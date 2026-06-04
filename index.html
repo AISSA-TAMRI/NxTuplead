@@ -1,621 +1,811 @@
 <!DOCTYPE html>
-
-<html class="dark" lang="en"><head>
+<html class="dark" lang="en">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>NxTuplead | High-Performance Growth Systems</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "secondary-fixed": "#d4e3ff",
-                        "surface-container": "#201f1f",
-                        "secondary-container": "#0267b8",
-                        "on-error": "#690005",
-                        "inverse-primary": "#005ac2",
-                        "on-secondary-fixed-variant": "#004883",
-                        "surface-container-highest": "#353534",
-                        "on-secondary": "#00315d",
-                        "surface-dim": "#131313",
-                        "on-error-container": "#ffdad6",
-                        "on-tertiary-fixed-variant": "#3c475a",
-                        "surface-tint": "#adc6ff",
-                        "inverse-on-surface": "#313030",
-                        "surface-container-high": "#2a2a2a",
-                        "primary-container": "#4d8eff",
-                        "tertiary": "#bcc7de",
-                        "secondary": "#a4c9ff",
-                        "surface-variant": "#353534",
-                        "inverse-surface": "#e5e2e1",
-                        "on-primary-container": "#00285d",
-                        "on-secondary-fixed": "#001c39",
-                        "outline-variant": "#424754",
-                        "tertiary-fixed": "#d8e3fb",
-                        "error-container": "#93000a",
-                        "surface": "#131313",
-                        "tertiary-container": "#8691a7",
-                        "primary-fixed": "#d8e2ff",
-                        "on-primary-fixed-variant": "#004395",
-                        "surface-container-low": "#1c1b1b",
-                        "on-secondary-container": "#d6e5ff",
-                        "on-tertiary-container": "#1f2a3c",
-                        "on-primary": "#002e6a",
-                        "on-surface-variant": "#c2c6d6",
-                        "on-surface": "#e5e2e1",
-                        "on-primary-fixed": "#001a42",
-                        "secondary-fixed-dim": "#a4c9ff",
-                        "on-tertiary": "#263143",
-                        "error": "#ffb4ab",
-                        "primary-fixed-dim": "#adc6ff",
-                        "outline": "#8c909f",
-                        "on-tertiary-fixed": "#111c2d",
-                        "background": "#131313",
-                        "tertiary-fixed-dim": "#bcc7de",
-                        "surface-container-lowest": "#0e0e0e",
-                        "surface-bright": "#3a3939",
-                        "on-background": "#e5e2e1",
-                        "primary": "#adc6ff"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    "spacing": {
-                        "max-width": "1440px",
-                        "margin-mobile": "16px",
-                        "sm": "12px",
-                        "xl": "64px",
-                        "margin-desktop": "48px",
-                        "xs": "4px",
-                        "base": "8px",
-                        "gutter": "24px",
-                        "lg": "40px",
-                        "md": "24px"
-                    },
-                    "fontFamily": {
-                        "body-lg": ["Inter"],
-                        "label-md": ["Inter"],
-                        "body-sm": ["Inter"],
-                        "headline-md": ["Inter"],
-                        "headline-sm": ["Inter"],
-                        "display-lg": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "body-md": ["Inter"],
-                        "display-lg-mobile": ["Inter"]
-                    },
-                    "fontSize": {
-                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "headline-md": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
-                    }
-                },
-            },
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "secondary-fixed": "#d4e3ff",
+          "surface-container": "#201f1f",
+          "secondary-container": "#0267b8",
+          "on-error": "#690005",
+          "inverse-primary": "#005ac2",
+          "on-secondary-fixed-variant": "#004883",
+          "surface-container-highest": "#353534",
+          "on-secondary": "#00315d",
+          "surface-dim": "#131313",
+          "on-error-container": "#ffdad6",
+          "on-tertiary-fixed-variant": "#3c475a",
+          "surface-tint": "#adc6ff",
+          "inverse-on-surface": "#313030",
+          "surface-container-high": "#2a2a2a",
+          "primary-container": "#4d8eff",
+          "tertiary": "#bcc7de",
+          "secondary": "#a4c9ff",
+          "surface-variant": "#353534",
+          "inverse-surface": "#e5e2e1",
+          "on-primary-container": "#00285d",
+          "on-secondary-fixed": "#001c39",
+          "outline-variant": "#424754",
+          "tertiary-fixed": "#d8e3fb",
+          "error-container": "#93000a",
+          "surface": "#131313",
+          "tertiary-container": "#8691a7",
+          "primary-fixed": "#d8e2ff",
+          "on-primary-fixed-variant": "#004395",
+          "surface-container-low": "#1c1b1b",
+          "on-secondary-container": "#d6e5ff",
+          "on-tertiary-container": "#1f2a3c",
+          "on-primary": "#002e6a",
+          "on-surface-variant": "#c2c6d6",
+          "on-surface": "#e5e2e1",
+          "on-primary-fixed": "#001a42",
+          "secondary-fixed-dim": "#a4c9ff",
+          "on-tertiary": "#263143",
+          "error": "#ffb4ab",
+          "primary-fixed-dim": "#adc6ff",
+          "outline": "#8c909f",
+          "on-tertiary-fixed": "#111c2d",
+          "background": "#131313",
+          "tertiary-fixed-dim": "#bcc7de",
+          "surface-container-lowest": "#0e0e0e",
+          "surface-bright": "#3a3939",
+          "on-background": "#e5e2e1",
+          "primary": "#adc6ff"
+        },
+        borderRadius: {
+          DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"
+        },
+        spacing: {
+          "max-width": "1440px",
+          "margin-mobile": "16px",
+          "sm": "12px", "xl": "64px",
+          "margin-desktop": "48px",
+          "xs": "4px", "base": "8px",
+          "gutter": "24px", "lg": "40px", "md": "24px"
+        },
+        fontFamily: {
+          "body-lg": ["Inter"], "label-md": ["Inter"], "body-sm": ["Inter"],
+          "headline-md": ["Inter"], "headline-sm": ["Inter"],
+          "display-lg": ["Inter"], "label-sm": ["Inter"],
+          "body-md": ["Inter"], "display-lg-mobile": ["Inter"]
+        },
+        fontSize: {
+          "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+          "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }],
+          "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+          "headline-md": ["30px", { lineHeight: "38px", letterSpacing: "-0.01em", fontWeight: "600" }],
+          "headline-sm": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+          "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
+          "label-sm": ["11px", { lineHeight: "14px", fontWeight: "500" }],
+          "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+          "display-lg-mobile": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }]
         }
-    </script>
+      },
+    },
+  }
+</script>
 <style>
-        body {
-            background-color: #0B0B0B;
-            color: #e5e2e1;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .glass-card {
-            background: rgba(22, 22, 22, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .glass-card:hover {
-            border-color: #3B82F6;
-            background: rgba(30, 30, 30, 0.8);
-            box-shadow: 0px 8px 30px rgba(59, 130, 246, 0.15);
-            transform: translateY(-6px);
-        }
-        .growth-highlight {
-            border-top: 3px solid #3B82F6;
-        }
-        
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(0.5deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-            70% { box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-        }
-        .pulse-glow {
-            animation: pulse-glow 2s infinite;
-        }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
 
-        .cta-shimmer {
-            position: relative;
-            overflow: hidden;
-        }
-        .cta-shimmer::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                to bottom right,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0) 40%,
-                rgba(255, 255, 255, 0.6) 50%,
-                rgba(255, 255, 255, 0) 60%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: rotate(45deg);
-            transition: 0.5s;
-            animation: shimmer-swipe 3s infinite linear;
-        }
-        @keyframes shimmer-swipe {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            20% { transform: translateX(100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
-        }
+  body {
+    background-color: #0B0B0B;
+    color: #e5e2e1;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
 
-        .data-bg {
-            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
-        }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
 
-        .gradient-text {
-            background: linear-gradient(135deg, #adc6ff 0%, #3B82F6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+  /* ─── Glass Card ─── */
+  .glass-card {
+    background: rgba(22, 22, 22, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @media (hover: hover) {
+    .glass-card:hover {
+      border-color: #3B82F6;
+      background: rgba(30, 30, 30, 0.8);
+      box-shadow: 0px 8px 30px rgba(59, 130, 246, 0.15);
+      transform: translateY(-6px);
+    }
+  }
 
-        .step-connector-h {
-            background: linear-gradient(to right, #3B82F6, transparent);
-        }
-        
-        details summary::-webkit-details-marker {
-            display: none;
-        }
-    </style>
+  /* ─── Reveal ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  .reveal.active { opacity: 1; transform: translateY(0); }
+
+  /* ─── Float animation ─── */
+  @keyframes float {
+    0%   { transform: translateY(0px) rotate(0deg); }
+    50%  { transform: translateY(-15px) rotate(0.5deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+  }
+  .animate-float { animation: float 6s ease-in-out infinite; }
+
+  /* ─── CTA shimmer ─── */
+  .cta-shimmer { position: relative; overflow: hidden; }
+  .cta-shimmer::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255,255,255,0) 0%, rgba(255,255,255,0) 40%,
+      rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 60%,
+      rgba(255,255,255,0) 100%
+    );
+    animation: shimmer-swipe 3s infinite linear;
+  }
+  @keyframes shimmer-swipe {
+    0%   { transform: translateX(-100%) rotate(45deg); }
+    20%  { transform: translateX(100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+  }
+
+  /* ─── Gradient text ─── */
+  .gradient-text {
+    background: linear-gradient(135deg, #adc6ff 0%, #3B82F6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ─── Data BG ─── */
+  .data-bg {
+    background: radial-gradient(circle at 50% 50%, rgba(59,130,246,0.08) 0%, transparent 70%);
+  }
+
+  /* ─── Step connector ─── */
+  .step-connector-h {
+    background: linear-gradient(to right, #3B82F6, transparent);
+  }
+
+  /* ─── Details/summary ─── */
+  details summary::-webkit-details-marker { display: none; }
+
+  /* ─── Mobile nav ─── */
+  #mobile-menu {
+    display: none;
+    position: fixed;
+    inset: 0;
+    top: 80px;
+    background: rgba(13,13,13,0.97);
+    backdrop-filter: blur(20px);
+    z-index: 40;
+    padding: 2rem 1.5rem;
+    flex-direction: column;
+    gap: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  #mobile-menu.open { display: flex; }
+  #mobile-menu a {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #c2c6d6;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: color 0.2s;
+  }
+  #mobile-menu a:hover { color: #adc6ff; }
+  #mobile-menu .menu-cta {
+    margin-top: 1rem;
+    background: #adc6ff;
+    color: #002e6a;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+  }
+
+  /* ─── Hamburger ─── */
+  .hamburger { cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 4px; }
+  .hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: #e5e2e1; border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* ─── Horizontal scroll fix ─── */
+  section, header, footer { width: 100%; max-width: 100%; }
+  img { max-width: 100%; height: auto; }
+
+  /* ─── Hero responsive tweaks ─── */
+  @media (max-width: 640px) {
+    .hero-title { font-size: 2rem !important; line-height: 1.2 !important; }
+    .hero-sub   { font-size: 1rem !important; }
+    .hero-btns  { flex-direction: column !important; gap: 0.75rem !important; }
+    .hero-btns button { width: 100% !important; padding: 0.875rem 1rem !important; font-size: 1rem !important; }
+    .hero-metrics { grid-template-columns: 1fr 1fr !important; }
+    .hero-metrics .col-span-full { grid-column: span 2 !important; }
+  }
+
+  /* ─── Overflow guard on steps ─── */
+  @media (max-width: 768px) {
+    .step-number { margin-left: 3.5rem !important; }
+  }
+
+  /* ─── Fix px-margin-desktop on mobile ─── */
+  .px-responsive {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  @media (min-width: 768px) {
+    .px-responsive {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+  }
+
+  /* ─── Testimonials ─── */
+  @media (max-width: 640px) {
+    .testimonial-grid { grid-template-columns: 1fr !important; }
+  }
+
+  /* ─── Services grid ─── */
+  @media (max-width: 480px) {
+    .services-grid { grid-template-columns: 1fr !important; }
+  }
+
+  /* ─── FAQ text size ─── */
+  @media (max-width: 640px) {
+    .faq-question { font-size: 1rem !important; }
+  }
+
+  /* ─── Features section ─── */
+  @media (max-width: 768px) {
+    .features-img { display: none; }
+    .features-text { width: 100% !important; }
+    .display-title { font-size: 2.25rem !important; line-height: 1.2 !important; }
+  }
+
+  /* ─── Calendar slots ─── */
+  @media (max-width: 400px) {
+    .slot-grid { grid-template-columns: 1fr 1fr !important; }
+  }
+
+  /* ─── Pulse glow ─── */
+  @keyframes pulse-glow {
+    0%   { box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+    70%  { box-shadow: 0 0 0 20px rgba(59,130,246,0); }
+    100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+  }
+  .pulse-glow { animation: pulse-glow 2s infinite; }
+</style>
 </head>
 <body class="selection:bg-primary selection:text-on-primary">
-<!-- TopNavBar -->
-<header class="docked full-width top-0 sticky bg-surface/80 dark:bg-surface/80 backdrop-blur-md border-b border-outline-variant dark:border-outline-variant z-50">
-<nav class="flex justify-between items-center w-full px-margin-desktop max-w-max-width mx-auto h-20">
-<div class="text-headline-sm font-headline-md font-bold tracking-tight text-on-surface dark:text-on-surface flex items-center gap-2">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
-            NxTuplead
-        </div>
-<div class="hidden md:flex items-center gap-lg">
-<a class="text-on-surface-variant dark:text-on-surface-variant text-label-md font-label-md hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#results">Results</a>
-<a class="text-on-surface-variant dark:text-on-surface-variant text-label-md font-label-md hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#process">Process</a>
-<a class="text-on-surface-variant dark:text-on-surface-variant text-label-md font-label-md hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#services">Services</a>
-<a class="text-on-surface-variant dark:text-on-surface-variant text-label-md font-label-md hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#testimonials">Testimonials</a>
-<a class="text-on-surface-variant dark:text-on-surface-variant text-label-md font-label-md hover:text-primary dark:hover:text-primary-fixed-dim transition-colors duration-200" href="#faq">FAQ</a>
-</div>
- <button class="bg-primary text-on-primary px-3 py-2 rounded-lg text-xs md:text-sm font-semibold active:scale-95 transition-all cta-shimmer shadow-xl shadow-primary/30">            Book a Strategy Call
-        </button>
-</nav>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="sticky top-0 bg-surface/80 backdrop-blur-md border-b border-outline-variant z-50" style="width:100%;">
+  <nav class="flex justify-between items-center w-full px-responsive h-20" style="max-width:1440px; margin:0 auto;">
+
+    <!-- Logo -->
+    <div class="text-xl font-bold tracking-tight text-on-surface flex items-center gap-2 flex-shrink-0">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">rocket_launch</span>
+      NxTuplead
+    </div>
+
+    <!-- Desktop nav links -->
+    <div class="hidden md:flex items-center gap-8">
+      <a class="text-on-surface-variant text-xs font-semibold tracking-widest uppercase hover:text-primary transition-colors" href="#results">Results</a>
+      <a class="text-on-surface-variant text-xs font-semibold tracking-widest uppercase hover:text-primary transition-colors" href="#process">Process</a>
+      <a class="text-on-surface-variant text-xs font-semibold tracking-widest uppercase hover:text-primary transition-colors" href="#services">Services</a>
+      <a class="text-on-surface-variant text-xs font-semibold tracking-widest uppercase hover:text-primary transition-colors" href="#testimonials">Testimonials</a>
+      <a class="text-on-surface-variant text-xs font-semibold tracking-widest uppercase hover:text-primary transition-colors" href="#faq">FAQ</a>
+    </div>
+
+    <!-- Desktop CTA -->
+    <button class="hidden md:block bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-semibold active:scale-95 transition-all cta-shimmer shadow-xl" style="box-shadow:0 0 24px rgba(173,198,255,0.3);">
+      Book a Strategy Call
+    </button>
+
+    <!-- Mobile: hamburger -->
+    <button id="hamburger-btn" class="hamburger md:hidden" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
 </header>
+
+<!-- Mobile nav menu -->
+<nav id="mobile-menu" role="navigation">
+  <a href="#results"      onclick="closeMobileMenu()">Results</a>
+  <a href="#process"      onclick="closeMobileMenu()">Process</a>
+  <a href="#services"     onclick="closeMobileMenu()">Services</a>
+  <a href="#testimonials" onclick="closeMobileMenu()">Testimonials</a>
+  <a href="#faq"          onclick="closeMobileMenu()">FAQ</a>
+  <button class="menu-cta" onclick="closeMobileMenu()">Book a Strategy Call</button>
+</nav>
+
 <main>
-<!-- Hero Section -->
-<section class="relative pt-xl pb-24 px-margin-desktop overflow-hidden data-bg">
-<div class="particles absolute inset-0 z-0 pointer-events-none" id="particles-js"></div>
-<div class="max-w-max-width mx-auto flex flex-col items-center text-center relative z-10 reveal active">
-<div class="mb-base px-sm py-xs bg-primary/10 border border-primary/20 rounded-full inline-block">
-<span class="text-primary font-label-md text-label-md tracking-widest uppercase">NOW SERVING ELITE ENTERPRISES</span>
-</div>
-<h1 class="text-4xl md:text-[72px] leading-tight mb-md max-w-5xl font-bold">            Scale Your Revenue with <span class="gradient-text italic">Predictable</span> Growth Systems.
-        </h1>
-<p class="text-on-surface-variant font-body-lg text-body-lg max-w-2xl mb-lg">
-            The high-performance acquisition engine for elite service businesses, coaches, and SMBs looking for mathematical certainty in their growth.
-        </p>
-<div class="flex flex-col sm:flex-row gap-md mb-xl">
-<button class="bg-primary text-on-primary px-xl py-md rounded-lg font-headline-sm text-headline-sm hover:brightness-110 transition-all shadow-2xl shadow-primary/40 cta-shimmer scale-105">
-                Book Your Strategy Call
-            </button>
-<button class="border border-outline-variant text-on-surface px-xl py-md rounded-lg font-headline-sm text-headline-sm hover:bg-white/5 transition-all">
-                View Case Studies
-            </button>
-</div>
-<!-- Hero Metrics -->
-<div class="grid grid-cols-2 md:grid-cols-3 gap-lg mb-xl w-full max-w-4xl border-t border-outline-variant/30 pt-lg">
-<div class="text-center">
-<div class="text-headline-md font-bold text-primary">$50M+</div>
-<div class="text-label-sm text-on-surface-variant uppercase">Revenue Generated</div>
-</div>
-<div class="text-center">
-<div class="text-headline-md font-bold text-primary">500k+</div>
-<div class="text-label-sm text-on-surface-variant uppercase">Qualified Leads</div>
-</div>
-<div class="text-center col-span-2 md:col-span-1">
-<div class="text-headline-md font-bold text-primary">200+</div>
-<div class="text-label-sm text-on-surface-variant uppercase">Businesses Served</div>
-</div>
-</div>
-<!-- Dashboard Visual -->
-<div class="w-full max-w-5xl glass-card rounded-2xl p-base relative group animate-float shadow-2xl">
-<div class="absolute inset-0 bg-primary/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
 
-</div>
-</div>
+<!-- ═══════════ HERO ═══════════ -->
+<section class="relative pt-16 pb-20 px-responsive overflow-hidden data-bg">
+  <div class="particles absolute inset-0 z-0 pointer-events-none" id="particles-js"></div>
+  <div class="max-w-5xl mx-auto flex flex-col items-center text-center relative z-10 reveal active">
 
+    <div class="mb-3 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full inline-block">
+      <span class="text-primary text-xs font-semibold tracking-widest uppercase">NOW SERVING ELITE ENTERPRISES</span>
+    </div>
 
-<!-- How It Works -->
-<section class="py-xl bg-surface-container-low px-margin-desktop reveal" id="process">
-<div class="max-w-max-width mx-auto">
-<div class="text-center mb-xl">
-<h2 class="font-headline-md text-headline-md text-on-surface mb-base font-bold">The Architecture of Growth</h2>
-<p class="text-on-surface-variant font-body-md text-body-md max-w-xl mx-auto">A refined 3-step process to transform your acquisition pipeline into a predictable revenue asset.</p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-xl relative">
-<!-- Connectors -->
-<div class="hidden md:block absolute top-12 left-[15%] right-[15%] h-1 step-connector-h z-0 opacity-20"></div>
-<div class="relative z-10 flex flex-col items-center text-center group">
-<div class="w-24 h-24 rounded-2xl bg-surface border border-outline-variant/30 text-primary flex items-center justify-center font-display-lg mb-md shadow-2xl transition-all group-hover:border-primary group-hover:-translate-y-2 group-hover:shadow-primary/20">
-<span class="material-symbols-outlined text-[40px]">video_call</span>
-</div>
-<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold mb-base -mt-12 ml-16 z-20 shadow-lg">1</div>
-<h4 class="font-headline-sm text-headline-sm mb-base text-on-surface">Strategy Call</h4>
-<p class="text-on-surface-variant font-body-sm text-body-sm px-md">Deep dive into your current unit economics, LTV, and scaling bottlenecks to find hidden leverage.</p>
-</div>
-<div class="relative z-10 flex flex-col items-center text-center group">
-<div class="w-24 h-24 rounded-2xl bg-surface border border-outline-variant/30 text-primary flex items-center justify-center font-display-lg mb-md shadow-2xl transition-all group-hover:border-primary group-hover:-translate-y-2 group-hover:shadow-primary/20">
-<span class="material-symbols-outlined text-[40px]">architecture</span>
-</div>
-<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold mb-base -mt-12 ml-16 z-20 shadow-lg">2</div>
-<h4 class="font-headline-sm text-headline-sm mb-base text-on-surface">Growth Review</h4>
-<p class="text-on-surface-variant font-body-sm text-body-sm px-md">Analysis of current assets and delivery of a custom architectural blueprint for your specific market niche.</p>
-</div>
-<div class="relative z-10 flex flex-col items-center text-center group">
-<div class="w-24 h-24 rounded-2xl bg-surface border border-outline-variant/30 text-primary flex items-center justify-center font-display-lg mb-md shadow-2xl transition-all group-hover:border-primary group-hover:-translate-y-2 group-hover:shadow-primary/20">
-<span class="material-symbols-outlined text-[40px]">auto_graph</span>
-</div>
-<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold mb-base -mt-12 ml-16 z-20 shadow-lg">3</div>
-<h4 class="font-headline-sm text-headline-sm mb-base text-on-surface">Scale</h4>
-<p class="text-on-surface-variant font-body-sm text-body-sm px-md">Full implementation of automated acquisition systems and continuous data-driven optimization loops.</p>
-</div>
-</div>
-</div>
+    <h1 class="hero-title text-4xl md:text-[72px] leading-tight mb-5 font-bold" style="max-width:900px;">
+      Scale Your Revenue with <span class="gradient-text italic">Predictable</span> Growth Systems.
+    </h1>
+
+    <p class="hero-sub text-on-surface-variant text-lg max-w-2xl mb-10" style="line-height:1.7;">
+      The high-performance acquisition engine for elite service businesses, coaches, and SMBs looking for mathematical certainty in their growth.
+    </p>
+
+    <div class="hero-btns flex flex-col sm:flex-row gap-4 mb-14 w-full sm:w-auto">
+      <button class="bg-primary text-on-primary px-10 py-4 rounded-lg font-semibold text-lg hover:brightness-110 transition-all shadow-2xl cta-shimmer w-full sm:w-auto" style="box-shadow:0 0 40px rgba(173,198,255,0.4);">
+        Book Your Strategy Call
+      </button>
+      <button class="border border-outline-variant text-on-surface px-10 py-4 rounded-lg font-semibold text-lg hover:bg-white/5 transition-all w-full sm:w-auto">
+        View Case Studies
+      </button>
+    </div>
+
+    <!-- Hero Metrics -->
+    <div class="hero-metrics grid grid-cols-2 md:grid-cols-3 gap-8 mb-12 w-full max-w-3xl border-t border-outline-variant/30 pt-8">
+      <div class="text-center">
+        <div class="text-3xl font-bold text-primary">$50M+</div>
+        <div class="text-xs text-on-surface-variant uppercase tracking-widest mt-1">Revenue Generated</div>
+      </div>
+      <div class="text-center">
+        <div class="text-3xl font-bold text-primary">500k+</div>
+        <div class="text-xs text-on-surface-variant uppercase tracking-widest mt-1">Qualified Leads</div>
+      </div>
+      <div class="text-center col-span-2 md:col-span-1">
+        <div class="text-3xl font-bold text-primary">200+</div>
+        <div class="text-xs text-on-surface-variant uppercase tracking-widest mt-1">Businesses Served</div>
+      </div>
+    </div>
+
+  </div>
 </section>
-<!-- Services -->
-<section class="py-xl px-margin-desktop reveal" id="services">
-<div class="max-w-max-width mx-auto">
-<div class="flex flex-col md:flex-row justify-between items-end mb-xl gap-md">
-<div class="max-w-2xl">
-<h2 class="font-headline-md text-headline-md text-on-surface mb-base font-bold">Enterprise Systems</h2>
-<p class="text-on-surface-variant font-body-md text-body-md">We don't just run ads; we build the entire technical and creative machinery required to sustain market dominance and scale with precision.</p>
-</div>
-<a class="text-primary font-label-md text-label-md hover:underline flex items-center gap-xs group mb-xs" href="#">
-                EXPLORE ALL SERVICES <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">arrow_forward</span>
-</a>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
-<!-- Service 1 -->
-<div class="glass-card p-md rounded-xl hover:border-primary/50 group">
-<div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-md transition-all group-hover:pulse-glow">
-<span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">hub</span>
-</div>
-<h4 class="font-headline-sm text-headline-sm mb-base text-on-surface">Lead Generation</h4>
-<p class="text-on-surface-variant font-body-sm text-body-sm">High-intent traffic acquisition across Search, Social, and Display channels using proprietary data modeling.</p>
-</div>
-<!-- Service 2 -->
-<div class="glass-card p-md rounded-xl hover:border-primary/50 group">
-<div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-md transition-all group-hover:pulse-glow">
-<span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">person_add</span>
-</div>
-<h4 class="font-headline-sm text-headline-sm mb-base text-on-surface">Customer Acquisition</h4>
-<p class="text-on-surface-variant font-body-sm text-body-sm">Full-funnel conversion strategies designed to turn cold traffic into high-value recurring revenue assets.</p>
-</div>
-<!-- Service 3 -->
-<div class="glass-card p-md rounded-xl hover:border-primary/50 group">
-<div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-md transition-all group-hover:pulse-glow">
-<span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
-</div>
-<h4 class="font-headline-sm text-headline-sm mb-base text-on-surface">Marketing Automation</h4>
-<p class="text-on-surface-variant font-body-sm text-body-sm">Sophisticated CRM triggers and lead nurturing sequences that operate 24/7 without manual intervention.</p>
-</div>
-<!-- Service 4 -->
-<div class="glass-card p-md rounded-xl hover:border-primary/50 group">
-<div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-md transition-all group-hover:pulse-glow">
-<span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">loop</span>
-</div>
-<h4 class="font-headline-sm text-headline-sm mb-base text-on-surface">LTV Optimization</h4>
-<p class="text-on-surface-variant font-body-sm text-body-sm">Maximization of customer lifetime value through strategic cross-sells and loyalty-based expansion systems.</p>
-</div>
-</div>
-</div>
-</section>
-<!-- Why NxTuplead (Features) -->
-<section class="py-xl bg-surface-container-lowest px-margin-desktop overflow-hidden reveal">
-<div class="max-w-max-width mx-auto flex flex-col lg:flex-row gap-xl items-center">
-<div class="lg:w-1/2">
-<h2 class="font-display-lg text-display-lg text-on-surface mb-lg font-bold">Built for the <span class="text-primary italic">Top 1%</span>.</h2>
-<ul class="space-y-lg">
-<li class="flex gap-md group">
-<div class="flex-shrink-0 w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">query_stats</span>
-</div>
-<div>
-<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Data-Driven Decisions</h4>
-<p class="text-on-surface-variant font-body-md text-body-md">We replace guesswork with granular tracking and predictive modeling to ensure every dollar is optimized for ROI.</p>
-</div>
-</li>
-<li class="flex gap-md group">
-<div class="flex-shrink-0 w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
-</div>
-<div>
-<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Automation-First</h4>
-<p class="text-on-surface-variant font-body-md text-body-md">Our systems remove manual friction, allowing your sales team to focus on closing, not chasing unqualified leads.</p>
-</div>
-</li>
-<li class="flex gap-md group">
-<div class="flex-shrink-0 w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">trending_up</span>
-</div>
-<div>
-<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Predictable ROI</h4>
-<p class="text-on-surface-variant font-body-md text-body-md">We focus strictly on bottom-line impact. If it doesn't result in revenue, it's not a metric we prioritize.</p>
-</div>
-</li>
-<li class="flex gap-md group">
-<div class="flex-shrink-0 w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">monitoring</span>
-</div>
-<div>
-<h4 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Transparent Reporting</h4>
-<p class="text-on-surface-variant font-body-md text-body-md">Real-time dashboards providing 24/7 visibility into your acquisition engine's performance and spending.</p>
-</div>
-</li>
-</ul>
-</div>
-<div class="lg:w-1/2 relative group">
-<div class="absolute -inset-10 bg-primary/20 blur-[120px] rounded-full opacity-30 group-hover:opacity-50 transition-opacity"></div>
-<div class="relative z-10 glass-card p-4 rounded-3xl border-primary/20 rotate-3 group-hover:rotate-0 transition-all duration-700">
-<img alt="High Tech Systems Visualization" class="rounded-2xl border border-outline-variant w-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6gvf1glZwsvUcZE_c9-R78DAL-9kozibFjSkJpYp1Lry83t1ysE2MsMEG3s_G4NpaP97bvUc6rHiH7gQhd9ItX6Oy_FuinPnFx0RUeDPRFtzrAJtiKWALJjY5bNvqg76147mvYvb8gapE7zaPUeRiCbI0P_VXXWP7bgTyEDdRmlXLwEsp74cDV5UWihP4GKQRjVKaIDm3grFtjHkVpmo-9NcTH0DYa8JoxPN8TX2fRlKR0QhDKT7n9ymmBuvg1DLkDpd9jV1axIg"/>
-</div>
-</div>
-</div>
-</section>
-<!-- Testimonials Section -->
-<section class="py-xl px-margin-desktop reveal bg-surface-container" id="testimonials">
-<div class="max-w-max-width mx-auto">
-<div class="text-center mb-xl">
-<h2 class="font-headline-md text-headline-md text-on-surface font-bold mb-base">Voices of Success</h2>
-<p class="text-on-surface-variant font-body-md text-body-md">Hear from the founders and executives who integrated NxTuplead into their growth stack.</p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-<!-- Testimonial 1 -->
-<div class="glass-card p-lg rounded-2xl border-outline-variant/30 relative">
-<span class="material-symbols-outlined text-primary/20 text-[48px] absolute top-4 right-4">format_quote</span>
-<p class="text-on-surface font-body-lg italic mb-lg leading-relaxed relative z-10">"NxTuplead didn't just give us leads; they gave us a scalable acquisition machine that actually understands our unit economics."</p>
-<div class="flex items-center gap-md">
-<div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden border border-primary/20">
-<img alt="Marcus Chen" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu7wpaOi9fTRwbHVeN_OwIg1rRB11ZDCaaRhX9SIc-l_3WXw_lIUXOUamx-6gsP_6dtV8JOejzPY7OoZB3VD58Fuh7pF3X8Wpka3pPvC4KcfVXCSBad4f-wTcJ0d7pAot6NBaVWZe0mlU4TMiVZ_XOwM9U5D_S6ODmNQgzqnx0O1TKOVGpWvuHC4S8M5DeaRFiy-_lakEVoAUmJl6CeteWz8itG1tZV7Wi-LuidxcgWKYKExdSrTs-svKWEj77JKFr7HcxXV9vjWY"/>
-</div>
-<div>
-<div class="font-bold text-on-surface">Marcus Chen</div>
-<div class="text-label-sm text-primary">CEO, Nexus Cloud</div>
-</div>
-</div>
-</div>
-<!-- Testimonial 2 -->
-<div class="glass-card p-lg rounded-2xl border-outline-variant/30 relative">
-<span class="material-symbols-outlined text-primary/20 text-[48px] absolute top-4 right-4">format_quote</span>
-<p class="text-on-surface font-body-lg italic mb-lg leading-relaxed relative z-10">"The transition from guesswork to data was immediate. We've seen a 400% increase in qualified calls within 90 days."</p>
-<div class="flex items-center gap-md">
-<div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden border border-primary/20">
-<img alt="Sarah Jenkins" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeM_uGNbrMHakXBK73ooFbc8RJI5ObjEOFqd7S9rRGkiBCGTW86UezLg0A-l5Ow-jSqQt2sQXgB1qnxBm3nYZmE_i3B-dnIoBIKvoio0DDy7iCbAqJYhDVjsDSboK-ZRfjg2u1PIW67XQBTvJmiwTj8bEbfcJF0k6n2ouvQdhj3RCp1mUpUQ-FXBQAKb1tbYZdJWCGphIj1Hb_W03wLO7MqWQTSRyXaM-iGNnmMkj6G_97QMfPnOGpXG4B3-gGsso6prCQu496d20"/>
-</div>
-<div>
-<div class="font-bold text-on-surface">Sarah Jenkins</div>
-<div class="text-label-sm text-primary">Founder, Elite Coaching</div>
-</div>
-</div>
-</div>
-<!-- Testimonial 3 -->
-<div class="glass-card p-lg rounded-2xl border-outline-variant/30 relative">
-<span class="material-symbols-outlined text-primary/20 text-[48px] absolute top-4 right-4">format_quote</span>
-<p class="text-on-surface font-body-lg italic mb-lg leading-relaxed relative z-10">"The best investment we've made in our marketing department. The automation systems they built pay for themselves daily."</p>
-<div class="flex items-center gap-md">
-<div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden border border-primary/20">
-<img alt="David Miller" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEWi6O4ay4E9Po9EdqwxqoKSkG6gRkzYeiw1TbAug_KcmAMpL9GrxIK9ytMiUFZyq0hV-mxvHeyr6R8QslUoefPST0YSjcFb3WU-_Ril9vBDXP34qOhmvO7K6dSmDEpkcLLmRAr-500mFmtTLtQQdPy_eED4e-e4VF5zjdF0sMqb4mRU-EqxtptNAll7zhAddoqW9anIZ5vWL-IQx1waINlf4_Tn9iXpF2PmuuDzOMTnCSC6Iaw_-PWNKN6p_4ty0KHtuhYo9ZIFg"/>
-</div>
-<div>
-<div class="font-bold text-on-surface">David Miller</div>
-<div class="text-label-sm text-primary">VP Growth, MedScale Pro</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- FAQ Section -->
-<section class="py-xl px-margin-desktop reveal" id="faq">
-<div class="max-w-3xl mx-auto">
-<h2 class="font-headline-md text-headline-md text-on-surface text-center mb-xl font-bold">Frequently Asked Questions</h2>
-<div class="space-y-md">
-<details class="group glass-card rounded-xl border border-outline-variant/20 overflow-hidden" open="">
-<summary class="flex justify-between items-center p-md md:p-lg cursor-pointer list-none select-none hover:bg-white/5 transition-colors">
-<span class="font-headline-sm text-lg md:text-xl text-on-surface font-semibold">How quickly can we expect results?</span>
-<span class="material-symbols-outlined group-open:rotate-180 transition-transform text-primary">expand_more</span>
-</summary>
-<div class="px-md md:px-lg pb-md md:pb-lg">
-<p class="text-on-surface-variant font-body-md text-body-md leading-relaxed">While initial tracking infrastructure and core system setup take 14-21 days, most clients begin seeing a measurable flow of high-intent leads within the first 30 days of campaign activation.</p>
-</div>
-</details>
-<details class="group glass-card rounded-xl border border-outline-variant/20 overflow-hidden">
-<summary class="flex justify-between items-center p-md md:p-lg cursor-pointer list-none select-none hover:bg-white/5 transition-colors">
-<span class="font-headline-sm text-lg md:text-xl text-on-surface font-semibold">Do you work with early-stage startups?</span>
-<span class="material-symbols-outlined group-open:rotate-180 transition-transform text-primary">expand_more</span>
-</summary>
-<div class="px-md md:px-lg pb-md md:pb-lg">
-<p class="text-on-surface-variant font-body-md text-body-md leading-relaxed">We primarily partner with established enterprises and elite SMBs that have already proven product-market fit. Our systems are designed to scale existing demand rather than discover it from scratch.</p>
-</div>
-</details>
-<details class="group glass-card rounded-xl border border-outline-variant/20 overflow-hidden">
-<summary class="flex justify-between items-center p-md md:p-lg cursor-pointer list-none select-none hover:bg-white/5 transition-colors">
-<span class="font-headline-sm text-lg md:text-xl text-on-surface font-semibold">What makes NxTuplead different from an agency?</span>
-<span class="material-symbols-outlined group-open:rotate-180 transition-transform text-primary">expand_more</span>
-</summary>
-<div class="px-md md:px-lg pb-md md:pb-lg">
-<p class="text-on-surface-variant font-body-md text-body-md leading-relaxed">We aren't a traditional creative agency. We are growth system architects. We build high-performance assets that you own, powered by data science and automation rather than just creative intuition and manual effort.</p>
-</div>
-</details>
-<details class="group glass-card rounded-xl border border-outline-variant/20 overflow-hidden">
-<summary class="flex justify-between items-center p-md md:p-lg cursor-pointer list-none select-none hover:bg-white/5 transition-colors">
-<span class="font-headline-sm text-lg md:text-xl text-on-surface font-semibold">What is the required ad spend minimum?</span>
-<span class="material-symbols-outlined group-open:rotate-180 transition-transform text-primary">expand_more</span>
-</summary>
-<div class="px-md md:px-lg pb-md md:pb-lg">
-<p class="text-on-surface-variant font-body-md text-body-md leading-relaxed">To ensure statistical significance and provide the ROI our engine is capable of, we typically recommend a minimum monthly ad spend of $5,000 across channels.</p>
-</div>
-</details>
-</div>
-</div>
-</section>
-<!-- Final CTA / Calendar -->
-<section class="py-xl bg-surface px-margin-desktop relative overflow-hidden reveal">
-<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#3B82F6 1px, transparent 1px); background-size: 32px 32px;"></div>
-<div class="max-w-max-width mx-auto relative z-10 flex flex-col items-center">
-<div class="max-w-2xl text-center mb-xl">
-<h2 class="font-display-lg text-display-lg text-on-surface mb-base font-bold">Ready for the Next Level of Growth?</h2>
-<p class="text-on-surface-variant font-body-lg text-body-lg mb-md">Schedule your 15-minute growth review below. We only take on 3 new partners each month to ensure absolute focus on engineering performance.</p>
-<div class="inline-flex items-center gap-xs px-md py-xs bg-error/10 border border-error/20 rounded-full">
-<span class="material-symbols-outlined text-error text-[18px]">emergency</span>
-<span class="text-error font-bold text-label-md uppercase tracking-tight">Only 3 partnership slots available for Q4</span>
-</div>
-</div>
-<!-- Calendar Widget Placeholder -->
-<div class="w-full max-w-4xl glass-card rounded-2xl p-md md:p-xl min-h-[600px] flex flex-col bg-surface-container relative">
-<div class="flex-grow flex flex-col items-center justify-center text-center">
-<div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-md">
-<span class="material-symbols-outlined text-primary text-[48px] animate-bounce" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
-</div>
-<h3 class="font-headline-md text-headline-md mb-md font-bold">Secure Your Time Slot</h3>
-<p class="text-on-surface-variant font-body-md text-body-md mb-lg">Integration with Google Calendar / Calendly</p>
-<!-- Mock Booking UI -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-sm w-full max-w-2xl mb-xl">
-<div class="p-md rounded-lg border border-outline-variant hover:border-primary cursor-pointer transition-all bg-black/20">9:00 AM</div>
-<div class="p-md rounded-lg border border-outline-variant hover:border-primary cursor-pointer transition-all bg-black/20">10:30 AM</div>
-<div class="p-md rounded-lg border border-primary bg-primary/10 text-primary font-bold">1:00 PM</div>
-<div class="p-md rounded-lg border border-outline-variant hover:border-primary cursor-pointer transition-all bg-black/20">3:30 PM</div>
-</div>
-<button class="bg-primary text-on-primary px-xl py-md rounded-lg font-headline-sm text-headline-sm hover:brightness-110 transition-all cta-shimmer shadow-2xl shadow-primary/40">
-                    Book Your Strategy Call
-                </button>
-</div>
-<div class="mt-xl pt-lg border-t border-outline-variant/30 flex justify-center gap-xl opacity-60 grayscale filter">
-<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-primary text-[20px]">verified</span> <span class="text-label-sm">Secured Encryption</span></div>
-<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-primary text-[20px]">check_circle</span> <span class="text-label-sm">Instant Confirmation</span></div>
-</div>
-</div>
-</div>
-</section>
-</main>
-<!-- Footer -->
-<footer class="w-full py-xl px-margin-desktop max-w-max-width mx-auto flex flex-col md:flex-row justify-between items-center gap-xl border-t border-outline-variant/20 bg-surface-container-lowest">
-<div class="flex flex-col items-center md:items-start gap-md">
-<div class="text-headline-sm font-bold text-on-surface flex items-center gap-2">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
-            NxTuplead
+
+<!-- ═══════════ HOW IT WORKS ═══════════ -->
+<section class="py-16 md:py-20 bg-surface-container-low px-responsive reveal" id="process">
+  <div style="max-width:1440px; margin:0 auto;">
+    <div class="text-center mb-12">
+      <h2 class="text-2xl md:text-3xl font-bold text-on-surface mb-3">The Architecture of Growth</h2>
+      <p class="text-on-surface-variant text-base max-w-lg mx-auto">A refined 3-step process to transform your acquisition pipeline into a predictable revenue asset.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 relative">
+      <!-- desktop connector line -->
+      <div class="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 step-connector-h opacity-20 z-0"></div>
+
+      <!-- Step 1 -->
+      <div class="relative z-10 flex flex-col items-center text-center group">
+        <div class="w-24 h-24 rounded-2xl bg-surface border border-outline-variant/30 text-primary flex items-center justify-center mb-6 shadow-2xl transition-all group-hover:border-primary group-hover:-translate-y-2" style="transition:all 0.3s;">
+          <span class="material-symbols-outlined" style="font-size:40px;">video_call</span>
         </div>
-<p class="text-on-surface-variant text-body-sm font-body-sm max-w-xs text-center md:text-left leading-relaxed">
-            © 2024 NxTuplead Systems Inc. All rights reserved. Engineering high-performance growth for elite enterprises globally.
-        </p>
-<div class="flex gap-md">
-<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">alternate_email</span></a>
-<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">public</span></a>
-</div>
-</div>
-<div class="flex flex-wrap justify-center gap-lg">
-<div class="flex flex-col gap-sm">
-<span class="text-on-surface font-bold text-label-md">Company</span>
-<a class="text-on-surface-variant text-label-sm hover:text-primary transition-all" href="#results">Results</a>
-<a class="text-on-surface-variant text-label-sm hover:text-primary transition-all" href="#process">Process</a>
-<a class="text-on-surface-variant text-label-sm hover:text-primary transition-all" href="#services">Services</a>
-</div>
-<div class="flex flex-col gap-sm">
-<span class="text-on-surface font-bold text-label-md">Legal</span>
-<a class="text-on-surface-variant text-label-sm hover:text-primary underline transition-all" href="#">Privacy Policy</a>
-<a class="text-on-surface-variant text-label-sm hover:text-primary underline transition-all" href="#">Terms of Service</a>
-<a class="text-on-surface-variant text-label-sm hover:text-primary underline transition-all" href="#">Cookie Policy</a>
-</div>
-</div>
+        <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm shadow-lg" style="margin-top:-3.5rem; margin-left:3.5rem; margin-bottom:0.75rem; position:relative; z-index:20;">1</div>
+        <h4 class="text-xl font-bold text-on-surface mb-2 mt-2">Strategy Call</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed px-2">Deep dive into your current unit economics, LTV, and scaling bottlenecks to find hidden leverage.</p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="relative z-10 flex flex-col items-center text-center group">
+        <div class="w-24 h-24 rounded-2xl bg-surface border border-outline-variant/30 text-primary flex items-center justify-center mb-6 shadow-2xl transition-all group-hover:border-primary group-hover:-translate-y-2">
+          <span class="material-symbols-outlined" style="font-size:40px;">architecture</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm shadow-lg" style="margin-top:-3.5rem; margin-left:3.5rem; margin-bottom:0.75rem; position:relative; z-index:20;">2</div>
+        <h4 class="text-xl font-bold text-on-surface mb-2 mt-2">Growth Review</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed px-2">Analysis of current assets and delivery of a custom architectural blueprint for your specific market niche.</p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="relative z-10 flex flex-col items-center text-center group">
+        <div class="w-24 h-24 rounded-2xl bg-surface border border-outline-variant/30 text-primary flex items-center justify-center mb-6 shadow-2xl transition-all group-hover:border-primary group-hover:-translate-y-2">
+          <span class="material-symbols-outlined" style="font-size:40px;">auto_graph</span>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm shadow-lg" style="margin-top:-3.5rem; margin-left:3.5rem; margin-bottom:0.75rem; position:relative; z-index:20;">3</div>
+        <h4 class="text-xl font-bold text-on-surface mb-2 mt-2">Scale</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed px-2">Full implementation of automated acquisition systems and continuous data-driven optimization loops.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SERVICES ═══════════ -->
+<section class="py-16 md:py-20 px-responsive reveal" id="services">
+  <div style="max-width:1440px; margin:0 auto;">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-5">
+      <div style="max-width:600px;">
+        <h2 class="text-2xl md:text-3xl font-bold text-on-surface mb-2">Enterprise Systems</h2>
+        <p class="text-on-surface-variant text-base">We don't just run ads; we build the entire technical and creative machinery required to sustain market dominance and scale with precision.</p>
+      </div>
+      <a class="text-primary text-xs font-semibold tracking-widest uppercase hover:underline flex items-center gap-1 group" href="#">
+        EXPLORE ALL SERVICES <span class="material-symbols-outlined" style="font-size:16px; transition:transform 0.2s;" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='translateX(0)'">arrow_forward</span>
+      </a>
+    </div>
+
+    <div class="services-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="glass-card p-6 rounded-xl group">
+        <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+          <span class="material-symbols-outlined text-primary" style="font-size:32px; font-variation-settings:'FILL' 1;">hub</span>
+        </div>
+        <h4 class="text-xl font-bold text-on-surface mb-2">Lead Generation</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed">High-intent traffic acquisition across Search, Social, and Display channels using proprietary data modeling.</p>
+      </div>
+
+      <div class="glass-card p-6 rounded-xl group">
+        <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+          <span class="material-symbols-outlined text-primary" style="font-size:32px; font-variation-settings:'FILL' 1;">person_add</span>
+        </div>
+        <h4 class="text-xl font-bold text-on-surface mb-2">Customer Acquisition</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed">Full-funnel conversion strategies designed to turn cold traffic into high-value recurring revenue assets.</p>
+      </div>
+
+      <div class="glass-card p-6 rounded-xl group">
+        <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+          <span class="material-symbols-outlined text-primary" style="font-size:32px; font-variation-settings:'FILL' 1;">smart_toy</span>
+        </div>
+        <h4 class="text-xl font-bold text-on-surface mb-2">Marketing Automation</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed">Sophisticated CRM triggers and lead nurturing sequences that operate 24/7 without manual intervention.</p>
+      </div>
+
+      <div class="glass-card p-6 rounded-xl group">
+        <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+          <span class="material-symbols-outlined text-primary" style="font-size:32px; font-variation-settings:'FILL' 1;">loop</span>
+        </div>
+        <h4 class="text-xl font-bold text-on-surface mb-2">LTV Optimization</h4>
+        <p class="text-on-surface-variant text-sm leading-relaxed">Maximization of customer lifetime value through strategic cross-sells and loyalty-based expansion systems.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ WHY NXTUPLEAD ═══════════ -->
+<section class="py-16 md:py-20 bg-surface-container-lowest px-responsive overflow-hidden reveal">
+  <div class="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center" style="max-width:1440px; margin:0 auto;">
+
+    <div class="features-text w-full lg:w-1/2">
+      <h2 class="display-title text-on-surface font-bold mb-10" style="font-size:clamp(2rem,5vw,3rem); line-height:1.15;">
+        Built for the <span class="text-primary italic">Top 1%</span>.
+      </h2>
+      <ul class="space-y-8">
+        <li class="flex gap-5 group">
+          <div class="flex-shrink-0 w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center" style="transition:transform 0.3s;">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">query_stats</span>
+          </div>
+          <div>
+            <h4 class="text-xl font-bold text-on-surface mb-1">Data-Driven Decisions</h4>
+            <p class="text-on-surface-variant text-base leading-relaxed">We replace guesswork with granular tracking and predictive modeling to ensure every dollar is optimized for ROI.</p>
+          </div>
+        </li>
+        <li class="flex gap-5 group">
+          <div class="flex-shrink-0 w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">precision_manufacturing</span>
+          </div>
+          <div>
+            <h4 class="text-xl font-bold text-on-surface mb-1">Automation-First</h4>
+            <p class="text-on-surface-variant text-base leading-relaxed">Our systems remove manual friction, allowing your sales team to focus on closing, not chasing unqualified leads.</p>
+          </div>
+        </li>
+        <li class="flex gap-5 group">
+          <div class="flex-shrink-0 w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">trending_up</span>
+          </div>
+          <div>
+            <h4 class="text-xl font-bold text-on-surface mb-1">Predictable ROI</h4>
+            <p class="text-on-surface-variant text-base leading-relaxed">We focus strictly on bottom-line impact. If it doesn't result in revenue, it's not a metric we prioritize.</p>
+          </div>
+        </li>
+        <li class="flex gap-5 group">
+          <div class="flex-shrink-0 w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">monitoring</span>
+          </div>
+          <div>
+            <h4 class="text-xl font-bold text-on-surface mb-1">Transparent Reporting</h4>
+            <p class="text-on-surface-variant text-base leading-relaxed">Real-time dashboards providing 24/7 visibility into your acquisition engine's performance and spending.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="features-img w-full lg:w-1/2 relative group">
+      <div class="absolute -inset-10 bg-primary/20 blur-[120px] rounded-full opacity-30"></div>
+      <div class="relative z-10 glass-card p-4 rounded-3xl border-primary/20" style="transform:rotate(3deg); transition:transform 0.7s;" onmouseover="this.style.transform='rotate(0deg)'" onmouseout="this.style.transform='rotate(3deg)'">
+        <img alt="High Tech Systems Visualization" class="rounded-2xl border border-outline-variant w-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6gvf1glZwsvUcZE_c9-R78DAL-9kozibFjSkJpYp1Lry83t1ysE2MsMEG3s_G4NpaP97bvUc6rHiH7gQhd9ItX6Oy_FuinPnFx0RUeDPRFtzrAJtiKWALJjY5bNvqg76147mvYvb8gapE7zaPUeRiCbI0P_VXXWP7bgTyEDdRmlXLwEsp74cDV5UWihP4GKQRjVKaIDm3grFtjHkVpmo-9NcTH0DYa8JoxPN8TX2fRlKR0QhDKT7n9ymmBuvg1DLkDpd9jV1axIg"/>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════ TESTIMONIALS ═══════════ -->
+<section class="py-16 md:py-20 px-responsive reveal bg-surface-container" id="testimonials">
+  <div style="max-width:1440px; margin:0 auto;">
+    <div class="text-center mb-10">
+      <h2 class="text-2xl md:text-3xl font-bold text-on-surface mb-2">Voices of Success</h2>
+      <p class="text-on-surface-variant text-base">Hear from the founders and executives who integrated NxTuplead into their growth stack.</p>
+    </div>
+
+    <div class="testimonial-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div class="glass-card p-8 rounded-2xl border-outline-variant/30 relative">
+        <span class="material-symbols-outlined absolute top-4 right-4" style="font-size:48px; color:rgba(173,198,255,0.15);">format_quote</span>
+        <p class="text-on-surface text-lg italic mb-6 leading-relaxed relative z-10">"NxTuplead didn't just give us leads; they gave us a scalable acquisition machine that actually understands our unit economics."</p>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden border border-primary/20 flex-shrink-0">
+            <img alt="Marcus Chen" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu7wpaOi9fTRwbHVeN_OwIg1rRB11ZDCaaRhX9SIc-l_3WXw_lIUXOUamx-6gsP_6dtV8JOejzPY7OoZB3VD58Fuh7pF3X8Wpka3pPvC4KcfVXCSBad4f-wTcJ0d7pAot6NBaVWZe0mlU4TMiVZ_XOwM9U5D_S6ODmNQgzqnx0O1TKOVGpWvuHC4S8M5DeaRFiy-_lakEVoAUmJl6CeteWz8itG1tZV7Wi-LuidxcgWKYKExdSrTs-svKWEj77JKFr7HcxXV9vjWY"/>
+          </div>
+          <div>
+            <div class="font-bold text-on-surface">Marcus Chen</div>
+            <div class="text-xs text-primary font-semibold">CEO, Nexus Cloud</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-8 rounded-2xl border-outline-variant/30 relative">
+        <span class="material-symbols-outlined absolute top-4 right-4" style="font-size:48px; color:rgba(173,198,255,0.15);">format_quote</span>
+        <p class="text-on-surface text-lg italic mb-6 leading-relaxed relative z-10">"The transition from guesswork to data was immediate. We've seen a 400% increase in qualified calls within 90 days."</p>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden border border-primary/20 flex-shrink-0">
+            <img alt="Sarah Jenkins" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeM_uGNbrMHakXBK73ooFbc8RJI5ObjEOFqd7S9rRGkiBCGTW86UezLg0A-l5Ow-jSqQt2sQXgB1qnxBm3nYZmE_i3B-dnIoBIKvoio0DDy7iCbAqJYhDVjsDSboK-ZRfjg2u1PIW67XQBTvJmiwTj8bEbfcJF0k6n2ouvQdhj3RCp1mUpUQ-FXBQAKb1tbYZdJWCGphIj1Hb_W03wLO7MqWQTSRyXaM-iGNnmMkj6G_97QMfPnOGpXG4B3-gGsso6prCQu496d20"/>
+          </div>
+          <div>
+            <div class="font-bold text-on-surface">Sarah Jenkins</div>
+            <div class="text-xs text-primary font-semibold">Founder, Elite Coaching</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-8 rounded-2xl border-outline-variant/30 relative md:col-span-2 lg:col-span-1">
+        <span class="material-symbols-outlined absolute top-4 right-4" style="font-size:48px; color:rgba(173,198,255,0.15);">format_quote</span>
+        <p class="text-on-surface text-lg italic mb-6 leading-relaxed relative z-10">"The best investment we've made in our marketing department. The automation systems they built pay for themselves daily."</p>
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full bg-surface-variant overflow-hidden border border-primary/20 flex-shrink-0">
+            <img alt="David Miller" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEWi6O4ay4E9Po9EdqwxqoKSkG6gRkzYeiw1TbAug_KcmAMpL9GrxIK9ytMiUFZyq0hV-mxvHeyr6R8QslUoefPST0YSjcFb3WU-_Ril9vBDXP34qOhmvO7K6dSmDEpkcLLmRAr-500mFmtTLtQQdPy_eED4e-e4VF5zjdF0sMqb4mRU-EqxtptNAll7zhAddoqW9anIZ5vWL-IQx1waINlf4_Tn9iXpF2PmuuDzOMTnCSC6Iaw_-PWNKN6p_4ty0KHtuhYo9ZIFg"/>
+          </div>
+          <div>
+            <div class="font-bold text-on-surface">David Miller</div>
+            <div class="text-xs text-primary font-semibold">VP Growth, MedScale Pro</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FAQ ═══════════ -->
+<section class="py-16 md:py-20 px-responsive reveal" id="faq">
+  <div style="max-width:768px; margin:0 auto;">
+    <h2 class="text-2xl md:text-3xl font-bold text-on-surface text-center mb-10">Frequently Asked Questions</h2>
+    <div class="space-y-4">
+
+      <details class="group glass-card rounded-xl border border-outline-variant/20 overflow-hidden" open>
+        <summary class="flex justify-between items-center p-5 md:p-6 cursor-pointer list-none select-none hover:bg-white/5 transition-colors gap-3">
+          <span class="faq-question text-lg font-semibold text-on-surface">How quickly can we expect results?</span>
+          <span class="material-symbols-outlined text-primary flex-shrink-0" style="transition:transform 0.3s;" id="faq-icon-1">expand_more</span>
+        </summary>
+        <div class="px-5 md:px-6 pb-5 md:pb-6">
+          <p class="text-on-surface-variant text-base leading-relaxed">While initial tracking infrastructure and core system setup take 14–21 days, most clients begin seeing a measurable flow of high-intent leads within the first 30 days of campaign activation.</p>
+        </div>
+      </details>
+
+      <details class="group glass-card rounded-xl border border-outline-variant/20 overflow-hidden">
+        <summary class="flex justify-between items-center p-5 md:p-6 cursor-pointer list-none select-none hover:bg-white/5 transition-colors gap-3">
+          <span class="faq-question text-lg font-semibold text-on-surface">Do you work with early-stage startups?</span>
+          <span class="material-symbols-outlined text-primary flex-shrink-0">expand_more</span>
+        </summary>
+        <div class="px-5 md:px-6 pb-5 md:pb-6">
+          <p class="text-on-surface-variant text-base leading-relaxed">We primarily partner with established enterprises and elite SMBs that have already proven product-market fit. Our systems are designed to scale existing demand rather than discover it from scratch.</p>
+        </div>
+      </details>
+
+      <details class="group glass-card rounded-xl border border-outline-variant/20 overflow-hidden">
+        <summary class="flex justify-between items-center p-5 md:p-6 cursor-pointer list-none select-none hover:bg-white/5 transition-colors gap-3">
+          <span class="faq-question text-lg font-semibold text-on-surface">What makes NxTuplead different from an agency?</span>
+          <span class="material-symbols-outlined text-primary flex-shrink-0">expand_more</span>
+        </summary>
+        <div class="px-5 md:px-6 pb-5 md:pb-6">
+          <p class="text-on-surface-variant text-base leading-relaxed">We aren't a traditional creative agency. We are growth system architects. We build high-performance assets that you own, powered by data science and automation rather than just creative intuition and manual effort.</p>
+        </div>
+      </details>
+
+      <details class="group glass-card rounded-xl border border-outline-variant/20 overflow-hidden">
+        <summary class="flex justify-between items-center p-5 md:p-6 cursor-pointer list-none select-none hover:bg-white/5 transition-colors gap-3">
+          <span class="faq-question text-lg font-semibold text-on-surface">What is the required ad spend minimum?</span>
+          <span class="material-symbols-outlined text-primary flex-shrink-0">expand_more</span>
+        </summary>
+        <div class="px-5 md:px-6 pb-5 md:pb-6">
+          <p class="text-on-surface-variant text-base leading-relaxed">To ensure statistical significance and provide the ROI our engine is capable of, we typically recommend a minimum monthly ad spend of $5,000 across channels.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FINAL CTA ═══════════ -->
+<section class="py-16 md:py-20 bg-surface px-responsive relative overflow-hidden reveal">
+  <div class="absolute inset-0 opacity-10" style="background-image:radial-gradient(#3B82F6 1px, transparent 1px); background-size:32px 32px;"></div>
+  <div class="relative z-10 flex flex-col items-center" style="max-width:1440px; margin:0 auto;">
+
+    <div class="max-w-2xl text-center mb-10 w-full">
+      <h2 class="font-bold text-on-surface mb-3" style="font-size:clamp(1.75rem,5vw,3rem); line-height:1.15;">Ready for the Next Level of Growth?</h2>
+      <p class="text-on-surface-variant text-lg mb-5" style="line-height:1.7;">Schedule your 15-minute growth review below. We only take on 3 new partners each month to ensure absolute focus on engineering performance.</p>
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-error/10 border border-error/20 rounded-full">
+        <span class="material-symbols-outlined text-error" style="font-size:18px;">emergency</span>
+        <span class="text-error font-bold text-xs uppercase tracking-tight">Only 3 partnership slots available for Q4</span>
+      </div>
+    </div>
+
+    <!-- Calendar Widget -->
+    <div class="w-full glass-card rounded-2xl p-6 md:p-12 bg-surface-container relative" style="max-width:960px; min-height:500px;">
+      <div class="flex flex-col items-center justify-center text-center h-full">
+        <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-5">
+          <span class="material-symbols-outlined text-primary" style="font-size:48px; animation:bounce 1s infinite;">calendar_today</span>
+        </div>
+        <h3 class="text-2xl font-bold mb-3">Secure Your Time Slot</h3>
+        <p class="text-on-surface-variant text-base mb-8">Integration with Google Calendar / Calendly</p>
+
+        <div class="slot-grid grid grid-cols-2 sm:grid-cols-4 gap-3 w-full mb-8" style="max-width:500px;">
+          <div class="p-4 rounded-lg border border-outline-variant hover:border-primary cursor-pointer transition-all bg-black/20 text-sm text-center">9:00 AM</div>
+          <div class="p-4 rounded-lg border border-outline-variant hover:border-primary cursor-pointer transition-all bg-black/20 text-sm text-center">10:30 AM</div>
+          <div class="p-4 rounded-lg border border-primary bg-primary/10 text-primary font-bold text-sm text-center">1:00 PM</div>
+          <div class="p-4 rounded-lg border border-outline-variant hover:border-primary cursor-pointer transition-all bg-black/20 text-sm text-center">3:30 PM</div>
+        </div>
+
+        <button class="bg-primary text-on-primary px-10 py-4 rounded-lg font-bold text-lg hover:brightness-110 transition-all cta-shimmer shadow-2xl w-full sm:w-auto" style="box-shadow:0 0 40px rgba(173,198,255,0.4); max-width:360px;">
+          Book Your Strategy Call
+        </button>
+
+        <div class="mt-8 pt-6 border-t border-outline-variant/30 flex flex-wrap justify-center gap-6 opacity-60">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size:18px;">verified</span>
+            <span class="text-xs">Secured Encryption</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size:18px;">check_circle</span>
+            <span class="text-xs">Instant Confirmation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer class="w-full py-12 px-responsive border-t border-outline-variant/20 bg-surface-container-lowest">
+  <div class="flex flex-col md:flex-row justify-between items-center gap-10" style="max-width:1440px; margin:0 auto;">
+
+    <div class="flex flex-col items-center md:items-start gap-4">
+      <div class="text-xl font-bold text-on-surface flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">rocket_launch</span>
+        NxTuplead
+      </div>
+      <p class="text-on-surface-variant text-sm text-center md:text-left leading-relaxed" style="max-width:280px;">
+        © 2024 NxTuplead Systems Inc. All rights reserved. Engineering high-performance growth for elite enterprises globally.
+      </p>
+      <div class="flex gap-4">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">alternate_email</span></a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">public</span></a>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-10">
+      <div class="flex flex-col gap-3">
+        <span class="text-on-surface font-bold text-xs uppercase tracking-widest">Company</span>
+        <a class="text-on-surface-variant text-xs hover:text-primary transition-colors" href="#results">Results</a>
+        <a class="text-on-surface-variant text-xs hover:text-primary transition-colors" href="#process">Process</a>
+        <a class="text-on-surface-variant text-xs hover:text-primary transition-colors" href="#services">Services</a>
+      </div>
+      <div class="flex flex-col gap-3">
+        <span class="text-on-surface font-bold text-xs uppercase tracking-widest">Legal</span>
+        <a class="text-on-surface-variant text-xs hover:text-primary underline transition-colors" href="#">Privacy Policy</a>
+        <a class="text-on-surface-variant text-xs hover:text-primary underline transition-colors" href="#">Terms of Service</a>
+        <a class="text-on-surface-variant text-xs hover:text-primary underline transition-colors" href="#">Cookie Policy</a>
+      </div>
+    </div>
+
+  </div>
 </footer>
+
 <script>
-    // Intersection Observer for Reveal Animations
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-            }
-        });
-    }, { threshold: 0.1 });
+  // ── Hamburger / Mobile Menu ──
+  const btn  = document.getElementById('hamburger-btn');
+  const menu = document.getElementById('mobile-menu');
 
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  btn.addEventListener('click', () => {
+    const open = menu.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
 
-    // Smooth scroll for nav links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            if(targetId === '#') return;
-            const target = document.querySelector(targetId);
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
+  function closeMobileMenu() {
+    menu.classList.remove('open');
+    btn.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ── Smooth scroll ──
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e) {
+      const id = this.getAttribute('href');
+      if (id === '#') return;
+      e.preventDefault();
+      const el = document.querySelector(id);
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      closeMobileMenu();
     });
+  });
 
-    // Subtle Particle Background for Hero
-    const heroBg = document.getElementById('particles-js');
-    if (heroBg) {
-        for (let i = 0; i < 40; i++) {
-            const dot = document.createElement('div');
-            dot.style.position = 'absolute';
-            dot.style.width = Math.random() * 2 + 1 + 'px';
-            dot.style.height = dot.style.width;
-            dot.style.backgroundColor = 'rgba(59, 130, 246, 0.4)';
-            dot.style.borderRadius = '50%';
-            dot.style.top = Math.random() * 100 + '%';
-            dot.style.left = Math.random() * 100 + '%';
-            dot.style.opacity = Math.random();
-            dot.style.animation = `float ${5 + Math.random() * 10}s infinite ease-in-out`;
-            heroBg.appendChild(dot);
-        }
+  // ── Reveal on scroll ──
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('active'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── FAQ icon rotation ──
+  document.querySelectorAll('details').forEach(d => {
+    const icon = d.querySelector('.material-symbols-outlined:last-child');
+    d.addEventListener('toggle', () => {
+      if (icon) icon.style.transform = d.open ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+  });
+
+  // ── Particles ──
+  const heroBg = document.getElementById('particles-js');
+  if (heroBg) {
+    for (let i = 0; i < 35; i++) {
+      const dot = document.createElement('div');
+      const s = Math.random() * 2 + 1;
+      Object.assign(dot.style, {
+        position: 'absolute',
+        width: s + 'px', height: s + 'px',
+        backgroundColor: 'rgba(59,130,246,0.4)',
+        borderRadius: '50%',
+        top: Math.random() * 100 + '%',
+        left: Math.random() * 100 + '%',
+        opacity: String(Math.random()),
+        animation: `float ${5 + Math.random() * 10}s infinite ease-in-out`
+      });
+      heroBg.appendChild(dot);
     }
+  }
+
+  // ── Bounce keyframe ──
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes bounce {
+      0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)}
+    }
+  `;
+  document.head.appendChild(style);
 </script>
-</body></html>
+</body>
+</html>
