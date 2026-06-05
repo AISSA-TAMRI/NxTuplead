@@ -321,7 +321,7 @@
     </div>
 
     <!-- Desktop CTA -->
-    <button class="hidden md:block bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-semibold active:scale-95 transition-all cta-shimmer shadow-xl" style="box-shadow:0 0 24px rgba(173,198,255,0.3);">
+    <button onclick="openModal()" class="hidden md:block bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-semibold active:scale-95 transition-all cta-shimmer shadow-xl" style="box-shadow:0 0 24px rgba(173,198,255,0.3);">
       Book a Strategy Call
     </button>
 
@@ -339,7 +339,7 @@
   <a href="#services"     onclick="closeMobileMenu()">Services</a>
   <a href="#testimonials" onclick="closeMobileMenu()">Testimonials</a>
   <a href="#faq"          onclick="closeMobileMenu()">FAQ</a>
-  <button class="menu-cta" onclick="closeMobileMenu()">Book a Strategy Call</button>
+  <button class="menu-cta" onclick="closeMobileMenu(); openModal();">Book a Strategy Call</button>
 </nav>
 
 <main>
@@ -362,11 +362,8 @@
     </p>
 
     <div class="hero-btns flex flex-col sm:flex-row gap-4 mb-14 w-full sm:w-auto">
-      <button class="bg-primary text-on-primary px-10 py-4 rounded-lg font-semibold text-lg hover:brightness-110 transition-all shadow-2xl cta-shimmer w-full sm:w-auto" style="box-shadow:0 0 40px rgba(173,198,255,0.4);">
+      <button onclick="openModal()" class="bg-primary text-on-primary px-10 py-4 rounded-lg font-semibold text-lg hover:brightness-110 transition-all shadow-2xl cta-shimmer w-full sm:w-auto" style="box-shadow:0 0 40px rgba(173,198,255,0.4);">
         Book Your Strategy Call
-      </button>
-      <button class="border border-outline-variant text-on-surface px-10 py-4 rounded-lg font-semibold text-lg hover:bg-white/5 transition-all w-full sm:w-auto">
-        View Case Studies
       </button>
     </div>
 
@@ -647,55 +644,357 @@
   </div>
 </section>
 
-<!-- ═══════════ FINAL CTA ═══════════ -->
-<section class="py-16 md:py-20 bg-surface px-responsive relative overflow-hidden reveal">
-  <div class="absolute inset-0 opacity-10" style="background-image:radial-gradient(#3B82F6 1px, transparent 1px); background-size:32px 32px;"></div>
+<!-- ═══════════ LEAD CAPTURE FORM ═══════════ -->
+<section class="py-16 md:py-20 bg-surface px-responsive relative overflow-hidden reveal" id="book">
+  <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image:radial-gradient(#3B82F6 1px, transparent 1px); background-size:32px 32px;"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none" style="background:radial-gradient(circle, #3B82F6 0%, transparent 70%); filter:blur(80px); opacity:0.08;"></div>
+
   <div class="relative z-10 flex flex-col items-center" style="max-width:1440px; margin:0 auto;">
 
+    <!-- Header -->
     <div class="max-w-2xl text-center mb-10 w-full">
+      <div class="mb-4 inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
+        <span class="w-2 h-2 rounded-full bg-primary inline-block" style="animation:dot-pulse 1.8s ease-in-out infinite;"></span>
+        <span class="text-primary text-xs font-semibold tracking-widest uppercase">Limited Availability</span>
+      </div>
       <h2 class="font-bold text-on-surface mb-3" style="font-size:clamp(1.75rem,5vw,3rem); line-height:1.15;">Ready for the Next Level of Growth?</h2>
-      <p class="text-on-surface-variant text-lg mb-5" style="line-height:1.7;">Schedule your 15-minute growth review below. We only take on 3 new partners each month to ensure absolute focus on engineering performance.</p>
+      <p class="text-on-surface-variant text-lg mb-5" style="line-height:1.7;">Fill in your details and our team will reach out within 24 hours to confirm your strategy session.</p>
       <div class="inline-flex items-center gap-2 px-4 py-2 bg-error/10 border border-error/20 rounded-full">
-        <span class="material-symbols-outlined text-error" style="font-size:18px;">emergency</span>
+        <span class="material-symbols-outlined text-error" style="font-size:16px;">emergency</span>
         <span class="text-error font-bold text-xs uppercase tracking-tight">Only 3 partnership slots available for Q4</span>
       </div>
     </div>
 
-    <!-- Calendar Widget -->
-    <div class="w-full glass-card rounded-2xl p-6 md:p-12 bg-surface-container relative" style="max-width:960px; min-height:500px;">
-      <div class="flex flex-col items-center justify-center text-center h-full">
-        <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-5">
-          <span class="material-symbols-outlined text-primary" style="font-size:48px; animation:bounce 1s infinite;">calendar_today</span>
-        </div>
-        <h3 class="text-2xl font-bold mb-3">Secure Your Time Slot</h3>
-        <p class="text-on-surface-variant text-base mb-8">Integration with Google Calendar / Calendly</p>
+    <!-- Card -->
+    <div class="w-full relative" style="max-width:720px;">
+      <!-- Corner accents -->
+      <div class="absolute -top-px -left-px w-8 h-8 border-t-2 border-l-2 border-primary rounded-tl-xl pointer-events-none" style="z-index:2;"></div>
+      <div class="absolute -top-px -right-px w-8 h-8 border-t-2 border-r-2 border-primary rounded-tr-xl pointer-events-none" style="z-index:2;"></div>
+      <div class="absolute -bottom-px -left-px w-8 h-8 border-b-2 border-l-2 border-primary rounded-bl-xl pointer-events-none" style="z-index:2;"></div>
+      <div class="absolute -bottom-px -right-px w-8 h-8 border-b-2 border-r-2 border-primary rounded-br-xl pointer-events-none" style="z-index:2;"></div>
 
-        <div class="slot-grid grid grid-cols-2 sm:grid-cols-4 gap-3 w-full mb-8" style="max-width:500px;">
-          <div class="p-4 rounded-lg border border-outline-variant hover:border-primary cursor-pointer transition-all bg-black/20 text-sm text-center">9:00 AM</div>
-          <div class="p-4 rounded-lg border border-outline-variant hover:border-primary cursor-pointer transition-all bg-black/20 text-sm text-center">10:30 AM</div>
-          <div class="p-4 rounded-lg border border-primary bg-primary/10 text-primary font-bold text-sm text-center">1:00 PM</div>
-          <div class="p-4 rounded-lg border border-outline-variant hover:border-primary cursor-pointer transition-all bg-black/20 text-sm text-center">3:30 PM</div>
-        </div>
+      <div id="form-card" class="rounded-2xl p-6 md:p-10" style="background:rgba(18,18,18,0.85); backdrop-filter:blur(24px); border:1px solid rgba(173,198,255,0.12);">
 
-        <button class="bg-primary text-on-primary px-10 py-4 rounded-lg font-bold text-lg hover:brightness-110 transition-all cta-shimmer shadow-2xl w-full sm:w-auto" style="box-shadow:0 0 40px rgba(173,198,255,0.4); max-width:360px;">
-          Book Your Strategy Call
-        </button>
+        <!-- FORM STATE -->
+        <form id="lead-form" novalidate autocomplete="on">
 
-        <div class="mt-8 pt-6 border-t border-outline-variant/30 flex flex-wrap justify-center gap-6 opacity-60">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary" style="font-size:18px;">verified</span>
-            <span class="text-xs">Secured Encryption</span>
+          <!-- Step indicator -->
+          <div class="flex items-center gap-3 mb-8">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold">1</div>
+              <span class="text-primary text-xs font-semibold hidden sm:inline">Your Details</span>
+            </div>
+            <div class="flex-1 h-px" style="background:rgba(255,255,255,0.1);"></div>
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" id="step2-indicator" style="border:1px solid #424754; color:#c2c6d6;">2</div>
+              <span class="text-on-surface-variant text-xs font-semibold hidden sm:inline">Confirmation</span>
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary" style="font-size:18px;">check_circle</span>
-            <span class="text-xs">Instant Confirmation</span>
+
+          <!-- First + Last Name -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="lc-label" for="first_name">First Name <span style="color:#adc6ff;">*</span></label>
+              <div class="lc-input-wrap">
+                <span class="lc-icon material-symbols-outlined">person</span>
+                <input class="lc-input" type="text" id="first_name" name="first_name" placeholder="Alex" autocomplete="given-name" required/>
+              </div>
+              <span class="lc-error" id="err-first_name">First name is required</span>
+            </div>
+            <div class="form-group">
+              <label class="lc-label" for="last_name">Last Name <span style="color:#adc6ff;">*</span></label>
+              <div class="lc-input-wrap">
+                <span class="lc-icon material-symbols-outlined">person</span>
+                <input class="lc-input" type="text" id="last_name" name="last_name" placeholder="Johnson" autocomplete="family-name" required/>
+              </div>
+              <span class="lc-error" id="err-last_name">Last name is required</span>
+            </div>
           </div>
+
+          <!-- Email -->
+          <div class="form-group mb-4">
+            <label class="lc-label" for="email">Work Email <span style="color:#adc6ff;">*</span></label>
+            <div class="lc-input-wrap">
+              <span class="lc-icon material-symbols-outlined">mail</span>
+              <input class="lc-input" type="email" id="email" name="email" placeholder="alex@company.com" autocomplete="email" required/>
+            </div>
+            <span class="lc-error" id="err-email">Please enter a valid email address</span>
+          </div>
+
+          <!-- Phone -->
+          <div class="form-group mb-4">
+            <label class="lc-label" for="phone">Phone Number <span style="color:#adc6ff;">*</span></label>
+            <div class="lc-input-wrap">
+              <span class="lc-icon material-symbols-outlined">call</span>
+              <input class="lc-input" type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" autocomplete="tel" required/>
+            </div>
+            <span class="lc-error" id="err-phone">Phone number is required</span>
+          </div>
+
+          <!-- Company -->
+          <div class="form-group mb-8">
+            <label class="lc-label" for="company_name">Company Name <span style="color:#adc6ff;">*</span></label>
+            <div class="lc-input-wrap">
+              <span class="lc-icon material-symbols-outlined">business</span>
+              <input class="lc-input" type="text" id="company_name" name="company_name" placeholder="Acme Corp" autocomplete="organization" required/>
+            </div>
+            <span class="lc-error" id="err-company_name">Company name is required</span>
+          </div>
+
+          <!-- General error banner -->
+          <div id="form-error" class="hidden mb-5 p-4 rounded-xl flex items-start gap-3" style="background:rgba(255,180,171,0.08); border:1px solid rgba(255,180,171,0.25);">
+            <span class="material-symbols-outlined flex-shrink-0" style="font-size:20px; color:#ffb4ab;">error</span>
+            <p class="text-sm leading-relaxed" id="form-error-msg" style="color:#ffb4ab;">Something went wrong. Please try again.</p>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" id="submit-btn" class="cta-shimmer w-full py-4 rounded-xl font-bold text-lg transition-all relative overflow-hidden" style="background:#adc6ff; color:#002e6a; box-shadow:0 0 40px rgba(173,198,255,0.3); letter-spacing:-0.01em;">
+            <span id="btn-text" class="flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined" style="font-size:20px; font-variation-settings:'FILL' 1;">calendar_today</span>
+              Book Strategy Call
+            </span>
+            <span id="btn-loading" class="hidden items-center justify-center gap-3">
+              <svg class="lc-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              </svg>
+              Sending...
+            </span>
+          </button>
+
+          <!-- Trust bar -->
+          <div class="mt-5 flex flex-wrap items-center justify-center gap-5" style="opacity:0.5;">
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined" style="font-size:16px; color:#adc6ff;">lock</span>
+              <span class="text-xs" style="color:#c2c6d6;">256-bit SSL</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined" style="font-size:16px; color:#adc6ff;">shield</span>
+              <span class="text-xs" style="color:#c2c6d6;">No spam, ever</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined" style="font-size:16px; color:#adc6ff;">schedule</span>
+              <span class="text-xs" style="color:#c2c6d6;">Reply within 24h</span>
+            </div>
+          </div>
+
+        </form>
+
+        <!-- SUCCESS STATE -->
+        <div id="success-state" class="hidden flex-col items-center justify-center text-center py-8">
+          <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6 mx-auto" style="background:rgba(173,198,255,0.1); border:2px solid #adc6ff;">
+            <span class="material-symbols-outlined" style="font-size:48px; color:#adc6ff; font-variation-settings:'FILL' 1; animation:lc-pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both;">check_circle</span>
+          </div>
+          <h3 class="text-2xl font-bold text-on-surface mb-2">You're on the list.</h3>
+          <p class="text-on-surface-variant text-base leading-relaxed mb-6" style="max-width:400px;">
+            Our team will review your details and reach out within <strong class="text-on-surface">24 hours</strong> to confirm your strategy session.
+          </p>
+          <div class="grid grid-cols-3 gap-4 w-full mb-6" style="max-width:380px;">
+            <div class="p-3 rounded-xl text-center" style="background:rgba(173,198,255,0.07); border:1px solid rgba(173,198,255,0.15);">
+              <div class="font-bold text-lg" style="color:#adc6ff;">24h</div>
+              <div class="text-xs mt-0.5" style="color:#8c909f;">Response</div>
+            </div>
+            <div class="p-3 rounded-xl text-center" style="background:rgba(173,198,255,0.07); border:1px solid rgba(173,198,255,0.15);">
+              <div class="font-bold text-lg" style="color:#adc6ff;">15m</div>
+              <div class="text-xs mt-0.5" style="color:#8c909f;">Call length</div>
+            </div>
+            <div class="p-3 rounded-xl text-center" style="background:rgba(173,198,255,0.07); border:1px solid rgba(173,198,255,0.15);">
+              <div class="font-bold text-lg" style="color:#adc6ff;">$0</div>
+              <div class="text-xs mt-0.5" style="color:#8c909f;">Cost</div>
+            </div>
+          </div>
+          <p class="text-xs" style="color:#8c909f;">Check your inbox — a confirmation email is on its way.</p>
         </div>
+
       </div>
-    </div>
+    </div><!-- /card -->
 
   </div>
 </section>
+
+<style>
+  /* Form labels */
+  .lc-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #c2c6d6;
+    margin-bottom: 8px;
+  }
+  /* Input wrapper */
+  .lc-input-wrap { position: relative; }
+  .lc-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #555b6e;
+    pointer-events: none;
+    transition: color 0.2s;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+  }
+  /* Inputs */
+  .lc-input {
+    width: 100%;
+    padding: 13px 14px 13px 44px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: #e5e2e1;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .lc-input::placeholder { color: #444a57; }
+  .lc-input:focus {
+    border-color: #adc6ff;
+    background: rgba(173,198,255,0.05);
+    box-shadow: 0 0 0 3px rgba(173,198,255,0.12);
+  }
+  .lc-input-wrap:focus-within .lc-icon { color: #adc6ff; }
+  /* Valid / invalid */
+  .lc-input.is-invalid { border-color: #ffb4ab; background: rgba(255,180,171,0.04); }
+  .lc-input.is-invalid:focus { box-shadow: 0 0 0 3px rgba(255,180,171,0.14); }
+  .lc-input.is-valid  { border-color: rgba(100,210,130,0.45); }
+  /* Field error message */
+  .lc-error {
+    display: none;
+    font-size: 12px;
+    color: #ffb4ab;
+    margin-top: 5px;
+    padding-left: 2px;
+  }
+  .form-group.has-error .lc-error   { display: block; }
+  .form-group.has-error .lc-input   { border-color: #ffb4ab; }
+  /* Button disabled */
+  #submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+  /* Spinner */
+  @keyframes lc-spin { to { transform: rotate(360deg); } }
+  .lc-spin { animation: lc-spin 0.8s linear infinite; }
+  /* Success pop */
+  @keyframes lc-pop {
+    0%   { transform: scale(0.4); opacity: 0; }
+    80%  { transform: scale(1.1); }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  /* Pulse dot */
+  @keyframes dot-pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%     { opacity:0.4; transform:scale(0.8); }
+  }
+</style>
+
+<script>
+(function () {
+  var WEBHOOK = 'https://n8n.upleaddigital.com/webhook/216f9e34-e437-4c51-a44b-c14051108fb6';
+  var form       = document.getElementById('lead-form');
+  var submitBtn  = document.getElementById('submit-btn');
+  var btnText    = document.getElementById('btn-text');
+  var btnLoading = document.getElementById('btn-loading');
+  var formError  = document.getElementById('form-error');
+  var formErrMsg = document.getElementById('form-error-msg');
+  var successEl  = document.getElementById('success-state');
+  var step2      = document.getElementById('step2-indicator');
+  var fields     = ['first_name','last_name','email','phone','company_name'];
+
+  fields.forEach(function(name) {
+    var input = document.getElementById(name);
+    input.addEventListener('blur', function(){ validateField(name); });
+    input.addEventListener('input', function(){
+      if (input.closest('.form-group').classList.contains('has-error')) validateField(name);
+    });
+  });
+
+  function validateField(name) {
+    var input = document.getElementById(name);
+    var group = input.closest('.form-group');
+    var val   = input.value.trim();
+    var valid = true;
+    if (!val) { valid = false; }
+    else if (name === 'email')  { valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val); }
+    else if (name === 'phone')  { valid = /^[\d\s\+\-\(\)]{7,}$/.test(val); }
+    group.classList.toggle('has-error', !valid);
+    input.classList.toggle('is-invalid', !valid);
+    input.classList.toggle('is-valid',  valid);
+    return valid;
+  }
+
+  function validateAll() {
+    return fields.map(validateField).every(Boolean);
+  }
+
+  function setLoading(on) {
+    submitBtn.disabled = on;
+    btnText.classList.toggle('hidden', on);
+    btnText.classList.toggle('flex', !on);
+    btnLoading.classList.toggle('hidden', !on);
+    btnLoading.classList.toggle('flex', on);
+  }
+
+  function showError(msg) {
+    formErrMsg.textContent = msg;
+    formError.classList.remove('hidden');
+    formError.classList.add('flex');
+    formError.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function hideError() {
+    formError.classList.add('hidden');
+    formError.classList.remove('flex');
+  }
+
+  function showSuccess() {
+    step2.style.background   = '#adc6ff';
+    step2.style.color        = '#002e6a';
+    step2.style.border       = '1px solid #adc6ff';
+    form.style.transition    = 'opacity 0.3s';
+    form.style.opacity       = '0';
+    setTimeout(function() {
+      form.style.display = 'none';
+      successEl.classList.remove('hidden');
+      successEl.classList.add('flex');
+      successEl.style.opacity    = '0';
+      successEl.style.transition = 'opacity 0.4s';
+      requestAnimationFrame(function(){ successEl.style.opacity = '1'; });
+    }, 300);
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    hideError();
+    if (!validateAll()) {
+      var first = form.querySelector('.is-invalid');
+      if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+      return;
+    }
+    setLoading(true);
+    var payload = {
+      first_name:   document.getElementById('first_name').value.trim(),
+      last_name:    document.getElementById('last_name').value.trim(),
+      email:        document.getElementById('email').value.trim(),
+      phone:        document.getElementById('phone').value.trim(),
+      company_name: document.getElementById('company_name').value.trim()
+    };
+    try {
+      var res = await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('status ' + res.status);
+      showSuccess();
+    } catch(err) {
+      showError('Something went wrong. Please try again or contact us directly.');
+      setLoading(false);
+    }
+  });
+})();
+</script>
 
 </main>
 
@@ -806,6 +1105,362 @@
     }
   `;
   document.head.appendChild(style);
+</script>
+
+<!-- ═══════════ MODAL POPUP ═══════════ -->
+<div id="booking-modal" aria-modal="true" role="dialog" aria-labelledby="modal-title"
+  style="display:none; position:fixed; inset:0; z-index:1000; padding:1rem; align-items:center; justify-content:center;">
+
+  <!-- Backdrop -->
+  <div id="modal-backdrop" onclick="closeModal()"
+    style="position:absolute; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px);"></div>
+
+  <!-- Panel -->
+  <div id="modal-panel"
+    style="position:relative; z-index:1; width:100%; max-width:600px; max-height:90vh; overflow-y:auto;
+           background:rgba(14,14,14,0.97); border:1px solid rgba(173,198,255,0.15);
+           border-radius:1.25rem; padding:2rem; box-shadow:0 0 80px rgba(59,130,246,0.2);
+           transform:scale(0.95) translateY(20px); opacity:0;
+           transition:transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.25s ease;">
+
+    <!-- Corner accents -->
+    <div style="position:absolute;top:-1px;left:-1px;width:28px;height:28px;border-top:2px solid #adc6ff;border-left:2px solid #adc6ff;border-radius:1.25rem 0 0 0;pointer-events:none;"></div>
+    <div style="position:absolute;top:-1px;right:-1px;width:28px;height:28px;border-top:2px solid #adc6ff;border-right:2px solid #adc6ff;border-radius:0 1.25rem 0 0;pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-1px;left:-1px;width:28px;height:28px;border-bottom:2px solid #adc6ff;border-left:2px solid #adc6ff;border-radius:0 0 0 1.25rem;pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-1px;right:-1px;width:28px;height:28px;border-bottom:2px solid #adc6ff;border-right:2px solid #adc6ff;border-radius:0 0 1.25rem 0;pointer-events:none;"></div>
+
+    <!-- Close button -->
+    <button onclick="closeModal()" aria-label="Close"
+      style="position:absolute; top:1rem; right:1rem; width:36px; height:36px; border-radius:50%;
+             background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
+             display:flex; align-items:center; justify-content:center; cursor:pointer;
+             color:#c2c6d6; transition:background 0.2s;"
+      onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+      onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+      <span class="material-symbols-outlined" style="font-size:18px;">close</span>
+    </button>
+
+    <!-- Modal header -->
+    <div style="text-align:center; margin-bottom:1.75rem; padding-right:2rem;">
+      <div style="display:inline-flex; align-items:center; gap:8px; padding:4px 14px;
+                  background:rgba(173,198,255,0.08); border:1px solid rgba(173,198,255,0.2);
+                  border-radius:999px; margin-bottom:12px;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#adc6ff;display:inline-block;animation:dot-pulse 1.8s ease-in-out infinite;"></span>
+        <span style="color:#adc6ff;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;">Limited Slots — Q4</span>
+      </div>
+      <h2 id="modal-title" style="font-size:clamp(1.35rem,4vw,1.75rem);font-weight:800;color:#e5e2e1;line-height:1.2;margin-bottom:6px;">
+        Book Your Strategy Call
+      </h2>
+      <p style="color:#8c909f;font-size:14px;line-height:1.6;">Fill in your details and we'll reach out within 24h to confirm.</p>
+    </div>
+
+    <!-- Step indicator -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:#adc6ff;color:#002e6a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">1</div>
+        <span style="color:#adc6ff;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Your Details</span>
+      </div>
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div id="modal-step2" style="width:26px;height:26px;border-radius:50%;border:1px solid #424754;color:#8c909f;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">2</div>
+        <span style="color:#8c909f;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Done</span>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <form id="modal-form" novalidate autocomplete="on">
+
+      <!-- First + Last -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;" class="modal-name-grid">
+        <div class="modal-field-group">
+          <label class="mlc-label" for="m_first_name">First Name <span style="color:#adc6ff;">*</span></label>
+          <div class="mlc-wrap">
+            <span class="mlc-icon material-symbols-outlined">person</span>
+            <input class="mlc-input" type="text" id="m_first_name" placeholder="Alex" autocomplete="given-name" required/>
+          </div>
+          <span class="mlc-err" id="merr-first_name">Required</span>
+        </div>
+        <div class="modal-field-group">
+          <label class="mlc-label" for="m_last_name">Last Name <span style="color:#adc6ff;">*</span></label>
+          <div class="mlc-wrap">
+            <span class="mlc-icon material-symbols-outlined">person</span>
+            <input class="mlc-input" type="text" id="m_last_name" placeholder="Johnson" autocomplete="family-name" required/>
+          </div>
+          <span class="mlc-err" id="merr-last_name">Required</span>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="modal-field-group" style="margin-bottom:12px;">
+        <label class="mlc-label" for="m_email">Work Email <span style="color:#adc6ff;">*</span></label>
+        <div class="mlc-wrap">
+          <span class="mlc-icon material-symbols-outlined">mail</span>
+          <input class="mlc-input" type="email" id="m_email" placeholder="alex@company.com" autocomplete="email" required/>
+        </div>
+        <span class="mlc-err" id="merr-email">Valid email required</span>
+      </div>
+
+      <!-- Phone -->
+      <div class="modal-field-group" style="margin-bottom:12px;">
+        <label class="mlc-label" for="m_phone">Phone Number <span style="color:#adc6ff;">*</span></label>
+        <div class="mlc-wrap">
+          <span class="mlc-icon material-symbols-outlined">call</span>
+          <input class="mlc-input" type="tel" id="m_phone" placeholder="+1 (555) 000-0000" autocomplete="tel" required/>
+        </div>
+        <span class="mlc-err" id="merr-phone">Phone number required</span>
+      </div>
+
+      <!-- Company -->
+      <div class="modal-field-group" style="margin-bottom:1.5rem;">
+        <label class="mlc-label" for="m_company">Company Name <span style="color:#adc6ff;">*</span></label>
+        <div class="mlc-wrap">
+          <span class="mlc-icon material-symbols-outlined">business</span>
+          <input class="mlc-input" type="text" id="m_company" placeholder="Acme Corp" autocomplete="organization" required/>
+        </div>
+        <span class="mlc-err" id="merr-company">Company name required</span>
+      </div>
+
+      <!-- Error banner -->
+      <div id="modal-error" style="display:none;margin-bottom:1rem;padding:12px 14px;border-radius:10px;background:rgba(255,180,171,0.08);border:1px solid rgba(255,180,171,0.25);align-items:start;gap:10px;">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#ffb4ab;flex-shrink:0;">error</span>
+        <p id="modal-error-msg" style="color:#ffb4ab;font-size:13px;line-height:1.5;">Something went wrong. Please try again.</p>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" id="modal-submit" class="cta-shimmer"
+        style="width:100%;padding:14px;border-radius:12px;font-weight:700;font-size:17px;
+               background:#adc6ff;color:#002e6a;border:none;cursor:pointer;
+               box-shadow:0 0 36px rgba(173,198,255,0.28);letter-spacing:-0.01em;
+               transition:filter 0.2s, opacity 0.2s; font-family:'Inter',sans-serif;">
+        <span id="modal-btn-text" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <span class="material-symbols-outlined" style="font-size:19px;font-variation-settings:'FILL' 1;">calendar_today</span>
+          Book Strategy Call
+        </span>
+        <span id="modal-btn-loading" style="display:none;align-items:center;justify-content:center;gap:10px;">
+          <svg class="lc-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+          Sending...
+        </span>
+      </button>
+
+      <!-- Trust -->
+      <div style="margin-top:14px;display:flex;flex-wrap:wrap;justify-content:center;gap:16px;opacity:0.45;">
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#c2c6d6;">
+          <span class="material-symbols-outlined" style="font-size:14px;color:#adc6ff;">lock</span> 256-bit SSL
+        </span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#c2c6d6;">
+          <span class="material-symbols-outlined" style="font-size:14px;color:#adc6ff;">shield</span> No spam
+        </span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#c2c6d6;">
+          <span class="material-symbols-outlined" style="font-size:14px;color:#adc6ff;">schedule</span> Reply in 24h
+        </span>
+      </div>
+
+    </form>
+
+    <!-- SUCCESS -->
+    <div id="modal-success" style="display:none;flex-direction:column;align-items:center;text-align:center;padding:1.5rem 0;">
+      <div style="width:88px;height:88px;border-radius:50%;background:rgba(173,198,255,0.08);border:2px solid #adc6ff;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;">
+        <span class="material-symbols-outlined" style="font-size:44px;color:#adc6ff;font-variation-settings:'FILL' 1;animation:lc-pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both;">check_circle</span>
+      </div>
+      <h3 style="font-size:1.4rem;font-weight:800;color:#e5e2e1;margin-bottom:8px;">You're on the list.</h3>
+      <p style="color:#8c909f;font-size:14px;line-height:1.7;max-width:340px;margin-bottom:1.5rem;">
+        Our team will reach out within <strong style="color:#e5e2e1;">24 hours</strong> to confirm your strategy session.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:320px;margin-bottom:1.25rem;">
+        <div style="padding:10px;border-radius:10px;text-align:center;background:rgba(173,198,255,0.06);border:1px solid rgba(173,198,255,0.14);">
+          <div style="font-weight:700;font-size:1.1rem;color:#adc6ff;">24h</div>
+          <div style="font-size:10px;color:#8c909f;margin-top:2px;">Response</div>
+        </div>
+        <div style="padding:10px;border-radius:10px;text-align:center;background:rgba(173,198,255,0.06);border:1px solid rgba(173,198,255,0.14);">
+          <div style="font-weight:700;font-size:1.1rem;color:#adc6ff;">15m</div>
+          <div style="font-size:10px;color:#8c909f;margin-top:2px;">Call</div>
+        </div>
+        <div style="padding:10px;border-radius:10px;text-align:center;background:rgba(173,198,255,0.06);border:1px solid rgba(173,198,255,0.14);">
+          <div style="font-weight:700;font-size:1.1rem;color:#adc6ff;">$0</div>
+          <div style="font-size:10px;color:#8c909f;margin-top:2px;">Cost</div>
+        </div>
+      </div>
+      <button onclick="closeModal()" style="padding:10px 28px;border-radius:8px;background:rgba(173,198,255,0.1);border:1px solid rgba(173,198,255,0.25);color:#adc6ff;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
+        Close
+      </button>
+    </div>
+
+  </div><!-- /modal-panel -->
+</div><!-- /modal -->
+
+<style>
+  /* Modal name grid — single column on mobile */
+  @media (max-width: 480px) {
+    .modal-name-grid { grid-template-columns: 1fr !important; }
+  }
+  /* Modal field labels */
+  .mlc-label {
+    display:block; font-size:10px; font-weight:700;
+    letter-spacing:0.09em; text-transform:uppercase;
+    color:#8c909f; margin-bottom:6px;
+  }
+  /* Input wrapper */
+  .mlc-wrap { position:relative; }
+  .mlc-icon {
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    font-size:17px; color:#444a57; pointer-events:none;
+    transition:color 0.2s;
+    font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;
+  }
+  .mlc-wrap:focus-within .mlc-icon { color:#adc6ff; }
+  /* Input */
+  .mlc-input {
+    width:100%; padding:11px 12px 11px 40px;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.09);
+    border-radius:9px; color:#e5e2e1;
+    font-size:14px; font-family:'Inter',sans-serif;
+    outline:none; -webkit-appearance:none; appearance:none;
+    transition:border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  }
+  .mlc-input::placeholder { color:#3a3f4d; }
+  .mlc-input:focus {
+    border-color:#adc6ff;
+    background:rgba(173,198,255,0.05);
+    box-shadow:0 0 0 3px rgba(173,198,255,0.11);
+  }
+  .mlc-input.is-invalid { border-color:#ffb4ab; }
+  .mlc-input.is-invalid:focus { box-shadow:0 0 0 3px rgba(255,180,171,0.13); }
+  .mlc-input.is-valid   { border-color:rgba(100,210,130,0.4); }
+  /* Error text */
+  .mlc-err { display:none; font-size:11px; color:#ffb4ab; margin-top:4px; padding-left:2px; }
+  .modal-field-group.has-error .mlc-err   { display:block; }
+  .modal-field-group.has-error .mlc-input { border-color:#ffb4ab; }
+  /* Submit disabled */
+  #modal-submit:disabled { opacity:0.65; cursor:not-allowed; }
+  /* Scrollbar inside modal */
+  #modal-panel::-webkit-scrollbar { width:4px; }
+  #modal-panel::-webkit-scrollbar-track { background:transparent; }
+  #modal-panel::-webkit-scrollbar-thumb { background:rgba(173,198,255,0.2); border-radius:4px; }
+</style>
+
+<script>
+(function(){
+  var WEBHOOK = 'https://n8n.upleaddigital.com/webhook/216f9e34-e437-4c51-a44b-c14051108fb6';
+  var modal   = document.getElementById('booking-modal');
+  var panel   = document.getElementById('modal-panel');
+
+  /* ── Open / Close ── */
+  window.openModal = function() {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(function(){
+      panel.style.transform = 'scale(1) translateY(0)';
+      panel.style.opacity   = '1';
+    });
+  };
+
+  window.closeModal = function() {
+    panel.style.transform = 'scale(0.95) translateY(20px)';
+    panel.style.opacity   = '0';
+    setTimeout(function(){
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 280);
+  };
+
+  /* Close on Escape */
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeModal();
+  });
+
+  /* ── Validation ── */
+  var mFields = [
+    { id:'m_first_name', errId:'merr-first_name', type:'text'  },
+    { id:'m_last_name',  errId:'merr-last_name',  type:'text'  },
+    { id:'m_email',      errId:'merr-email',       type:'email' },
+    { id:'m_phone',      errId:'merr-phone',       type:'phone' },
+    { id:'m_company',    errId:'merr-company',     type:'text'  }
+  ];
+
+  mFields.forEach(function(f){
+    var inp = document.getElementById(f.id);
+    inp.addEventListener('blur',  function(){ mValidate(f); });
+    inp.addEventListener('input', function(){
+      if (inp.closest('.modal-field-group').classList.contains('has-error')) mValidate(f);
+    });
+  });
+
+  function mValidate(f) {
+    var inp   = document.getElementById(f.id);
+    var group = inp.closest('.modal-field-group');
+    var val   = inp.value.trim();
+    var ok    = !!val;
+    if (ok && f.type === 'email') ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    if (ok && f.type === 'phone') ok = /^[\d\s\+\-\(\)]{7,}$/.test(val);
+    group.classList.toggle('has-error', !ok);
+    inp.classList.toggle('is-invalid', !ok);
+    inp.classList.toggle('is-valid',   ok);
+    return ok;
+  }
+
+  function mValidateAll() {
+    return mFields.map(mValidate).every(Boolean);
+  }
+
+  /* ── Loading state ── */
+  function mSetLoading(on) {
+    var btn  = document.getElementById('modal-submit');
+    var txt  = document.getElementById('modal-btn-text');
+    var spin = document.getElementById('modal-btn-loading');
+    btn.disabled       = on;
+    txt.style.display  = on  ? 'none'  : 'flex';
+    spin.style.display = on  ? 'flex'  : 'none';
+  }
+
+  /* ── Submit ── */
+  document.getElementById('modal-form').addEventListener('submit', async function(e){
+    e.preventDefault();
+    document.getElementById('modal-error').style.display = 'none';
+
+    if (!mValidateAll()) {
+      var first = document.querySelector('#modal-panel .is-invalid');
+      if (first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+      return;
+    }
+
+    mSetLoading(true);
+
+    var payload = {
+      first_name:   document.getElementById('m_first_name').value.trim(),
+      last_name:    document.getElementById('m_last_name').value.trim(),
+      email:        document.getElementById('m_email').value.trim(),
+      phone:        document.getElementById('m_phone').value.trim(),
+      company_name: document.getElementById('m_company').value.trim()
+    };
+
+    try {
+      var res = await fetch(WEBHOOK, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('status ' + res.status);
+
+      /* Success transition */
+      var step2 = document.getElementById('modal-step2');
+      step2.style.background  = '#adc6ff';
+      step2.style.color       = '#002e6a';
+      step2.style.border      = '1px solid #adc6ff';
+
+      document.getElementById('modal-form').style.display    = 'none';
+      document.getElementById('modal-success').style.display = 'flex';
+
+    } catch(err) {
+      var errBox = document.getElementById('modal-error');
+      document.getElementById('modal-error-msg').textContent = 'Something went wrong. Please try again.';
+      errBox.style.display = 'flex';
+      mSetLoading(false);
+    }
+  });
+})();
 </script>
 </body>
 </html>
