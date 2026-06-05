@@ -1428,13 +1428,27 @@
 
     mSetLoading(true);
 
+    const params = new URLSearchParams(window.location.search);
+
+    const utm_source = params.get('utm_source') || '';
+    const utm_medium = params.get('utm_medium') || '';
+    const utm_campaign = params.get('utm_campaign') || '';
+    const utm_content = params.get('utm_content') || '';
+    const utm_term = params.get('utm_term') || '';
+
     var payload = {
-      first_name:   document.getElementById('m_first_name').value.trim(),
-      last_name:    document.getElementById('m_last_name').value.trim(),
-      email:        document.getElementById('m_email').value.trim(),
-      phone:        document.getElementById('m_phone').value.trim(),
-      company_name: document.getElementById('m_company').value.trim()
-    };
+  first_name: document.getElementById('m_first_name').value.trim(),
+  last_name: document.getElementById('m_last_name').value.trim(),
+  email: document.getElementById('m_email').value.trim(),
+  phone: document.getElementById('m_phone').value.trim(),
+  company_name: document.getElementById('m_company').value.trim(),
+
+  utm_source: utm_source,
+  utm_medium: utm_medium,
+  utm_campaign: utm_campaign,
+  utm_content: utm_content,
+  utm_term: utm_term
+};
 
     try {
       var res = await fetch(WEBHOOK, {
