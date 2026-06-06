@@ -15,11 +15,15 @@ export default async function handler(req, res) {
 
     const events = await calendar.events.list({
       calendarId: 'primary',
-      maxResults: 10
+      singleEvents: true,
+      orderBy: 'startTime',
+      timeMin: '2026-06-02T00:00:00Z',
+      timeMax: '2026-06-03T00:00:00Z'
     });
 
     return res.status(200).json({
       success: true,
+      count: events.data.items.length,
       events: events.data.items
     });
 
