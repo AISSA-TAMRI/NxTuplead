@@ -34,8 +34,11 @@ const events = await calendar.events.list({
 });
 
 return res.status(200).json({
-  success: true,
+  timeMin: startOfDay.toISOString(),
+  timeMax: endOfDay.toISOString(),
+  count: events.data.items?.length || 0,
   events: events.data.items
+});
 });
 
 } catch (error) {
