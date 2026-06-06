@@ -4,7 +4,25 @@ const CALENDAR_ID =
 '75537187f4967e4d458c22654a730f09a9a58c2d1709d271f40134274a96fb9b@group.calendar.google.com';
 
 export default async function handler(req, res) {
+
+if (req.method !== 'POST') {
+return res.status(405).json({
+success: false,
+error: 'Method not allowed'
+});
+}
+
 try {
+
+const {
+  first_name,
+  last_name,
+  email,
+  phone,
+  company_name,
+  startTime,
+  endTime
+} = req.body;
 
 const auth = new google.auth.JWT({
   email: process.env.GOOGLE_CLIENT_EMAIL,
@@ -20,16 +38,23 @@ const calendar = google.calendar({
 const event = await calendar.events.insert({
   calendarId: CALENDAR_ID,
   requestBody: {
-    summary: 'TEST BOOKING',
-    start: {
-      dateTime: '2026-06-10T10:00:00+01:00',
-      timeZone: 'Africa/Algiers'
-    },
-    end: {
-      dateTime: '2026-06-10T11:00:00+01:00',
-      timeZone: 'Africa/Algiers'
-    }
-  }
+    summary: `Strategy Call - ${first_name} ${last_name}`,
+    description: `
+
+Name: ${first_name} ${last_name}
+Email: ${email}
+Phone: ${phone}
+Company: ${company_name}
+`,
+start: {
+dateTime: startTime,
+timeZone: 'Africa/Algiers'
+},
+end: {
+dateTime: endTime,
+timeZone: 'Africa/Algiers'
+}
+}
 });
 
 return res.status(200).json({
@@ -38,9 +63,11 @@ return res.status(200).json({
 });
 
 } catch (error) {
+
 return res.status(500).json({
-success: false,
-error: error.message
+  success: false,
+  error: error.message
 });
+
 }
 }
