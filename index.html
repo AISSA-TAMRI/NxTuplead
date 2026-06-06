@@ -1856,11 +1856,9 @@ var yyyy = selectedDay.year;
 var mm = String(selectedDay.month + 1).padStart(2,'0');
 var dd = String(selectedDay.day).padStart(2,'0');
 
-var startTime =
-${yyyy}-${mm}-${dd}T${slotMap[selectedSlot].start}+01:00;
+var startTime = ${yyyy}-${mm}-${dd}T${slotMap[selectedSlot].start}+01:00;
 
-var endTime =
-${yyyy}-${mm}-${dd}T${slotMap[selectedSlot].end}+01:00;
+var endTime = ${yyyy}-${mm}-${dd}T${slotMap[selectedSlot].end}+01:00;
 
 var bookingRes = await fetch('/api/create-booking', {
 method: 'POST',
