@@ -1276,7 +1276,7 @@
       <!-- Section label -->
       <div style="margin-bottom:1rem;">
         <p style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#8c909f;margin-bottom:4px;">Step 2 of 3 — Pick a Date & Time</p>
-        <h3 style="font-size:1.1rem;font-weight:700;color:#e5e2e1;line-height:1.3;">Schedule Your Strategy Call</h3>
+        <h3 style="font-size:1.1rem;font-weight:700;color:#e5e2e1;line-height:1.3;">Select your preferred slot</h3>
       </div>
 
       <!-- ── CALENDAR ── -->
@@ -1840,49 +1840,12 @@
       preferred_time: selectedSlot
     });
 
-    /* 1. Create Google Calendar booking */
-
-var bookingRes = await fetch('/api/create-booking', {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({
-first_name: storedPayload.first_name,
-last_name: storedPayload.last_name,
-email: storedPayload.email,
-phone: storedPayload.phone,
-company_name: storedPayload.company_name,
-
-startTime: selectedDateISO,
-endTime: selectedEndISO
-
-})
-});
-
-if (!bookingRes.ok) {
-throw new Error('Booking creation failed');
-}
-
-var bookingData = await bookingRes.json();
-
-if (!bookingData.success) {
-throw new Error('Google Calendar booking failed');
-}
-
-/* 2. Save event id */
-
-finalPayload.booking_event_id = bookingData.eventId;
-
-/* 3. Send lead to CRM */
-
-var res = await fetch(WEBHOOK, {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(finalPayload)
-});
-
-if (!res.ok) {
-throw new Error('status ' + res.status);
-}
+    try {
+      var res = await fetch(WEBHOOK, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(finalPayload)
+      });
       if (!res.ok) throw new Error('status ' + res.status);
 
       /* Activate step 3 indicator */
@@ -1915,4 +1878,3 @@ throw new Error('status ' + res.status);
 </script>
 </body>
 </html>
-
