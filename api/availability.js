@@ -38,7 +38,7 @@ return res.status(200).json({
   timeMax: endOfDay.toISOString(),
   count: events.data.items?.length || 0,
   events: events.data.items
-});
+
 });
 
 } catch (error) {
