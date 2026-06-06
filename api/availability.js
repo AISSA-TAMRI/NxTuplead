@@ -8,16 +8,25 @@ export default async function handler(req, res) {
       scopes: ['https://www.googleapis.com/auth/calendar']
     });
 
-    const token = await auth.authorize();
-
-    res.status(200).json({
-      success: true,
-      token: !!token.access_token
+    const calendar = google.calendar({
+      version: 'v3',
+      auth
     });
-  } catch (e) {
-    res.status(500).json({
+
+    const events = await calendar.events.list({
+      calendarId: 'primary',
+      maxResults: 10
+    });
+
+    return res.status(200).json({
+      success: true,
+      events: events.data.items
+    });
+
+  } catch (error) {
+    return res.status(500).json({
       success: false,
-      error: e.message
+      error: error.message
     });
   }
 }
