@@ -1770,32 +1770,79 @@
   };
 
   /* ── Show time slots ── */
-  function mShowSlots() {
-    if (!selectedDay) return;
-    var section = document.getElementById('slot-section');
-    section.style.display = 'block';
-    section.classList.add('slide-in');
+  async function mShowSlots() {
+if (!selectedDay) return;
 
-    var label = DAY_NAMES[selectedDay.date.getDay()] + ', ' +
-                MONTH_NAMES[selectedDay.month] + ' ' + selectedDay.day + ', ' + selectedDay.year;
-    document.getElementById('slot-date-label').textContent = label;
+var section = document.getElementById('slot-section');
+section.style.display = 'block';
+section.classList.add('slide-in');
 
-    var grid = document.getElementById('slot-grid');
-    grid.innerHTML = '';
-    SLOTS.forEach(function(slot){
-      var btn = document.createElement('button');
-      btn.type      = 'button';
-      btn.className = 'slot-btn' + (selectedSlot === slot ? ' slot-selected' : '');
-      btn.textContent = slot;
-      btn.addEventListener('click', function(){
-        selectedSlot = slot;
-        mShowSlots();   // re-render to update selection highlight
-        mUpdateSummary();
-        mUpdateConfirmBtn();
-      });
-      grid.appendChild(btn);
-    });
-  }
+var label =
+DAY_NAMES[selectedDay.date.getDay()] + ', ' +
+MONTH_NAMES[selectedDay.month] + ' ' +
+selectedDay.day + ', ' +
+selectedDay.year;
+
+document.getElementById('slot-date-label').textContent = label;
+
+var yyyy = selectedDay.year;
+var mm = String(selectedDay.month + 1).padStart(2, '0');
+var dd = String(selectedDay.day).padStart(2, '0');
+
+var apiDate = ${yyyy}-${mm}-${dd};
+
+var bookedSlots = [];
+
+try {
+var response = await fetch(/api/availability?date=${apiDate});
+var data = await response.json();
+
+if (data.events) {
+  bookedSlots = data.events.map(function(event) {
+    var dt = new Date(event.start.dateTime);
+
+    var hours = dt.getHours();
+    var minutes = String(dt.getMinutes()).padStart(2, '0');
+
+    var suffix = hours >= 12 ? 'PM' : 'AM';
+    var hour12 = hours % 12 || 12;
+
+    return `${String(hour12).padStart(2,'0')}:${minutes} ${suffix}`;
+  });
+}
+
+} catch(e) {
+console.error('Availability error', e);
+}
+
+var grid = document.getElementById('slot-grid');
+grid.innerHTML = '';
+
+SLOTS.forEach(function(slot) {
+
+if (bookedSlots.includes(slot)) {
+  return;
+}
+
+var btn = document.createElement('button');
+btn.type = 'button';
+btn.className =
+  'slot-btn' +
+  (selectedSlot === slot ? ' slot-selected' : '');
+
+btn.textContent = slot;
+
+btn.addEventListener('click', function() {
+  selectedSlot = slot;
+  mShowSlots();
+  mUpdateSummary();
+  mUpdateConfirmBtn();
+});
+
+grid.appendChild(btn);
+
+});
+}
 
   /* ── Update booking summary ── */
   function mUpdateSummary() {
