@@ -1155,15 +1155,20 @@
     </div>
 
     <!-- Step indicator -->
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div style="width:26px;height:26px;border-radius:50%;background:#adc6ff;color:#002e6a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">1</div>
-        <span style="color:#adc6ff;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Your Details</span>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:1.5rem;">
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+        <div id="modal-step1-dot" style="width:26px;height:26px;border-radius:50%;background:#adc6ff;color:#002e6a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">1</div>
+        <span id="modal-step1-lbl" style="color:#adc6ff;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">Your Details</span>
       </div>
-      <div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div id="modal-step2" style="width:26px;height:26px;border-radius:50%;border:1px solid #424754;color:#8c909f;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">2</div>
-        <span style="color:#8c909f;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Done</span>
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.08);min-width:8px;"></div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+        <div id="modal-step2" style="width:26px;height:26px;border-radius:50%;border:1px solid #424754;color:#8c909f;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:all 0.3s;">2</div>
+        <span id="modal-step2-lbl" style="color:#8c909f;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">Schedule</span>
+      </div>
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.08);min-width:8px;"></div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+        <div id="modal-step3-dot" style="width:26px;height:26px;border-radius:50%;border:1px solid #424754;color:#8c909f;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:all 0.3s;">3</div>
+        <span id="modal-step3-lbl" style="color:#8c909f;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;">Confirmed</span>
       </div>
     </div>
 
@@ -1226,21 +1231,21 @@
         <p id="modal-error-msg" style="color:#ffb4ab;font-size:13px;line-height:1.5;">Something went wrong. Please try again.</p>
       </div>
 
-      <!-- Submit -->
+      <!-- Submit → Continue to Step 2 -->
       <button type="submit" id="modal-submit" class="cta-shimmer"
         style="width:100%;padding:14px;border-radius:12px;font-weight:700;font-size:17px;
                background:#adc6ff;color:#002e6a;border:none;cursor:pointer;
                box-shadow:0 0 36px rgba(173,198,255,0.28);letter-spacing:-0.01em;
                transition:filter 0.2s, opacity 0.2s; font-family:'Inter',sans-serif;">
         <span id="modal-btn-text" style="display:flex;align-items:center;justify-content:center;gap:8px;">
-          <span class="material-symbols-outlined" style="font-size:19px;font-variation-settings:'FILL' 1;">calendar_today</span>
-          Book Strategy Call
+          Continue
+          <span class="material-symbols-outlined" style="font-size:19px;">arrow_forward</span>
         </span>
         <span id="modal-btn-loading" style="display:none;align-items:center;justify-content:center;gap:10px;">
           <svg class="lc-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
             <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
           </svg>
-          Sending...
+          Validating...
         </span>
       </button>
 
@@ -1259,15 +1264,133 @@
 
     </form>
 
-    <!-- SUCCESS -->
+    <!-- ══ STEP 2: SCHEDULE ══ -->
+    <div id="modal-schedule" style="display:none;flex-direction:column;gap:0;">
+
+      <!-- Back link -->
+      <button onclick="mGoBackToForm()" style="display:inline-flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:#8c909f;font-size:12px;font-family:'Inter',sans-serif;padding:0;margin-bottom:1.25rem;transition:color 0.2s;" onmouseover="this.style.color='#adc6ff'" onmouseout="this.style.color='#8c909f'">
+        <span class="material-symbols-outlined" style="font-size:15px;">arrow_back</span>
+        Back to details
+      </button>
+
+      <!-- Section label -->
+      <div style="margin-bottom:1rem;">
+        <p style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#8c909f;margin-bottom:4px;">Step 2 of 3 — Pick a Date & Time</p>
+        <h3 style="font-size:1.1rem;font-weight:700;color:#e5e2e1;line-height:1.3;">Select your preferred slot</h3>
+      </div>
+
+      <!-- ── CALENDAR ── -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
+        <!-- Calendar header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <button id="cal-prev" onclick="mCalPrev()" style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#c2c6d6;transition:all 0.2s;font-family:'Inter',sans-serif;" onmouseover="this.style.borderColor='#adc6ff';this.style.color='#adc6ff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.09)';this.style.color='#c2c6d6'">
+            <span class="material-symbols-outlined" style="font-size:16px;">chevron_left</span>
+          </button>
+          <span id="cal-month-label" style="font-size:14px;font-weight:700;color:#e5e2e1;letter-spacing:-0.01em;"></span>
+          <button id="cal-next" onclick="mCalNext()" style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#c2c6d6;transition:all 0.2s;font-family:'Inter',sans-serif;" onmouseover="this.style.borderColor='#adc6ff';this.style.color='#adc6ff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.09)';this.style.color='#c2c6d6'">
+            <span class="material-symbols-outlined" style="font-size:16px;">chevron_right</span>
+          </button>
+        </div>
+        <!-- Day-of-week headers -->
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;">
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#555b6e;padding:4px 0;letter-spacing:0.06em;">SUN</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#555b6e;padding:4px 0;letter-spacing:0.06em;">MON</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#555b6e;padding:4px 0;letter-spacing:0.06em;">TUE</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#555b6e;padding:4px 0;letter-spacing:0.06em;">WED</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#555b6e;padding:4px 0;letter-spacing:0.06em;">THU</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#555b6e;padding:4px 0;letter-spacing:0.06em;">FRI</div>
+          <div style="text-align:center;font-size:10px;font-weight:700;color:#555b6e;padding:4px 0;letter-spacing:0.06em;">SAT</div>
+        </div>
+        <!-- Calendar grid -->
+        <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;"></div>
+      </div>
+
+      <!-- ── TIME SLOTS (hidden until date selected) ── -->
+      <div id="slot-section" style="display:none;margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem;">
+          <span class="material-symbols-outlined" style="font-size:16px;color:#adc6ff;">schedule</span>
+          <p style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#8c909f;">Available Times — <span id="slot-date-label" style="color:#adc6ff;"></span></p>
+        </div>
+        <div id="slot-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+      </div>
+
+      <!-- ── BOOKING SUMMARY (hidden until time selected) ── -->
+      <div id="booking-summary" style="display:none;margin-bottom:1.25rem;padding:1rem 1.1rem;border-radius:12px;background:rgba(173,198,255,0.06);border:1px solid rgba(173,198,255,0.18);">
+        <p style="font-size:10px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#8c909f;margin-bottom:10px;">Booking Summary</p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="material-symbols-outlined" style="font-size:17px;color:#adc6ff;flex-shrink:0;">event</span>
+            <div>
+              <div style="font-size:10px;color:#8c909f;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">Date</div>
+              <div id="summary-date" style="font-size:14px;font-weight:700;color:#e5e2e1;margin-top:1px;"></div>
+            </div>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="material-symbols-outlined" style="font-size:17px;color:#adc6ff;flex-shrink:0;">schedule</span>
+            <div>
+              <div style="font-size:10px;color:#8c909f;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">Time</div>
+              <div id="summary-time" style="font-size:14px;font-weight:700;color:#e5e2e1;margin-top:1px;"></div>
+            </div>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="material-symbols-outlined" style="font-size:17px;color:#adc6ff;flex-shrink:0;">videocam</span>
+            <div>
+              <div style="font-size:10px;color:#8c909f;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">Format</div>
+              <div style="font-size:14px;font-weight:700;color:#e5e2e1;margin-top:1px;">15-min Video Call</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error banner for scheduling -->
+      <div id="schedule-error" style="display:none;margin-bottom:1rem;padding:12px 14px;border-radius:10px;background:rgba(255,180,171,0.08);border:1px solid rgba(255,180,171,0.25);align-items:start;gap:10px;">
+        <span class="material-symbols-outlined" style="font-size:18px;color:#ffb4ab;flex-shrink:0;">error</span>
+        <p id="schedule-error-msg" style="color:#ffb4ab;font-size:13px;line-height:1.5;">Something went wrong. Please try again.</p>
+      </div>
+
+      <!-- Confirm button -->
+      <button id="confirm-btn" onclick="mConfirmBooking()" disabled class="cta-shimmer"
+        style="width:100%;padding:14px;border-radius:12px;font-weight:700;font-size:17px;
+               background:#adc6ff;color:#002e6a;border:none;cursor:not-allowed;opacity:0.45;
+               box-shadow:0 0 36px rgba(173,198,255,0.2);letter-spacing:-0.01em;
+               transition:all 0.25s; font-family:'Inter',sans-serif;">
+        <span id="confirm-btn-text" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <span class="material-symbols-outlined" style="font-size:19px;font-variation-settings:'FILL' 1;">calendar_today</span>
+          Confirm Strategy Call
+        </span>
+        <span id="confirm-btn-loading" style="display:none;align-items:center;justify-content:center;gap:10px;">
+          <svg class="lc-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+          Booking...
+        </span>
+      </button>
+
+      <!-- Trust bar -->
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;justify-content:center;gap:16px;opacity:0.45;">
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#c2c6d6;">
+          <span class="material-symbols-outlined" style="font-size:14px;color:#adc6ff;">lock</span> 256-bit SSL
+        </span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#c2c6d6;">
+          <span class="material-symbols-outlined" style="font-size:14px;color:#adc6ff;">shield</span> No spam
+        </span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#c2c6d6;">
+          <span class="material-symbols-outlined" style="font-size:14px;color:#adc6ff;">schedule</span> Reply in 24h
+        </span>
+      </div>
+
+    </div><!-- /modal-schedule -->
     <div id="modal-success" style="display:none;flex-direction:column;align-items:center;text-align:center;padding:1.5rem 0;">
       <div style="width:88px;height:88px;border-radius:50%;background:rgba(173,198,255,0.08);border:2px solid #adc6ff;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;">
         <span class="material-symbols-outlined" style="font-size:44px;color:#adc6ff;font-variation-settings:'FILL' 1;animation:lc-pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both;">check_circle</span>
       </div>
-      <h3 style="font-size:1.4rem;font-weight:800;color:#e5e2e1;margin-bottom:8px;">You're on the list.</h3>
-      <p style="color:#8c909f;font-size:14px;line-height:1.7;max-width:340px;margin-bottom:1.5rem;">
-        Our team will reach out within <strong style="color:#e5e2e1;">24 hours</strong> to confirm your strategy session.
+      <h3 style="font-size:1.4rem;font-weight:800;color:#e5e2e1;margin-bottom:8px;">You're confirmed.</h3>
+      <p style="color:#8c909f;font-size:14px;line-height:1.7;max-width:340px;margin-bottom:6px;">
+        Your strategy call is scheduled for:
       </p>
+      <p id="success-date-detail" style="color:#adc6ff;font-size:15px;font-weight:700;margin-bottom:1.25rem;"></p>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:320px;margin-bottom:1.25rem;">
         <div style="padding:10px;border-radius:10px;text-align:center;background:rgba(173,198,255,0.06);border:1px solid rgba(173,198,255,0.14);">
           <div style="font-weight:700;font-size:1.1rem;color:#adc6ff;">24h</div>
@@ -1339,6 +1462,90 @@
   #modal-panel::-webkit-scrollbar { width:4px; }
   #modal-panel::-webkit-scrollbar-track { background:transparent; }
   #modal-panel::-webkit-scrollbar-thumb { background:rgba(173,198,255,0.2); border-radius:4px; }
+
+  /* ── Calendar day cells ── */
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    color: #c2c6d6;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    position: relative;
+    min-height: 36px;
+  }
+  .cal-day:hover:not(.cal-day--disabled):not(.cal-day--selected) {
+    background: rgba(173,198,255,0.1);
+    border-color: rgba(173,198,255,0.25);
+    color: #e5e2e1;
+  }
+  .cal-day--empty { cursor: default; }
+  .cal-day--disabled {
+    color: #2d3140;
+    cursor: not-allowed;
+  }
+  .cal-day--today {
+    color: #adc6ff;
+    font-weight: 700;
+  }
+  .cal-day--today::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: #adc6ff;
+  }
+  .cal-day--selected {
+    background: #adc6ff !important;
+    color: #002e6a !important;
+    font-weight: 700;
+    border-color: #adc6ff !important;
+    box-shadow: 0 0 14px rgba(173,198,255,0.4);
+  }
+  .cal-day--selected::after { display: none; }
+
+  /* ── Time slot buttons ── */
+  .slot-btn {
+    padding: 9px 8px;
+    border-radius: 9px;
+    border: 1px solid rgba(255,255,255,0.09);
+    background: rgba(255,255,255,0.03);
+    color: #c2c6d6;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+  .slot-btn:hover:not(.slot-selected) {
+    border-color: rgba(173,198,255,0.35);
+    background: rgba(173,198,255,0.08);
+    color: #e5e2e1;
+  }
+  .slot-selected {
+    background: rgba(173,198,255,0.18) !important;
+    border-color: #adc6ff !important;
+    color: #adc6ff !important;
+    box-shadow: 0 0 10px rgba(173,198,255,0.2);
+  }
+
+  /* Slide-in animation for schedule section */
+  @keyframes slideDown {
+    from { opacity:0; transform:translateY(12px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .slide-in { animation: slideDown 0.3s cubic-bezier(0.25,0.1,0.25,1) both; }
 </style>
 
 <script>
@@ -1346,6 +1553,20 @@
   var WEBHOOK = '/api/lead';
   var modal   = document.getElementById('booking-modal');
   var panel   = document.getElementById('modal-panel');
+
+  /* ── Stored form data ── */
+  var storedPayload = null;
+
+  /* ── Calendar state ── */
+  var calDate     = new Date();          // current displayed month
+  var selectedDay = null;               // { year, month, day, label }
+  var selectedSlot = null;              // "09:00 AM" etc.
+
+  var MONTH_NAMES = ['January','February','March','April','May','June',
+                     'July','August','September','October','November','December'];
+  var DAY_NAMES   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  var SLOTS = ['09:00 AM','10:00 AM','11:00 AM','02:00 PM','03:00 PM'];
 
   /* ── Open / Close ── */
   window.openModal = function() {
@@ -1366,10 +1587,20 @@
     }, 280);
   };
 
-  /* Close on Escape */
   document.addEventListener('keydown', function(e){
     if (e.key === 'Escape') closeModal();
   });
+
+  /* ── Go back to form ── */
+  window.mGoBackToForm = function() {
+    document.getElementById('modal-schedule').style.display = 'none';
+    document.getElementById('modal-form').style.display     = 'block';
+    // Reset step indicators
+    var s2 = document.getElementById('modal-step2');
+    s2.style.background = ''; s2.style.color = '#8c909f'; s2.style.border = '1px solid #424754';
+    mSubmit.disabled = false;
+    mSetLoading(false);
+  };
 
   /* ── Validation ── */
   var mFields = [
@@ -1405,18 +1636,16 @@
     return mFields.map(mValidate).every(Boolean);
   }
 
-  /* ── Loading state ── */
+  /* ── Loading state (Step 1 button) ── */
+  var mSubmit = document.getElementById('modal-submit');
   function mSetLoading(on) {
-    var btn  = document.getElementById('modal-submit');
-    var txt  = document.getElementById('modal-btn-text');
-    var spin = document.getElementById('modal-btn-loading');
-    btn.disabled       = on;
-    txt.style.display  = on  ? 'none'  : 'flex';
-    spin.style.display = on  ? 'flex'  : 'none';
+    mSubmit.disabled = on;
+    document.getElementById('modal-btn-text').style.display  = on ? 'none' : 'flex';
+    document.getElementById('modal-btn-loading').style.display = on ? 'flex' : 'none';
   }
 
-  /* ── Submit ── */
-  document.getElementById('modal-form').addEventListener('submit', async function(e){
+  /* ── Step 1 Submit → go to Step 2 ── */
+  document.getElementById('modal-form').addEventListener('submit', function(e){
     e.preventDefault();
     document.getElementById('modal-error').style.display = 'none';
 
@@ -1426,55 +1655,227 @@
       return;
     }
 
-    mSetLoading(true);
+    /* Activate step 2 indicator */
+    var s2 = document.getElementById('modal-step2');
+    s2.style.background = '#adc6ff';
+    s2.style.color      = '#002e6a';
+    s2.style.border     = '1px solid #adc6ff';
 
     const params = new URLSearchParams(window.location.search);
+    storedPayload = {
+      first_name:   document.getElementById('m_first_name').value.trim(),
+      last_name:    document.getElementById('m_last_name').value.trim(),
+      email:        document.getElementById('m_email').value.trim(),
+      phone:        document.getElementById('m_phone').value.trim(),
+      company_name: document.getElementById('m_company').value.trim(),
+      utm_source:   params.get('utm_source')   || '',
+      utm_medium:   params.get('utm_medium')   || '',
+      utm_campaign: params.get('utm_campaign') || '',
+      utm_content:  params.get('utm_content')  || '',
+      utm_term:     params.get('utm_term')     || ''
+    };
 
-    const utm_source = params.get('utm_source') || '';
-    const utm_medium = params.get('utm_medium') || '';
-    const utm_campaign = params.get('utm_campaign') || '';
-    const utm_content = params.get('utm_content') || '';
-    const utm_term = params.get('utm_term') || '';
+    /* Hide form, show schedule */
+    document.getElementById('modal-form').style.display     = 'none';
+    var sched = document.getElementById('modal-schedule');
+    sched.style.display = 'flex';
+    sched.classList.add('slide-in');
 
-    var payload = {
-  first_name: document.getElementById('m_first_name').value.trim(),
-  last_name: document.getElementById('m_last_name').value.trim(),
-  email: document.getElementById('m_email').value.trim(),
-  phone: document.getElementById('m_phone').value.trim(),
-  company_name: document.getElementById('m_company').value.trim(),
+    /* Init calendar */
+    calDate = new Date();
+    selectedDay  = null;
+    selectedSlot = null;
+    mRenderCalendar();
+    document.getElementById('slot-section').style.display    = 'none';
+    document.getElementById('booking-summary').style.display = 'none';
+    mUpdateConfirmBtn();
 
-  utm_source: utm_source,
-  utm_medium: utm_medium,
-  utm_campaign: utm_campaign,
-  utm_content: utm_content,
-  utm_term: utm_term
-};
+    /* Scroll panel to top */
+    panel.scrollTop = 0;
+  });
+
+  /* ── Calendar render ── */
+  function mRenderCalendar() {
+    var y = calDate.getFullYear();
+    var m = calDate.getMonth();
+    document.getElementById('cal-month-label').textContent = MONTH_NAMES[m] + ' ' + y;
+
+    var today     = new Date();
+    today.setHours(0,0,0,0);
+    var firstDay  = new Date(y, m, 1).getDay();  // 0=Sun
+    var daysInMon = new Date(y, m+1, 0).getDate();
+
+    /* Disable prev arrow if current month == today's month */
+    var prevBtn = document.getElementById('cal-prev');
+    var isCurrentMonth = (y === today.getFullYear() && m === today.getMonth());
+    prevBtn.style.opacity = isCurrentMonth ? '0.3' : '1';
+    prevBtn.style.pointerEvents = isCurrentMonth ? 'none' : 'auto';
+
+    var grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+
+    /* Empty cells before first day */
+    for (var i = 0; i < firstDay; i++) {
+      var empty = document.createElement('div');
+      empty.className = 'cal-day cal-day--empty';
+      grid.appendChild(empty);
+    }
+
+    /* Day cells */
+    for (var d = 1; d <= daysInMon; d++) {
+      var cell    = document.createElement('button');
+      var cellDate = new Date(y, m, d);
+      cellDate.setHours(0,0,0,0);
+      var isWeekend  = (cellDate.getDay() === 0 || cellDate.getDay() === 6);
+      var isPast     = cellDate < today;
+      var isToday    = cellDate.getTime() === today.getTime();
+      var isSelected = selectedDay &&
+                       selectedDay.year === y &&
+                       selectedDay.month === m &&
+                       selectedDay.day === d;
+      var disabled   = isPast || isWeekend;
+
+      cell.className = 'cal-day' +
+        (disabled   ? ' cal-day--disabled' : '') +
+        (isToday    ? ' cal-day--today'    : '') +
+        (isSelected ? ' cal-day--selected' : '');
+
+      cell.type        = 'button';
+      cell.textContent = d;
+      cell.disabled    = disabled;
+
+      if (!disabled) {
+        (function(day, yr, mo, dateObj){
+          cell.addEventListener('click', function(){
+            selectedDay = { year: yr, month: mo, day: day, date: dateObj };
+            selectedSlot = null;
+            mRenderCalendar();
+            mShowSlots();
+            mUpdateSummary();
+            mUpdateConfirmBtn();
+          });
+        })(d, y, m, cellDate);
+      }
+      grid.appendChild(cell);
+    }
+  }
+
+  window.mCalPrev = function() {
+    calDate.setMonth(calDate.getMonth() - 1);
+    mRenderCalendar();
+  };
+  window.mCalNext = function() {
+    calDate.setMonth(calDate.getMonth() + 1);
+    mRenderCalendar();
+  };
+
+  /* ── Show time slots ── */
+  function mShowSlots() {
+    if (!selectedDay) return;
+    var section = document.getElementById('slot-section');
+    section.style.display = 'block';
+    section.classList.add('slide-in');
+
+    var label = DAY_NAMES[selectedDay.date.getDay()] + ', ' +
+                MONTH_NAMES[selectedDay.month] + ' ' + selectedDay.day + ', ' + selectedDay.year;
+    document.getElementById('slot-date-label').textContent = label;
+
+    var grid = document.getElementById('slot-grid');
+    grid.innerHTML = '';
+    SLOTS.forEach(function(slot){
+      var btn = document.createElement('button');
+      btn.type      = 'button';
+      btn.className = 'slot-btn' + (selectedSlot === slot ? ' slot-selected' : '');
+      btn.textContent = slot;
+      btn.addEventListener('click', function(){
+        selectedSlot = slot;
+        mShowSlots();   // re-render to update selection highlight
+        mUpdateSummary();
+        mUpdateConfirmBtn();
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  /* ── Update booking summary ── */
+  function mUpdateSummary() {
+    var summary = document.getElementById('booking-summary');
+    if (selectedDay && selectedSlot) {
+      var dateStr = DAY_NAMES[selectedDay.date.getDay()] + ', ' +
+                    MONTH_NAMES[selectedDay.month] + ' ' + selectedDay.day + ', ' + selectedDay.year;
+      document.getElementById('summary-date').textContent = dateStr;
+      document.getElementById('summary-time').textContent = selectedSlot + ' (Your local time)';
+      summary.style.display = 'block';
+      summary.classList.add('slide-in');
+    } else {
+      summary.style.display = 'none';
+    }
+  }
+
+  /* ── Enable/disable Confirm button ── */
+  function mUpdateConfirmBtn() {
+    var btn  = document.getElementById('confirm-btn');
+    var ready = !!(selectedDay && selectedSlot);
+    btn.disabled = !ready;
+    btn.style.opacity = ready ? '1' : '0.45';
+    btn.style.cursor  = ready ? 'pointer' : 'not-allowed';
+  }
+
+  /* ── Confirm booking → POST webhook ── */
+  window.mConfirmBooking = async function() {
+    if (!selectedDay || !selectedSlot || !storedPayload) return;
+    document.getElementById('schedule-error').style.display = 'none';
+
+    var confirmBtn  = document.getElementById('confirm-btn');
+    var btnTxt      = document.getElementById('confirm-btn-text');
+    var btnSpin     = document.getElementById('confirm-btn-loading');
+    confirmBtn.disabled  = true;
+    btnTxt.style.display  = 'none';
+    btnSpin.style.display = 'flex';
+
+    var dateStr = MONTH_NAMES[selectedDay.month] + ' ' + selectedDay.day + ', ' + selectedDay.year;
+
+    var finalPayload = Object.assign({}, storedPayload, {
+      preferred_date: dateStr,
+      preferred_time: selectedSlot
+    });
 
     try {
       var res = await fetch(WEBHOOK, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(finalPayload)
       });
       if (!res.ok) throw new Error('status ' + res.status);
 
-      /* Success transition */
-      var step2 = document.getElementById('modal-step2');
-      step2.style.background  = '#adc6ff';
-      step2.style.color       = '#002e6a';
-      step2.style.border      = '1px solid #adc6ff';
+      /* Activate step 3 indicator */
+      var s3 = document.getElementById('modal-step3-dot');
+      s3.style.background = '#adc6ff';
+      s3.style.color      = '#002e6a';
+      s3.style.border     = '1px solid #adc6ff';
 
-      document.getElementById('modal-form').style.display    = 'none';
-      document.getElementById('modal-success').style.display = 'flex';
+      /* Show success */
+      document.getElementById('modal-schedule').style.display = 'none';
+      var succ = document.getElementById('modal-success');
+      succ.style.display = 'flex';
+      succ.classList.add('slide-in');
+
+      /* Enrich success copy with date/time */
+      var sd = document.getElementById('success-date-detail');
+      if (sd) sd.textContent = dateStr + ' at ' + selectedSlot;
 
     } catch(err) {
-      var errBox = document.getElementById('modal-error');
-      document.getElementById('modal-error-msg').textContent = 'Something went wrong. Please try again.';
+      var errBox = document.getElementById('schedule-error');
+      document.getElementById('schedule-error-msg').textContent = 'Something went wrong. Please try again.';
       errBox.style.display = 'flex';
-      mSetLoading(false);
+      confirmBtn.disabled  = false;
+      btnTxt.style.display  = 'flex';
+      btnSpin.style.display = 'none';
     }
-  });
+  };
+
 })();
 </script>
 </body>
 </html>
+
