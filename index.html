@@ -1839,7 +1839,52 @@
       preferred_date: dateStr,
       preferred_time: selectedSlot
     });
+     /* Create Google Calendar event */
 
+var slotMap = {
+'09:00 AM': { start:'09:00:00', end:'09:15:00' },
+'10:00 AM': { start:'10:00:00', end:'10:15:00' },
+'11:00 AM': { start:'11:00:00', end:'11:15:00' },
+'02:00 PM': { start:'14:00:00', end:'14:15:00' },
+'03:00 PM': { start:'15:00:00', end:'15:15:00' }
+};
+
+var yyyy = selectedDay.year;
+var mm = String(selectedDay.month + 1).padStart(2,'0');
+var dd = String(selectedDay.day).padStart(2,'0');
+
+var startTime =
+${yyyy}-${mm}-${dd}T${slotMap[selectedSlot].start}+01:00;
+
+var endTime =
+${yyyy}-${mm}-${dd}T${slotMap[selectedSlot].end}+01:00;
+
+var bookingRes = await fetch('/api/create-booking', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+first_name: storedPayload.first_name,
+last_name: storedPayload.last_name,
+email: storedPayload.email,
+phone: storedPayload.phone,
+company_name: storedPayload.company_name,
+startTime,
+endTime
+})
+});
+
+if (!bookingRes.ok) {
+throw new Error('Failed to create calendar event');
+}
+
+var bookingData = await bookingRes.json();
+
+if (!bookingData.success) {
+throw new Error(bookingData.error || 'Booking failed');
+}
+
+finalPayload.booking_event_id = bookingData.eventId;
+    
     try {
       var res = await fetch(WEBHOOK, {
         method:  'POST',
