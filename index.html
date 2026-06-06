@@ -1840,12 +1840,49 @@
       preferred_time: selectedSlot
     });
 
-    try {
-      var res = await fetch(WEBHOOK, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(finalPayload)
-      });
+    /* 1. Create Google Calendar booking */
+
+var bookingRes = await fetch('/api/create-booking', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+first_name: storedPayload.first_name,
+last_name: storedPayload.last_name,
+email: storedPayload.email,
+phone: storedPayload.phone,
+company_name: storedPayload.company_name,
+
+startTime: selectedDateISO,
+endTime: selectedEndISO
+
+})
+});
+
+if (!bookingRes.ok) {
+throw new Error('Booking creation failed');
+}
+
+var bookingData = await bookingRes.json();
+
+if (!bookingData.success) {
+throw new Error('Google Calendar booking failed');
+}
+
+/* 2. Save event id */
+
+finalPayload.booking_event_id = bookingData.eventId;
+
+/* 3. Send lead to CRM */
+
+var res = await fetch(WEBHOOK, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(finalPayload)
+});
+
+if (!res.ok) {
+throw new Error('status ' + res.status);
+}
       if (!res.ok) throw new Error('status ' + res.status);
 
       /* Activate step 3 indicator */
