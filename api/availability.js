@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     });
 
     const events = await calendar.events.list({
-      calendarId: 'primary',
+      calendarId: '75537187f4967e4d458c22654a730f09a9a58c2d1709d271f40134274a96fb9b@group.calendar.google.com',
       singleEvents: true,
       orderBy: 'startTime',
       timeMin: '2026-06-02T00:00:00Z',
