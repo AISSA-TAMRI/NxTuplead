@@ -1800,6 +1800,7 @@ var data = await response.json();
 if (data.events) {
   bookedSlots = data.events.map(function(event) {
     var dt = new Date(event.start.dateTime);
+    console.log('EVENT DATETIME:', event.start.dateTime);
 
     var hours = dt.getHours();
     var minutes = String(dt.getMinutes()).padStart(2, '0');
@@ -1807,7 +1808,11 @@ if (data.events) {
     var suffix = hours >= 12 ? 'PM' : 'AM';
     var hour12 = hours % 12 || 12;
 
-    return `${String(hour12).padStart(2,'0')}:${minutes} ${suffix}`;
+    var slotTime = `${String(hour12).padStart(2,'0')}:${minutes} ${suffix}`;
+
+console.log('BOOKED SLOT:', slotTime);
+
+return slotTime;
   });
 }
 
