@@ -1794,7 +1794,7 @@ var apiDate = `${yyyy}-${mm}-${dd}`;
 var bookedSlots = [];
 
 try {
-var response = await fetch(/api/availability?date=${apiDate});
+var response = await fetch(`/api/availability?date=${apiDate}`);
 var data = await response.json();
 
 if (data.events) {
