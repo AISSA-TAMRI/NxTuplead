@@ -784,8 +784,11 @@ async function loadLeads() {
 
           <td>
             ${lead.preferred_date
-              ? new Date(lead.preferred_date).toLocaleDateString()
-              : "-"}
+      ? new Date(lead.preferred_date).toLocaleDateString()
+      : "-"}
+  </div>
+  <div style="font-size:11px;color:var(--tx3)">
+    ${lead.preferred_time || ""}
           </td>
 
           <td>
