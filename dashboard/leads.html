@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #111319; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #33343b; border-radius: 10px; }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            background: rgba(29, 34, 45, 0.8);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#171c26",
+                        "surface": "#111319",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary-fixed-variant": "#2c4677",
+                        "on-secondary": "#2c3039",
+                        "on-tertiary-container": "#4d525f",
+                        "surface-tint": "#adc6ff",
+                        "tertiary-fixed": "#dee2f1",
+                        "surface-bright": "#373940",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#44474f",
+                        "surface-card": "#1d222d",
+                        "on-error": "#690005",
+                        "surface-container-high": "#282a30",
+                        "surface-container-highest": "#33343b",
+                        "text-primary": "#ffffff",
+                        "border-subtle": "rgba(255, 255, 255, 0.08)",
+                        "on-tertiary-fixed-variant": "#424753",
+                        "on-background": "#e2e2eb",
+                        "inverse-on-surface": "#2e3037",
+                        "background": "#111319",
+                        "secondary-fixed": "#dfe2ee",
+                        "secondary-container": "#454952",
+                        "on-tertiary": "#2b303c",
+                        "inverse-primary": "#455e90",
+                        "tertiary-fixed-dim": "#c2c6d5",
+                        "on-surface": "#e2e2eb",
+                        "primary-container": "#adc6ff",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-surface": "#e2e2eb",
+                        "accent-hover": "#c5d8ff",
+                        "surface-container": "#1e1f26",
+                        "outline": "#8e909a",
+                        "on-primary": "#122f5f",
+                        "surface-container-low": "#191b22",
+                        "on-secondary-container": "#b5b8c3",
+                        "surface-main": "#0f1117",
+                        "secondary": "#c3c6d1",
+                        "on-surface-variant": "#c4c6d0",
+                        "on-primary-fixed": "#001a42",
+                        "surface-container-lowest": "#0c0e14",
+                        "on-secondary-fixed": "#181c24",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#434750",
+                        "surface-dim": "#111319",
+                        "surface-secondary": "#171b23",
+                        "error-container": "#93000a",
+                        "tertiary": "#dee2f1",
+                        "accent-glow": "rgba(173, 198, 255, 0.15)",
+                        "on-primary-container": "#385283",
+                        "text-muted": "#b8c0d4",
+                        "surface-variant": "#33343b",
+                        "tertiary-container": "#c2c6d5",
+                        "secondary-fixed-dim": "#c3c6d1",
+                        "primary": "#d8e2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "20px",
+                        "sm": "12px",
+                        "base": "4px",
+                        "container-max": "1440px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "margin": "24px",
+                        "xs": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-main text-on-surface custom-scrollbar selection:bg-primary/30">
+<!-- SIDE NAVIGATION -->
+<aside class="fixed left-0 top-0 h-full w-[240px] bg-surface-secondary flex flex-col py-lg px-md z-50">
+<div class="mb-xl px-xs">
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">NXTUP Lead</h1>
+<p class="font-label-md text-label-md text-on-surface-variant/60">Enterprise Workspace</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard (Inactive) -->
+<a class="flex items-center gap-xs px-sm py-xs rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<!-- Leads (Inactive) -->
+<a class="flex items-center gap-xs px-sm py-xs rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="font-body-md text-body-md">Leads</span>
+</a>
+<!-- Pipeline (Active) -->
+<a class="flex items-center gap-xs px-sm py-xs rounded-lg text-primary bg-primary/10 border-r-2 border-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-md text-body-md">Pipeline</span>
+</a>
+<!-- Rest of items simplified -->
+<a class="flex items-center gap-xs px-sm py-xs rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md text-body-md">Calendar</span>
+</a>
+<a class="flex items-center gap-xs px-sm py-xs rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined">check_box</span>
+<span class="font-body-md text-body-md">Tasks</span>
+</a>
+<a class="flex items-center gap-xs px-sm py-xs rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</a>
+<a class="flex items-center gap-xs px-sm py-xs rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-primary transition-all duration-200" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-md text-body-md">AI Workspace</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-border-subtle pt-md">
+<button class="w-full bg-primary text-on-primary-fixed py-xs rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-accent-hover transition-colors shadow-lg shadow-primary/10">
+<span class="material-symbols-outlined !text-[16px]">add</span>
+                Quick Create
+            </button>
+</div>
+</aside>
+<!-- MAIN CONTENT -->
+<main class="ml-[240px] min-h-screen flex flex-col">
+<!-- TOP NAV BAR -->
+<header class="sticky top-0 z-40 bg-surface-main/80 backdrop-blur-md border-b border-border-subtle flex justify-between items-center h-16 px-xl">
+<div class="flex items-center gap-xl flex-1">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined">search</span>
+<input class="bg-transparent border-none focus:ring-0 font-body-md text-body-md w-64 placeholder:text-on-surface-variant/40" placeholder="Search opportunities..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-container overflow-hidden border border-border-subtle">
+<img alt="Workspace Admin" class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged male workspace administrator with a confident smile, wearing a modern charcoal suit. The background is a blurred office setting with high-end architectural details and soft blue lighting. The overall mood is executive, sharp, and corporate-modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCseXxmYSBBgIvYIeSRlVdYJTz5SUr8zbRZK1REp9HZiBuYM0svE0uvhigWYV8YFs8VRWUAhg_laEBRR4Lq4Ldm3lnE19sacLLNqg8UGGa11Un5JwFSDcFstwZbKtTtXpTX-izriOczNznmxMyw9TI2bvdhQ-icTs6wEYNbJ-0JYFSJN7G2aHWuPtF79_8UaDMtKHtsniATLxv4Lio8MGS7TyDTEz3nPtdaeoefYF2Q_hS4GiXIwqHtLJ5GPt6M6BPjhVmsDeC0DtA"/>
+</div>
+</div>
+</header>
+<!-- TOOLBAR / FILTERING -->
+<section class="px-xl py-md border-b border-border-subtle bg-surface-low/30">
+<div class="flex items-center justify-between mb-md">
+<div class="flex items-center gap-sm">
+<h2 class="font-headline-lg text-headline-lg text-text-primary tracking-tight">Opportunities</h2>
+<div class="flex items-center gap-xs px-xs bg-surface-container rounded-lg border border-border-subtle py-1">
+<span class="material-symbols-outlined !text-[14px] text-primary">verified</span>
+<span class="font-label-md text-label-md text-on-surface-variant">248 active</span>
+</div>
+</div>
+<div class="flex items-center gap-xs">
+<button class="px-sm py-1.5 rounded-lg border border-border-subtle text-on-surface-variant hover:bg-white/5 font-label-md text-label-md flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[16px]">save</span>
+                        Save View
+                    </button>
+<button class="px-sm py-1.5 rounded-lg bg-white/5 border border-primary/20 text-primary hover:bg-primary/10 font-label-md text-label-md flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[16px]">file_download</span>
+                        Export
+                    </button>
+</div>
+</div>
+<div class="flex items-center gap-xs flex-wrap">
+<!-- Saved Views Chips -->
+<button class="px-sm py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-label-md text-label-md">All Open</button>
+<button class="px-sm py-1 rounded-full bg-surface-container text-on-surface-variant border border-border-subtle font-label-md text-label-md hover:border-primary/40 transition-colors">My High Value</button>
+<button class="px-sm py-1 rounded-full bg-surface-container text-on-surface-variant border border-border-subtle font-label-md text-label-md hover:border-primary/40 transition-colors">Closing This Quarter</button>
+<div class="w-px h-6 bg-border-subtle mx-xs"></div>
+<!-- Linear-style filters -->
+<button class="flex items-center gap-xs px-xs py-1 text-on-surface-variant font-label-md text-label-md hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined !text-[16px]">filter_alt</span>
+                    Filter
+                </button>
+<button class="flex items-center gap-xs px-xs py-1 text-on-surface-variant font-label-md text-label-md hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined !text-[16px]">swap_vert</span>
+                    Sort
+                </button>
+</div>
+</section>
+<!-- DATA TABLE -->
+<section class="flex-1 px-xl py-md overflow-x-auto">
+<table class="w-full text-left border-separate border-spacing-0">
+<thead>
+<tr class="text-on-surface-variant/60 uppercase">
+<th class="pb-sm px-sm font-label-sm text-label-sm border-b border-border-subtle">Opportunity</th>
+<th class="pb-sm px-sm font-label-sm text-label-sm border-b border-border-subtle">Status</th>
+<th class="pb-sm px-sm font-label-sm text-label-sm border-b border-border-subtle">Pipeline Stage</th>
+<th class="pb-sm px-sm font-label-sm text-label-sm border-b border-border-subtle">Lead Score</th>
+<th class="pb-sm px-sm font-label-sm text-label-sm border-b border-border-subtle">Value</th>
+<th class="pb-sm px-sm font-label-sm text-label-sm border-b border-border-subtle">Risk</th>
+<th class="pb-sm px-sm font-label-sm text-label-sm border-b border-border-subtle">Next Action</th>
+<th class="pb-sm px-sm font-label-sm text-label-sm border-b border-border-subtle"></th>
+</tr>
+</thead>
+<tbody class="text-on-surface">
+<!-- Row 1 -->
+<tr class="group hover:bg-surface-secondary/50 transition-colors">
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center font-bold text-primary font-label-md text-label-md">
+                                    QL
+                                </div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-text-primary">Global Cloud Expansion</p>
+<p class="font-label-md text-label-md text-on-surface-variant">Quant Logic Corp</p>
+</div>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<span class="px-xs py-0.5 rounded bg-primary/10 text-primary font-label-md text-label-md">Active</span>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[14px] text-primary">circle</span>
+<span class="font-body-md text-body-md">Contracting</span>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="w-24 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle font-body-md text-body-md font-mono">$1.2M</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<span class="px-xs py-0.5 rounded bg-on-tertiary-container/10 text-on-tertiary-container font-label-md text-label-md">Low</span>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<button class="bg-white/5 hover:bg-white/10 px-sm py-1 rounded text-primary font-label-md text-label-md border border-border-subtle">
+                                Send Proposal
+                            </button>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle text-right">
+<button class="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="group hover:bg-surface-secondary/50 transition-colors">
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-secondary/20 flex items-center justify-center font-bold text-secondary font-label-md text-label-md">
+                                    HS
+                                </div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-text-primary">Enterprise Security Suite</p>
+<p class="font-label-md text-label-md text-on-surface-variant">HyperScale Inc</p>
+</div>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<span class="px-xs py-0.5 rounded bg-on-tertiary-container/10 text-on-tertiary-container font-label-md text-label-md">In Progress</span>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[14px] text-on-tertiary-container">circle</span>
+<span class="font-body-md text-body-md">Discovery</span>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="w-24 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[42%]"></div>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle font-body-md text-body-md font-mono">$450k</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<span class="px-xs py-0.5 rounded bg-error/10 text-error font-label-md text-label-md">High</span>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<button class="bg-white/5 hover:bg-white/10 px-sm py-1 rounded text-primary font-label-md text-label-md border border-border-subtle">
+                                Book Demo
+                            </button>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle text-right">
+<button class="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="group hover:bg-surface-secondary/50 transition-colors">
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-primary/20 flex items-center justify-center font-bold text-primary font-label-md text-label-md">
+                                    A
+                                </div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-text-primary">AI Integration Project</p>
+<p class="font-label-md text-label-md text-on-surface-variant">Artemis AI</p>
+</div>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<span class="px-xs py-0.5 rounded bg-primary/10 text-primary font-label-md text-label-md">Hot</span>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[14px] text-primary">circle</span>
+<span class="font-body-md text-body-md">Negotiation</span>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="w-24 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[96%]"></div>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle font-body-md text-body-md font-mono">$2.1M</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<span class="px-xs py-0.5 rounded bg-on-tertiary-container/10 text-on-tertiary-container font-label-md text-label-md">Low</span>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<button class="bg-white/5 hover:bg-white/10 px-sm py-1 rounded text-primary font-label-md text-label-md border border-border-subtle">
+                                Internal Review
+                            </button>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle text-right">
+<button class="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="group hover:bg-surface-secondary/50 transition-colors">
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-on-surface-variant/20 flex items-center justify-center font-bold text-on-surface-variant font-label-md text-label-md">
+                                    N
+                                </div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-text-primary">NextGen API Hub</p>
+<p class="font-label-md text-label-md text-on-surface-variant">Nexus Devs</p>
+</div>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<span class="px-xs py-0.5 rounded bg-surface-container text-on-surface-variant font-label-md text-label-md">Dormant</span>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined !text-[14px] text-on-surface-variant/30">circle</span>
+<span class="font-body-md text-body-md">Cold Lead</span>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<div class="w-24 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="bg-on-surface-variant/40 h-full w-[12%]"></div>
+</div>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle font-body-md text-body-md font-mono">$85k</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<span class="px-xs py-0.5 rounded bg-error/10 text-error font-label-md text-label-md">High</span>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle">
+<button class="bg-white/5 hover:bg-white/10 px-sm py-1 rounded text-primary font-label-md text-label-md border border-border-subtle">
+                                Re-engage
+                            </button>
+</td>
+<td class="py-sm px-sm border-b border-border-subtle text-right">
+<button class="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<!-- FOOTER STATS -->
+<footer class="mt-auto px-xl py-sm bg-surface-low border-t border-border-subtle flex items-center justify-between">
+<div class="flex items-center gap-xl">
+<div class="flex items-baseline gap-xs">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Total Pipeline:</span>
+<span class="font-title-md text-title-md text-primary font-mono">$14.8M</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Weighted Value:</span>
+<span class="font-title-md text-title-md text-text-primary font-mono">$8.2M</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<p class="font-label-md text-label-md text-on-surface-variant">Showing 4 of 248 records</p>
+<div class="flex items-center gap-xs">
+<button class="p-1 rounded hover:bg-white/5 disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-1 rounded hover:bg-white/5">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</footer>
+</main>
+<!-- RIGHT ACTION PANE (Hidden/Overlay Placeholder) -->
+<div class="fixed right-0 top-16 h-[calc(100%-4rem)] w-96 bg-surface-card border-l border-border-subtle transform translate-x-full transition-transform duration-300 z-30 flex flex-col" id="side-detail">
+<div class="p-lg border-b border-border-subtle flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-text-primary">Opportunity Details</h3>
+<button class="text-on-surface-variant hover:text-primary" onclick="toggleSideDetail()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 p-lg overflow-y-auto">
+<!-- Details content would go here -->
+<div class="space-y-lg">
+<div class="bg-surface-main p-md rounded-lg border border-border-subtle">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase mb-xs">Forecast Score</p>
+<p class="font-display-lg text-display-lg text-primary">82<span class="text-body-lg text-on-surface-variant">/100</span></p>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Owner</p>
+<p class="font-body-md text-body-md text-text-primary">Alex Rivera</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Close Date</p>
+<p class="font-body-md text-body-md text-text-primary">Nov 12, 2024</p>
+</div>
+</div>
+<div class="space-y-sm">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase">Recent Activity</p>
+<div class="flex gap-sm border-l-2 border-primary/30 pl-md py-1">
+<div class="text-label-md font-label-md text-on-surface-variant">Oct 14</div>
+<div class="text-body-md font-body-md text-text-primary">Proposal sent to decision maker</div>
+</div>
+<div class="flex gap-sm border-l-2 border-border-subtle pl-md py-1">
+<div class="text-label-md font-label-md text-on-surface-variant">Oct 11</div>
+<div class="text-body-md font-body-md text-text-primary">Discovery call completed</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Simple micro-interaction for rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', (e) => {
+                // Prevent detail view if clicking an action button
+                if (e.target.closest('button')) return;
+                toggleSideDetail();
+            });
+        });
+
+        function toggleSideDetail() {
+            const pane = document.getElementById('side-detail');
+            pane.classList.toggle('translate-x-full');
+        }
+
+        // Add a subtle glow pulse to the primary button
+        const quickCreateBtn = document.querySelector('button.bg-primary');
+        setInterval(() => {
+            quickCreateBtn.classList.add('shadow-[0_0_15px_rgba(173,198,255,0.4)]');
+            setTimeout(() => {
+                quickCreateBtn.classList.remove('shadow-[0_0_15px_rgba(173,198,255,0.4)]');
+            }, 1000);
+        }, 3000);
+    </script>
+</body></html>

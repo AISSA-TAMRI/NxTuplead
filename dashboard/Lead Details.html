@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NXTUP Lead | Opportunity Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#171c26",
+                        "surface": "#111319",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary-fixed-variant": "#2c4677",
+                        "on-secondary": "#2c3039",
+                        "on-tertiary-container": "#4d525f",
+                        "surface-tint": "#adc6ff",
+                        "tertiary-fixed": "#dee2f1",
+                        "surface-bright": "#373940",
+                        "error": "#ffb4ab",
+                        "outline-variant": "#44474f",
+                        "surface-card": "#1d222d",
+                        "on-error": "#690005",
+                        "surface-container-high": "#282a30",
+                        "surface-container-highest": "#33343b",
+                        "text-primary": "#ffffff",
+                        "border-subtle": "rgba(255, 255, 255, 0.08)",
+                        "on-tertiary-fixed-variant": "#424753",
+                        "on-background": "#e2e2eb",
+                        "inverse-on-surface": "#2e3037",
+                        "background": "#111319",
+                        "secondary-fixed": "#dfe2ee",
+                        "secondary-container": "#454952",
+                        "on-tertiary": "#2b303c",
+                        "inverse-primary": "#455e90",
+                        "tertiary-fixed-dim": "#c2c6d5",
+                        "on-surface": "#e2e2eb",
+                        "primary-container": "#adc6ff",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-surface": "#e2e2eb",
+                        "accent-hover": "#c5d8ff",
+                        "surface-container": "#1e1f26",
+                        "outline": "#8e909a",
+                        "on-primary": "#122f5f",
+                        "surface-container-low": "#191b22",
+                        "on-secondary-container": "#b5b8c3",
+                        "surface-main": "#0f1117",
+                        "secondary": "#c3c6d1",
+                        "on-surface-variant": "#c4c6d0",
+                        "on-primary-fixed": "#001a42",
+                        "surface-container-lowest": "#0c0e14",
+                        "on-secondary-fixed": "#181c24",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#434750",
+                        "surface-dim": "#111319",
+                        "surface-secondary": "#171b23",
+                        "error-container": "#93000a",
+                        "tertiary": "#dee2f1",
+                        "accent-glow": "rgba(173, 198, 255, 0.15)",
+                        "on-primary-container": "#385283",
+                        "text-muted": "#b8c0d4",
+                        "surface-variant": "#33343b",
+                        "tertiary-container": "#c2c6d5",
+                        "secondary-fixed-dim": "#c3c6d1",
+                        "primary": "#d8e2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "20px",
+                        "sm": "12px",
+                        "base": "4px",
+                        "container-max": "1440px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "margin": "24px",
+                        "xs": "8px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "title-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0f1117;
+            font-family: 'Inter', sans-serif;
+            color: #e2e2eb;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-header {
+            backdrop-filter: blur(12px);
+            background: rgba(15, 17, 23, 0.8);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .deal-gradient {
+            background: linear-gradient(135deg, rgba(173, 198, 255, 0.1) 0%, rgba(15, 17, 23, 0) 100%);
+        }
+        .card-light-catch {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-surface-main">
+<!-- Sidebar (Shared Component Identity) -->
+<aside class="fixed left-0 top-0 h-full w-[240px] bg-surface-secondary flex flex-col py-lg px-md border-r border-border-subtle z-50">
+<div class="mb-xl px-xs">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">NXTUP Lead</h1>
+<p class="font-body-md text-body-md text-muted">Enterprise Workspace</p>
+</div>
+<nav class="flex-1 space-y-base overflow-y-auto custom-scrollbar">
+<div class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out text-on-surface-variant hover:bg-white/5 hover:text-primary cursor-pointer rounded-lg">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</div>
+<!-- Active State -->
+<div class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out text-primary bg-primary/10 border-r-2 border-primary cursor-pointer rounded-lg">
+<span class="material-symbols-outlined">person_search</span>
+<span class="font-body-md text-body-md">Leads</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out text-on-surface-variant hover:bg-white/5 hover:text-primary cursor-pointer rounded-lg">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-md text-body-md">Pipeline</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out text-on-surface-variant hover:bg-white/5 hover:text-primary cursor-pointer rounded-lg">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-body-md text-body-md">Calendar</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out text-on-surface-variant hover:bg-white/5 hover:text-primary cursor-pointer rounded-lg">
+<span class="material-symbols-outlined">check_box</span>
+<span class="font-body-md text-body-md">Tasks</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out text-on-surface-variant hover:bg-white/5 hover:text-primary cursor-pointer rounded-lg">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Analytics</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out text-on-surface-variant hover:bg-white/5 hover:text-primary cursor-pointer rounded-lg">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-md text-body-md">AI Workspace</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm transition-all duration-200 ease-in-out text-on-surface-variant hover:bg-white/5 hover:text-primary cursor-pointer rounded-lg">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</div>
+</nav>
+<div class="mt-auto pt-lg px-xs border-t border-border-subtle">
+<div class="flex items-center gap-md">
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-primary/20" data-alt="Close-up studio portrait of a confident male executive in his 40s, featuring sharp focus, cinematic lighting with subtle blue and orange highlights, against a dark minimalist background. The style is professional and clean, fitting a high-end enterprise software aesthetic with a sophisticated and trustworthy mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPEjfTkakAauLzOm85B__FTclj8nN6vbf0YEuJP81Acxh-GV-ir_VAdraiAGEo0y8oMp0BQ1eRXr-lMdhViUMuplsJ3-n9Gj4Cmc2AnJxlV8yTwBYoCZeGRq9Vr0wy41WfI4P08vpa0qi5b1ZI-3zSJoRacz5yJU9HmO_o2HZ5MQtLKzFcnydQqDGzMoaO90QXc_lKpw9qa94w6QdfSxxf8V2iXJk912c2rJzyeXD_HocNA74m4yL6msT1SFST7me_BmiJDdMj3vo"/>
+<div>
+<p class="font-label-md text-label-md font-bold">Alex Chen</p>
+<p class="text-[10px] text-muted">Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top Navigation -->
+<header class="fixed top-0 right-0 z-40 w-[calc(100%-240px)] h-16 glass-header border-b border-border-subtle flex justify-between items-center px-xl">
+<div class="flex items-center gap-xl">
+<div class="flex items-center gap-sm bg-surface-container-low border border-border-subtle rounded-lg px-md py-xs w-80">
+<span class="material-symbols-outlined text-muted text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full placeholder:text-muted" placeholder="Search commands or data..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<div class="flex items-center gap-sm">
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-xs text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+<button class="bg-primary text-on-primary-fixed px-md py-xs rounded font-label-md hover:bg-accent-hover transition-all active:scale-95">
+                Create New
+            </button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[240px] pt-16 min-h-screen">
+<!-- Quick Action Toolbar -->
+<div class="px-xl py-md border-b border-border-subtle bg-surface-main flex items-center justify-between">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+<div class="flex flex-col">
+<h2 class="font-title-md text-title-md font-bold">Acme Corp Enterprise Expansion</h2>
+<p class="font-label-sm text-label-sm text-muted">OPP-4829 • Assigned to Alex Chen</p>
+</div>
+<div class="ml-lg px-sm py-1 rounded bg-primary/10 text-primary font-label-sm">In Negotiation</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-xs px-md py-2 border border-border-subtle hover:bg-white/5 rounded transition-all">
+<span class="material-symbols-outlined text-sm">call</span>
+<span class="font-label-md">Log Call</span>
+</button>
+<button class="flex items-center gap-xs px-md py-2 border border-border-subtle hover:bg-white/5 rounded transition-all">
+<span class="material-symbols-outlined text-sm">event</span>
+<span class="font-label-md">Book Meeting</span>
+</button>
+<button class="flex items-center gap-xs px-md py-2 bg-primary text-on-primary-fixed rounded transition-all">
+<span class="material-symbols-outlined text-sm">send</span>
+<span class="font-label-md">Send Email</span>
+</button>
+</div>
+</div>
+<div class="p-xl grid grid-cols-12 gap-xl">
+<!-- Column 1: Profile & Intelligence (3 Cols) -->
+<section class="col-span-3 space-y-lg">
+<!-- Profile Card -->
+<div class="bg-surface-card card-light-catch rounded-xl p-lg border border-border-subtle">
+<div class="flex items-center gap-md mb-lg">
+<img alt="Sarah Jensen" class="w-12 h-12 rounded-lg object-cover" data-alt="A professional headshot of a female tech executive in her late 30s with an intelligent expression, wearing a sleek blazer. The background is a blurred high-end corporate office with soft, cool lighting. The color palette is modern and neutral, featuring deep blues and grays to align with a premium enterprise software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBW6B1VNEmbuIoIJeWJGIPtUW3U3f_CIVqO1coePw6Q1bxqnxhEWuftUi--wUUhVlAAImNTsC_MKPPFTRfjJv6qezCpt4pevsZ87GGbWwcSidzCJknjy-NpBJPMRMrqu7WWPNotWoD6rZiWrgkooYzVWsdPCsSAQSn-aphG7MUn87z4AJUnZgH3k1pSWXcTj8WCS-4abO3ytPsxmw-cz9NeY2HtEwDEkyVFkDEdcfn66yWQA3NCHJCoXMH1VvAbXZdiXk5dnoAdAv8"/>
+<div>
+<h3 class="font-title-md text-title-md">Sarah Jensen</h3>
+<p class="font-body-md text-muted">VP of Engineering, Acme Corp</p>
+</div>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-muted">Deal Value</span>
+<span class="font-body-md font-bold">$245,000</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-md text-muted">Est. Close</span>
+<span class="font-body-md">Oct 24, 2024</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-md text-muted">Region</span>
+<span class="font-body-md">North America</span>
+</div>
+</div>
+</div>
+<!-- Company Intelligence -->
+<div class="bg-surface-card card-light-catch rounded-xl p-lg border border-border-subtle">
+<div class="flex items-center justify-between mb-md">
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-widest">Company Intelligence</h4>
+<span class="material-symbols-outlined text-muted text-sm">info</span>
+</div>
+<div class="p-md bg-surface-container-low rounded-lg mb-md">
+<p class="font-body-md text-on-surface mb-xs">Recent Funding</p>
+<p class="font-title-md text-title-md font-bold text-primary">$45M Series C</p>
+<p class="font-label-md text-muted mt-base italic">3 days ago via TechCrunch</p>
+</div>
+<div class="space-y-sm">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-sm text-primary">groups</span>
+<span class="font-body-md">1,200+ employees</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-sm text-primary">language</span>
+<span class="font-body-md">acme-corp.io</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-sm text-primary">public</span>
+<span class="font-body-md">HQ: San Francisco, CA</span>
+</div>
+</div>
+</div>
+<!-- Deal Scoring -->
+<div class="bg-surface-card card-light-catch rounded-xl p-lg border border-border-subtle deal-gradient">
+<div class="flex items-center justify-between mb-lg">
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-widest">Deal Score</h4>
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div class="flex flex-col items-center justify-center py-md">
+<div class="relative w-24 h-24 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-highest" cx="48" cy="48" fill="transparent" r="44" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-primary" cx="48" cy="48" fill="transparent" r="44" stroke="currentColor" stroke-dasharray="276" stroke-dashoffset="55" stroke-width="6"></circle>
+</svg>
+<span class="absolute font-headline-md text-headline-md">82</span>
+</div>
+<p class="font-label-md text-primary mt-md">Very Strong Interest</p>
+</div>
+<div class="mt-md space-y-xs">
+<div class="flex justify-between text-[11px]">
+<span class="text-muted">Engagement</span>
+<span class="text-primary">High</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full">
+<div class="bg-primary w-[90%] h-full rounded-full"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Column 2: Opportunity Memory (6 Cols) -->
+<section class="col-span-6 space-y-md">
+<div class="flex items-center justify-between px-md">
+<h3 class="font-title-md text-title-md">Opportunity Memory</h3>
+<div class="flex gap-sm">
+<button class="font-label-sm px-sm py-1 rounded bg-surface-container-highest text-muted border border-border-subtle">All</button>
+<button class="font-label-sm px-sm py-1 rounded hover:bg-surface-container-highest text-muted transition-colors">Emails</button>
+<button class="font-label-sm px-sm py-1 rounded hover:bg-surface-container-highest text-muted transition-colors">Notes</button>
+</div>
+</div>
+<div class="space-y-lg relative before:content-[''] before:absolute before:left-[21px] before:top-0 before:bottom-0 before:w-[1px] before:bg-border-subtle">
+<!-- Timeline Item: Email -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-11 h-11 bg-surface-container-high rounded-full border border-border-subtle flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-primary text-sm">mail</span>
+</div>
+<div class="bg-surface-card border border-border-subtle rounded-xl p-md card-light-catch">
+<div class="flex justify-between mb-sm">
+<span class="font-label-md text-primary">Inbound Email Received</span>
+<span class="text-[10px] text-muted">2 hours ago</span>
+</div>
+<h4 class="font-body-lg font-bold mb-xs">Re: Next steps on the contract review</h4>
+<p class="font-body-md text-muted line-clamp-2">"Hi Alex, our legal team finished the first pass on the MSA. We have a few questions regarding the liability clause..."</p>
+<div class="mt-md flex gap-sm">
+<button class="font-label-sm text-primary hover:underline">Reply</button>
+<button class="font-label-sm text-muted">Forward</button>
+</div>
+</div>
+</div>
+<!-- Timeline Item: Status Change -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-11 h-11 bg-surface-container-high rounded-full border border-border-subtle flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-primary text-sm">trending_up</span>
+</div>
+<div class="py-md border-b border-border-subtle flex items-center justify-between">
+<p class="font-body-md"><span class="font-bold">Deal Status</span> changed to <span class="text-primary font-bold">Negotiation</span></p>
+<span class="text-[10px] text-muted">Yesterday, 4:15 PM</span>
+</div>
+</div>
+<!-- Timeline Item: Call Note -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-11 h-11 bg-surface-container-high rounded-full border border-border-subtle flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-primary text-sm">call</span>
+</div>
+<div class="bg-surface-card border border-border-subtle rounded-xl p-md card-light-catch">
+<div class="flex justify-between mb-sm">
+<span class="font-label-md text-primary">Logged Call</span>
+<span class="text-[10px] text-muted">Yesterday, 2:30 PM</span>
+</div>
+<div class="flex items-center gap-md mb-md">
+<button class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="flex-1 bg-surface-container-highest h-1 rounded-full relative">
+<div class="absolute top-1/2 left-[30%] -translate-y-1/2 w-2 h-2 rounded-full bg-primary"></div>
+</div>
+<span class="font-label-sm text-muted">04:12</span>
+</div>
+<h4 class="font-label-sm text-primary uppercase mb-xs">Key Takeaways</h4>
+<ul class="list-disc list-inside text-body-md text-muted space-y-1">
+<li>Procurement cycle is usually 4-6 weeks.</li>
+<li>Sarah is the primary champion, but the CFO needs a final demo.</li>
+<li>Security whitepaper has been requested.</li>
+</ul>
+</div>
+</div>
+<!-- Timeline Item: Note -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-11 h-11 bg-surface-container-high rounded-full border border-border-subtle flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-primary text-sm">note_alt</span>
+</div>
+<div class="bg-surface-card border border-border-subtle rounded-xl p-md card-light-catch">
+<div class="flex justify-between mb-sm">
+<span class="font-label-md text-primary">Internal Note</span>
+<span class="text-[10px] text-muted">Aug 12, 11:00 AM</span>
+</div>
+<p class="font-body-md text-on-surface">Spoke to engineering. We can definitely support their custom SSO requirement. Need to update the proposal to include the implementation fee.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Column 3: Actions & Assessment (3 Cols) -->
+<section class="col-span-3 space-y-lg">
+<!-- Next Actions -->
+<div class="bg-surface-card card-light-catch rounded-xl p-lg border border-border-subtle">
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-lg">Next Actions</h4>
+<div class="space-y-md">
+<div class="flex items-start gap-md group cursor-pointer">
+<div class="mt-1 w-4 h-4 border border-muted rounded flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[10px] text-transparent group-hover:text-primary">check</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md font-bold">Send MSA to Legal</p>
+<p class="text-[11px] text-error">Due Today</p>
+</div>
+</div>
+<div class="flex items-start gap-md group cursor-pointer">
+<div class="mt-1 w-4 h-4 border border-muted rounded flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[10px] text-transparent group-hover:text-primary">check</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md font-bold">Schedule Demo for CFO</p>
+<p class="text-[11px] text-muted">Follow up in 2 days</p>
+</div>
+</div>
+<div class="flex items-start gap-md group cursor-pointer">
+<div class="mt-1 w-4 h-4 border border-muted rounded flex items-center justify-center group-hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-[10px] text-transparent group-hover:text-primary">check</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md font-bold">Request Security Whitepaper</p>
+<p class="text-[11px] text-muted">Assigned to Tech Team</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-lg py-2 font-label-md text-primary bg-primary/5 rounded border border-primary/20 hover:bg-primary/10 transition-all">
+                        + Add Task
+                    </button>
+</div>
+<!-- Meeting Intelligence -->
+<div class="bg-surface-card card-light-catch rounded-xl p-lg border border-border-subtle">
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-lg">Meeting Intelligence</h4>
+<div class="p-md bg-surface-container-low rounded-lg space-y-md">
+<div>
+<p class="font-label-sm text-muted mb-xs">Next Meeting</p>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-sm">videocam</span>
+<span class="font-body-md font-bold">Technical Deep Dive</span>
+</div>
+<p class="text-[11px] text-muted ml-6">Tomorrow at 10:00 AM PST</p>
+</div>
+<div class="pt-sm border-t border-border-subtle">
+<p class="font-label-sm text-muted mb-xs">Suggested Topics</p>
+<div class="flex flex-wrap gap-xs">
+<span class="px-xs py-[2px] bg-surface-container-highest rounded text-[10px]">API Security</span>
+<span class="px-xs py-[2px] bg-surface-container-highest rounded text-[10px]">Deployment Speed</span>
+<span class="px-xs py-[2px] bg-surface-container-highest rounded text-[10px]">SSO Config</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Deal Risk Assessment -->
+<div class="bg-surface-card card-light-catch rounded-xl p-lg border border-border-subtle relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl -mr-16 -mt-16"></div>
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-lg">AI Risk Assessment</h4>
+<div class="space-y-lg">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<p class="font-body-md font-bold">Competitor Identified</p>
+<p class="text-[11px] text-muted">Sarah mentioned evaluating "Competitor X" in the last call.</p>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-[#ffc107]" style="font-variation-settings: 'FILL' 1;">access_time</span>
+<div>
+<p class="font-body-md font-bold">Decision Lag</p>
+<p class="text-[11px] text-muted">Legal response time is 25% slower than average for this account size.</p>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<div>
+<p class="font-body-md font-bold">Executive Buy-in</p>
+<p class="text-[11px] text-muted">CFO involvement signals high priority intent.</p>
+</div>
+</div>
+</div>
+<div class="mt-xl p-md border border-primary/20 bg-primary/5 rounded-lg">
+<p class="font-label-sm text-primary mb-xs">AI Recommendation</p>
+<p class="text-body-md italic text-on-surface">"Prioritize the CFO demo within 72 hours to maintain momentum against competitors. Request technical proof-of-concept access to lock engineering champion."</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Micro-interaction effects -->
+<script>
+        document.querySelectorAll('.group').forEach(item => {
+            item.addEventListener('click', () => {
+                const check = item.querySelector('.material-symbols-outlined');
+                const label = item.querySelector('.font-body-md');
+                if (check.innerText === 'check_circle') {
+                    check.innerText = 'check';
+                    check.classList.add('text-transparent');
+                    check.classList.remove('text-primary');
+                    label.classList.remove('line-through', 'text-muted');
+                } else {
+                    check.innerText = 'check_circle';
+                    check.style.fontVariationSettings = "'FILL' 1";
+                    check.classList.remove('text-transparent');
+                    check.classList.add('text-primary');
+                    label.classList.add('line-through', 'text-muted');
+                }
+            });
+        });
+    </script>
+</body></html>
