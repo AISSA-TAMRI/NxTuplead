@@ -132,9 +132,126 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .mslot .mn{font-size:12px;font-weight:500;color:var(--tx)}
 .arow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
 .arow:last-child{border-bottom:none}
+
+/* ═══════════════════════════════════════
+   LEAD DETAIL PANEL
+═══════════════════════════════════════ */
+#leadPanel{
+  position:fixed;top:0;right:-480px;width:480px;height:100%;
+  background:var(--s1);border-left:1px solid var(--bd);
+  overflow:hidden;transition:right .28s cubic-bezier(0.2,0,0,1);
+  z-index:9999;display:flex;flex-direction:column;
+}
+#leadPanel.lp-open{right:0}
+.lp-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.35);
+  z-index:9998;display:none;backdrop-filter:blur(2px);
+}
+.lp-overlay.show{display:block}
+
+/* header */
+.lp-hd{padding:16px 18px 12px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.lp-hd-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.lp-company{font-size:16px;font-weight:700;color:var(--tx);letter-spacing:-0.01em;line-height:1.3}
+.lp-sub{font-size:11px;color:var(--tx3);margin-top:2px}
+.lp-acts{display:flex;gap:6px;flex-wrap:wrap}
+
+/* body */
+.lp-body{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+
+/* card */
+.lp-card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;
+  border-top-color:rgba(255,255,255,0.1);overflow:hidden}
+.lp-card-hd{
+  display:flex;align-items:center;gap:8px;padding:9px 13px;
+  border-bottom:1px solid var(--bd);background:rgba(255,255,255,0.02)
+}
+.lp-card-hd .mat{font-size:15px;color:var(--acc)}
+.lp-card-title{font-size:10px;font-weight:700;letter-spacing:0.07em;
+  text-transform:uppercase;color:var(--tx2);flex:1}
+
+/* rows */
+.lp-rows{padding:3px 0}
+.lp-row{
+  display:flex;align-items:center;gap:11px;padding:8px 13px;
+  border-bottom:1px solid rgba(255,255,255,0.035);transition:background .12s;
+}
+.lp-row:last-child{border-bottom:none}
+.lp-row:hover{background:rgba(255,255,255,0.025)}
+.lp-ri{
+  width:26px;height:26px;border-radius:6px;
+  background:rgba(255,255,255,0.05);display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;
+}
+.lp-ri .mat{font-size:13px;color:var(--tx3)}
+.lp-rl{font-size:10px;font-weight:600;letter-spacing:0.05em;
+  text-transform:uppercase;color:var(--tx3);margin-bottom:1px}
+.lp-rv{font-size:13px;color:var(--tx);font-weight:500}
+.lp-rv a{color:var(--acc);text-decoration:none}
+.lp-rv a:hover{text-decoration:underline}
+
+/* notes */
+.lp-notes{
+  width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:6px;
+  color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;
+  padding:9px 11px;resize:vertical;min-height:80px;outline:none;
+  transition:border-color .15s;line-height:1.65;
+}
+.lp-notes:focus{border-color:rgba(173,198,255,0.35)}
+.lp-notes::placeholder{color:var(--tx3)}
+
+/* timeline */
+.lp-tl{padding:4px 0}
+.lp-tl-item{
+  display:flex;gap:10px;padding:9px 13px;position:relative;
+}
+.lp-tl-item::before{
+  content:'';position:absolute;left:26px;top:36px;bottom:0;
+  width:1px;background:var(--bd);
+}
+.lp-tl-item:last-child::before{display:none}
+.lp-tl-dot{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;border:1px solid var(--bd);
+}
+.lp-tl-dot .mat{font-size:12px}
+.lp-tl-dot.ac{background:var(--acc-d);color:var(--acc)}
+.lp-tl-dot.gr{background:var(--gr-d);color:var(--gr)}
+.lp-tl-dot.re{background:var(--re-d);color:var(--re)}
+.lp-tl-dot.am{background:var(--am-d);color:var(--am)}
+.lp-tl-dot.bl{background:var(--bl-d);color:var(--bl)}
+.lp-tl-dot.gy{background:rgba(255,255,255,0.04);color:var(--tx3)}
+.lp-tl-txt{font-size:12px;font-weight:500;color:var(--tx)}
+.lp-tl-meta{font-size:11px;color:var(--tx3);margin-top:1px}
+
+/* toast */
+.lp-toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:var(--s2);border:1px solid var(--bd);border-radius:8px;
+  padding:10px 18px;font-size:13px;font-weight:500;color:var(--tx);
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:99999;
+  opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;
+}
+.lp-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.lp-toast.ok{border-color:rgba(74,222,128,0.3);color:var(--gr)}
+.lp-toast.err{border-color:rgba(248,113,113,0.3);color:var(--re)}
+
+/* status badge colors */
+.sc-Potential{background:var(--bl-d);color:var(--bl)}
+.sc-Won{background:var(--gr-d);color:var(--gr)}
+.sc-Lost{background:var(--re-d);color:var(--re)}
+.sc-default{background:rgba(255,255,255,0.06);color:var(--tx2)}
+
+/* table status badge */
+.badge.st-Potential{background:var(--bl-d);color:var(--bl)}
+.badge.st-Won{background:var(--gr-d);color:var(--gr)}
+.badge.st-Lost{background:var(--re-d);color:var(--re)}
+
 </style>
 </head>
 <body>
+<div class="lp-overlay" id="lpOverlay" onclick="closeLeadPanel()"></div>
+<div class="lp-toast" id="lpToast"></div>
 
 <!-- COMMAND PALETTE -->
 <div id="cmdpal" onclick="if(event.target===this)closeCmdPal()">
@@ -277,7 +394,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
       </div>
       <div style="display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''">
         <div class="av">AR</div>
-        <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--tx)">ِConor supersayan</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:0.06em">joba is gay</div></div>
+        <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--tx)">Alex Rivera</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:0.06em">Enterprise Closer</div></div>
         <span class="mat sm" style="color:var(--tx3)">expand_more</span>
       </div>
     </div>
@@ -419,7 +536,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         <div class="pc">
           <div class="card" style="overflow:hidden">
             <table class="dt">
-              <thead><tr><th style="width:24px"><input type="checkbox" style="accent-color:var(--acc)"/></th><th>CarWash</th><th>Name-Contact</th><th>Status</th><th>Phone</th><th>Id Owner</th><th>Scheduled At</th><th>Last Contacted At</th><th>Risk</th><th>Last Activity</th><th></th></tr></thead>
+              <thead><tr><th style="width:24px"><input type="checkbox" style="accent-color:var(--acc)"/></th><th>Company</th><th>Contact</th><th>Status</th><th>Phone</th><th>Source</th><th>Scheduled</th><th>Last Contacted</th><th></th></tr></thead>
               <tbody id="leadsTable">
  
               </tbody>
@@ -730,143 +847,506 @@ document.addEventListener('keydown',e=>{
 });
 </script>
   <script>
-    let allLeads = [];
-async function loadLeads() {
+/* ═══════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════ */
+const API = {
+  getLeads      : 'https://n8n.upleaddigital.com/webhook/get-leads',
+  getClients    : 'https://n8n.upleaddigital.com/webhook/get-clients',
+  leadManagement: 'https://n8n.upleaddigital.com/webhook/lead-management',
+};
+
+/* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+let allLeads    = [];
+let currentLead = null;
+
+/* ═══════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════ */
+function fmtDate(d){
+  if(!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function fmtTime(t){ return t || '—'; }
+
+function scClass(status){
+  const map={Won:'gr',Lost:'re',Potential:'bl'};
+  return map[status]||'gy';
+}
+
+function toast(msg, type='ok'){
+  const el = document.getElementById('lpToast');
+  el.textContent = msg;
+  el.className = `lp-toast ${type} show`;
+  setTimeout(()=>{ el.className='lp-toast'; }, 3000);
+}
+
+/* ═══════════════════════════════════════════════════
+   LOAD LEADS
+═══════════════════════════════════════════════════ */
+async function loadLeads(){
+  const tbody = document.getElementById('leadsTable');
+  tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--tx3)">
+    <span class="mat" style="font-size:20px;display:block;margin-bottom:6px">hourglass_top</span>Loading leads…</td></tr>`;
   try {
-    const response = await fetch(
-      "https://n8n.upleaddigital.com/webhook/get-leads"
-    );
-
-    const leads = await response.json();
-    allLeads = leads;
-
-    const table = document.getElementById("leadsTable");
-
-    table.innerHTML = "";
-
-    leads.forEach(lead => {
-
-      const row = `
-        <tr onclick="openLead(${lead.id})" style="cursor:pointer">
-          <td>
-            <input type="checkbox" style="accent-color:var(--acc)">
-          </td>
-
-          <td>
-            <div style="font-weight:600">
-              ${lead.company_name || "-"}
-            </div>
-            <div style="font-size:11px;color:var(--tx3)">
-              ${lead.utm_source || "Direct"}
-              </div>
-              <div style="font-size:11px;color:var(--tx3)">
-              ${lead.utm_campaign || "No Campaign"}
-            </div>
-          </td>
-
-          <td>
-            <div>
-              ${lead.first_name || ""} ${lead.last_name || ""}
-            </div>
-            <div style="font-size:11px;color:var(--tx3)">
-              ${lead.email || ""}
-            </div>
-          </td>
-
-          <td>
-            <span class="badge ac">
-              ${lead.status || "Potential"}
-            </span>
-          </td>
-
-          <td>
-            ${lead.phone || ""}
-          </td>
-
-          <td>
-            ${lead.owner_id || ""}
-          </td>
-
-          <td>
-            ${lead.preferred_date
-      ? new Date(lead.preferred_date).toLocaleDateString()
-      : "-"}
-  </div>
-  <div style="font-size:11px;color:var(--tx3)">
-    ${lead.preferred_time || ""}
-          </td>
-
-          <td>
-            ${lead.last_contacted_at
-                ? new Date(lead.last_contacted_at).toLocaleDateString()
-                : "No Contact Yet"}
-          </td>
-
-          <td>
-            <button class="tbb" style="width:28px;height:28px">
-              <span class="mat sm">more_horiz</span>
-            </button>
-          </td>
-        </tr>
-      `;
-
-      table.innerHTML += row;
-
-    });
-  } catch (err) {
-    console.error(err);
+    const res  = await fetch(API.getLeads);
+    const data = await res.json();
+    allLeads   = Array.isArray(data) ? data : [];
+    renderTable(allLeads);
+  } catch(e){
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--re)">
+      Failed to load leads. Check webhook connection.</td></tr>`;
+    console.error(e);
   }
 }
-function openLead(id) {
 
+function renderTable(leads){
+  const tbody = document.getElementById('leadsTable');
+  const count = document.getElementById('leadsCount');
+  if(count) count.textContent = `Showing ${leads.length} leads`;
+
+  if(!leads.length){
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--tx3)">No leads found.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = leads.map(lead => {
+    const sc  = scClass(lead.status);
+    const name = ((lead.first_name||'') + ' ' + (lead.last_name||'')).trim() || '—';
+    const src  = lead.utm_source || '—';
+    const date = lead.preferred_date
+      ? `${fmtDate(lead.preferred_date)} ${lead.preferred_time||''}`.trim()
+      : '—';
+    const last = lead.last_contacted_at ? fmtDate(lead.last_contacted_at) : '<span style="color:var(--tx3)">Never</span>';
+
+    return `
+      <tr onclick="openLead(${lead.id})" style="cursor:pointer">
+        <td onclick="event.stopPropagation()">
+          <input type="checkbox" style="accent-color:var(--acc)">
+        </td>
+        <td>
+          <div style="font-weight:600">${lead.company_name||'—'}</div>
+          <div style="font-size:11px;color:var(--tx3)">${src}</div>
+        </td>
+        <td>
+          <div>${name}</div>
+          <div style="font-size:11px;color:var(--tx3)">${lead.email||''}</div>
+        </td>
+        <td><span class="badge st-${lead.status||'Potential'}">${lead.status||'Potential'}</span></td>
+        <td style="color:var(--tx2)">${lead.phone||'—'}</td>
+        <td>
+          ${lead.utm_campaign
+            ? `<span class="badge ac" style="font-size:10px">${lead.utm_campaign}</span>`
+            : `<span style="color:var(--tx3)">—</span>`}
+        </td>
+        <td style="color:var(--tx2);font-size:12px">${date}</td>
+        <td style="font-size:12px">${last}</td>
+        <td onclick="event.stopPropagation()">
+          <button class="tbb" style="width:28px;height:28px" onclick="openLead(${lead.id})">
+            <span class="mat sm">open_in_new</span>
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   OPEN LEAD PANEL
+═══════════════════════════════════════════════════ */
+function openLead(id){
   const lead = allLeads.find(l => l.id == id);
+  if(!lead) return;
+  currentLead = lead;
 
-  document.getElementById("leadContent").innerHTML = `
-    <h2>${lead.company_name || "-"}</h2>
+  const sc    = scClass(lead.status);
+  const name  = ((lead.first_name||'') + ' ' + (lead.last_name||'')).trim() || '—';
+  const status = lead.status || 'Potential';
 
-    <p><strong>Name:</strong> ${lead.first_name || ""} ${lead.last_name || ""}</p>
+  /* badges */
+  document.getElementById('lp-badges').innerHTML =
+    `<span class="badge ${sc}">${status}</span>` +
+    (lead.utm_source ? `<span class="badge gy">${lead.utm_source}</span>` : '') +
+    (lead.converted_at ? `<span class="badge gr">Converted</span>` : '');
 
-    <p><strong>Email:</strong> ${lead.email || "-"}</p>
+  document.getElementById('lp-company').textContent = lead.company_name || '—';
+  document.getElementById('lp-sub').textContent =
+    (lead.utm_campaign ? lead.utm_campaign : 'No Campaign') +
+    (lead.email ? ' · ' + lead.email : '');
 
-    <p><strong>Phone:</strong> ${lead.phone || "-"}</p>
+  /* disable buttons based on status */
+  document.getElementById('btnWon').disabled  = status === 'Won';
+  document.getElementById('btnLost').disabled = status === 'Lost';
 
-    <p><strong>Status:</strong> ${lead.status || "-"}</p>
+  /* body */
+  document.getElementById('leadContent').innerHTML = `
 
-    <p><strong>Source:</strong> ${lead.utm_source || "-"}</p>
+    <!-- Contact Card -->
+    <div class="lp-card">
+      <div class="lp-card-hd">
+        <span class="mat">person</span>
+        <span class="lp-card-title">Contact</span>
+      </div>
+      <div class="lp-rows">
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">badge</span></div>
+          <div><div class="lp-rl">Full Name</div><div class="lp-rv">${name}</div></div>
+        </div>
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">mail</span></div>
+          <div><div class="lp-rl">Email</div><div class="lp-rv">
+            ${lead.email ? `<a href="mailto:${lead.email}">${lead.email}</a>` : '—'}
+          </div></div>
+        </div>
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">call</span></div>
+          <div><div class="lp-rl">Phone</div><div class="lp-rv">
+            ${lead.phone ? `<a href="tel:${lead.phone}">${lead.phone}</a>` : '—'}
+          </div></div>
+        </div>
+      </div>
+    </div>
 
-    <p><strong>Campaign:</strong> ${lead.utm_campaign || "-"}</p>
+    <!-- Lead Info Card -->
+    <div class="lp-card">
+      <div class="lp-card-hd">
+        <span class="mat">travel_explore</span>
+        <span class="lp-card-title">Lead Information</span>
+      </div>
+      <div class="lp-rows">
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">ads_click</span></div>
+          <div><div class="lp-rl">Source</div><div class="lp-rv">
+            ${lead.utm_source ? `<span class="badge bl">${lead.utm_source}</span>` : '—'}
+          </div></div>
+        </div>
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">campaign</span></div>
+          <div><div class="lp-rl">Campaign</div><div class="lp-rv">
+            ${lead.utm_campaign ? `<span class="badge ac">${lead.utm_campaign}</span>` : '—'}
+          </div></div>
+        </div>
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">tune</span></div>
+          <div><div class="lp-rl">Medium / Content</div><div class="lp-rv" style="color:var(--tx2)">
+            ${[lead.utm_medium, lead.utm_content, lead.utm_term].filter(Boolean).join(' · ') || '—'}
+          </div></div>
+        </div>
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">person_pin</span></div>
+          <div><div class="lp-rl">Owner</div><div class="lp-rv">
+            <div style="display:flex;align-items:center;gap:7px">
+              <div class="av" style="width:22px;height:22px;font-size:9px">
+                ${lead.owner_id ? String(lead.owner_id).slice(0,2).toUpperCase() : '?'}
+              </div>
+              <span>${lead.owner_id || '—'}</span>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
 
-    <p><strong>Scheduled:</strong> ${lead.preferred_date || "-"} ${lead.preferred_time || ""}</p>
+    <!-- Scheduling Card -->
+    <div class="lp-card">
+      <div class="lp-card-hd">
+        <span class="mat">calendar_today</span>
+        <span class="lp-card-title">Scheduling</span>
+      </div>
+      <div class="lp-rows">
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">event</span></div>
+          <div><div class="lp-rl">Preferred Date</div><div class="lp-rv">${fmtDate(lead.preferred_date)}</div></div>
+        </div>
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">schedule</span></div>
+          <div><div class="lp-rl">Preferred Time</div><div class="lp-rv">${fmtTime(lead.preferred_time)}</div></div>
+        </div>
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">history</span></div>
+          <div><div class="lp-rl">Last Contacted</div>
+          <div class="lp-rv" style="${!lead.last_contacted_at?'color:var(--tx3)':''}">
+            ${lead.last_contacted_at ? fmtDate(lead.last_contacted_at) : 'Never contacted'}
+          </div></div>
+        </div>
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">alarm</span></div>
+          <div><div class="lp-rl">Next Follow-Up</div>
+          <div class="lp-rv" style="${lead.next_followup_at ? 'color:var(--am)' : 'color:var(--tx3)'}">
+            ${lead.next_followup_at ? fmtDate(lead.next_followup_at) : 'Not set'}
+          </div></div>
+        </div>
+        ${lead.converted_at ? `
+        <div class="lp-row">
+          <div class="lp-ri"><span class="mat">verified</span></div>
+          <div><div class="lp-rl">Converted At</div>
+          <div class="lp-rv" style="color:var(--gr)">${fmtDate(lead.converted_at)}</div></div>
+        </div>` : ''}
+      </div>
+    </div>
 
-    <p><strong>Last Contacted:</strong> ${lead.last_contacted_at || "-"}</p>
+    <!-- Notes Card -->
+    <div class="lp-card">
+      <div class="lp-card-hd">
+        <span class="mat">sticky_note_2</span>
+        <span class="lp-card-title">Notes</span>
+        <button class="abtn" style="margin-left:auto;padding:3px 9px;font-size:11px"
+          onclick="saveNote()">
+          <span class="mat sm">save</span>Save
+        </button>
+      </div>
+      <div style="padding:10px 13px">
+        <textarea class="lp-notes" id="noteArea"
+          placeholder="Add notes about this lead…">${lead.notes||''}</textarea>
+      </div>
+    </div>
 
-    <p><strong>Notes:</strong> ${lead.notes || "-"}</p>
+    <!-- Activity Timeline -->
+    <div class="lp-card">
+      <div class="lp-card-hd">
+        <span class="mat">timeline</span>
+        <span class="lp-card-title">Activity Timeline</span>
+      </div>
+      <div class="lp-tl">${buildTimeline(lead)}</div>
+    </div>
   `;
 
-  document.getElementById("leadPanel").style.right = "0";
+  document.getElementById('leadPanel').classList.add('lp-open');
+  document.getElementById('lpOverlay').classList.add('show');
 }
+
+/* ═══════════════════════════════════════════════════
+   TIMELINE BUILDER
+═══════════════════════════════════════════════════ */
+function buildTimeline(lead){
+  const events = [];
+
+  if(lead.created_at)
+    events.push({dot:'ac',icon:'add_circle',
+      text:'Lead created',meta:fmtDate(lead.created_at)});
+
+  if(lead.last_contacted_at)
+    events.push({dot:'bl',icon:'call',
+      text:'Last contacted',meta:fmtDate(lead.last_contacted_at)});
+
+  if(lead.preferred_date)
+    events.push({dot:'am',icon:'event',
+      text:'Appointment scheduled',
+      meta:`${fmtDate(lead.preferred_date)} ${fmtTime(lead.preferred_time)}`});
+
+  if(lead.next_followup_at)
+    events.push({dot:'am',icon:'alarm',
+      text:'Follow-up scheduled',meta:fmtDate(lead.next_followup_at)});
+
+  if(lead.converted_at)
+    events.push({dot:'gr',icon:'verified',
+      text:'Converted to client',meta:fmtDate(lead.converted_at)});
+
+  if(lead.status==='Won')
+    events.push({dot:'gr',icon:'check_circle',text:'Marked as Won',meta:'Status update'});
+
+  if(lead.status==='Lost')
+    events.push({dot:'re',icon:'cancel',text:'Marked as Lost',meta:'Status update'});
+
+  if(lead.notes)
+    events.push({dot:'gy',icon:'sticky_note_2',text:'Note on file',meta:'See Notes card'});
+
+  if(!events.length)
+    return `<div style="padding:16px;text-align:center;font-size:12px;color:var(--tx3)">
+      No activity recorded yet.</div>`;
+
+  return events.map(e=>`
+    <div class="lp-tl-item">
+      <div class="lp-tl-dot ${e.dot}"><span class="mat">${e.icon}</span></div>
+      <div style="padding-top:2px">
+        <div class="lp-tl-txt">${e.text}</div>
+        <div class="lp-tl-meta">${e.meta}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   CLOSE PANEL
+═══════════════════════════════════════════════════ */
+function closeLeadPanel(){
+  document.getElementById('leadPanel').classList.remove('lp-open');
+  document.getElementById('lpOverlay').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════════════
+   ACTION: CHANGE STATUS  (Won / Lost / Potential)
+   POST to /webhook/lead-management
+   Body: { action: "update_status", id, status }
+═══════════════════════════════════════════════════ */
+async function lpStatus(newStatus){
+  if(!currentLead) return;
+  const btn = newStatus==='Won'
+    ? document.getElementById('btnWon')
+    : document.getElementById('btnLost');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="mat sm">hourglass_top</span>${newStatus}`;
+
+  try {
+    const res = await fetch(API.leadManagement, {
+      method : 'POST',
+      headers: {'Content-Type':'application/json'},
+      body   : JSON.stringify({
+        action: 'update_status',
+        id    : currentLead.id,
+        status: newStatus
+      })
+    });
+
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    /* update local cache */
+    currentLead.status = newStatus;
+    const idx = allLeads.findIndex(l=>l.id===currentLead.id);
+    if(idx>-1) allLeads[idx].status = newStatus;
+
+    /* refresh badge + table row */
+    document.getElementById('lp-badges').querySelector('.badge').className =
+      `badge ${scClass(newStatus)}`;
+    document.getElementById('lp-badges').querySelector('.badge').textContent = newStatus;
+    renderTable(allLeads);
+
+    toast(`✓ Status updated to ${newStatus}`, 'ok');
+
+    if(newStatus==='Won'){
+      currentLead.converted_at = new Date().toISOString();
+    }
+  } catch(e){
+    toast('Failed to update status. Try again.', 'err');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = newStatus==='Won'
+      ? '<span class="mat sm">check_circle</span>Won'
+      : '<span class="mat sm">cancel</span>Lost';
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ACTION: CONVERT TO CLIENT
+   POST to /webhook/lead-management
+   Body: { action: "convert", id }
+   n8n will create client record + update converted_client_id & converted_at
+═══════════════════════════════════════════════════ */
+async function lpConvert(){
+  if(!currentLead) return;
+  if(currentLead.converted_at){
+    toast('This lead is already converted.', 'err'); return;
+  }
+  if(!confirm(`Convert "${currentLead.company_name||'this lead'}" to a Client?`)) return;
+
+  const btn = document.querySelector('.lp-acts .abtn.pri');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="mat sm">hourglass_top</span>Converting…';
+
+  try {
+    const res = await fetch(API.leadManagement, {
+      method : 'POST',
+      headers: {'Content-Type':'application/json'},
+      body   : JSON.stringify({
+        action: 'convert',
+        id    : currentLead.id,
+        /* pass all fields n8n needs to create the client */
+        company_name      : currentLead.company_name,
+        first_name        : currentLead.first_name,
+        last_name         : currentLead.last_name,
+        email             : currentLead.email,
+        phone             : currentLead.phone,
+        notes             : currentLead.notes,
+        account_manager_id: currentLead.owner_id
+      })
+    });
+
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    currentLead.converted_at = new Date().toISOString();
+    currentLead.status = 'Won';
+    const idx = allLeads.findIndex(l=>l.id===currentLead.id);
+    if(idx>-1){
+      allLeads[idx].converted_at = currentLead.converted_at;
+      allLeads[idx].status = 'Won';
+    }
+    renderTable(allLeads);
+    toast('✓ Lead converted to Client successfully!', 'ok');
+    /* re-open panel to refresh badges */
+    openLead(currentLead.id);
+  } catch(e){
+    toast('Conversion failed. Check n8n webhook.', 'err');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="mat sm">person_check</span>Convert';
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ACTION: SAVE NOTE
+   POST to /webhook/lead-management
+   Body: { action: "update_note", id, notes }
+═══════════════════════════════════════════════════ */
+async function saveNote(){
+  if(!currentLead) return;
+  const notes = document.getElementById('noteArea').value;
+
+  try {
+    const res = await fetch(API.leadManagement, {
+      method : 'POST',
+      headers: {'Content-Type':'application/json'},
+      body   : JSON.stringify({
+        action: 'update_note',
+        id    : currentLead.id,
+        notes
+      })
+    });
+
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    currentLead.notes = notes;
+    const idx = allLeads.findIndex(l=>l.id===currentLead.id);
+    if(idx>-1) allLeads[idx].notes = notes;
+
+    toast('✓ Note saved', 'ok');
+  } catch(e){
+    toast('Failed to save note.', 'err');
+    console.error(e);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ACTION: EDIT  (placeholder — extend as needed)
+═══════════════════════════════════════════════════ */
+function lpEdit(){
+  toast('Edit form coming soon — connect your update webhook.', 'ok');
+}
+
+/* ═══════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════ */
 loadLeads();
 </script>
-  <div id="leadPanel"
-     style="
-     position:fixed;
-     top:0;
-     right:-450px;
-     width:450px;
-     height:100%;
-     background:#111827;
-     border-left:1px solid #333;
-     overflow:auto;
-     transition:.3s;
-     z-index:9999;
-     padding:20px;">
-
-  <button onclick="document.getElementById('leadPanel').style.right='-450px'">
-    Close
-  </button>
-
-  <div id="leadContent"></div>
-
-</div>
+  <!-- LEAD DETAIL PANEL -->
+  <div id="leadPanel">
+    <div class="lp-hd">
+      <div class="lp-hd-top">
+        <div style="min-width:0;flex:1">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px" id="lp-badges"></div>
+          <div class="lp-company" id="lp-company">—</div>
+          <div class="lp-sub" id="lp-sub">—</div>
+        </div>
+        <button class="tbb" onclick="closeLeadPanel()"><span class="mat">close</span></button>
+      </div>
+      <div class="lp-acts">
+        <button class="abtn" onclick="lpEdit()"><span class="mat sm">edit</span>Edit</button>
+        <button class="abtn" id="btnWon"  onclick="lpStatus('Won')"  style="color:var(--gr);border-color:rgba(74,222,128,0.25)"><span class="mat sm">check_circle</span>Won</button>
+        <button class="abtn" id="btnLost" onclick="lpStatus('Lost')" style="color:var(--re);border-color:rgba(248,113,113,0.25)"><span class="mat sm">cancel</span>Lost</button>
+        <button class="abtn pri" onclick="lpConvert()"><span class="mat sm">person_check</span>Convert</button>
+      </div>
+    </div>
+    <div class="lp-body" id="leadContent"></div>
+  </div>
 </body>
 </html>
