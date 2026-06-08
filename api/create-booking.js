@@ -1,7 +1,7 @@
 import { google } from 'googleapis';
 
 const CALENDAR_ID =
-'75537187f4967e4d458c22654a730f09a9a58c2d1709d271f40134274a96fb9b@group.calendar.google.com';
+'issatamri1999@gmail.com';
 
 export default async function handler(req, res) {
 
