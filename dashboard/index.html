@@ -755,7 +755,10 @@ async function loadLeads() {
               ${lead.company_name || "-"}
             </div>
             <div style="font-size:11px;color:var(--tx3)">
-              ${lead.utm_source || "No Source"}
+              ${lead.utm_source || "Direct"}
+              </div>
+              <div style="font-size:11px;color:var(--tx3)">
+              ${lead.utm_campaign || "No Campaign"}
             </div>
           </td>
 
