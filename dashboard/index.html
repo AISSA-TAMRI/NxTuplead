@@ -730,6 +730,7 @@ document.addEventListener('keydown',e=>{
 });
 </script>
   <script>
+    let allLeads = [];
 async function loadLeads() {
   try {
     const response = await fetch(
@@ -737,6 +738,7 @@ async function loadLeads() {
     );
 
     const leads = await response.json();
+    allLeads = leads;
 
     const table = document.getElementById("leadsTable");
 
@@ -745,7 +747,7 @@ async function loadLeads() {
     leads.forEach(lead => {
 
       const row = `
-        <tr onclick="showLead(${lead.id})" style="cursor:pointer">
+        <tr onclick="openLead(${lead.id})" style="cursor:pointer">
           <td>
             <input type="checkbox" style="accent-color:var(--acc)">
           </td>
@@ -815,8 +817,56 @@ async function loadLeads() {
     console.error(err);
   }
 }
+function openLead(id) {
 
+  const lead = allLeads.find(l => l.id == id);
+
+  document.getElementById("leadContent").innerHTML = `
+    <h2>${lead.company_name || "-"}</h2>
+
+    <p><strong>Name:</strong> ${lead.first_name || ""} ${lead.last_name || ""}</p>
+
+    <p><strong>Email:</strong> ${lead.email || "-"}</p>
+
+    <p><strong>Phone:</strong> ${lead.phone || "-"}</p>
+
+    <p><strong>Status:</strong> ${lead.status || "-"}</p>
+
+    <p><strong>Source:</strong> ${lead.utm_source || "-"}</p>
+
+    <p><strong>Campaign:</strong> ${lead.utm_campaign || "-"}</p>
+
+    <p><strong>Scheduled:</strong> ${lead.preferred_date || "-"} ${lead.preferred_time || ""}</p>
+
+    <p><strong>Last Contacted:</strong> ${lead.last_contacted_at || "-"}</p>
+
+    <p><strong>Notes:</strong> ${lead.notes || "-"}</p>
+  `;
+
+  document.getElementById("leadPanel").style.right = "0";
+}
 loadLeads();
 </script>
+  <div id="leadPanel"
+     style="
+     position:fixed;
+     top:0;
+     right:-450px;
+     width:450px;
+     height:100%;
+     background:#111827;
+     border-left:1px solid #333;
+     overflow:auto;
+     transition:.3s;
+     z-index:9999;
+     padding:20px;">
+
+  <button onclick="document.getElementById('leadPanel').style.right='-450px'">
+    Close
+  </button>
+
+  <div id="leadContent"></div>
+
+</div>
 </body>
 </html>
