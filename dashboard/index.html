@@ -8,7 +8,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#0f1117;--s1:#171b23;--s2:#1d222d;--s3:#252b38;--acc:#adc6ff;--acc-d:rgba(173,198,255,0.12);--acc-g:rgba(173,198,255,0.08);--tx:#e2e2eb;--tx2:#b8c0d4;--tx3:#8e909a;--bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.11);--gr:#4ade80;--gr-d:rgba(74,222,128,0.1);--re:#f87171;--re-d:rgba(248,113,113,0.1);--am:#fbbf24;--am-d:rgba(251,191,36,0.1);--bl:#60a5fa;--bl-d:rgba(96,165,250,0.1);--pu:#a78bfa;--pu-d:rgba(167,139,250,0.1)}
+/* ═══════════════════════════════════════
+   DESIGN TOKENS — unchanged from original
+═══════════════════════════════════════ */
+:root{
+  --bg:#0f1117;--s1:#171b23;--s2:#1d222d;--s3:#252b38;
+  --acc:#adc6ff;--acc-d:rgba(173,198,255,0.12);--acc-g:rgba(173,198,255,0.08);
+  --tx:#e2e2eb;--tx2:#b8c0d4;--tx3:#8e909a;
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.11);
+  --gr:#4ade80;--gr-d:rgba(74,222,128,0.1);
+  --re:#f87171;--re-d:rgba(248,113,113,0.1);
+  --am:#fbbf24;--am-d:rgba(251,191,36,0.1);
+  --bl:#60a5fa;--bl-d:rgba(96,165,250,0.1);
+  --pu:#a78bfa;--pu-d:rgba(167,139,250,0.1)
+}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
 .mat{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;font-size:18px;line-height:1;vertical-align:middle;user-select:none}
@@ -16,11 +29,19 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:10px}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
 #app{display:flex;height:100vh;width:100vw;overflow:hidden}
 #sidebar{width:220px;min-width:220px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;z-index:50;transition:width 0.2s}
 #main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
 #topbar{height:52px;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:40;flex-shrink:0}
 #workspace{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--bg)}
+
+/* ═══════════════════════════════════════
+   NAV — unchanged
+═══════════════════════════════════════ */
 .nav-logo{padding:16px 16px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd)}
 .nav-logo .bolt{color:var(--acc);font-size:22px}
 .nav-logo span{font-weight:700;font-size:15px;color:var(--acc);letter-spacing:-0.02em;white-space:nowrap}
@@ -37,6 +58,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .nav-bottom{padding:12px;border-top:1px solid var(--bd)}
 .av{width:28px;height:28px;border-radius:50%;background:var(--acc-d);border:1px solid var(--bd2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--acc)}
 .av.bl{background:var(--bl-d);color:var(--bl)}.av.pu{background:var(--pu-d);color:var(--pu)}
+
+/* ═══════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════ */
 .search-box{flex:1;max-width:400px;position:relative;display:flex;align-items:center}
 .search-box input{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:7px;padding:6px 12px 6px 34px;color:var(--tx);font-size:13px;outline:none;transition:border-color 0.15s;font-family:'Inter',sans-serif}
 .search-box input:focus{border-color:rgba(173,198,255,0.3)}
@@ -50,6 +75,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .tdiv{width:1px;height:20px;background:var(--bd);flex-shrink:0}
 .qbtn{display:flex;align-items:center;gap:6px;background:var(--acc);color:#0f1117;font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all 0.15s;border:none;font-family:'Inter',sans-serif}
 .qbtn:hover{background:#c5d8ff;transform:translateY(-1px)}
+
+/* ═══════════════════════════════════════
+   SHARED COMPONENTS — unchanged
+═══════════════════════════════════════ */
 .pc{padding:20px 24px}
 .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .stitle{font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3)}
@@ -60,6 +89,9 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .badge.am{background:var(--am-d);color:var(--am)}.badge.bl{background:var(--bl-d);color:var(--bl)}
 .badge.pu{background:var(--pu-d);color:var(--pu)}.badge.gy{background:rgba(255,255,255,0.06);color:var(--tx2)}
 .badge.ac{background:var(--acc-d);color:var(--acc)}
+.badge.st-Potential{background:var(--bl-d);color:var(--bl)}
+.badge.st-Won{background:var(--gr-d);color:var(--gr)}
+.badge.st-Lost{background:var(--re-d);color:var(--re)}
 .sbar{height:3px;border-radius:2px;background:rgba(255,255,255,0.07);overflow:hidden;flex:1}
 .sfill{height:100%;border-radius:2px;background:var(--acc);transition:width 0.3s}
 .mlbl{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3)}
@@ -79,12 +111,29 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .tlic.ac{background:var(--acc-d);color:var(--acc)}.tlic.gr{background:var(--gr-d);color:var(--gr)}
 .tlic.am{background:var(--am-d);color:var(--am)}.tlic.bl{background:var(--bl-d);color:var(--bl)}
 .tlic.gy{background:rgba(255,255,255,0.04);color:var(--tx2)}
-.kboard{display:flex;gap:12px;padding:0 24px 20px;overflow-x:auto;height:calc(100vh - 130px)}
-.kcol{min-width:268px;max-width:268px;display:flex;flex-direction:column;gap:8px}
-.khead{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:6px 6px 0 0;background:var(--s1)}
-.kcards{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-top:6px}
-.kcard{background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:12px;cursor:pointer;transition:all 0.15s;border-top-color:rgba(255,255,255,0.09)}
-.kcard:hover{border-color:rgba(173,198,255,0.2);box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+.ftrack{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.ffill{height:100%;border-radius:3px;background:var(--acc)}
+.pv{display:none}.pv.active{display:block}
+.arow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.arow:last-child{border-bottom:none}
+.abtn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bd);background:none;color:var(--tx2);transition:all 0.15s;font-family:'Inter',sans-serif}
+.abtn:hover{background:rgba(255,255,255,0.05);color:var(--tx);border-color:var(--bd2)}
+.abtn.pri{background:var(--acc);color:#0f1117;border-color:transparent;font-weight:600}
+.abtn.pri:hover{background:#c5d8ff}
+.abtn:disabled{opacity:0.5;cursor:not-allowed}
+.abtn.danger{color:var(--re);border-color:rgba(248,113,113,0.25)}
+.abtn.danger:hover{background:var(--re-d);border-color:rgba(248,113,113,0.4)}
+.tgroup{display:flex;background:var(--s1);border-radius:6px;padding:3px;border:1px solid var(--bd)}
+.topt{padding:5px 12px;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;color:var(--tx2);transition:all 0.15s}
+.topt.active{background:var(--s2);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.ic{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:14px;border-left:3px solid var(--acc)}
+.ic.re{border-left-color:var(--re)}.ic.am{border-left-color:var(--am)}
+.ic.gr{border-left-color:var(--gr)}.ic.pu{border-left-color:var(--pu)}
+.aibadge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,rgba(167,139,250,0.15),rgba(96,165,250,0.1));border:1px solid rgba(167,139,250,0.2);color:#c4b5fd;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;letter-spacing:0.04em}
+
+/* ═══════════════════════════════════════
+   COMMAND PALETTE — unchanged
+═══════════════════════════════════════ */
 #cmdpal{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;padding-top:100px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px)}
 #cmdpal.open{display:flex}
 .cmdbox{width:580px;background:#1d222d;border:1px solid rgba(173,198,255,0.2);border-radius:10px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.7)}
@@ -104,154 +153,258 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .cfoot{padding:8px 16px;border-top:1px solid var(--bd);display:flex;gap:14px}
 .chint{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx3)}
 .chint kbd{background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;font-size:10px}
-#dpanel{position:fixed;right:0;top:0;bottom:0;width:460px;background:var(--s1);border-left:1px solid var(--bd);z-index:60;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.25s cubic-bezier(0.2,0,0,1)}
-#dpanel.open{transform:translateX(0)}
-.phead{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;flex-shrink:0}
-.ptabs{display:flex;gap:2px;padding:0 20px;border-bottom:1px solid var(--bd);flex-shrink:0}
-.ptab{padding:10px 14px;font-size:12px;font-weight:500;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap}
-.ptab.active{color:var(--acc);border-bottom-color:var(--acc)}
-.pbody{flex:1;overflow-y:auto;padding:16px 20px}
-.df .dl{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3);margin-bottom:3px}
-.df .dv{font-size:13px;color:var(--tx);margin-bottom:14px}
-.ic{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:14px;border-left:3px solid var(--acc)}
-.ic.re{border-left-color:var(--re)}.ic.am{border-left-color:var(--am)}.ic.gr{border-left-color:var(--gr)}.ic.pu{border-left-color:var(--pu)}
-.abtn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bd);background:none;color:var(--tx2);transition:all 0.15s;font-family:'Inter',sans-serif}
-.abtn:hover{background:rgba(255,255,255,0.05);color:var(--tx);border-color:var(--bd2)}
-.abtn.pri{background:var(--acc);color:#0f1117;border-color:transparent;font-weight:600}
-.abtn.pri:hover{background:#c5d8ff}
-.aibadge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,rgba(167,139,250,0.15),rgba(96,165,250,0.1));border:1px solid rgba(167,139,250,0.2);color:#c4b5fd;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;letter-spacing:0.04em}
-.tgroup{display:flex;background:var(--s1);border-radius:6px;padding:3px;border:1px solid var(--bd)}
-.topt{padding:5px 12px;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;color:var(--tx2);transition:all 0.15s}
-.topt.active{background:var(--s2);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
-.ftrack{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
-.ffill{height:100%;border-radius:3px;background:var(--acc)}
-.pv{display:none}.pv.active{display:block}
-.mslot{background:var(--acc-d);border:1px solid rgba(173,198,255,0.2);border-radius:5px;padding:6px 9px;margin-bottom:4px;cursor:pointer;transition:all 0.15s}
-.mslot:hover{border-color:rgba(173,198,255,0.4)}
-.mslot .mt{font-size:10px;font-weight:600;letter-spacing:0.04em;color:var(--acc)}
-.mslot .mn{font-size:12px;font-weight:500;color:var(--tx)}
-.arow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
-.arow:last-child{border-bottom:none}
 
 /* ═══════════════════════════════════════
-   LEAD DETAIL PANEL
+   LEAD DETAIL PANEL — unchanged from original
 ═══════════════════════════════════════ */
-#leadPanel{
-  position:fixed;top:0;right:-480px;width:480px;height:100%;
-  background:var(--s1);border-left:1px solid var(--bd);
-  overflow:hidden;transition:right .28s cubic-bezier(0.2,0,0,1);
-  z-index:9999;display:flex;flex-direction:column;
-}
+#leadPanel{position:fixed;top:0;right:-480px;width:480px;height:100%;background:var(--s1);border-left:1px solid var(--bd);overflow:hidden;transition:right .28s cubic-bezier(0.2,0,0,1);z-index:9999;display:flex;flex-direction:column}
 #leadPanel.lp-open{right:0}
-.lp-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.35);
-  z-index:9998;display:none;backdrop-filter:blur(2px);
-}
+.lp-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:9998;display:none;backdrop-filter:blur(2px)}
 .lp-overlay.show{display:block}
-
-/* header */
 .lp-hd{padding:16px 18px 12px;border-bottom:1px solid var(--bd);flex-shrink:0}
 .lp-hd-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
 .lp-company{font-size:16px;font-weight:700;color:var(--tx);letter-spacing:-0.01em;line-height:1.3}
 .lp-sub{font-size:11px;color:var(--tx3);margin-top:2px}
 .lp-acts{display:flex;gap:6px;flex-wrap:wrap}
-
-/* body */
 .lp-body{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
-
-/* card */
-.lp-card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;
-  border-top-color:rgba(255,255,255,0.1);overflow:hidden}
-.lp-card-hd{
-  display:flex;align-items:center;gap:8px;padding:9px 13px;
-  border-bottom:1px solid var(--bd);background:rgba(255,255,255,0.02)
-}
+.lp-card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;border-top-color:rgba(255,255,255,0.1);overflow:hidden}
+.lp-card-hd{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--bd);background:rgba(255,255,255,0.02)}
 .lp-card-hd .mat{font-size:15px;color:var(--acc)}
-.lp-card-title{font-size:10px;font-weight:700;letter-spacing:0.07em;
-  text-transform:uppercase;color:var(--tx2);flex:1}
-
-/* rows */
+.lp-card-title{font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--tx2);flex:1}
 .lp-rows{padding:3px 0}
-.lp-row{
-  display:flex;align-items:center;gap:11px;padding:8px 13px;
-  border-bottom:1px solid rgba(255,255,255,0.035);transition:background .12s;
-}
+.lp-row{display:flex;align-items:center;gap:11px;padding:8px 13px;border-bottom:1px solid rgba(255,255,255,0.035);transition:background .12s}
 .lp-row:last-child{border-bottom:none}
 .lp-row:hover{background:rgba(255,255,255,0.025)}
-.lp-ri{
-  width:26px;height:26px;border-radius:6px;
-  background:rgba(255,255,255,0.05);display:flex;align-items:center;
-  justify-content:center;flex-shrink:0;
-}
+.lp-ri{width:26px;height:26px;border-radius:6px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .lp-ri .mat{font-size:13px;color:var(--tx3)}
-.lp-rl{font-size:10px;font-weight:600;letter-spacing:0.05em;
-  text-transform:uppercase;color:var(--tx3);margin-bottom:1px}
+.lp-rl{font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--tx3);margin-bottom:1px}
 .lp-rv{font-size:13px;color:var(--tx);font-weight:500}
 .lp-rv a{color:var(--acc);text-decoration:none}
 .lp-rv a:hover{text-decoration:underline}
-
-/* notes */
-.lp-notes{
-  width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:6px;
-  color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;
-  padding:9px 11px;resize:vertical;min-height:80px;outline:none;
-  transition:border-color .15s;line-height:1.65;
-}
+.lp-notes{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;padding:9px 11px;resize:vertical;min-height:80px;outline:none;transition:border-color .15s;line-height:1.65}
 .lp-notes:focus{border-color:rgba(173,198,255,0.35)}
 .lp-notes::placeholder{color:var(--tx3)}
-
-/* timeline */
 .lp-tl{padding:4px 0}
-.lp-tl-item{
-  display:flex;gap:10px;padding:9px 13px;position:relative;
-}
-.lp-tl-item::before{
-  content:'';position:absolute;left:26px;top:36px;bottom:0;
-  width:1px;background:var(--bd);
-}
+.lp-tl-item{display:flex;gap:10px;padding:9px 13px;position:relative}
+.lp-tl-item::before{content:'';position:absolute;left:26px;top:36px;bottom:0;width:1px;background:var(--bd)}
 .lp-tl-item:last-child::before{display:none}
-.lp-tl-dot{
-  width:24px;height:24px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;border:1px solid var(--bd);
-}
+.lp-tl-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--bd)}
 .lp-tl-dot .mat{font-size:12px}
-.lp-tl-dot.ac{background:var(--acc-d);color:var(--acc)}
-.lp-tl-dot.gr{background:var(--gr-d);color:var(--gr)}
-.lp-tl-dot.re{background:var(--re-d);color:var(--re)}
-.lp-tl-dot.am{background:var(--am-d);color:var(--am)}
-.lp-tl-dot.bl{background:var(--bl-d);color:var(--bl)}
-.lp-tl-dot.gy{background:rgba(255,255,255,0.04);color:var(--tx3)}
+.lp-tl-dot.ac{background:var(--acc-d);color:var(--acc)}.lp-tl-dot.gr{background:var(--gr-d);color:var(--gr)}
+.lp-tl-dot.re{background:var(--re-d);color:var(--re)}.lp-tl-dot.am{background:var(--am-d);color:var(--am)}
+.lp-tl-dot.bl{background:var(--bl-d);color:var(--bl)}.lp-tl-dot.gy{background:rgba(255,255,255,0.04);color:var(--tx3)}
 .lp-tl-txt{font-size:12px;font-weight:500;color:var(--tx)}
 .lp-tl-meta{font-size:11px;color:var(--tx3);margin-top:1px}
 
-/* toast */
-.lp-toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);
-  background:var(--s2);border:1px solid var(--bd);border-radius:8px;
-  padding:10px 18px;font-size:13px;font-weight:500;color:var(--tx);
-  box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:99999;
-  opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;
-}
+/* ═══════════════════════════════════════
+   TOAST — unchanged
+═══════════════════════════════════════ */
+.lp-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 18px;font-size:13px;font-weight:500;color:var(--tx);box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:99999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
 .lp-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .lp-toast.ok{border-color:rgba(74,222,128,0.3);color:var(--gr)}
 .lp-toast.err{border-color:rgba(248,113,113,0.3);color:var(--re)}
 
-/* status badge colors */
-.sc-Potential{background:var(--bl-d);color:var(--bl)}
-.sc-Won{background:var(--gr-d);color:var(--gr)}
-.sc-Lost{background:var(--re-d);color:var(--re)}
-.sc-default{background:rgba(255,255,255,0.06);color:var(--tx2)}
+/* ═══════════════════════════════════════
+   MODAL — NEW
+═══════════════════════════════════════ */
+#modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px)}
+#modal.open{display:flex}
+.modal-box{background:var(--s1);border:1px solid var(--bd2);border-radius:10px;width:520px;max-width:95vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.7)}
+.modal-hd{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-hd-title{font-size:15px;font-weight:700;color:var(--tx)}
+.modal-body{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.modal-ft{padding:14px 20px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--tx3)}
+.form-input{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:8px 11px;color:var(--tx);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;width:100%}
+.form-input:focus{border-color:rgba(173,198,255,0.35)}
+.form-input::placeholder{color:var(--tx3)}
+.form-select{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:8px 11px;color:var(--tx);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;width:100%;cursor:pointer}
+.form-select:focus{border-color:rgba(173,198,255,0.35)}
+.form-textarea{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:8px 11px;color:var(--tx);font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:vertical;min-height:70px;width:100%;line-height:1.6}
+.form-textarea:focus{border-color:rgba(173,198,255,0.35)}
+.form-textarea::placeholder{color:var(--tx3)}
+.section-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3);padding:4px 0 8px;border-bottom:1px solid var(--bd);margin-bottom:4px;grid-column:1/-1}
 
-/* table status badge */
-.badge.st-Potential{background:var(--bl-d);color:var(--bl)}
-.badge.st-Won{background:var(--gr-d);color:var(--gr)}
-.badge.st-Lost{background:var(--re-d);color:var(--re)}
+/* ═══════════════════════════════════════
+   DASHBOARD STAT CARDS — NEW
+═══════════════════════════════════════ */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;border-top-color:rgba(255,255,255,0.1);padding:14px 16px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:8px 8px 0 0}
+.stat-card.c-acc::after{background:var(--acc)}
+.stat-card.c-gr::after{background:var(--gr)}
+.stat-card.c-re::after{background:var(--re)}
+.stat-card.c-am::after{background:var(--am)}
+.stat-card.c-bl::after{background:var(--bl)}
+.stat-card.c-pu::after{background:var(--pu)}
 
+/* ═══════════════════════════════════════
+   EMPTY STATES — NEW
+═══════════════════════════════════════ */
+.empty-state{text-align:center;padding:48px 24px;color:var(--tx3)}
+.empty-state .mat{font-size:36px;display:block;margin-bottom:10px;opacity:0.4}
+.empty-state p{font-size:13px;margin-bottom:14px}
+
+/* ═══════════════════════════════════════
+   LOADING STATE
+═══════════════════════════════════════ */
+.loading-row td{text-align:center;padding:32px;color:var(--tx3)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear infinite;display:inline-block}
+
+/* ═══════════════════════════════════════
+   CALENDAR — NEW
+═══════════════════════════════════════ */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--bd)}
+.cal-cell{background:var(--s2);min-height:90px;padding:6px;position:relative}
+.cal-cell.other-month{background:var(--bg);opacity:0.5}
+.cal-cell.today{background:rgba(173,198,255,0.05)}
+.cal-cell.today .cal-day{background:var(--acc);color:#0f1117;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-day{font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:4px;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-event{font-size:10px;font-weight:500;padding:2px 5px;border-radius:3px;margin-bottom:2px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:opacity .15s}
+.cal-event:hover{opacity:0.8}
+.cal-event.st-Potential{background:var(--bl-d);color:var(--bl);border-left:2px solid var(--bl)}
+.cal-event.st-Won{background:var(--gr-d);color:var(--gr);border-left:2px solid var(--gr)}
+.cal-event.st-Lost{background:var(--re-d);color:var(--re);border-left:2px solid var(--re)}
+.cal-hdr{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3);padding:8px;text-align:center;background:var(--s1)}
+
+/* ═══════════════════════════════════════
+   ACTIVITY FEED — NEW
+═══════════════════════════════════════ */
+.activity-icon{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--bd)}
+.activity-icon.ac{background:var(--acc-d);color:var(--acc)}
+.activity-icon.gr{background:var(--gr-d);color:var(--gr)}
+.activity-icon.re{background:var(--re-d);color:var(--re)}
+.activity-icon.am{background:var(--am-d);color:var(--am)}
+.activity-icon.bl{background:var(--bl-d);color:var(--bl)}
+.activity-icon.gy{background:rgba(255,255,255,0.04);color:var(--tx2)}
+
+/* ═══════════════════════════════════════
+   CONFIRM DIALOG — NEW
+═══════════════════════════════════════ */
+#confirmDialog{position:fixed;inset:0;z-index:11000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)}
+#confirmDialog.open{display:flex}
+.confirm-box{background:var(--s1);border:1px solid var(--bd2);border-radius:10px;padding:24px;width:360px;max-width:95vw;box-shadow:0 16px 48px rgba(0,0,0,0.7)}
+.confirm-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.confirm-msg{font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:20px}
+.confirm-actions{display:flex;gap:8px;justify-content:flex-end}
 </style>
 </head>
 <body>
+
+<!-- ═══════════════════════════════════════
+     OVERLAYS & UTILITY UI
+═══════════════════════════════════════ -->
 <div class="lp-overlay" id="lpOverlay" onclick="closeLeadPanel()"></div>
 <div class="lp-toast" id="lpToast"></div>
+
+<!-- CONFIRM DIALOG -->
+<div id="confirmDialog">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+    <div class="confirm-msg" id="confirmMsg">This action cannot be undone.</div>
+    <div class="confirm-actions">
+      <button class="abtn" onclick="confirmCancel()">Cancel</button>
+      <button class="abtn danger" id="confirmOkBtn" onclick="confirmOk()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEAD CREATE / EDIT MODAL -->
+<div id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <span class="modal-hd-title" id="modalTitle">New Lead</span>
+      <button class="tbb" onclick="closeModal()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="modalLeadId"/>
+      <div class="form-row">
+        <div class="form-group"><div class="section-label">Contact Information</div></div>
+        <div class="form-group"><!-- spacer --></div>
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" id="mFirstName" placeholder="John"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" id="mLastName" placeholder="Smith"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="mEmail" type="email" placeholder="john@company.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-input" id="mPhone" type="tel" placeholder="+1 555 000 0000"/>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">Company Name</label>
+          <input class="form-input" id="mCompany" placeholder="Acme Corp"/>
+        </div>
+
+        <div class="form-group"><div class="section-label" style="margin-top:4px">Status & Assignment</div></div>
+        <div class="form-group"><!-- spacer --></div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="mStatus">
+            <option value="Potential">Potential</option>
+            <option value="Won">Won</option>
+            <option value="Lost">Lost</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Owner / Agent</label>
+          <input class="form-input" id="mOwner" placeholder="Owner name or ID"/>
+        </div>
+
+        <div class="form-group"><div class="section-label" style="margin-top:4px">Scheduling</div></div>
+        <div class="form-group"><!-- spacer --></div>
+        <div class="form-group">
+          <label class="form-label">Preferred Date</label>
+          <input class="form-input" id="mPrefDate" type="date"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Time</label>
+          <input class="form-input" id="mPrefTime" type="time"/>
+        </div>
+
+        <div class="form-group"><div class="section-label" style="margin-top:4px">UTM / Source</div></div>
+        <div class="form-group"><!-- spacer --></div>
+        <div class="form-group">
+          <label class="form-label">Source</label>
+          <input class="form-input" id="mUtmSource" placeholder="google, facebook…"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Campaign</label>
+          <input class="form-input" id="mUtmCampaign" placeholder="Campaign name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Medium</label>
+          <input class="form-input" id="mUtmMedium" placeholder="cpc, organic…"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Content</label>
+          <input class="form-input" id="mUtmContent" placeholder="Ad variant"/>
+        </div>
+
+        <div class="form-group full" style="margin-top:4px">
+          <label class="form-label">Notes</label>
+          <textarea class="form-textarea" id="mNotes" placeholder="Internal notes about this lead…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="closeModal()">Cancel</button>
+      <button class="abtn pri" id="modalSaveBtn" onclick="saveLeadModal()">
+        <span class="mat sm">save</span>Save Lead
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- COMMAND PALETTE -->
 <div id="cmdpal" onclick="if(event.target===this)closeCmdPal()">
@@ -263,18 +416,15 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
     </div>
     <div class="csec">
       <div class="cslbl">Quick Actions</div>
-      <div class="ci" onclick="closeCmdPal()"><span class="mat">add_circle</span><span class="clbl">Create Opportunity</span><span class="csc">C O</span></div>
-      <div class="ci" onclick="closeCmdPal()"><span class="mat">event_available</span><span class="clbl">Book Meeting</span><span class="csc">C M</span></div>
-      <div class="ci" onclick="closeCmdPal()"><span class="mat">check_circle</span><span class="clbl">Create Task</span><span class="csc">C T</span></div>
-      <div class="ci" onclick="closeCmdPal()"><span class="mat">sticky_note_2</span><span class="clbl">Add Note</span><span class="csc">C N</span></div>
+      <div class="ci" onclick="openCreateLead();closeCmdPal()"><span class="mat">add_circle</span><span class="clbl">Create Lead</span><span class="csc">C L</span></div>
     </div>
     <div class="csec">
       <div class="cslbl">Navigate</div>
-      <div class="ci" onclick="go('dashboard')"><span class="mat">dashboard</span><span class="clbl">Dashboard</span></div>
-      <div class="ci" onclick="go('opportunities')"><span class="mat">people</span><span class="clbl">Opportunities</span></div>
-      <div class="ci" onclick="go('pipeline')"><span class="mat">account_tree</span><span class="clbl">Pipeline</span></div>
-      <div class="ci" onclick="go('meetings')"><span class="mat">video_call</span><span class="clbl">Meetings</span></div>
-      <div class="ci" onclick="go('ai')"><span class="mat">auto_awesome</span><span class="clbl">AI Workspace</span></div>
+      <div class="ci" onclick="navigate('dashboard')"><span class="mat">dashboard</span><span class="clbl">Dashboard</span></div>
+      <div class="ci" onclick="navigate('opportunities')"><span class="mat">people</span><span class="clbl">Leads</span></div>
+      <div class="ci" onclick="navigate('clients')"><span class="mat">verified_user</span><span class="clbl">Clients</span></div>
+      <div class="ci" onclick="navigate('activity')"><span class="mat">activity_zone</span><span class="clbl">Activity</span></div>
+      <div class="ci" onclick="navigate('calendar')"><span class="mat">calendar_today</span><span class="clbl">Calendar</span></div>
     </div>
     <div class="cfoot">
       <span class="chint"><kbd>↑↓</kbd> Navigate</span>
@@ -284,127 +434,64 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
   </div>
 </div>
 
-<!-- DETAIL PANEL -->
-<div id="dpanel">
-  <div class="phead">
-    <div style="flex:1;min-width:0">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <span class="badge ac">HOT</span><span class="badge am">High Risk</span>
-        <span class="aibadge"><span class="mat sm" style="font-size:12px">auto_awesome</span>AI</span>
-      </div>
-      <div style="font-size:16px;font-weight:700;color:var(--tx);letter-spacing:-0.01em">Meridian Capital Group</div>
-      <div style="font-size:12px;color:var(--tx2);margin-top:2px">Enterprise SaaS · $84,000 ARR</div>
-    </div>
-    <div style="display:flex;gap:6px">
-      <button class="abtn pri"><span class="mat sm">event</span>Book Call</button>
-      <button class="tbb" onclick="closePanel()"><span class="mat">close</span></button>
-    </div>
-  </div>
-  <div class="ptabs">
-    <div class="ptab active" onclick="switchTab(this,'ov')">Overview</div>
-    <div class="ptab" onclick="switchTab(this,'tl')">Timeline</div>
-    <div class="ptab" onclick="switchTab(this,'tk')">Tasks</div>
-    <div class="ptab" onclick="switchTab(this,'ai')">AI Intel</div>
-  </div>
-  <div class="pbody">
-    <div id="pt-ov">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px">
-        <div class="csm" style="padding:12px"><div class="mlbl">Stage</div><div style="font-size:14px;font-weight:600;margin-top:3px">Proposal Sent</div></div>
-        <div class="csm" style="padding:12px"><div class="mlbl">Probability</div><div style="font-size:14px;font-weight:600;color:var(--am);margin-top:3px">62%</div></div>
-        <div class="csm" style="padding:12px"><div class="mlbl">Lead Score</div><div style="display:flex;align-items:center;gap:8px;margin-top:3px"><span style="font-size:14px;font-weight:600;color:var(--acc)">87</span><div class="sbar"><div class="sfill" style="width:87%"></div></div></div></div>
-        <div class="csm" style="padding:12px"><div class="mlbl">Days In Stage</div><div style="font-size:14px;font-weight:600;color:var(--re);margin-top:3px">14 days ⚠</div></div>
-      </div>
-      <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3);margin-bottom:10px">Contact</div>
-      <div class="df"><div class="dl">Primary Contact</div><div class="dv">James Whitmore · CTO</div></div>
-      <div class="df"><div class="dl">Email</div><div class="dv" style="color:var(--acc)">j.whitmore@meridian.com</div></div>
-      <div class="df"><div class="dl">Source</div><div class="dv"><span class="badge bl">LinkedIn Outbound</span></div></div>
-      <div class="df"><div class="dl">Owner</div><div class="dv" style="display:flex;align-items:center;gap:6px"><div class="av" style="width:20px;height:20px;font-size:9px">AR</div>Alex Rivera</div></div>
-      <div style="margin:16px 0">
-        <div class="ic am">
-          <div style="font-size:12px;font-weight:600;color:var(--am);margin-bottom:3px">⚡ Follow-Up Required</div>
-          <div style="font-size:12px;color:var(--tx2)">No response to proposal for 14 days. Send value-confirmation email today.</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="abtn"><span class="mat sm">mail</span>Email</button>
-        <button class="abtn"><span class="mat sm">sticky_note_2</span>Note</button>
-        <button class="abtn"><span class="mat sm">task_alt</span>Task</button>
-        <button class="abtn"><span class="mat sm">share</span>Assign</button>
-      </div>
-    </div>
-    <div id="pt-tl" style="display:none">
-      <div class="tli"><div class="tlic ac"><span class="mat sm">mail</span></div><div><div style="font-size:13px;font-weight:500">Proposal email sent</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">Jun 2 · 10:15 AM · Alex Rivera</div></div></div>
-      <div class="tli"><div class="tlic gr"><span class="mat sm">video_call</span></div><div><div style="font-size:13px;font-weight:500">Discovery call completed</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">May 28 · 2:00 PM · 42 min</div><div style="font-size:11px;color:var(--tx2);margin-top:4px;background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:4px;border:1px solid var(--bd)">Budget confirmed $80-100K. Legal review needed. Strong intent signal.</div></div></div>
-      <div class="tli"><div class="tlic bl"><span class="mat sm">event</span></div><div><div style="font-size:13px;font-weight:500">Meeting booked</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">May 25 · by James Whitmore</div></div></div>
-      <div class="tli" style="--bd:transparent"><div class="tlic gy"><span class="mat sm">add_circle</span></div><div><div style="font-size:13px;font-weight:500">Opportunity created</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">May 23 · LinkedIn inbound</div></div></div>
-    </div>
-    <div id="pt-tk" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <span style="font-size:12px;font-weight:600;color:var(--tx2)">3 open tasks</span>
-        <button class="abtn"><span class="mat sm">add</span>Add</button>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <div class="csm" style="padding:10px 12px;display:flex;gap:10px;align-items:flex-start"><div class="pdot hi" style="margin-top:5px"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Send follow-up email re: pricing</div><div style="font-size:11px;color:var(--re);margin-top:2px">Overdue · Jun 4</div></div></div>
-        <div class="csm" style="padding:10px 12px;display:flex;gap:10px;align-items:flex-start"><div class="pdot me" style="margin-top:5px"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Connect with legal team contact</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">Due Jun 9</div></div></div>
-        <div class="csm" style="padding:10px 12px;display:flex;gap:10px;align-items:flex-start"><div class="pdot lo" style="margin-top:5px"></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Prepare custom ROI deck</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">Due Jun 12</div></div></div>
-      </div>
-    </div>
-    <div id="pt-ai" style="display:none">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px"><span class="aibadge"><span class="mat sm" style="font-size:12px">auto_awesome</span>AI Summary</span></div>
-      <div class="ic pu" style="margin-bottom:14px"><p style="font-size:12px;color:var(--tx2);line-height:1.7">Meridian Capital has strong buying intent. Primary risk is procurement timeline — legal review introduces 2–3 week delay. Recommend executive sponsor outreach. Close probability increases to 81% if meeting booked this week.</p></div>
-      <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3);margin-bottom:8px">Suggested Actions</div>
-      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
-        <div class="csm" style="padding:10px 12px;display:flex;align-items:center;gap:8px;cursor:pointer"><span class="mat sm" style="color:var(--acc)">bolt</span><div style="flex:1;font-size:12px">Send executive alignment email to CFO</div><span class="badge ac">HIGH</span></div>
-        <div class="csm" style="padding:10px 12px;display:flex;align-items:center;gap:8px;cursor:pointer"><span class="mat sm" style="color:var(--am)">schedule</span><div style="flex:1;font-size:12px">Book legal team intro call</div><span class="badge am">MED</span></div>
-      </div>
-      <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3);margin-bottom:8px">Risk Scores</div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--tx2);width:90px">Deal Risk</span><div class="sbar"><div class="sfill" style="width:58%;background:var(--am)"></div></div><span style="font-size:12px;font-weight:600;color:var(--am)">58%</span></div>
-        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--tx2);width:90px">Intent Score</span><div class="sbar"><div class="sfill" style="width:87%"></div></div><span style="font-size:12px;font-weight:600;color:var(--acc)">87%</span></div>
-        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--tx2);width:90px">Response Rate</span><div class="sbar"><div class="sfill" style="width:40%;background:var(--re)"></div></div><span style="font-size:12px;font-weight:600;color:var(--re)">40%</span></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- APP -->
+<!-- ═══════════════════════════════════════
+     APP SHELL
+═══════════════════════════════════════ -->
 <div id="app">
   <aside id="sidebar">
-    <div class="nav-logo"><span class="mat lg bolt">bolt</span><span>NXTUP Lead</span></div>
+    <div class="nav-logo">
+      <span class="mat lg bolt">bolt</span>
+      <span>NXTUP Lead</span>
+    </div>
     <div class="nav-section">
-      <div class="nav-item active" onclick="sp('dashboard',this)"><span class="mat">dashboard</span><span class="lbl">Dashboard</span></div>
-      <div class="nav-item" onclick="sp('opportunities',this)"><span class="mat">people</span><span class="lbl">Opportunities</span><span class="nbadge">24</span></div>
-      <div class="nav-item" onclick="sp('pipeline',this)"><span class="mat">account_tree</span><span class="lbl">Pipeline</span></div>
-      <div class="nav-item" onclick="sp('meetings',this)"><span class="mat">video_call</span><span class="lbl">Meetings</span><span class="nbadge">3</span></div>
-      <div class="nav-item" onclick="sp('calendar',this)"><span class="mat">calendar_today</span><span class="lbl">Calendar</span></div>
-      <div class="nav-item" onclick="sp('tasks',this)"><span class="mat">check_circle</span><span class="lbl">Tasks</span><span class="nbadge red">7</span></div>
+      <div class="nav-item" data-page="dashboard" onclick="navigate('dashboard')">
+        <span class="mat">dashboard</span><span class="lbl">Dashboard</span>
+      </div>
+      <div class="nav-item" data-page="opportunities" onclick="navigate('opportunities')">
+        <span class="mat">people</span><span class="lbl">Leads</span>
+        <span class="nbadge" id="navCountLeads">—</span>
+      </div>
+      <div class="nav-item" data-page="clients" onclick="navigate('clients')">
+        <span class="mat">verified_user</span><span class="lbl">Clients</span>
+        <span class="nbadge" id="navCountClients" style="background:var(--gr-d);color:var(--gr)">—</span>
+      </div>
       <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
-      <div class="nav-item" onclick="sp('analytics',this)"><span class="mat">insights</span><span class="lbl">Analytics</span></div>
-      <div class="nav-item" onclick="sp('activity',this)"><span class="mat">activity_zone</span><span class="lbl">Activity</span></div>
-      <div class="nav-item" onclick="sp('automations',this)"><span class="mat">bolt</span><span class="lbl">Automations</span></div>
+      <div class="nav-item" data-page="activity" onclick="navigate('activity')">
+        <span class="mat">activity_zone</span><span class="lbl">Activity</span>
+      </div>
+      <div class="nav-item" data-page="calendar" onclick="navigate('calendar')">
+        <span class="mat">calendar_today</span><span class="lbl">Calendar</span>
+      </div>
       <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
-      <div class="nav-item" onclick="sp('ai',this)"><span class="mat">auto_awesome</span><span class="lbl">AI Workspace</span><span class="nbadge pu">NEW</span></div>
-      <div class="nav-item" onclick="sp('reports',this)"><span class="mat">bar_chart</span><span class="lbl">Reports</span></div>
-      <div class="nav-item" onclick="sp('settings',this)"><span class="mat">settings</span><span class="lbl">Settings</span></div>
+      <div class="nav-item" data-page="settings" onclick="navigate('settings')">
+        <span class="mat">settings</span><span class="lbl">Settings</span>
+      </div>
     </div>
     <div class="nav-bottom">
-      <div style="background:var(--acc-d);border:1px solid rgba(173,198,255,0.15);border-radius:6px;padding:10px 12px;margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span class="mat sm" style="color:var(--acc)">bolt</span><span style="font-size:11px;font-weight:600;color:var(--acc)">7 tasks overdue</span></div>
-        <div style="font-size:11px;color:var(--tx2)">Revenue at risk: <strong style="color:var(--re)">$142K</strong></div>
+      <!-- Dynamic alert box -->
+      <div id="sidebarAlert" style="display:none;background:var(--re-d);border:1px solid rgba(248,113,113,0.2);border-radius:6px;padding:10px 12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <span class="mat sm" style="color:var(--re);font-size:13px">warning</span>
+          <span style="font-size:11px;font-weight:600;color:var(--re)" id="sidebarAlertTitle">Follow-ups needed</span>
+        </div>
+        <div style="font-size:11px;color:var(--tx2)" id="sidebarAlertBody">—</div>
       </div>
-      <div style="display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''">
-        <div class="av">AR</div>
-        <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--tx)">Alex Rivera</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:0.06em">Enterprise Closer</div></div>
-        <span class="mat sm" style="color:var(--tx3)">expand_more</span>
+      <div style="display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:6px;cursor:pointer"
+        onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''">
+        <div class="av">NX</div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:500;color:var(--tx)">NXTUP Lead</div>
+          <div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:0.06em">CRM</div>
+        </div>
       </div>
     </div>
   </aside>
 
   <div id="main">
     <header id="topbar">
-      <button class="tbb" onclick="document.getElementById('sidebar').style.width=document.getElementById('sidebar').style.width==='56px'?'220px':'56px'"><span class="mat">menu</span></button>
+      <button class="tbb" id="sidebarToggle"><span class="mat">menu</span></button>
       <div class="tdiv"></div>
-      <span class="ptitle" id="ptitle">Command Center</span>
+      <span class="ptitle" id="ptitle">Dashboard</span>
       <div style="flex:1"></div>
       <div class="search-box">
         <span class="mat si sm">search</span>
@@ -413,110 +500,122 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
       </div>
       <div style="flex:1"></div>
       <div style="display:flex;align-items:center;gap:4px">
-        <button class="tbb" style="position:relative"><span class="mat">notifications</span><span class="ndot"></span></button>
-        <button class="tbb"><span class="mat">activity_zone</span></button>
-        <button class="tbb"><span class="mat">help_outline</span></button>
+        <button class="tbb"><span class="mat">notifications</span></button>
         <div class="tdiv" style="margin:0 4px"></div>
-        <button class="qbtn" onclick="openCmdPal()"><span class="mat sm" style="font-size:14px">add</span>New</button>
+        <button class="qbtn" onclick="openCreateLead()">
+          <span class="mat sm" style="font-size:14px">add</span>New Lead
+        </button>
       </div>
     </header>
 
     <div id="workspace">
 
-      <!-- DASHBOARD -->
-      <div class="pv active" id="pv-dashboard">
+      <!-- ═══════════════════════════════
+           DASHBOARD
+      ═══════════════════════════════ -->
+      <div class="pv" id="pv-dashboard">
         <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-          <div style="font-size:13px;font-weight:600;color:var(--tx)">Sunday, June 7</div>
+          <div style="font-size:13px;font-weight:600;color:var(--tx)" id="dashDate">—</div>
           <div class="tdiv"></div>
-          <div style="display:flex;align-items:center;gap:6px"><div class="pdot hi"></div><span style="font-size:12px;color:var(--tx2)"><strong style="color:var(--re)">7</strong> overdue tasks</span></div>
-          <div style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--am)">warning</span><span style="font-size:12px;color:var(--tx2)"><strong style="color:var(--am)">4</strong> deals at risk</span></div>
-          <div style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--gr)">check_circle</span><span style="font-size:12px;color:var(--tx2)"><strong style="color:var(--gr)">3</strong> meetings today</span></div>
-          <div style="margin-left:auto"><button class="abtn pri" onclick="openCmdPal()"><span class="mat sm">bolt</span>Quick Action</button></div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="mat sm" style="color:var(--bl)">schedule</span>
+            <span style="font-size:12px;color:var(--tx2)">
+              <strong id="dashMeetingsToday" style="color:var(--bl)">—</strong> meetings today
+            </span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="mat sm" style="color:var(--am)">date_range</span>
+            <span style="font-size:12px;color:var(--tx2)">
+              <strong id="dashMeetingsWeek" style="color:var(--am)">—</strong> this week
+            </span>
+          </div>
+          <div style="margin-left:auto">
+            <button class="abtn pri" onclick="openCreateLead()">
+              <span class="mat sm">add</span>New Lead
+            </button>
+          </div>
         </div>
         <div class="pc">
-          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px">
-            <div class="card" style="padding:14px 16px"><div class="mlbl">Pipeline Value</div><div class="mval" style="margin:5px 0 3px">$4.85M</div><div class="mdelta up">↑ 12% vs last month</div></div>
-            <div class="card" style="padding:14px 16px"><div class="mlbl">Active Deals</div><div class="mval" style="margin:5px 0 3px">124</div><div class="mdelta up">↑ 8 new this week</div></div>
-            <div class="card" style="padding:14px 16px"><div class="mlbl">Meetings Booked</div><div class="mval" style="margin:5px 0 3px">18</div><div style="font-size:11px;color:var(--tx3)">this week</div></div>
-            <div class="card" style="padding:14px 16px"><div class="mlbl">Won MTD</div><div class="mval" style="color:var(--gr);margin:5px 0 3px">$218K</div><div style="display:flex;align-items:center;gap:6px;margin-top:2px"><div class="ftrack" style="flex:1"><div class="ffill" style="width:54%"></div></div><span style="font-size:10px;color:var(--tx3)">54%</span></div></div>
-            <div class="card" style="padding:14px 16px"><div class="mlbl">Revenue At Risk</div><div class="mval" style="color:var(--re);margin:5px 0 3px">$142K</div><div class="mdelta down">4 stalled deals</div></div>
+          <!-- Stats row -->
+          <div class="stat-grid" id="dashStats">
+            <div class="stat-card c-acc">
+              <div class="mlbl">Total Leads</div>
+              <div class="mval" style="margin:5px 0 3px" id="statTotal">
+                <span class="spin mat sm">sync</span>
+              </div>
+              <div style="font-size:11px;color:var(--tx3)">all time</div>
+            </div>
+            <div class="stat-card c-bl">
+              <div class="mlbl">Potential</div>
+              <div class="mval" style="margin:5px 0 3px;color:var(--bl)" id="statPotential">—</div>
+              <div style="font-size:11px;color:var(--tx3)">active pipeline</div>
+            </div>
+            <div class="stat-card c-gr">
+              <div class="mlbl">Won</div>
+              <div class="mval" style="margin:5px 0 3px;color:var(--gr)" id="statWon">—</div>
+              <div style="font-size:11px;color:var(--tx3)">converted</div>
+            </div>
+            <div class="stat-card c-re">
+              <div class="mlbl">Lost</div>
+              <div class="mval" style="margin:5px 0 3px;color:var(--re)" id="statLost">—</div>
+              <div style="font-size:11px;color:var(--tx3)">closed lost</div>
+            </div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 340px;gap:16px">
-            <div style="display:flex;flex-direction:column;gap:14px">
-              <div>
-                <div class="sh"><span class="stitle" style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--re)">priority_high</span>Urgent Follow-Ups</span><span class="badge re">7</span></div>
-                <div class="card" style="overflow:hidden">
-                  <table class="dt"><thead><tr><th>Opportunity</th><th>Last Activity</th><th>Risk</th><th></th></tr></thead>
-                  <tbody>
-                    <tr style="cursor:pointer" onclick="openPanel()"><td><div style="font-weight:600">Meridian Capital</div><div style="font-size:11px;color:var(--tx3)">$84K · Proposal Sent</div></td><td><span style="color:var(--re);font-size:12px">14d ago</span></td><td><span class="badge re">HIGH</span></td><td><button class="abtn" style="font-size:11px;padding:3px 8px"><span class="mat sm">mail</span></button></td></tr>
-                    <tr style="cursor:pointer"><td><div style="font-weight:600">Volaris Systems</div><div style="font-size:11px;color:var(--tx3)">$47K · Demo Done</div></td><td><span style="color:var(--am);font-size:12px">9d ago</span></td><td><span class="badge am">MED</span></td><td><button class="abtn" style="font-size:11px;padding:3px 8px"><span class="mat sm">event</span></button></td></tr>
-                    <tr style="cursor:pointer"><td><div style="font-weight:600">NorthEdge Partners</div><div style="font-size:11px;color:var(--tx3)">$120K · Negotiating</div></td><td><span style="color:var(--am);font-size:12px">7d ago</span></td><td><span class="badge am">MED</span></td><td><button class="abtn" style="font-size:11px;padding:3px 8px"><span class="mat sm">call</span></button></td></tr>
-                    <tr style="cursor:pointer"><td><div style="font-weight:600">Arctis Ventures</div><div style="font-size:11px;color:var(--tx3)">$33K · Qualified</div></td><td><span style="color:var(--tx3);font-size:12px">5d ago</span></td><td><span class="badge gy">LOW</span></td><td><button class="abtn" style="font-size:11px;padding:3px 8px"><span class="mat sm">sticky_note_2</span></button></td></tr>
-                  </tbody></table>
-                </div>
+
+          <!-- Second row -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 320px;gap:16px">
+
+            <!-- Latest Leads -->
+            <div>
+              <div class="sh">
+                <span class="stitle" style="display:flex;align-items:center;gap:6px">
+                  <span class="mat sm" style="color:var(--acc)">person_add</span>Latest Leads
+                </span>
+                <a style="font-size:11px;color:var(--acc);cursor:pointer" onclick="navigate('opportunities')">View all →</a>
               </div>
-              <div>
-                <div class="sh"><span class="stitle" style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">local_fire_department</span>Hot Opportunities</span><a style="font-size:11px;color:var(--acc);cursor:pointer" onclick="sp('opportunities',document.querySelectorAll('.nav-item')[1])">View all →</a></div>
-                <div class="card" style="overflow:hidden">
-                  <table class="dt"><thead><tr><th>Company</th><th>Value</th><th>Score</th><th>Stage</th></tr></thead>
-                  <tbody>
-                    <tr style="cursor:pointer" onclick="openPanel()"><td><div style="font-weight:600">Pinnacle Corp</div><div style="font-size:11px;color:var(--tx3)">Enterprise SaaS</div></td><td><span style="font-weight:600;color:var(--acc)">$156K</span></td><td><div style="display:flex;align-items:center;gap:5px"><span style="font-size:12px;font-weight:600;color:var(--gr)">94</span><div class="sbar" style="width:40px"><div class="sfill" style="width:94%"></div></div></div></td><td><span class="badge gr">Negotiating</span></td></tr>
-                    <tr style="cursor:pointer" onclick="openPanel()"><td><div style="font-weight:600">Meridian Capital</div><div style="font-size:11px;color:var(--tx3)">FinTech</div></td><td><span style="font-weight:600;color:var(--acc)">$84K</span></td><td><div style="display:flex;align-items:center;gap:5px"><span style="font-size:12px;font-weight:600;color:var(--am)">87</span><div class="sbar" style="width:40px"><div class="sfill" style="width:87%"></div></div></div></td><td><span class="badge ac">Proposal</span></td></tr>
-                    <tr style="cursor:pointer"><td><div style="font-weight:600">Stratos Global</div><div style="font-size:11px;color:var(--tx3)">B2B Services</div></td><td><span style="font-weight:600;color:var(--acc)">$62K</span></td><td><div style="display:flex;align-items:center;gap:5px"><span style="font-size:12px;font-weight:600;color:var(--acc)">81</span><div class="sbar" style="width:40px"><div class="sfill" style="width:81%"></div></div></div></td><td><span class="badge bl">Demo</span></td></tr>
-                  </tbody></table>
-                </div>
+              <div class="card" style="overflow:hidden">
+                <table class="dt">
+                  <thead><tr><th>Company</th><th>Contact</th><th>Status</th><th>Created</th></tr></thead>
+                  <tbody id="dashLatestLeads">
+                    <tr class="loading-row"><td colspan="4">
+                      <span class="spin mat sm">sync</span> Loading…
+                    </td></tr>
+                  </tbody>
+                </table>
               </div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:14px">
-              <div>
-                <div class="sh"><span class="stitle">Pipeline Health</span></div>
-                <div class="card" style="padding:16px">
-                  <div style="display:flex;flex-direction:column;gap:10px">
-                    <div><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;color:var(--tx2)">New / Inbound</span><span style="font-size:12px;font-weight:600">$680K · 28</span></div><div class="ftrack"><div class="ffill" style="width:40%;background:var(--bl)"></div></div></div>
-                    <div><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;color:var(--tx2)">Qualified</span><span style="font-size:12px;font-weight:600">$1.1M · 34</span></div><div class="ftrack"><div class="ffill" style="width:62%"></div></div></div>
-                    <div><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;color:var(--tx2)">Demo / Discovery</span><span style="font-size:12px;font-weight:600">$980K · 22</span></div><div class="ftrack"><div class="ffill" style="width:55%;background:var(--pu)"></div></div></div>
-                    <div><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;color:var(--tx2)">Proposal Sent</span><span style="font-size:12px;font-weight:600">$1.4M · 18</span></div><div class="ftrack"><div class="ffill" style="width:78%;background:var(--am)"></div></div></div>
-                    <div><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;color:var(--tx2)">Negotiating</span><span style="font-size:12px;font-weight:600">$690K · 10</span></div><div class="ftrack"><div class="ffill" style="width:90%;background:var(--gr)"></div></div></div>
+
+            <!-- Pipeline breakdown -->
+            <div>
+              <div class="sh"><span class="stitle">Lead Breakdown</span></div>
+              <div class="card" style="padding:16px">
+                <div style="display:flex;flex-direction:column;gap:12px" id="dashBreakdown">
+                  <div style="text-align:center;padding:20px;color:var(--tx3);font-size:12px">
+                    <span class="spin mat sm">sync</span> Loading…
                   </div>
                 </div>
               </div>
-              <div>
-                <div class="sh"><span class="stitle">Revenue Forecast</span><span style="font-size:11px;color:var(--tx3)">June 2025</span></div>
-                <div class="card" style="padding:16px">
-                  <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px">
-                    <div><div style="font-size:22px;font-weight:700;letter-spacing:-0.02em">$403K</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">Projected close</div></div>
-                    <div style="text-align:right"><div style="font-size:12px;font-weight:600;color:var(--gr)">+$42K best case</div><div style="font-size:11px;color:var(--re);margin-top:2px">−$67K worst case</div></div>
-                  </div>
-                  <div style="display:flex;align-items:flex-end;gap:3px;height:40px">
-                    <div style="flex:1;background:rgba(173,198,255,0.1);border-radius:2px 2px 0 0;height:55%"></div>
-                    <div style="flex:1;background:rgba(173,198,255,0.1);border-radius:2px 2px 0 0;height:40%"></div>
-                    <div style="flex:1;background:rgba(173,198,255,0.15);border-radius:2px 2px 0 0;height:70%"></div>
-                    <div style="flex:1;background:rgba(173,198,255,0.2);border-radius:2px 2px 0 0;height:60%"></div>
-                    <div style="flex:1;background:rgba(173,198,255,0.25);border-radius:2px 2px 0 0;height:80%"></div>
-                    <div style="flex:1;background:var(--acc);border-radius:2px 2px 0 0;height:100%"></div>
-                    <div style="flex:1;background:rgba(173,198,255,0.07);border-radius:2px 2px 0 0;height:65%;border:1px dashed rgba(173,198,255,0.2)"></div>
-                    <div style="flex:1;background:rgba(173,198,255,0.07);border-radius:2px 2px 0 0;height:75%;border:1px dashed rgba(173,198,255,0.2)"></div>
-                  </div>
-                  <div style="display:flex;justify-content:space-between;margin-top:4px"><span style="font-size:10px;color:var(--tx3)">Jun 1</span><span style="font-size:10px;color:var(--acc);font-weight:600">Today</span><span style="font-size:10px;color:var(--tx3)">Jun 30</span></div>
+              <!-- Clients count -->
+              <div class="card" style="padding:14px;margin-top:10px;display:flex;align-items:center;gap:12px">
+                <div style="width:36px;height:36px;border-radius:8px;background:var(--gr-d);display:flex;align-items:center;justify-content:center">
+                  <span class="mat" style="color:var(--gr);font-size:18px">verified_user</span>
                 </div>
+                <div style="flex:1">
+                  <div class="mlbl">Total Clients</div>
+                  <div style="font-size:20px;font-weight:700;color:var(--gr);margin-top:2px" id="statClients">—</div>
+                </div>
+                <a style="font-size:11px;color:var(--acc);cursor:pointer" onclick="navigate('clients')">View →</a>
               </div>
             </div>
-            <div style="display:flex;flex-direction:column;gap:14px">
-              <div>
-                <div class="sh"><span class="stitle" style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">today</span>Today's Meetings</span></div>
-                <div style="display:flex;flex-direction:column;gap:6px">
-                  <div class="mslot"><div class="mt">9:00 AM · 30 min</div><div class="mn">Pinnacle Corp — Close Call</div><div style="font-size:11px;color:var(--tx3)">$156K</div></div>
-                  <div class="mslot" style="background:var(--gr-d);border-color:rgba(74,222,128,0.2)"><div class="mt" style="color:var(--gr)">2:00 PM · 45 min</div><div class="mn">Volaris Systems — Demo</div><div style="font-size:11px;color:var(--tx3)">$47K</div></div>
-                  <div class="mslot" style="background:rgba(255,255,255,0.03);border-color:var(--bd)"><div class="mt" style="color:var(--tx3)">4:30 PM · 60 min</div><div class="mn">Stratos Global — Discovery</div><div style="font-size:11px;color:var(--tx3)">$62K</div></div>
-                </div>
-              </div>
-              <div>
-                <div class="sh"><span class="stitle">Live Activity</span></div>
-                <div class="card" style="padding:14px;max-height:220px;overflow-y:auto">
-                  <div class="arow"><div class="tlic gr" style="width:24px;height:24px;flex-shrink:0"><span class="mat" style="font-size:13px">check_circle</span></div><div style="flex:1"><div style="font-size:12px;font-weight:500">Pinnacle Corp → Negotiating</div><div style="font-size:10px;color:var(--tx3)">2m · Alex Rivera</div></div></div>
-                  <div class="arow"><div class="tlic ac" style="width:24px;height:24px;flex-shrink:0"><span class="mat" style="font-size:13px">event_available</span></div><div style="flex:1"><div style="font-size:12px;font-weight:500">Meeting booked — Stratos Global</div><div style="font-size:10px;color:var(--tx3)">18m · Inbound</div></div></div>
-                  <div class="arow"><div class="tlic bl" style="width:24px;height:24px;flex-shrink:0"><span class="mat" style="font-size:13px">person_add</span></div><div style="flex:1"><div style="font-size:12px;font-weight:500">New lead — Arctis Ventures</div><div style="font-size:10px;color:var(--tx3)">42m · Google Ads</div></div></div>
-                  <div class="arow" style="border-bottom:none"><div class="tlic gy" style="width:24px;height:24px;flex-shrink:0"><span class="mat" style="font-size:13px">mail</span></div><div style="flex:1"><div style="font-size:12px;font-weight:500">Email opened — Meridian Capital</div><div style="font-size:10px;color:var(--tx3)">2h · Auto-tracked</div></div></div>
+
+            <!-- Meetings / calendar summary -->
+            <div>
+              <div class="sh"><span class="stitle" style="display:flex;align-items:center;gap:6px">
+                <span class="mat sm" style="color:var(--acc)">today</span>Upcoming Meetings
+              </span></div>
+              <div id="dashUpcomingMeetings" style="display:flex;flex-direction:column;gap:6px">
+                <div style="text-align:center;padding:20px;color:var(--tx3);font-size:12px">
+                  <span class="spin mat sm">sync</span> Loading…
                 </div>
               </div>
             </div>
@@ -524,217 +623,113 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         </div>
       </div>
 
-      <!-- OPPORTUNITIES -->
+      <!-- ═══════════════════════════════
+           LEADS (OPPORTUNITIES)
+      ═══════════════════════════════ -->
       <div class="pv" id="pv-opportunities">
         <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
-          <div class="tgroup"><div class="topt active">All</div><div class="topt">My Deals</div><div class="topt">Hot</div><div class="topt">At Risk</div></div>
+          <div class="tgroup" id="leadsFilterGroup">
+            <div class="topt active" onclick="filterLeads('all',this)">All</div>
+            <div class="topt" onclick="filterLeads('Potential',this)">Potential</div>
+            <div class="topt" onclick="filterLeads('Won',this)">Won</div>
+            <div class="topt" onclick="filterLeads('Lost',this)">Lost</div>
+          </div>
           <div style="flex:1"></div>
-          <button class="abtn"><span class="mat sm">filter_list</span>Filter</button>
-          <button class="abtn"><span class="mat sm">sort</span>Sort</button>
-          <button class="abtn pri"><span class="mat sm">add</span>New Opportunity</button>
+          <button class="abtn pri" onclick="openCreateLead()">
+            <span class="mat sm">add</span>New Lead
+          </button>
         </div>
         <div class="pc">
           <div class="card" style="overflow:hidden">
             <table class="dt">
-              <thead><tr><th style="width:24px"><input type="checkbox" style="accent-color:var(--acc)"/></th><th>Company</th><th>Contact</th><th>Status</th><th>Phone</th><th>Source</th><th>Scheduled</th><th>Last Contacted</th><th></th></tr></thead>
-              <tbody id="leadsTable">
- 
+              <thead>
+                <tr>
+                  <th style="width:24px"><input type="checkbox" style="accent-color:var(--acc)"/></th>
+                  <th>Company</th>
+                  <th>Contact</th>
+                  <th>Status</th>
+                  <th>Phone</th>
+                  <th>Source</th>
+                  <th>Scheduled</th>
+                  <th>Last Contacted</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="leadsTable"></tbody>
+            </table>
+          </div>
+          <div style="padding:10px 14px;display:flex;align-items:center;border-top:1px solid var(--bd)">
+            <span style="font-size:12px;color:var(--tx3)" id="leadsCount">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════
+           CLIENTS
+      ═══════════════════════════════ -->
+      <div class="pv" id="pv-clients">
+        <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
+          <span style="font-size:13px;font-weight:600;color:var(--tx)">Client Database</span>
+          <div style="flex:1"></div>
+          <button class="abtn" onclick="loadClients()">
+            <span class="mat sm">refresh</span>Refresh
+          </button>
+        </div>
+        <div class="pc">
+          <div class="card" style="overflow:hidden">
+            <table class="dt">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Contact</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Converted</th>
+                  <th>Manager</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="clientsTable">
+                <tr class="loading-row"><td colspan="7">
+                  <span class="spin mat sm">sync</span> Loading clients…
+                </td></tr>
               </tbody>
             </table>
           </div>
           <div style="padding:10px 14px;display:flex;align-items:center;border-top:1px solid var(--bd)">
-            <span style="font-size:12px;color:var(--tx3)">Showing 5 of 124 opportunities</span>
-            <div style="margin-left:auto;display:flex;gap:4px">
-              <button class="tbb" style="width:28px;height:28px"><span class="mat sm">chevron_left</span></button>
-              <button class="tbb" style="width:28px;height:28px;background:var(--acc-d);color:var(--acc)">1</button>
-              <button class="tbb" style="width:28px;height:28px">2</button>
-              <button class="tbb" style="width:28px;height:28px">3</button>
-              <button class="tbb" style="width:28px;height:28px"><span class="mat sm">chevron_right</span></button>
-            </div>
+            <span style="font-size:12px;color:var(--tx3)" id="clientsCount">—</span>
           </div>
         </div>
       </div>
 
-      <!-- PIPELINE -->
-      <div class="pv" id="pv-pipeline">
-        <div style="border-bottom:1px solid var(--bd);padding:12px 24px;background:var(--s1);display:flex;align-items:center;gap:20px">
-          <div><div style="font-size:20px;font-weight:700;color:var(--tx);letter-spacing:-0.02em">$4,852,900</div><div style="font-size:11px;color:var(--tx3)">Total pipeline</div></div>
-          <div class="tdiv"></div>
-          <div><div style="font-size:15px;font-weight:600">124</div><div style="font-size:11px;color:var(--tx3)">Active deals</div></div>
-          <div class="tdiv"></div>
-          <div><div style="font-size:15px;font-weight:600">$39.1K</div><div style="font-size:11px;color:var(--tx3)">Avg size</div></div>
-          <div class="tdiv"></div>
-          <div><div style="font-size:15px;font-weight:600;color:var(--gr)">24%</div><div style="font-size:11px;color:var(--tx3)">Win rate</div></div>
-          <div style="margin-left:auto;display:flex;gap:8px">
-            <button class="abtn"><span class="mat sm">filter_list</span>Filter</button>
-            <button class="abtn pri"><span class="mat sm">add</span>Add Deal</button>
-          </div>
-        </div>
-        <div class="kboard">
-          <div class="kcol"><div class="khead"><span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--bl)">NEW</span><span style="font-size:11px;color:var(--tx3)">$680K·28</span></div><div class="kcards">
-            <div class="kcard" onclick="openPanel()"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Arctis Ventures</div><span class="badge gy">58</span></div><div style="font-size:12px;color:var(--tx3);margin-bottom:8px">VC / Finance</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--acc)">$33K</span><div class="av">AR</div></div><div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--tx3)">5d · No meeting</span><span class="badge gy">LOW</span></div></div>
-            <div class="kcard"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Creston Media</div><span class="badge gr">71</span></div><div style="font-size:12px;color:var(--tx3);margin-bottom:8px">Media · SMB</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--acc)">$18K</span><div class="av bl">SK</div></div><div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--tx3)">2d · Jun 10</span><span class="badge gr">LOW</span></div></div>
-          </div></div>
-          <div class="kcol"><div class="khead"><span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--acc)">QUALIFIED</span><span style="font-size:11px;color:var(--tx3)">$1.1M·34</span></div><div class="kcards">
-            <div class="kcard" onclick="openPanel()"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Volaris Systems</div><span class="badge ac">73</span></div><div style="font-size:12px;color:var(--tx3);margin-bottom:8px">Manufacturing</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--acc)">$47K</span><div class="av bl">SK</div></div><div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--am)">9d · Overdue</span><span class="badge am">MED</span></div></div>
-          </div></div>
-          <div class="kcol"><div class="khead"><span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pu)">DEMO</span><span style="font-size:11px;color:var(--tx3)">$980K·22</span></div><div class="kcards">
-            <div class="kcard" onclick="openPanel()"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Stratos Global</div><span class="badge ac">81</span></div><div style="font-size:12px;color:var(--tx3);margin-bottom:8px">B2B Services</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--acc)">$62K</span><div class="av">AR</div></div><div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--gr)">Today 4:30PM</span><span class="badge gr">LOW</span></div></div>
-          </div></div>
-          <div class="kcol"><div class="khead"><span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--am)">PROPOSAL</span><span style="font-size:11px;color:var(--tx3)">$1.4M·18</span></div><div class="kcards">
-            <div class="kcard" style="border-left:3px solid var(--am)" onclick="openPanel()"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Meridian Capital</div><span class="badge am">87</span></div><div style="font-size:12px;color:var(--tx3);margin-bottom:8px">FinTech</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--acc)">$84K</span><div class="av">AR</div></div><div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--re)">14d · At risk</span><span class="badge re">HIGH</span></div></div>
-            <div class="kcard"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:600;font-size:13px">NorthEdge Partners</div><span class="badge gr">79</span></div><div style="font-size:12px;color:var(--tx3);margin-bottom:8px">PE · Mid-Market</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--acc)">$120K</span><div class="av bl">SK</div></div><div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--am)">7d · Obj raised</span><span class="badge am">MED</span></div></div>
-          </div></div>
-          <div class="kcol"><div class="khead"><span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gr)">NEGOTIATING</span><span style="font-size:11px;color:var(--tx3)">$690K·10</span></div><div class="kcards">
-            <div class="kcard" style="border-left:3px solid var(--gr)" onclick="openPanel()"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Pinnacle Corp</div><span class="badge gr">94</span></div><div style="font-size:12px;color:var(--tx3);margin-bottom:8px">Enterprise SaaS</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--acc)">$156K</span><div class="av">AR</div></div><div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--gr)">2d · Close 9AM</span><span class="badge gr">LOW</span></div></div>
-          </div></div>
-        </div>
-      </div>
-
-      <!-- MEETINGS -->
-      <div class="pv" id="pv-meetings">
-        <div class="pc">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><span style="font-size:16px;font-weight:700;letter-spacing:-0.01em">Today's Meetings</span><button class="abtn pri"><span class="mat sm">event_available</span>Schedule Meeting</button></div>
-          <div style="display:grid;grid-template-columns:1fr 300px;gap:16px">
-            <div style="display:flex;flex-direction:column;gap:10px">
-              <div class="card" style="padding:16px">
-                <div style="display:flex;align-items:flex-start;gap:14px">
-                  <div style="background:var(--gr-d);border:1px solid rgba(74,222,128,0.2);border-radius:8px;padding:8px 10px;text-align:center;min-width:56px"><div style="font-size:18px;font-weight:700;color:var(--gr)">9</div><div style="font-size:10px;font-weight:600;color:var(--gr)">AM</div></div>
-                  <div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:15px;font-weight:600">Pinnacle Corp — Close Call</span><span class="badge gr">CLOSING</span><span class="aibadge"><span class="mat" style="font-size:11px">auto_awesome</span>AI Ready</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:8px">Rachel Torres · 30 min · Zoom</div><div class="ic gr" style="padding:10px 12px;margin-bottom:10px"><div style="font-size:11px;font-weight:600;color:var(--gr);margin-bottom:2px">AI Pre-Meeting Brief</div><div style="font-size:12px;color:var(--tx2)">Last call: Budget confirmed $150-160K. Main concern: implementation timeline. Open with Acme Corp case study.</div></div><div style="display:flex;gap:6px"><button class="abtn pri"><span class="mat sm">video_call</span>Join Meeting</button><button class="abtn"><span class="mat sm">description</span>Brief</button><button class="abtn"><span class="mat sm">sticky_note_2</span>Notes</button></div></div>
-                  <div style="text-align:right"><div style="font-size:20px;font-weight:700;color:var(--acc)">$156K</div><div style="font-size:11px;color:var(--tx3)">deal value</div></div>
-                </div>
-              </div>
-              <div class="card" style="padding:16px">
-                <div style="display:flex;align-items:flex-start;gap:14px">
-                  <div style="background:var(--acc-d);border:1px solid rgba(173,198,255,0.2);border-radius:8px;padding:8px 10px;text-align:center;min-width:56px"><div style="font-size:18px;font-weight:700;color:var(--acc)">2</div><div style="font-size:10px;font-weight:600;color:var(--acc)">PM</div></div>
-                  <div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:15px;font-weight:600">Volaris Systems — Demo</span><span class="badge bl">DEMO</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:8px">Tom Richards · 45 min · Google Meet</div><div style="display:flex;gap:6px"><button class="abtn pri"><span class="mat sm">video_call</span>Join Meeting</button><button class="abtn"><span class="mat sm">description</span>Brief</button></div></div>
-                  <div style="text-align:right"><div style="font-size:20px;font-weight:700;color:var(--acc)">$47K</div><div style="font-size:11px;color:var(--tx3)">deal value</div></div>
-                </div>
-              </div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div class="card" style="padding:14px">
-                <div class="stitle" style="margin-bottom:12px">Meeting Performance</div>
-                <div style="display:flex;flex-direction:column;gap:10px">
-                  <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--tx2)">Show Rate</span><span style="font-size:12px;font-weight:600;color:var(--gr)">87%</span></div><div class="ftrack"><div class="ffill" style="width:87%;background:var(--gr)"></div></div></div>
-                  <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--tx2)">Meeting → Proposal</span><span style="font-size:12px;font-weight:600;color:var(--acc)">64%</span></div><div class="ftrack"><div class="ffill" style="width:64%"></div></div></div>
-                  <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--tx2)">Booked this week</span><span style="font-weight:600">18</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TASKS -->
-      <div class="pv" id="pv-tasks">
-        <div class="pc">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-            <div style="display:flex;align-items:center;gap:12px"><span style="font-size:16px;font-weight:700;letter-spacing:-0.01em">Tasks</span><span class="badge re">7 overdue</span></div>
-            <div style="display:flex;gap:8px"><div class="tgroup"><div class="topt active">All</div><div class="topt">Mine</div><div class="topt">Overdue</div></div><button class="abtn pri"><span class="mat sm">add</span>New Task</button></div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div>
-              <div class="sh"><span class="stitle" style="color:var(--re)">Overdue</span><span class="badge re">7</span></div>
-              <div style="display:flex;flex-direction:column;gap:6px">
-                <div class="card" style="padding:12px 14px;display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input type="checkbox" style="margin-top:3px;accent-color:var(--acc)"/><div style="flex:1"><div style="font-size:13px;font-weight:600">Send follow-up — Meridian Capital</div><div style="font-size:11px;color:var(--re);margin-top:2px">Overdue by 3 days · $84K</div></div><span class="badge re">HIGH</span></div>
-                <div class="card" style="padding:12px 14px;display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input type="checkbox" style="margin-top:3px;accent-color:var(--acc)"/><div style="flex:1"><div style="font-size:13px;font-weight:600">Send proposal — Volaris Systems</div><div style="font-size:11px;color:var(--re);margin-top:2px">Overdue by 2 days · $47K</div></div><span class="badge re">HIGH</span></div>
-                <div class="card" style="padding:12px 14px;display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input type="checkbox" style="margin-top:3px;accent-color:var(--acc)"/><div style="flex:1"><div style="font-size:13px;font-weight:600">Price objection response — NorthEdge</div><div style="font-size:11px;color:var(--am);margin-top:2px">Overdue by 1 day · $120K</div></div><span class="badge am">MED</span></div>
-              </div>
-            </div>
-            <div>
-              <div class="sh"><span class="stitle" style="color:var(--am)">Due Today</span><span class="badge am">4</span></div>
-              <div style="display:flex;flex-direction:column;gap:6px">
-                <div class="card" style="padding:12px 14px;display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input type="checkbox" style="margin-top:3px;accent-color:var(--acc)"/><div style="flex:1"><div style="font-size:13px;font-weight:600">Run demo — Stratos Global</div><div style="font-size:11px;color:var(--tx2);margin-top:2px">4:30 PM meeting</div></div><span class="badge am">TODAY</span></div>
-                <div class="card" style="padding:12px 14px;display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input type="checkbox" style="margin-top:3px;accent-color:var(--acc)"/><div style="flex:1"><div style="font-size:13px;font-weight:600">Prepare close call brief — Pinnacle</div><div style="font-size:11px;color:var(--tx2);margin-top:2px">9:00 AM meeting</div></div><span class="badge am">TODAY</span></div>
-                <div class="card" style="padding:12px 14px;display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input type="checkbox" style="margin-top:3px;accent-color:var(--acc)"/><div style="flex:1"><div style="font-size:13px;font-weight:600">Update pipeline forecast report</div><div style="font-size:11px;color:var(--tx2);margin-top:2px">Weekly review</div></div><span class="badge gy">LOW</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ANALYTICS -->
-      <div class="pv" id="pv-analytics">
-        <div class="pc">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><span style="font-size:16px;font-weight:700;letter-spacing:-0.01em">Analytics</span><div style="display:flex;gap:8px"><div class="tgroup"><div class="topt active">This Month</div><div class="topt">Quarter</div><div class="topt">YTD</div></div><button class="abtn"><span class="mat sm">download</span>Export</button></div></div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
-            <div class="card" style="padding:14px"><div class="mlbl">Conversion Rate</div><div class="mval" style="margin:5px 0 3px;color:var(--gr)">24%</div><div class="mdelta up">↑ 3.2% vs last period</div></div>
-            <div class="card" style="padding:14px"><div class="mlbl">Avg Deal Cycle</div><div class="mval" style="margin:5px 0 3px">28d</div><div class="mdelta down">↓ 2d slower</div></div>
-            <div class="card" style="padding:14px"><div class="mlbl">Pipeline Velocity</div><div class="mval" style="margin:5px 0 3px;color:var(--acc)">$18.4K</div><div style="font-size:11px;color:var(--tx3)">per day</div></div>
-            <div class="card" style="padding:14px"><div class="mlbl">Quota Attainment</div><div class="mval" style="margin:5px 0 3px">54%</div><div class="ftrack" style="margin-top:6px"><div class="ffill" style="width:54%;background:var(--am)"></div></div></div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="card" style="padding:16px">
-              <div class="sh" style="margin-bottom:14px"><span class="stitle">Conversion Funnel</span></div>
-              <div style="display:flex;flex-direction:column;gap:10px">
-                <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--tx2);width:100px">New Leads</span><div style="flex:1;height:20px;background:var(--bl);border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px"><span style="font-size:11px;font-weight:600;color:#fff">248</span></div></div>
-                <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--tx2);width:100px">Qualified</span><div style="flex:1;height:20px;background:var(--acc);border-radius:3px;width:78%;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;opacity:0.8"><span style="font-size:11px;font-weight:600;color:#0f1117">194</span></div></div>
-                <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--tx2);width:100px">Demo Done</span><div style="flex:1;height:20px;background:var(--pu);border-radius:3px;width:52%;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;opacity:0.7"><span style="font-size:11px;font-weight:600;color:#fff">129</span></div></div>
-                <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--tx2);width:100px">Proposal</span><div style="flex:1;height:20px;background:var(--am);border-radius:3px;width:36%;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;opacity:0.7"><span style="font-size:11px;font-weight:600;color:#0f1117">89</span></div></div>
-                <div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:var(--tx2);width:100px">Closed Won</span><div style="flex:1;height:20px;background:var(--gr);border-radius:3px;width:24%;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;opacity:0.7"><span style="font-size:11px;font-weight:600;color:#0f1117">60</span></div></div>
-              </div>
-            </div>
-            <div class="card" style="padding:16px">
-              <div class="sh" style="margin-bottom:14px"><span class="stitle">Source Quality</span></div>
-              <div style="display:flex;flex-direction:column;gap:8px">
-                <div class="csm" style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:600">LinkedIn Outbound</div><div style="font-size:11px;color:var(--tx3)">42 leads · 31% conv.</div></div><span style="font-weight:700;color:var(--gr)">$1.2M</span></div>
-                <div class="csm" style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:600">Referral</div><div style="font-size:11px;color:var(--tx3)">14 leads · 57% conv.</div></div><span style="font-weight:700;color:var(--gr)">$980K</span></div>
-                <div class="csm" style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:600">Google Ads</div><div style="font-size:11px;color:var(--tx3)">38 leads · 19% conv.</div></div><span style="font-weight:700;color:var(--acc)">$740K</span></div>
-                <div class="csm" style="padding:10px 12px;display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;font-weight:600">Cold Email</div><div style="font-size:11px;color:var(--tx3)">89 leads · 9% conv.</div></div><span style="font-weight:700;color:var(--tx2)">$412K</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- AI WORKSPACE -->
-      <div class="pv" id="pv-ai">
-        <div class="pc">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><span style="font-size:16px;font-weight:700;letter-spacing:-0.01em">AI Workspace</span><span class="aibadge"><span class="mat" style="font-size:12px">auto_awesome</span>NXTUP Intelligence</span></div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
-            <div class="card" style="padding:16px;border-top-color:rgba(167,139,250,0.3)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span class="mat" style="color:var(--pu)">psychology</span><span style="font-size:13px;font-weight:600">Lead Intelligence</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:10px">AI-scored leads with intent signals, company research, and enrichment.</div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--tx2)">Analyzed today</span><span style="font-weight:600;color:var(--pu)">47</span></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px"><span style="color:var(--tx2)">High-intent found</span><span style="font-weight:600;color:var(--gr)">12</span></div></div>
-            <div class="card" style="padding:16px;border-top-color:rgba(173,198,255,0.3)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span class="mat" style="color:var(--acc)">record_voice_over</span><span style="font-size:13px;font-weight:600">Conversation Intel</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Auto-summaries, action items, sentiment analysis from every call.</div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--tx2)">Meetings analyzed</span><span style="font-weight:600;color:var(--acc)">18</span></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px"><span style="color:var(--tx2)">Actions extracted</span><span style="font-weight:600;color:var(--gr)">34</span></div></div>
-            <div class="card" style="padding:16px;border-top-color:rgba(248,113,113,0.3)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span class="mat" style="color:var(--re)">warning</span><span style="font-size:13px;font-weight:600">Deal Risk Detection</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Real-time alerts when deals show stall signals or competitor activity.</div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--tx2)">Risks detected</span><span style="font-weight:600;color:var(--re)">4</span></div><div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px"><span style="color:var(--tx2)">Revenue at risk</span><span style="font-weight:600;color:var(--re)">$142K</span></div></div>
-          </div>
-          <div class="sh"><span class="stitle">AI Insights · Now</span></div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <div class="ic re"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:600;color:var(--re)">🔴 Deal Stall — Meridian Capital</span><span style="font-size:11px;color:var(--tx3)">14d no response</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:8px">Proposal open 14 days, no reply. Similar deals close 3x faster when followed up within 48h. Recommend executive sponsor outreach.</div><button class="abtn pri" style="font-size:11px"><span class="mat sm">bolt</span>Generate Follow-Up Email</button></div>
-            <div class="ic am"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:600;color:var(--am)">⚡ Close Signal — Pinnacle Corp</span><span style="font-size:11px;color:var(--tx3)">High intent</span></div><div style="font-size:12px;color:var(--tx2)">Rachel Torres viewed proposal 3 times in 24h and forwarded to 2 colleagues. Today's close call is critical — don't reschedule.</div></div>
-            <div class="ic gr"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;font-weight:600;color:var(--gr)">✓ Expansion Opportunity — Stratos Global</span><span style="font-size:11px;color:var(--tx3)">Series B raised</span></div><div style="font-size:12px;color:var(--tx2)">Company just raised Series B and posted 3 senior ops hires. Discovery call today could move to $120K+ ACV.</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTIVITY -->
+      <!-- ═══════════════════════════════
+           ACTIVITY
+      ═══════════════════════════════ -->
       <div class="pv" id="pv-activity">
+        <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
+          <span style="font-size:13px;font-weight:600;color:var(--tx)">Activity Feed</span>
+          <div style="flex:1"></div>
+          <button class="abtn" onclick="loadActivity()">
+            <span class="mat sm">refresh</span>Refresh
+          </button>
+        </div>
         <div class="pc">
-          <div style="font-size:16px;font-weight:700;letter-spacing:-0.01em;margin-bottom:16px">Activity Center</div>
           <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
             <div class="card" style="padding:16px">
-              <div class="stitle" style="margin-bottom:14px">Live Feed</div>
-              <div class="arow"><div class="tlic gr" style="flex-shrink:0"><span class="mat sm">trending_up</span></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Pinnacle Corp moved to <strong style="color:var(--gr)">Negotiating</strong></div><div style="font-size:10px;color:var(--tx3)">2m · Alex Rivera</div></div><span style="font-size:12px;font-weight:600;color:var(--acc)">$156K</span></div>
-              <div class="arow"><div class="tlic ac" style="flex-shrink:0"><span class="mat sm">event_available</span></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Meeting booked — Stratos Global</div><div style="font-size:10px;color:var(--tx3)">18m · Inbound</div></div><span style="font-size:12px;font-weight:600;color:var(--acc)">$62K</span></div>
-              <div class="arow"><div class="tlic bl" style="flex-shrink:0"><span class="mat sm">person_add</span></div><div style="flex:1"><div style="font-size:13px;font-weight:500">New opportunity — Arctis Ventures</div><div style="font-size:10px;color:var(--tx3)">42m · Google Ads</div></div><span style="font-size:12px;font-weight:600;color:var(--acc)">$33K</span></div>
-              <div class="arow"><div class="tlic am" style="flex-shrink:0"><span class="mat sm">sticky_note_2</span></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Note added — NorthEdge Partners</div><div style="font-size:10px;color:var(--tx3)">1h · Sarah Kim</div></div></div>
-              <div class="arow" style="border-bottom:none"><div class="tlic gy" style="flex-shrink:0"><span class="mat sm">mail</span></div><div style="flex:1"><div style="font-size:13px;font-weight:500">Email opened — Meridian Capital</div><div style="font-size:10px;color:var(--tx3)">2h · Auto-tracked</div></div></div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:12px">
-              <div class="card" style="padding:14px">
-                <div class="stitle" style="margin-bottom:12px">Today's Summary</div>
-                <div style="display:flex;flex-direction:column;gap:8px">
-                  <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--tx2)">New opportunities</span><span style="font-weight:600;color:var(--gr)">+3</span></div>
-                  <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--tx2)">Stage changes</span><span style="font-weight:600">7</span></div>
-                  <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--tx2)">Meetings booked</span><span style="font-weight:600;color:var(--acc)">4</span></div>
-                  <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--tx2)">Tasks completed</span><span style="font-weight:600;color:var(--gr)">9</span></div>
+              <div class="stitle" style="margin-bottom:14px">Recent Activity</div>
+              <div id="activityFeed">
+                <div class="loading-row" style="text-align:center;padding:32px;color:var(--tx3)">
+                  <span class="spin mat sm">sync</span> Loading activity…
                 </div>
               </div>
+            </div>
+            <div>
               <div class="card" style="padding:14px">
-                <div class="stitle" style="margin-bottom:12px">Team Activity</div>
-                <div style="display:flex;flex-direction:column;gap:8px">
-                  <div style="display:flex;align-items:center;gap:9px"><div class="av">AR</div><div style="flex:1"><div style="font-size:12px;font-weight:500">Alex Rivera</div><div style="font-size:11px;color:var(--tx3)">4 actions · 2 meetings</div></div><span class="badge gr">ACTIVE</span></div>
-                  <div style="display:flex;align-items:center;gap:9px"><div class="av bl">SK</div><div style="flex:1"><div style="font-size:12px;font-weight:500">Sarah Kim</div><div style="font-size:11px;color:var(--tx3)">6 actions · 1 meeting</div></div><span class="badge gr">ACTIVE</span></div>
-                  <div style="display:flex;align-items:center;gap:9px"><div class="av pu">MR</div><div style="flex:1"><div style="font-size:12px;font-weight:500">Mike Ross</div><div style="font-size:11px;color:var(--tx3)">1 action</div></div><span class="badge gy">AWAY</span></div>
+                <div class="stitle" style="margin-bottom:12px">Lead Status Summary</div>
+                <div id="activitySummary" style="display:flex;flex-direction:column;gap:8px">
+                  <div style="text-align:center;padding:16px;color:var(--tx3);font-size:12px">
+                    <span class="spin mat sm">sync</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -742,184 +737,352 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         </div>
       </div>
 
-      <!-- AUTOMATIONS -->
-      <div class="pv" id="pv-automations">
-        <div class="pc">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><span style="font-size:16px;font-weight:700;letter-spacing:-0.01em">Automations</span><button class="abtn pri"><span class="mat sm">add</span>New Automation</button></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="card" style="padding:16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px"><span class="mat" style="color:var(--gr)">bolt</span><span style="font-size:14px;font-weight:600">Auto Lead Qualification</span></div><span class="badge gr">ACTIVE</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Scores and routes new leads based on company size, industry, and intent signals.</div><div style="font-size:11px;color:var(--tx3)">Triggered 248× this month · Saved ~12h</div></div>
-            <div class="card" style="padding:16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px"><span class="mat" style="color:var(--acc)">schedule_send</span><span style="font-size:14px;font-weight:600">Follow-Up Reminders</span></div><span class="badge gr">ACTIVE</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Creates tasks when opportunity has no activity for 5+ days. Escalates at 10 days.</div><div style="font-size:11px;color:var(--tx3)">7 active reminders · Triggered 89×</div></div>
-            <div class="card" style="padding:16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px"><span class="mat" style="color:var(--pu)">smart_toy</span><span style="font-size:14px;font-weight:600">AI Meeting Brief</span></div><span class="badge gr">ACTIVE</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Generates AI brief 1h before every call. Includes history, objections, next steps.</div><div style="font-size:11px;color:var(--tx3)">18 briefs generated this month</div></div>
-            <div class="card" style="padding:16px;opacity:0.6"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px"><span class="mat" style="color:var(--tx3)">mail</span><span style="font-size:14px;font-weight:600">Email Sequence</span></div><span class="badge gy">PAUSED</span></div><div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Multi-step drip sequence for inbound leads. 5 emails over 14 days.</div><div style="font-size:11px;color:var(--tx3)">Paused for review</div></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- CALENDAR -->
+      <!-- ═══════════════════════════════
+           CALENDAR
+      ═══════════════════════════════ -->
       <div class="pv" id="pv-calendar">
+        <div style="border-bottom:1px solid var(--bd);padding:12px 24px;background:var(--s1);display:flex;align-items:center;gap:16px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="tbb" onclick="calPrev()"><span class="mat sm">chevron_left</span></button>
+            <span style="font-size:16px;font-weight:700;color:var(--tx);min-width:160px;text-align:center" id="calMonthTitle">—</span>
+            <button class="tbb" onclick="calNext()"><span class="mat sm">chevron_right</span></button>
+          </div>
+          <button class="abtn" onclick="calGoToday()">Today</button>
+          <div style="flex:1"></div>
+          <div style="display:flex;gap:10px;font-size:11px;color:var(--tx3)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:var(--bl);display:inline-block"></span>Potential</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:var(--gr);display:inline-block"></span>Won</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:var(--re);display:inline-block"></span>Lost</span>
+          </div>
+        </div>
         <div class="pc">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="display:flex;align-items:center;gap:10px"><span style="font-size:16px;font-weight:700;letter-spacing:-0.01em">June 2025</span><button class="tbb"><span class="mat sm">chevron_left</span></button><button class="tbb"><span class="mat sm">chevron_right</span></button></div><div style="display:flex;gap:8px"><div class="tgroup"><div class="topt">Day</div><div class="topt active">Week</div><div class="topt">Month</div></div><button class="abtn pri"><span class="mat sm">add</span>Schedule</button></div></div>
-          <div class="card" style="padding:16px">
-            <div style="display:grid;grid-template-columns:60px repeat(7,1fr);gap:1px;margin-bottom:8px">
-              <div></div>
-              <div style="text-align:center;padding:6px 0"><div style="font-size:11px;color:var(--tx3)">MON</div><div style="font-size:16px;font-weight:600">2</div></div>
-              <div style="text-align:center;padding:6px 0"><div style="font-size:11px;color:var(--tx3)">TUE</div><div style="font-size:16px;font-weight:600">3</div></div>
-              <div style="text-align:center;padding:6px 0"><div style="font-size:11px;color:var(--tx3)">WED</div><div style="font-size:16px;font-weight:600">4</div></div>
-              <div style="text-align:center;padding:6px 0"><div style="font-size:11px;color:var(--tx3)">THU</div><div style="font-size:16px;font-weight:600">5</div></div>
-              <div style="text-align:center;padding:6px 0"><div style="font-size:11px;color:var(--tx3)">FRI</div><div style="font-size:16px;font-weight:600">6</div></div>
-              <div style="text-align:center;padding:6px 0;background:var(--acc-d);border-radius:6px"><div style="font-size:11px;color:var(--acc)">SAT</div><div style="font-size:16px;font-weight:700;color:var(--acc)">7</div></div>
-              <div style="text-align:center;padding:6px 0"><div style="font-size:11px;color:var(--tx3)">SUN</div><div style="font-size:16px;font-weight:600">8</div></div>
-            </div>
-            <div style="display:grid;grid-template-columns:60px repeat(7,1fr);gap:1px;border-top:1px solid var(--bd)">
-              <div style="padding:8px 4px;text-align:right;font-size:10px;color:var(--tx3)">9 AM</div>
-              <div style="padding:4px;border-right:1px solid var(--bd)"><div style="background:var(--gr-d);border:1px solid rgba(74,222,128,0.2);border-radius:4px;padding:5px 7px;font-size:11px;font-weight:500;color:var(--gr)">Pinnacle Close<br/><span style="color:var(--tx3);font-weight:400">9:00–9:30</span></div></div>
-              <div style="border-right:1px solid var(--bd)"></div><div style="border-right:1px solid var(--bd)"></div><div style="border-right:1px solid var(--bd)"></div><div style="border-right:1px solid var(--bd)"></div>
-              <div style="background:rgba(173,198,255,0.02);border-right:1px solid var(--bd)"></div><div></div>
-              <div style="padding:8px 4px;text-align:right;font-size:10px;color:var(--tx3)">2 PM</div>
-              <div style="padding:4px;border-right:1px solid var(--bd)"><div style="background:var(--acc-d);border:1px solid rgba(173,198,255,0.2);border-radius:4px;padding:5px 7px;font-size:11px;font-weight:500;color:var(--acc)">Volaris Demo<br/><span style="color:var(--tx3);font-weight:400">2:00–2:45</span></div></div>
-              <div style="border-right:1px solid var(--bd)"></div>
-              <div style="padding:4px;border-right:1px solid var(--bd)"><div style="background:var(--bl-d);border:1px solid rgba(96,165,250,0.2);border-radius:4px;padding:5px 7px;font-size:11px;font-weight:500;color:var(--bl)">NorthEdge Neg<br/><span style="color:var(--tx3);font-weight:400">2:00–3:00</span></div></div>
-              <div style="border-right:1px solid var(--bd)"></div><div style="border-right:1px solid var(--bd)"></div>
-              <div style="background:rgba(173,198,255,0.02);border-right:1px solid var(--bd)"></div><div></div>
-              <div style="padding:8px 4px;text-align:right;font-size:10px;color:var(--tx3)">4:30</div>
-              <div style="padding:4px;border-right:1px solid var(--bd)"><div style="background:rgba(255,255,255,0.03);border:1px solid var(--bd);border-radius:4px;padding:5px 7px;font-size:11px;font-weight:500;color:var(--tx2)">Stratos Discovery<br/><span style="color:var(--tx3);font-weight:400">4:30–5:30</span></div></div>
-              <div style="border-right:1px solid var(--bd)"></div><div style="border-right:1px solid var(--bd)"></div><div style="border-right:1px solid var(--bd)"></div><div style="border-right:1px solid var(--bd)"></div>
-              <div style="background:rgba(173,198,255,0.02);border-right:1px solid var(--bd)"></div><div></div>
+          <!-- Calendar header row -->
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:1px">
+            <div class="cal-hdr">Mon</div>
+            <div class="cal-hdr">Tue</div>
+            <div class="cal-hdr">Wed</div>
+            <div class="cal-hdr">Thu</div>
+            <div class="cal-hdr">Fri</div>
+            <div class="cal-hdr">Sat</div>
+            <div class="cal-hdr">Sun</div>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden">
+            <div id="calGrid" class="cal-grid">
+              <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--tx3);font-size:12px">
+                <span class="spin mat sm">sync</span> Loading calendar…
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- REPORTS -->
-      <div class="pv" id="pv-reports">
-        <div class="pc">
-          <div style="font-size:16px;font-weight:700;letter-spacing:-0.01em;margin-bottom:16px">Reports</div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <div class="card" style="padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer"><div style="display:flex;align-items:center;gap:10px"><span class="mat" style="color:var(--acc)">description</span><div><div style="font-weight:600">Monthly Revenue Report</div><div style="font-size:12px;color:var(--tx3)">Pipeline, won deals, forecast — June 2025</div></div></div><span class="mat sm" style="color:var(--tx3)">open_in_new</span></div>
-            <div class="card" style="padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer"><div style="display:flex;align-items:center;gap:10px"><span class="mat" style="color:var(--gr)">people</span><div><div style="font-weight:600">Team Performance</div><div style="font-size:12px;color:var(--tx3)">Individual metrics, quota attainment, activity</div></div></div><span class="mat sm" style="color:var(--tx3)">open_in_new</span></div>
-            <div class="card" style="padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer"><div style="display:flex;align-items:center;gap:10px"><span class="mat" style="color:var(--am)">conversion_path</span><div><div style="font-weight:600">Conversion Analysis</div><div style="font-size:12px;color:var(--tx3)">Stage funnel, drop-off rates, velocity</div></div></div><span class="mat sm" style="color:var(--tx3)">open_in_new</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SETTINGS -->
+      <!-- ═══════════════════════════════
+           SETTINGS
+      ═══════════════════════════════ -->
       <div class="pv" id="pv-settings">
         <div class="pc">
           <div style="font-size:16px;font-weight:700;letter-spacing:-0.01em;margin-bottom:16px">Settings</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div class="card" style="padding:16px"><div style="font-size:14px;font-weight:600;margin-bottom:6px">Workspace</div><div style="font-size:12px;color:var(--tx3)">Team, billing, integrations</div></div>
-            <div class="card" style="padding:16px"><div style="font-size:14px;font-weight:600;margin-bottom:6px">Notifications</div><div style="font-size:12px;color:var(--tx3)">Alerts, reminders, digests</div></div>
-            <div class="card" style="padding:16px"><div style="font-size:14px;font-weight:600;margin-bottom:6px">Integrations</div><div style="font-size:12px;color:var(--tx3)">CRM, calendar, email, Slack, n8n</div></div>
-            <div class="card" style="padding:16px"><div style="font-size:14px;font-weight:600;margin-bottom:6px">AI Settings</div><div style="font-size:12px;color:var(--tx3)">Models, context, scoring parameters</div></div>
+            <div class="card" style="padding:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:6px">Webhook Endpoints</div>
+              <div style="font-size:12px;color:var(--tx3);margin-bottom:10px">Connected N8N integrations</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg);border-radius:5px;border:1px solid var(--bd)">
+                  <span style="font-size:12px;color:var(--tx2)">GET Leads</span>
+                  <span class="badge gr">Active</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg);border-radius:5px;border:1px solid var(--bd)">
+                  <span style="font-size:12px;color:var(--tx2)">GET Clients</span>
+                  <span class="badge gr">Active</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg);border-radius:5px;border:1px solid var(--bd)">
+                  <span style="font-size:12px;color:var(--tx2)">Lead Management</span>
+                  <span class="badge gr">Active</span>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="padding:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:6px">About</div>
+              <div style="font-size:12px;color:var(--tx3);line-height:1.7">
+                NXTUP Lead — Revenue Operating System<br/>
+                Version 2.0 — Production<br/>
+                <br/>
+                Data source: PostgreSQL via N8N<br/>
+                All metrics are live and real-time.
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
+    </div><!-- end workspace -->
+  </div><!-- end main -->
+</div><!-- end app -->
+
+<!-- ═══════════════════════════════════════
+     LEAD DETAIL PANEL — unchanged from original
+═══════════════════════════════════════ -->
+<div id="leadPanel">
+  <div class="lp-hd">
+    <div class="lp-hd-top">
+      <div style="min-width:0;flex:1">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px" id="lp-badges"></div>
+        <div class="lp-company" id="lp-company">—</div>
+        <div class="lp-sub" id="lp-sub">—</div>
+      </div>
+      <button class="tbb" onclick="closeLeadPanel()"><span class="mat">close</span></button>
+    </div>
+    <div class="lp-acts">
+      <button class="abtn" onclick="lpEdit()"><span class="mat sm">edit</span>Edit</button>
+      <button class="abtn" id="btnWon"
+        style="color:var(--gr);border-color:rgba(74,222,128,0.25)"
+        onclick="lpStatus('Won')">
+        <span class="mat sm">check_circle</span>Won
+      </button>
+      <button class="abtn" id="btnLost"
+        style="color:var(--re);border-color:rgba(248,113,113,0.25)"
+        onclick="lpStatus('Lost')">
+        <span class="mat sm">cancel</span>Lost
+      </button>
+      <button class="abtn" id="btnPotential"
+        style="color:var(--bl);border-color:rgba(96,165,250,0.25)"
+        onclick="lpStatus('Potential')">
+        <span class="mat sm">radio_button_unchecked</span>Potential
+      </button>
+      <button class="abtn pri" onclick="lpConvert()">
+        <span class="mat sm">person_check</span>Convert
+      </button>
+      <button class="abtn danger" onclick="lpDelete()">
+        <span class="mat sm">delete</span>Delete
+      </button>
     </div>
   </div>
+  <div class="lp-body" id="leadContent"></div>
 </div>
 
+<!-- ═══════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════ -->
 <script>
-const titles={dashboard:'Command Center',opportunities:'Opportunities',pipeline:'Pipeline',meetings:'Meetings',calendar:'Calendar',tasks:'Tasks',analytics:'Analytics',activity:'Activity Center',automations:'Automations',ai:'AI Workspace',reports:'Reports',settings:'Settings'};
-function sp(page,el){
-  document.querySelectorAll('.pv').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const p=document.getElementById('pv-'+page);
-  if(p)p.classList.add('active');
-  if(el)el.classList.add('active');
-  document.getElementById('ptitle').textContent=titles[page]||page;
-  document.getElementById('dpanel').classList.remove('open');
-}
-function go(page){sp(page);closeCmdPal();}
-function openCmdPal(){document.getElementById('cmdpal').classList.add('open');setTimeout(()=>document.getElementById('cmdinput').focus(),50);}
-function closeCmdPal(){document.getElementById('cmdpal').classList.remove('open');}
-function openPanel(){document.getElementById('dpanel').classList.add('open');}
-function closePanel(){document.getElementById('dpanel').classList.remove('open');}
-function switchTab(el,tab){
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('[id^="pt-"]').forEach(p=>p.style.display='none');
-  document.getElementById('pt-'+tab).style.display='block';
-}
-document.addEventListener('keydown',e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openCmdPal();}
-  if(e.key==='Escape')closeCmdPal();
-});
-</script>
-  <script>
-/* ═══════════════════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════════════════ */
+'use strict';
+
+/* ═══════════════════════════════════════
+   CONFIG — same endpoints as original
+═══════════════════════════════════════ */
 const API = {
   getLeads      : 'https://n8n.upleaddigital.com/webhook/get-leads',
   getClients    : 'https://n8n.upleaddigital.com/webhook/get-clients',
   leadManagement: 'https://n8n.upleaddigital.com/webhook/lead-management',
 };
 
-/* ═══════════════════════════════════════════════════
+const PAGE_TITLES = {
+  dashboard    : 'Dashboard',
+  opportunities: 'Leads',
+  clients      : 'Clients',
+  activity     : 'Activity',
+  calendar     : 'Calendar',
+  settings     : 'Settings',
+};
+
+const VALID_PAGES = Object.keys(PAGE_TITLES);
+
+/* ═══════════════════════════════════════
    STATE
-═══════════════════════════════════════════════════ */
-let allLeads    = [];
-let currentLead = null;
+═══════════════════════════════════════ */
+let allLeads      = [];
+let allClients    = [];
+let currentLead   = null;
+let activeFilter  = 'all';
+let calYear       = new Date().getFullYear();
+let calMonth      = new Date().getMonth(); // 0-indexed
+let confirmCallback = null;
+let activityLoaded  = false;
+let clientsLoaded   = false;
 
-/* ═══════════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════════ */
-function fmtDate(d){
-  if(!d) return '—';
-  return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+/* ═══════════════════════════════════════
+   ROUTING — hash-based, no server needed
+═══════════════════════════════════════ */
+function navigate(page, pushState = true) {
+  if (!VALID_PAGES.includes(page)) page = 'dashboard';
+
+  // update URL hash
+  if (pushState && location.hash !== '#' + page) {
+    history.pushState({ page }, '', '#' + page);
+  }
+
+  // activate page view
+  document.querySelectorAll('.pv').forEach(p => p.classList.remove('active'));
+  const pv = document.getElementById('pv-' + page);
+  if (pv) pv.classList.add('active');
+
+  // activate nav item
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navEl = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (navEl) navEl.classList.add('active');
+
+  // update topbar title
+  document.getElementById('ptitle').textContent = PAGE_TITLES[page] || page;
+
+  // close any open panels
+  document.getElementById('dpanel') && (document.getElementById('dpanel').classList.remove('open'));
+  closeCmdPal();
+
+  // lazy-load page data
+  if (page === 'clients' && !clientsLoaded)  { loadClients(); clientsLoaded = true; }
+  if (page === 'activity' && !activityLoaded) { loadActivity(); activityLoaded = true; }
+  if (page === 'calendar') renderCalendar();
 }
-function fmtTime(t){ return t || '—'; }
 
-function scClass(status){
-  const map={Won:'gr',Lost:'re',Potential:'bl'};
-  return map[status]||'gy';
+// browser back/forward
+window.addEventListener('popstate', e => {
+  const page = (e.state && e.state.page) || pageFromHash();
+  navigate(page, false);
+});
+
+function pageFromHash() {
+  const h = location.hash.replace('#', '');
+  return VALID_PAGES.includes(h) ? h : 'dashboard';
 }
 
-function toast(msg, type='ok'){
+// boot: respect current URL
+function bootPage() {
+  const page = pageFromHash();
+  navigate(page, false);
+  if (page !== 'dashboard') {
+    // replace state so we have a proper state object
+    history.replaceState({ page }, '', '#' + page);
+  } else {
+    history.replaceState({ page: 'dashboard' }, '', '#dashboard');
+  }
+}
+
+/* ═══════════════════════════════════════
+   SIDEBAR TOGGLE
+═══════════════════════════════════════ */
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  const sb = document.getElementById('sidebar');
+  const collapsed = sb.style.width === '56px';
+  sb.style.width = collapsed ? '220px' : '56px';
+  sb.style.minWidth = collapsed ? '220px' : '56px';
+  sb.querySelectorAll('.lbl, .nbadge, .nav-bottom > div:not(.nav-item)').forEach(el => {
+    el.style.display = collapsed ? '' : 'none';
+  });
+});
+
+/* ═══════════════════════════════════════
+   HELPERS — carry over from original
+═══════════════════════════════════════ */
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+function fmtTime(t) { return t || '—'; }
+function scClass(status) {
+  const map = { Won:'gr', Lost:'re', Potential:'bl' };
+  return map[status] || 'gy';
+}
+function initials(s) {
+  if (!s) return '?';
+  return s.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+}
+
+function toast(msg, type = 'ok') {
   const el = document.getElementById('lpToast');
   el.textContent = msg;
   el.className = `lp-toast ${type} show`;
-  setTimeout(()=>{ el.className='lp-toast'; }, 3000);
+  setTimeout(() => { el.className = 'lp-toast'; }, 3000);
 }
 
-/* ═══════════════════════════════════════════════════
-   LOAD LEADS
-═══════════════════════════════════════════════════ */
-async function loadLeads(){
-  const tbody = document.getElementById('leadsTable');
-  tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--tx3)">
-    <span class="mat" style="font-size:20px;display:block;margin-bottom:6px">hourglass_top</span>Loading leads…</td></tr>`;
+/* ═══════════════════════════════════════
+   CONFIRM DIALOG
+═══════════════════════════════════════ */
+function showConfirm(title, msg, okLabel, okClass, cb) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent   = msg;
+  const btn = document.getElementById('confirmOkBtn');
+  btn.textContent = okLabel;
+  btn.className   = `abtn ${okClass}`;
+  confirmCallback = cb;
+  document.getElementById('confirmDialog').classList.add('open');
+}
+function confirmCancel() {
+  document.getElementById('confirmDialog').classList.remove('open');
+  confirmCallback = null;
+}
+function confirmOk() {
+  document.getElementById('confirmDialog').classList.remove('open');
+  if (typeof confirmCallback === 'function') confirmCallback();
+  confirmCallback = null;
+}
+
+/* ═══════════════════════════════════════
+   COMMAND PALETTE
+═══════════════════════════════════════ */
+function openCmdPal() {
+  document.getElementById('cmdpal').classList.add('open');
+  setTimeout(() => document.getElementById('cmdinput').focus(), 50);
+}
+function closeCmdPal() {
+  document.getElementById('cmdpal').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════
+   LOAD LEADS — preserved from original + sidebar counters
+═══════════════════════════════════════ */
+async function loadLeads() {
+  renderTableLoading();
   try {
     const res  = await fetch(API.getLeads);
     const data = await res.json();
     allLeads   = Array.isArray(data) ? data : [];
     renderTable(allLeads);
-  } catch(e){
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--re)">
-      Failed to load leads. Check webhook connection.</td></tr>`;
-    console.error(e);
+    updateSidebarCounts();
+    updateDashboard();
+  } catch(e) {
+    document.getElementById('leadsTable').innerHTML =
+      `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--re)">
+        <span class="mat sm">error</span> Failed to load leads. Check webhook connection.
+      </td></tr>`;
+    console.error('loadLeads:', e);
   }
 }
 
-function renderTable(leads){
+function renderTableLoading() {
+  document.getElementById('leadsTable').innerHTML =
+    `<tr class="loading-row"><td colspan="9">
+      <span class="spin mat sm">sync</span> Loading leads…
+    </td></tr>`;
+}
+
+function renderTable(leads) {
   const tbody = document.getElementById('leadsTable');
   const count = document.getElementById('leadsCount');
-  if(count) count.textContent = `Showing ${leads.length} leads`;
 
-  if(!leads.length){
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--tx3)">No leads found.</td></tr>`;
+  if (count) count.textContent = `${leads.length} lead${leads.length !== 1 ? 's' : ''}`;
+
+  if (!leads.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="9">
+        <div class="empty-state">
+          <span class="mat">person_search</span>
+          <p>No leads found.</p>
+          <button class="abtn pri" onclick="openCreateLead()">
+            <span class="mat sm">add</span>Add First Lead
+          </button>
+        </div>
+      </td></tr>`;
     return;
   }
 
   tbody.innerHTML = leads.map(lead => {
-    const sc  = scClass(lead.status);
     const name = ((lead.first_name||'') + ' ' + (lead.last_name||'')).trim() || '—';
-    const src  = lead.utm_source || '—';
     const date = lead.preferred_date
-      ? `${fmtDate(lead.preferred_date)} ${lead.preferred_time||''}`.trim()
+      ? `${fmtDate(lead.preferred_date)}${lead.preferred_time ? ' ' + lead.preferred_time : ''}`.trim()
       : '—';
-    const last = lead.last_contacted_at ? fmtDate(lead.last_contacted_at) : '<span style="color:var(--tx3)">Never</span>';
+    const last = lead.last_contacted_at
+      ? fmtDate(lead.last_contacted_at)
+      : '<span style="color:var(--tx3)">Never</span>';
+    const src  = lead.utm_source || '—';
 
     return `
       <tr onclick="openLead(${lead.id})" style="cursor:pointer">
@@ -952,22 +1115,473 @@ function renderTable(leads){
   }).join('');
 }
 
-/* ═══════════════════════════════════════════════════
-   OPEN LEAD PANEL
-═══════════════════════════════════════════════════ */
-function openLead(id){
+/* ═══════════════════════════════════════
+   FILTER LEADS
+═══════════════════════════════════════ */
+function filterLeads(filter, el) {
+  activeFilter = filter;
+  document.querySelectorAll('#leadsFilterGroup .topt').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const filtered = filter === 'all' ? allLeads : allLeads.filter(l => l.status === filter);
+  renderTable(filtered);
+}
+
+/* ═══════════════════════════════════════
+   SIDEBAR COUNTERS
+═══════════════════════════════════════ */
+function updateSidebarCounts() {
+  const potential = allLeads.filter(l => l.status === 'Potential').length;
+  const el = document.getElementById('navCountLeads');
+  if (el) el.textContent = potential;
+
+  // sidebar alert: leads without any contact
+  const neverContacted = allLeads.filter(l => !l.last_contacted_at && l.status === 'Potential').length;
+  const alertBox   = document.getElementById('sidebarAlert');
+  const alertTitle = document.getElementById('sidebarAlertTitle');
+  const alertBody  = document.getElementById('sidebarAlertBody');
+  if (neverContacted > 0 && alertBox) {
+    alertBox.style.display = '';
+    alertTitle.textContent = `${neverContacted} untouched lead${neverContacted !== 1 ? 's' : ''}`;
+    alertBody.textContent  = `${neverContacted} potential lead${neverContacted !== 1 ? 's' : ''} never contacted`;
+  } else if (alertBox) {
+    alertBox.style.display = 'none';
+  }
+}
+
+/* ═══════════════════════════════════════
+   DASHBOARD — real data from allLeads
+═══════════════════════════════════════ */
+function updateDashboard() {
+  if (!allLeads.length && document.getElementById('statTotal').textContent === '—') return;
+
+  const total     = allLeads.length;
+  const potential = allLeads.filter(l => l.status === 'Potential').length;
+  const won       = allLeads.filter(l => l.status === 'Won').length;
+  const lost      = allLeads.filter(l => l.status === 'Lost').length;
+
+  // stats
+  document.getElementById('statTotal').textContent     = total;
+  document.getElementById('statPotential').textContent = potential;
+  document.getElementById('statWon').textContent       = won;
+  document.getElementById('statLost').textContent      = lost;
+
+  // date bar
+  const now = new Date();
+  document.getElementById('dashDate').textContent =
+    now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // meetings today / this week (from preferred_date)
+  const todayStr = now.toISOString().slice(0,10);
+  const weekEnd  = new Date(now); weekEnd.setDate(now.getDate() + 6);
+  const weekStr  = weekEnd.toISOString().slice(0,10);
+
+  const meetingsToday = allLeads.filter(l => l.preferred_date && l.preferred_date.slice(0,10) === todayStr).length;
+  const meetingsWeek  = allLeads.filter(l => {
+    if (!l.preferred_date) return false;
+    const d = l.preferred_date.slice(0,10);
+    return d >= todayStr && d <= weekStr;
+  }).length;
+
+  document.getElementById('dashMeetingsToday').textContent = meetingsToday;
+  document.getElementById('dashMeetingsWeek').textContent  = meetingsWeek;
+
+  // breakdown bar chart
+  const bkEl = document.getElementById('dashBreakdown');
+  if (bkEl && total > 0) {
+    bkEl.innerHTML = `
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:12px;color:var(--tx2)">Potential</span>
+          <span style="font-size:12px;font-weight:600">${potential}</span>
+        </div>
+        <div class="ftrack"><div class="ffill" style="width:${(potential/total*100).toFixed(0)}%;background:var(--bl)"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:12px;color:var(--tx2)">Won</span>
+          <span style="font-size:12px;font-weight:600;color:var(--gr)">${won}</span>
+        </div>
+        <div class="ftrack"><div class="ffill" style="width:${(won/total*100).toFixed(0)}%;background:var(--gr)"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:12px;color:var(--tx2)">Lost</span>
+          <span style="font-size:12px;font-weight:600;color:var(--re)">${lost}</span>
+        </div>
+        <div class="ftrack"><div class="ffill" style="width:${(lost/total*100).toFixed(0)}%;background:var(--re)"></div></div>
+      </div>
+      <div style="padding-top:8px;border-top:1px solid var(--bd);display:flex;justify-content:space-between">
+        <span style="font-size:12px;color:var(--tx3)">Win rate</span>
+        <span style="font-size:12px;font-weight:700;color:${won > 0 ? 'var(--gr)' : 'var(--tx3)'}">
+          ${total > 0 ? ((won / (won + lost || 1)) * 100).toFixed(0) : 0}%
+        </span>
+      </div>`;
+  } else if (bkEl) {
+    bkEl.innerHTML = `<div class="empty-state" style="padding:20px">
+      <span class="mat" style="font-size:24px">bar_chart</span>
+      <p>No data yet</p>
+    </div>`;
+  }
+
+  // latest 6 leads
+  const latestLeads = [...allLeads]
+    .sort((a,b) => new Date(b.created_at||0) - new Date(a.created_at||0))
+    .slice(0,6);
+  const latestEl = document.getElementById('dashLatestLeads');
+  if (latestEl) {
+    if (!latestLeads.length) {
+      latestEl.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--tx3)">No leads yet</td></tr>`;
+    } else {
+      latestEl.innerHTML = latestLeads.map(l => `
+        <tr onclick="openLead(${l.id})" style="cursor:pointer">
+          <td>
+            <div style="font-weight:600">${l.company_name||'—'}</div>
+            <div style="font-size:11px;color:var(--tx3)">${l.utm_source||'—'}</div>
+          </td>
+          <td style="font-size:12px">${((l.first_name||'')+' '+(l.last_name||'')).trim()||'—'}</td>
+          <td><span class="badge st-${l.status||'Potential'}">${l.status||'Potential'}</span></td>
+          <td style="font-size:11px;color:var(--tx3)">${fmtDate(l.created_at)}</td>
+        </tr>`).join('');
+    }
+  }
+
+  // upcoming meetings
+  const upcoming = allLeads
+    .filter(l => l.preferred_date && l.preferred_date.slice(0,10) >= todayStr)
+    .sort((a,b) => a.preferred_date.localeCompare(b.preferred_date))
+    .slice(0,5);
+  const upEl = document.getElementById('dashUpcomingMeetings');
+  if (upEl) {
+    if (!upcoming.length) {
+      upEl.innerHTML = `<div style="text-align:center;padding:20px;color:var(--tx3);font-size:12px">
+        <span class="mat" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.4">event_busy</span>
+        No upcoming meetings scheduled
+      </div>`;
+    } else {
+      upEl.innerHTML = upcoming.map(l => {
+        const isToday = l.preferred_date.slice(0,10) === todayStr;
+        const sc = scClass(l.status);
+        return `
+          <div class="csm" style="padding:10px 12px;cursor:pointer;
+            ${isToday ? 'border-color:rgba(173,198,255,0.3);background:var(--acc-g)' : ''}"
+            onclick="openLead(${l.id})">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+              <span style="font-size:11px;font-weight:600;color:${isToday ? 'var(--acc)' : 'var(--tx3)'}">${fmtDate(l.preferred_date)}${l.preferred_time ? ' · '+l.preferred_time : ''}</span>
+              <span class="badge ${sc}" style="font-size:9px">${l.status||'Potential'}</span>
+            </div>
+            <div style="font-size:13px;font-weight:600">${l.company_name||'—'}</div>
+            <div style="font-size:11px;color:var(--tx3)">${((l.first_name||'')+' '+(l.last_name||'')).trim()||'—'}</div>
+          </div>`;
+      }).join('');
+    }
+  }
+}
+
+/* ═══════════════════════════════════════
+   LOAD CLIENTS
+═══════════════════════════════════════ */
+async function loadClients() {
+  document.getElementById('clientsTable').innerHTML =
+    `<tr class="loading-row"><td colspan="7"><span class="spin mat sm">sync</span> Loading clients…</td></tr>`;
+  try {
+    const res  = await fetch(API.getClients);
+    const data = await res.json();
+    allClients = Array.isArray(data) ? data : [];
+    renderClientsTable(allClients);
+
+    // update sidebar + dashboard counter
+    const el = document.getElementById('navCountClients');
+    if (el) el.textContent = allClients.length;
+    const dEl = document.getElementById('statClients');
+    if (dEl) dEl.textContent = allClients.length;
+  } catch(e) {
+    document.getElementById('clientsTable').innerHTML =
+      `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--re)">
+        <span class="mat sm">error</span> Failed to load clients.
+      </td></tr>`;
+    console.error('loadClients:', e);
+  }
+}
+
+function renderClientsTable(clients) {
+  const tbody = document.getElementById('clientsTable');
+  const count = document.getElementById('clientsCount');
+  if (count) count.textContent = `${clients.length} client${clients.length !== 1 ? 's' : ''}`;
+
+  if (!clients.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="7">
+        <div class="empty-state">
+          <span class="mat">group</span>
+          <p>No clients yet. Convert a lead to create your first client.</p>
+          <button class="abtn pri" onclick="navigate('opportunities')">
+            View Leads →
+          </button>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = clients.map(c => {
+    const name = ((c.first_name||'') + ' ' + (c.last_name||'')).trim() || '—';
+    const mgr  = c.account_manager_id || c.account_manager || c.owner_id || '—';
+    return `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="av" style="background:var(--gr-d);color:var(--gr);font-size:10px">
+              ${initials(c.company_name||name)}
+            </div>
+            <div>
+              <div style="font-weight:600">${c.company_name||'—'}</div>
+              <div style="font-size:11px;color:var(--tx3)">${c.id ? '#'+c.id : ''}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-size:13px">${name}</td>
+        <td>
+          ${c.email
+            ? `<a href="mailto:${c.email}" style="color:var(--acc);text-decoration:none;font-size:13px">${c.email}</a>`
+            : '<span style="color:var(--tx3)">—</span>'}
+        </td>
+        <td style="color:var(--tx2);font-size:13px">${c.phone||'—'}</td>
+        <td style="font-size:12px;color:var(--gr)">${fmtDate(c.converted_at||c.created_at)}</td>
+        <td style="font-size:12px;color:var(--tx2)">${mgr}</td>
+        <td>
+          ${c.email ? `<a href="mailto:${c.email}"><button class="tbb" style="width:28px;height:28px">
+            <span class="mat sm">mail</span></button></a>` : ''}
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   LOAD ACTIVITY — from crm.activities via lead-management webhook
+═══════════════════════════════════════ */
+async function loadActivity() {
+  document.getElementById('activityFeed').innerHTML =
+    `<div style="text-align:center;padding:32px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div>`;
+
+  try {
+    const res  = await fetch(API.leadManagement, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ action: 'get_activities' })
+    });
+    const data = await res.json();
+    const activities = Array.isArray(data) ? data : (data.activities || []);
+    renderActivityFeed(activities);
+  } catch(e) {
+    // fallback: derive synthetic activity from allLeads
+    const synthetic = deriveSyntheticActivity(allLeads);
+    renderActivityFeed(synthetic);
+    console.warn('Activity webhook not available, using derived data:', e);
+  }
+
+  // always render summary from allLeads
+  renderActivitySummary();
+}
+
+function deriveSyntheticActivity(leads) {
+  // Build a timeline from lead field changes as fallback
+  const events = [];
+  leads.forEach(l => {
+    if (l.created_at) events.push({
+      type: 'created', description: `Lead created — ${l.company_name||'Unknown'}`,
+      created_at: l.created_at, lead_id: l.id
+    });
+    if (l.last_contacted_at) events.push({
+      type: 'contacted', description: `Contacted — ${l.company_name||'Unknown'}`,
+      created_at: l.last_contacted_at, lead_id: l.id
+    });
+    if (l.converted_at) events.push({
+      type: 'converted', description: `Converted to client — ${l.company_name||'Unknown'}`,
+      created_at: l.converted_at, lead_id: l.id
+    });
+  });
+  return events.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0,30);
+}
+
+function activityIcon(type) {
+  const map = {
+    created   : { cls:'ac', icon:'add_circle' },
+    contacted : { cls:'bl', icon:'call' },
+    converted : { cls:'gr', icon:'verified' },
+    won       : { cls:'gr', icon:'check_circle' },
+    lost      : { cls:'re', icon:'cancel' },
+    note      : { cls:'am', icon:'sticky_note_2' },
+    meeting   : { cls:'pu', icon:'event' },
+    email     : { cls:'ac', icon:'mail' },
+    status    : { cls:'am', icon:'swap_horiz' },
+    default   : { cls:'gy', icon:'history' },
+  };
+  const t = (type||'').toLowerCase();
+  for (const [key, val] of Object.entries(map)) {
+    if (t.includes(key)) return val;
+  }
+  return map.default;
+}
+
+function renderActivityFeed(activities) {
+  const el = document.getElementById('activityFeed');
+  if (!activities.length) {
+    el.innerHTML = `<div class="empty-state">
+      <span class="mat">history_toggle_off</span>
+      <p>No activity recorded yet.</p>
+    </div>`;
+    return;
+  }
+  el.innerHTML = activities.map((a, i) => {
+    const { cls, icon } = activityIcon(a.type || a.activity_type || '');
+    const isLast = i === activities.length - 1;
+    return `
+      <div class="arow" style="${isLast ? 'border-bottom:none' : ''}">
+        <div class="activity-icon ${cls}">
+          <span class="mat sm">${icon}</span>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:500;color:var(--tx)">${a.description||a.message||a.text||'Activity recorded'}</div>
+          <div style="font-size:10px;color:var(--tx3);margin-top:2px">${fmtDate(a.created_at||a.date)}${a.lead_id ? ' · Lead #'+a.lead_id : ''}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderActivitySummary() {
+  const el = document.getElementById('activitySummary');
+  if (!el) return;
+  const total     = allLeads.length;
+  const potential = allLeads.filter(l => l.status === 'Potential').length;
+  const won       = allLeads.filter(l => l.status === 'Won').length;
+  const lost      = allLeads.filter(l => l.status === 'Lost').length;
+  const neverContacted = allLeads.filter(l => !l.last_contacted_at).length;
+
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px">
+      <span style="font-size:12px;color:var(--tx2)">Total Leads</span>
+      <span style="font-weight:700;font-size:14px">${total}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px">
+      <span style="font-size:12px;color:var(--tx2)">Potential</span>
+      <span style="font-weight:700;color:var(--bl)">${potential}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px">
+      <span style="font-size:12px;color:var(--tx2)">Won</span>
+      <span style="font-weight:700;color:var(--gr)">${won}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px">
+      <span style="font-size:12px;color:var(--tx2)">Lost</span>
+      <span style="font-weight:700;color:var(--re)">${lost}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:${neverContacted > 0 ? 'var(--re-d)' : 'var(--bg)'};border-radius:5px">
+      <span style="font-size:12px;color:var(--tx2)">Never Contacted</span>
+      <span style="font-weight:700;color:${neverContacted > 0 ? 'var(--re)' : 'var(--tx3)'}">${neverContacted}</span>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════
+   CALENDAR
+═══════════════════════════════════════ */
+function renderCalendar() {
+  const monthNames = ['January','February','March','April','May','June',
+    'July','August','September','October','November','December'];
+  document.getElementById('calMonthTitle').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+  const today    = new Date();
+  const todayStr = today.toISOString().slice(0,10);
+
+  // Build event map: date → [leads]
+  const eventMap = {};
+  allLeads.forEach(l => {
+    if (!l.preferred_date) return;
+    const d = l.preferred_date.slice(0,10);
+    if (!eventMap[d]) eventMap[d] = [];
+    eventMap[d].push(l);
+  });
+
+  // Grid: start from Monday of the week containing the 1st
+  const firstDay  = new Date(calYear, calMonth, 1);
+  const lastDay   = new Date(calYear, calMonth + 1, 0);
+  // Monday=0 offset
+  let startOffset = (firstDay.getDay() + 6) % 7; // Mon=0
+
+  const grid = document.getElementById('calGrid');
+  let html = '';
+
+  // cells before month start
+  for (let i = 0; i < startOffset; i++) {
+    const d = new Date(firstDay);
+    d.setDate(d.getDate() - (startOffset - i));
+    const ds = d.toISOString().slice(0,10);
+    html += `<div class="cal-cell other-month">
+      <div class="cal-day" style="color:var(--tx3)">${d.getDate()}</div>
+    </div>`;
+  }
+
+  // actual month days
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const isToday = ds === todayStr;
+    const events  = eventMap[ds] || [];
+    const evHtml  = events.slice(0,3).map(l => `
+      <div class="cal-event st-${l.status||'Potential'}" onclick="event.stopPropagation();openLead(${l.id})" title="${l.company_name||'Lead'} ${l.preferred_time||''}">
+        ${l.preferred_time ? '<span style="opacity:0.7">'+l.preferred_time+'</span> ' : ''}${l.company_name||'Lead'}
+      </div>`).join('');
+    const more = events.length > 3
+      ? `<div style="font-size:9px;color:var(--tx3);padding:1px 4px">+${events.length-3} more</div>`
+      : '';
+
+    html += `<div class="cal-cell${isToday ? ' today' : ''}">
+      <div class="cal-day">${day}</div>
+      ${evHtml}${more}
+    </div>`;
+  }
+
+  // fill remaining cells to complete last row
+  const totalCells = startOffset + lastDay.getDate();
+  const remainder  = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remainder; i++) {
+    html += `<div class="cal-cell other-month">
+      <div class="cal-day" style="color:var(--tx3)">${i}</div>
+    </div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function calPrev() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+function calNext() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+function calGoToday() {
+  const now = new Date();
+  calYear   = now.getFullYear();
+  calMonth  = now.getMonth();
+  renderCalendar();
+}
+
+/* ═══════════════════════════════════════
+   OPEN LEAD PANEL — preserved from original + edit/delete
+═══════════════════════════════════════ */
+function openLead(id) {
   const lead = allLeads.find(l => l.id == id);
-  if(!lead) return;
+  if (!lead) return;
   currentLead = lead;
 
-  const sc    = scClass(lead.status);
-  const name  = ((lead.first_name||'') + ' ' + (lead.last_name||'')).trim() || '—';
+  const sc     = scClass(lead.status);
+  const name   = ((lead.first_name||'') + ' ' + (lead.last_name||'')).trim() || '—';
   const status = lead.status || 'Potential';
 
-  /* badges */
+  // badges
   document.getElementById('lp-badges').innerHTML =
     `<span class="badge ${sc}">${status}</span>` +
-    (lead.utm_source ? `<span class="badge gy">${lead.utm_source}</span>` : '') +
+    (lead.utm_source   ? `<span class="badge gy">${lead.utm_source}</span>` : '') +
     (lead.converted_at ? `<span class="badge gr">Converted</span>` : '');
 
   document.getElementById('lp-company').textContent = lead.company_name || '—';
@@ -975,13 +1589,13 @@ function openLead(id){
     (lead.utm_campaign ? lead.utm_campaign : 'No Campaign') +
     (lead.email ? ' · ' + lead.email : '');
 
-  /* disable buttons based on status */
-  document.getElementById('btnWon').disabled  = status === 'Won';
-  document.getElementById('btnLost').disabled = status === 'Lost';
+  // button states
+  document.getElementById('btnWon').disabled       = status === 'Won';
+  document.getElementById('btnLost').disabled      = status === 'Lost';
+  document.getElementById('btnPotential').disabled = status === 'Potential';
 
-  /* body */
+  // body
   document.getElementById('leadContent').innerHTML = `
-
     <!-- Contact Card -->
     <div class="lp-card">
       <div class="lp-card-hd">
@@ -1029,7 +1643,8 @@ function openLead(id){
         </div>
         <div class="lp-row">
           <div class="lp-ri"><span class="mat">tune</span></div>
-          <div><div class="lp-rl">Medium / Content</div><div class="lp-rv" style="color:var(--tx2)">
+          <div><div class="lp-rl">Medium / Content / Term</div>
+          <div class="lp-rv" style="color:var(--tx2)">
             ${[lead.utm_medium, lead.utm_content, lead.utm_term].filter(Boolean).join(' · ') || '—'}
           </div></div>
         </div>
@@ -1038,7 +1653,7 @@ function openLead(id){
           <div><div class="lp-rl">Owner</div><div class="lp-rv">
             <div style="display:flex;align-items:center;gap:7px">
               <div class="av" style="width:22px;height:22px;font-size:9px">
-                ${lead.owner_id ? String(lead.owner_id).slice(0,2).toUpperCase() : '?'}
+                ${initials(String(lead.owner_id||'?'))}
               </div>
               <span>${lead.owner_id || '—'}</span>
             </div>
@@ -1056,16 +1671,18 @@ function openLead(id){
       <div class="lp-rows">
         <div class="lp-row">
           <div class="lp-ri"><span class="mat">event</span></div>
-          <div><div class="lp-rl">Preferred Date</div><div class="lp-rv">${fmtDate(lead.preferred_date)}</div></div>
+          <div><div class="lp-rl">Preferred Date</div>
+          <div class="lp-rv">${fmtDate(lead.preferred_date)}</div></div>
         </div>
         <div class="lp-row">
           <div class="lp-ri"><span class="mat">schedule</span></div>
-          <div><div class="lp-rl">Preferred Time</div><div class="lp-rv">${fmtTime(lead.preferred_time)}</div></div>
+          <div><div class="lp-rl">Preferred Time</div>
+          <div class="lp-rv">${fmtTime(lead.preferred_time)}</div></div>
         </div>
         <div class="lp-row">
           <div class="lp-ri"><span class="mat">history</span></div>
           <div><div class="lp-rl">Last Contacted</div>
-          <div class="lp-rv" style="${!lead.last_contacted_at?'color:var(--tx3)':''}">
+          <div class="lp-rv" style="${!lead.last_contacted_at ? 'color:var(--tx3)' : ''}">
             ${lead.last_contacted_at ? fmtDate(lead.last_contacted_at) : 'Never contacted'}
           </div></div>
         </div>
@@ -1090,8 +1707,7 @@ function openLead(id){
       <div class="lp-card-hd">
         <span class="mat">sticky_note_2</span>
         <span class="lp-card-title">Notes</span>
-        <button class="abtn" style="margin-left:auto;padding:3px 9px;font-size:11px"
-          onclick="saveNote()">
+        <button class="abtn" style="margin-left:auto;padding:3px 9px;font-size:11px" onclick="saveNote()">
           <span class="mat sm">save</span>Save
         </button>
       </div>
@@ -1115,47 +1731,35 @@ function openLead(id){
   document.getElementById('lpOverlay').classList.add('show');
 }
 
-/* ═══════════════════════════════════════════════════
-   TIMELINE BUILDER
-═══════════════════════════════════════════════════ */
-function buildTimeline(lead){
+/* ═══════════════════════════════════════
+   TIMELINE BUILDER — preserved from original
+═══════════════════════════════════════ */
+function buildTimeline(lead) {
   const events = [];
 
-  if(lead.created_at)
-    events.push({dot:'ac',icon:'add_circle',
-      text:'Lead created',meta:fmtDate(lead.created_at)});
+  if (lead.created_at)
+    events.push({ dot:'ac', icon:'add_circle', text:'Lead created', meta:fmtDate(lead.created_at) });
+  if (lead.last_contacted_at)
+    events.push({ dot:'bl', icon:'call', text:'Last contacted', meta:fmtDate(lead.last_contacted_at) });
+  if (lead.preferred_date)
+    events.push({ dot:'am', icon:'event', text:'Appointment scheduled',
+      meta:`${fmtDate(lead.preferred_date)} ${fmtTime(lead.preferred_time)}` });
+  if (lead.next_followup_at)
+    events.push({ dot:'am', icon:'alarm', text:'Follow-up scheduled', meta:fmtDate(lead.next_followup_at) });
+  if (lead.converted_at)
+    events.push({ dot:'gr', icon:'verified', text:'Converted to client', meta:fmtDate(lead.converted_at) });
+  if (lead.status === 'Won' && !lead.converted_at)
+    events.push({ dot:'gr', icon:'check_circle', text:'Marked as Won', meta:'Status update' });
+  if (lead.status === 'Lost')
+    events.push({ dot:'re', icon:'cancel', text:'Marked as Lost', meta:'Status update' });
+  if (lead.notes)
+    events.push({ dot:'gy', icon:'sticky_note_2', text:'Note on file', meta:'See Notes card' });
 
-  if(lead.last_contacted_at)
-    events.push({dot:'bl',icon:'call',
-      text:'Last contacted',meta:fmtDate(lead.last_contacted_at)});
-
-  if(lead.preferred_date)
-    events.push({dot:'am',icon:'event',
-      text:'Appointment scheduled',
-      meta:`${fmtDate(lead.preferred_date)} ${fmtTime(lead.preferred_time)}`});
-
-  if(lead.next_followup_at)
-    events.push({dot:'am',icon:'alarm',
-      text:'Follow-up scheduled',meta:fmtDate(lead.next_followup_at)});
-
-  if(lead.converted_at)
-    events.push({dot:'gr',icon:'verified',
-      text:'Converted to client',meta:fmtDate(lead.converted_at)});
-
-  if(lead.status==='Won')
-    events.push({dot:'gr',icon:'check_circle',text:'Marked as Won',meta:'Status update'});
-
-  if(lead.status==='Lost')
-    events.push({dot:'re',icon:'cancel',text:'Marked as Lost',meta:'Status update'});
-
-  if(lead.notes)
-    events.push({dot:'gy',icon:'sticky_note_2',text:'Note on file',meta:'See Notes card'});
-
-  if(!events.length)
+  if (!events.length)
     return `<div style="padding:16px;text-align:center;font-size:12px;color:var(--tx3)">
       No activity recorded yet.</div>`;
 
-  return events.map(e=>`
+  return events.map(e => `
     <div class="lp-tl-item">
       <div class="lp-tl-dot ${e.dot}"><span class="mat">${e.icon}</span></div>
       <div style="padding-top:2px">
@@ -1165,188 +1769,323 @@ function buildTimeline(lead){
     </div>`).join('');
 }
 
-/* ═══════════════════════════════════════════════════
-   CLOSE PANEL
-═══════════════════════════════════════════════════ */
-function closeLeadPanel(){
+/* ═══════════════════════════════════════
+   CLOSE LEAD PANEL — preserved
+═══════════════════════════════════════ */
+function closeLeadPanel() {
   document.getElementById('leadPanel').classList.remove('lp-open');
   document.getElementById('lpOverlay').classList.remove('show');
 }
 
-/* ═══════════════════════════════════════════════════
-   ACTION: CHANGE STATUS  (Won / Lost / Potential)
-   POST to /webhook/lead-management
-   Body: { action: "update_status", id, status }
-═══════════════════════════════════════════════════ */
-async function lpStatus(newStatus){
-  if(!currentLead) return;
-  const btn = newStatus==='Won'
-    ? document.getElementById('btnWon')
-    : document.getElementById('btnLost');
-  btn.disabled = true;
-  btn.innerHTML = `<span class="mat sm">hourglass_top</span>${newStatus}`;
+/* ═══════════════════════════════════════
+   STATUS UPDATE — preserved from original
+═══════════════════════════════════════ */
+async function lpStatus(newStatus) {
+  if (!currentLead) return;
+  const btnMap = { Won:'btnWon', Lost:'btnLost', Potential:'btnPotential' };
+  const btn    = document.getElementById(btnMap[newStatus]);
+  if (btn) { btn.disabled = true; }
 
   try {
     const res = await fetch(API.leadManagement, {
       method : 'POST',
-      headers: {'Content-Type':'application/json'},
-      body   : JSON.stringify({
-        action: 'update_status',
-        id    : currentLead.id,
-        status: newStatus
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ action:'update_status', id:currentLead.id, status:newStatus })
     });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    /* update local cache */
+    // update local cache
     currentLead.status = newStatus;
-    const idx = allLeads.findIndex(l=>l.id===currentLead.id);
-    if(idx>-1) allLeads[idx].status = newStatus;
+    const idx = allLeads.findIndex(l => l.id === currentLead.id);
+    if (idx > -1) allLeads[idx].status = newStatus;
 
-    /* refresh badge + table row */
-    document.getElementById('lp-badges').querySelector('.badge').className =
-      `badge ${scClass(newStatus)}`;
-    document.getElementById('lp-badges').querySelector('.badge').textContent = newStatus;
-    renderTable(allLeads);
-
+    renderTable(activeFilter === 'all' ? allLeads : allLeads.filter(l => l.status === activeFilter));
+    updateDashboard();
+    updateSidebarCounts();
+    if (activityLoaded) { activityLoaded = false; loadActivity(); activityLoaded = true; }
+    openLead(currentLead.id); // refresh panel
     toast(`✓ Status updated to ${newStatus}`, 'ok');
-
-    if(newStatus==='Won'){
-      currentLead.converted_at = new Date().toISOString();
-    }
-  } catch(e){
+  } catch(e) {
     toast('Failed to update status. Try again.', 'err');
     console.error(e);
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = newStatus==='Won'
-      ? '<span class="mat sm">check_circle</span>Won'
-      : '<span class="mat sm">cancel</span>Lost';
+    if (btn) btn.disabled = false;
   }
 }
 
-/* ═══════════════════════════════════════════════════
-   ACTION: CONVERT TO CLIENT
-   POST to /webhook/lead-management
-   Body: { action: "convert", id }
-   n8n will create client record + update converted_client_id & converted_at
-═══════════════════════════════════════════════════ */
-async function lpConvert(){
-  if(!currentLead) return;
-  if(currentLead.converted_at){
-    toast('This lead is already converted.', 'err'); return;
-  }
-  if(!confirm(`Convert "${currentLead.company_name||'this lead'}" to a Client?`)) return;
+/* ═══════════════════════════════════════
+   CONVERT TO CLIENT — preserved from original
+═══════════════════════════════════════ */
+async function lpConvert() {
+  if (!currentLead) return;
+  if (currentLead.converted_at) { toast('This lead is already converted.', 'err'); return; }
 
-  const btn = document.querySelector('.lp-acts .abtn.pri');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="mat sm">hourglass_top</span>Converting…';
+  showConfirm(
+    'Convert to Client',
+    `Convert "${currentLead.company_name || 'this lead'}" to a Client? This will create a new client record.`,
+    'Convert', 'abtn pri',
+    async () => {
+      const btn = document.querySelector('.lp-acts .abtn.pri');
+      if (btn) { btn.disabled = true; btn.innerHTML = '<span class="mat sm">hourglass_top</span>Converting…'; }
+      try {
+        const res = await fetch(API.leadManagement, {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({
+            action            : 'convert',
+            id                : currentLead.id,
+            company_name      : currentLead.company_name,
+            first_name        : currentLead.first_name,
+            last_name         : currentLead.last_name,
+            email             : currentLead.email,
+            phone             : currentLead.phone,
+            notes             : currentLead.notes,
+            account_manager_id: currentLead.owner_id
+          })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-  try {
-    const res = await fetch(API.leadManagement, {
-      method : 'POST',
-      headers: {'Content-Type':'application/json'},
-      body   : JSON.stringify({
-        action: 'convert',
-        id    : currentLead.id,
-        /* pass all fields n8n needs to create the client */
-        company_name      : currentLead.company_name,
-        first_name        : currentLead.first_name,
-        last_name         : currentLead.last_name,
-        email             : currentLead.email,
-        phone             : currentLead.phone,
-        notes             : currentLead.notes,
-        account_manager_id: currentLead.owner_id
-      })
-    });
-
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    currentLead.converted_at = new Date().toISOString();
-    currentLead.status = 'Won';
-    const idx = allLeads.findIndex(l=>l.id===currentLead.id);
-    if(idx>-1){
-      allLeads[idx].converted_at = currentLead.converted_at;
-      allLeads[idx].status = 'Won';
+        currentLead.converted_at = new Date().toISOString();
+        currentLead.status = 'Won';
+        const idx = allLeads.findIndex(l => l.id === currentLead.id);
+        if (idx > -1) {
+          allLeads[idx].converted_at = currentLead.converted_at;
+          allLeads[idx].status = 'Won';
+        }
+        renderTable(activeFilter === 'all' ? allLeads : allLeads.filter(l => l.status === activeFilter));
+        updateDashboard();
+        updateSidebarCounts();
+        clientsLoaded = false; // force refresh
+        toast('✓ Lead converted to Client!', 'ok');
+        openLead(currentLead.id);
+      } catch(e) {
+        toast('Conversion failed. Check n8n webhook.', 'err');
+        console.error(e);
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<span class="mat sm">person_check</span>Convert'; }
+      }
     }
-    renderTable(allLeads);
-    toast('✓ Lead converted to Client successfully!', 'ok');
-    /* re-open panel to refresh badges */
-    openLead(currentLead.id);
-  } catch(e){
-    toast('Conversion failed. Check n8n webhook.', 'err');
-    console.error(e);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<span class="mat sm">person_check</span>Convert';
-  }
+  );
 }
 
-/* ═══════════════════════════════════════════════════
-   ACTION: SAVE NOTE
-   POST to /webhook/lead-management
-   Body: { action: "update_note", id, notes }
-═══════════════════════════════════════════════════ */
-async function saveNote(){
-  if(!currentLead) return;
+/* ═══════════════════════════════════════
+   SAVE NOTE — preserved from original
+═══════════════════════════════════════ */
+async function saveNote() {
+  if (!currentLead) return;
   const notes = document.getElementById('noteArea').value;
-
   try {
     const res = await fetch(API.leadManagement, {
       method : 'POST',
-      headers: {'Content-Type':'application/json'},
-      body   : JSON.stringify({
-        action: 'update_note',
-        id    : currentLead.id,
-        notes
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify({ action:'update_note', id:currentLead.id, notes })
     });
-
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     currentLead.notes = notes;
-    const idx = allLeads.findIndex(l=>l.id===currentLead.id);
-    if(idx>-1) allLeads[idx].notes = notes;
-
+    const idx = allLeads.findIndex(l => l.id === currentLead.id);
+    if (idx > -1) allLeads[idx].notes = notes;
     toast('✓ Note saved', 'ok');
-  } catch(e){
+  } catch(e) {
     toast('Failed to save note.', 'err');
     console.error(e);
   }
 }
 
-/* ═══════════════════════════════════════════════════
-   ACTION: EDIT  (placeholder — extend as needed)
-═══════════════════════════════════════════════════ */
-function lpEdit(){
-  toast('Edit form coming soon — connect your update webhook.', 'ok');
+/* ═══════════════════════════════════════
+   DELETE LEAD — NEW
+═══════════════════════════════════════ */
+function lpDelete() {
+  if (!currentLead) return;
+  showConfirm(
+    'Delete Lead',
+    `Permanently delete "${currentLead.company_name || 'this lead'}"? This cannot be undone.`,
+    'Delete', 'abtn danger',
+    async () => {
+      try {
+        const res = await fetch(API.leadManagement, {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({ action:'delete_lead', id:currentLead.id })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        // remove from local cache
+        allLeads = allLeads.filter(l => l.id !== currentLead.id);
+        closeLeadPanel();
+        renderTable(activeFilter === 'all' ? allLeads : allLeads.filter(l => l.status === activeFilter));
+        updateDashboard();
+        updateSidebarCounts();
+        toast('✓ Lead deleted', 'ok');
+      } catch(e) {
+        toast('Failed to delete lead. Check webhook.', 'err');
+        console.error(e);
+      }
+    }
+  );
 }
 
-/* ═══════════════════════════════════════════════════
+/* ═══════════════════════════════════════
+   EDIT LEAD — open modal with existing data
+═══════════════════════════════════════ */
+function lpEdit() {
+  if (!currentLead) return;
+  openCreateLead(currentLead);
+}
+
+/* ═══════════════════════════════════════
+   CREATE / EDIT MODAL
+═══════════════════════════════════════ */
+function openCreateLead(lead = null) {
+  document.getElementById('modalLeadId').value  = lead ? lead.id : '';
+  document.getElementById('modalTitle').textContent = lead ? 'Edit Lead' : 'New Lead';
+  document.getElementById('modalSaveBtn').innerHTML =
+    `<span class="mat sm">save</span>${lead ? 'Update Lead' : 'Save Lead'}`;
+
+  // populate fields
+  document.getElementById('mFirstName').value   = lead ? (lead.first_name  || '') : '';
+  document.getElementById('mLastName').value    = lead ? (lead.last_name   || '') : '';
+  document.getElementById('mEmail').value       = lead ? (lead.email       || '') : '';
+  document.getElementById('mPhone').value       = lead ? (lead.phone       || '') : '';
+  document.getElementById('mCompany').value     = lead ? (lead.company_name|| '') : '';
+  document.getElementById('mStatus').value      = lead ? (lead.status      || 'Potential') : 'Potential';
+  document.getElementById('mOwner').value       = lead ? (lead.owner_id    || '') : '';
+  document.getElementById('mPrefDate').value    = lead ? (lead.preferred_date ? lead.preferred_date.slice(0,10) : '') : '';
+  document.getElementById('mPrefTime').value    = lead ? (lead.preferred_time || '') : '';
+  document.getElementById('mUtmSource').value   = lead ? (lead.utm_source  || '') : '';
+  document.getElementById('mUtmCampaign').value = lead ? (lead.utm_campaign|| '') : '';
+  document.getElementById('mUtmMedium').value   = lead ? (lead.utm_medium  || '') : '';
+  document.getElementById('mUtmContent').value  = lead ? (lead.utm_content || '') : '';
+  document.getElementById('mNotes').value       = lead ? (lead.notes       || '') : '';
+
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+async function saveLeadModal() {
+  const id     = document.getElementById('modalLeadId').value;
+  const isEdit = !!id;
+  const btn    = document.getElementById('modalSaveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="mat sm">hourglass_top</span>Saving…';
+
+  const payload = {
+    action      : isEdit ? 'update_lead' : 'create_lead',
+    first_name  : document.getElementById('mFirstName').value.trim(),
+    last_name   : document.getElementById('mLastName').value.trim(),
+    email       : document.getElementById('mEmail').value.trim(),
+    phone       : document.getElementById('mPhone').value.trim(),
+    company_name: document.getElementById('mCompany').value.trim(),
+    status      : document.getElementById('mStatus').value,
+    owner_id    : document.getElementById('mOwner').value.trim(),
+    preferred_date: document.getElementById('mPrefDate').value || null,
+    preferred_time: document.getElementById('mPrefTime').value || null,
+    utm_source  : document.getElementById('mUtmSource').value.trim(),
+    utm_campaign: document.getElementById('mUtmCampaign').value.trim(),
+    utm_medium  : document.getElementById('mUtmMedium').value.trim(),
+    utm_content : document.getElementById('mUtmContent').value.trim(),
+    notes       : document.getElementById('mNotes').value.trim(),
+  };
+  if (isEdit) payload.id = parseInt(id);
+
+  // basic validation
+  if (!payload.company_name && !payload.email) {
+    toast('Company name or email is required.', 'err');
+    btn.disabled = false;
+    btn.innerHTML = `<span class="mat sm">save</span>${isEdit ? 'Update Lead' : 'Save Lead'}`;
+    return;
+  }
+
+  try {
+    const res = await fetch(API.leadManagement, {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const result = await res.json();
+
+    closeModal();
+    toast(isEdit ? '✓ Lead updated' : '✓ Lead created', 'ok');
+
+    if (isEdit) {
+      // update local cache
+      const idx = allLeads.findIndex(l => l.id == id);
+      if (idx > -1) {
+        allLeads[idx] = { ...allLeads[idx], ...payload };
+      }
+      if (currentLead && currentLead.id == id) {
+        currentLead = { ...currentLead, ...payload };
+        openLead(currentLead.id); // refresh panel
+      }
+    } else {
+      // reload all leads to get the new one with server-assigned ID
+      await loadLeads();
+    }
+
+    renderTable(activeFilter === 'all' ? allLeads : allLeads.filter(l => l.status === activeFilter));
+    updateDashboard();
+    updateSidebarCounts();
+    if (page() === 'calendar') renderCalendar();
+  } catch(e) {
+    toast(isEdit ? 'Failed to update lead.' : 'Failed to create lead.', 'err');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<span class="mat sm">save</span>${isEdit ? 'Update Lead' : 'Save Lead'}`;
+  }
+}
+
+// helper: current page
+function page() {
+  return location.hash.replace('#', '') || 'dashboard';
+}
+
+/* ═══════════════════════════════════════
+   KEYBOARD SHORTCUTS
+═══════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openCmdPal(); }
+  if (e.key === 'Escape') {
+    if (document.getElementById('modal').classList.contains('open')) { closeModal(); return; }
+    if (document.getElementById('confirmDialog').classList.contains('open')) { confirmCancel(); return; }
+    closeCmdPal();
+    closeLeadPanel();
+  }
+  // C+L shortcut for create lead
+  if (e.key === 'l' && !e.metaKey && !e.ctrlKey &&
+      document.activeElement.tagName !== 'INPUT' &&
+      document.activeElement.tagName !== 'TEXTAREA') {
+    openCreateLead();
+  }
+});
+
+/* ═══════════════════════════════════════
    BOOT
-═══════════════════════════════════════════════════ */
-loadLeads();
+═══════════════════════════════════════ */
+(async function boot() {
+  bootPage();
+  await loadLeads();
+  // Eagerly load clients count for sidebar
+  try {
+    const res  = await fetch(API.getClients);
+    const data = await res.json();
+    allClients = Array.isArray(data) ? data : [];
+    const el = document.getElementById('navCountClients');
+    if (el) el.textContent = allClients.length;
+    const dEl = document.getElementById('statClients');
+    if (dEl) dEl.textContent = allClients.length;
+    // if clients page is already open, render it
+    if (page() === 'clients') {
+      renderClientsTable(allClients);
+      clientsLoaded = true;
+    }
+  } catch(e) {
+    console.warn('Could not preload clients count:', e);
+  }
+})();
 </script>
-  <!-- LEAD DETAIL PANEL -->
-  <div id="leadPanel">
-    <div class="lp-hd">
-      <div class="lp-hd-top">
-        <div style="min-width:0;flex:1">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px" id="lp-badges"></div>
-          <div class="lp-company" id="lp-company">—</div>
-          <div class="lp-sub" id="lp-sub">—</div>
-        </div>
-        <button class="tbb" onclick="closeLeadPanel()"><span class="mat">close</span></button>
-      </div>
-      <div class="lp-acts">
-        <button class="abtn" onclick="lpEdit()"><span class="mat sm">edit</span>Edit</button>
-        <button class="abtn" id="btnWon"  onclick="lpStatus('Won')"  style="color:var(--gr);border-color:rgba(74,222,128,0.25)"><span class="mat sm">check_circle</span>Won</button>
-        <button class="abtn" id="btnLost" onclick="lpStatus('Lost')" style="color:var(--re);border-color:rgba(248,113,113,0.25)"><span class="mat sm">cancel</span>Lost</button>
-        <button class="abtn pri" onclick="lpConvert()"><span class="mat sm">person_check</span>Convert</button>
-      </div>
-    </div>
-    <div class="lp-body" id="leadContent"></div>
-  </div>
 </body>
 </html>
