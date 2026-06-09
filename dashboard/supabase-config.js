@@ -11,5 +11,5 @@
  * ─────────────────────────────────────────────────────────────
  */
 
-window.SUPABASE_URL      = 'https://YOUR_PROJECT_ID.supabase.co';
-window.SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+window.SUPABASE_URL      = 'https://gfmcsuqehgbetdsszwyd.supabase.co';
+window.SUPABASE_ANON_KEY = 'sb_publishable_o10rnZg2cRXO61e9FrZfOQ_G02UD-GY';
