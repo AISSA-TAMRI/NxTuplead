@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <!-- Supabase Config — set your credentials in this file -->
-<script src="supabase-config.js"></script>
+<script src="./supabase-config.js"></script>
 <!-- Supabase CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -372,7 +372,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('[NXTUP Auth] Missing Supabase credentials. Edit supabase-config.js first.');
 }
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
@@ -385,7 +385,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 ═══════════════════════════════════════ */
 async function boot() {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabaseClient.auth.getSession();
     if (session) {
       // Already logged in → go to dashboard
       window.location.replace('dashboard.html');
@@ -481,7 +481,7 @@ async function handleSignIn() {
   setLoading('signin-btn', true);
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password,
     });
@@ -528,7 +528,7 @@ async function handleForgotPassword() {
   btn.innerHTML = `<span class="mat sm spin">sync</span> Sending…`;
 
   try {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/dashboard.html',
     });
 
