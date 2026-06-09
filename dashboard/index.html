@@ -1041,7 +1041,7 @@ async function loadLeads() {
   } catch(e) {
     document.getElementById('leadsTable').innerHTML =
       `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--re)">
-        <span class="mat sm">error</span> Failed to load leads. Check webhook connection.
+        <span class="mat sm">error</span> No leads Yet.
       </td></tr>`;
     console.error('loadLeads:', e);
   }
@@ -1297,7 +1297,7 @@ async function loadClients() {
   } catch(e) {
     document.getElementById('clientsTable').innerHTML =
       `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--re)">
-        <span class="mat sm">error</span> Failed to load clients.
+        <span class="mat sm">error</span> No Clients Yet.
       </td></tr>`;
     console.error('loadClients:', e);
   }
