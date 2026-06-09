@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <!-- Supabase Config — set your credentials in this file -->
-<script src="supabase-config.js"></script>
+<script src="./supabase-config.js"></script>
 <!-- Supabase CDN — MUST be loaded before any script that uses supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -812,7 +812,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 const SUPABASE_URL      = window.SUPABASE_URL      || '';
 const SUPABASE_ANON_KEY  = window.SUPABASE_ANON_KEY  || '';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
@@ -855,7 +855,7 @@ let currentProfile  = null;
 ═══════════════════════════════════════ */
 async function bootAuth() {
   try {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
 
     if (error || !session) {
       // No session → redirect to login
@@ -968,7 +968,7 @@ function redirectToLogin() {
 async function handleSignOut() {
   closeUserMenu();
   try {
-    await supabase.auth.signOut();
+    await supabaseClient.auth.signOut();
   } catch (e) {
     console.error('SignOut error:', e);
   }
