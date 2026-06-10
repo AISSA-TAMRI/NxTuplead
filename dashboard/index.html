@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NXTUP Lead | Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<!-- Supabase Config — set your credentials in this file -->
+<script src="supabase-config.js"></script>
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ═══════════════════════════════════════
+   SHARED DESIGN TOKENS
+═══════════════════════════════════════ */
+:root{
+  --bg:#0f1117;--s1:#171b23;--s2:#1d222d;--s3:#252b38;
+  --acc:#adc6ff;--acc-d:rgba(173,198,255,0.12);--acc-g:rgba(173,198,255,0.08);
+  --tx:#e2e2eb;--tx2:#b8c0d4;--tx3:#8e909a;
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.11);
+  --gr:#4ade80;--gr-d:rgba(74,222,128,0.1);
+  --re:#f87171;--re-d:rgba(248,113,113,0.1);
+  --am:#fbbf24;--am-d:rgba(251,191,36,0.1);
+  --bl:#60a5fa;--bl-d:rgba(96,165,250,0.1);
+  --pu:#a78bfa;--pu-d:rgba(167,139,250,0.1)
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
+.mat{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;font-size:18px;line-height:1;vertical-align:middle;user-select:none}
+.mat.sm{font-size:15px}.mat.lg{font-size:22px}
+
+/* ═══════════════════════════════════════
+   LOGIN PAGE
+═══════════════════════════════════════ */
+#login-page{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg);
+  position:relative;
+  overflow:hidden;
+}
+
+/* Subtle animated grid background */
+#login-page::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(173,198,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(173,198,255,0.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  animation:gridDrift 20s linear infinite;
+}
+#login-page::after{
+  content:'';
+  position:absolute;
+  top:-200px;left:50%;transform:translateX(-50%);
+  width:600px;height:600px;
+  background:radial-gradient(ellipse at center,rgba(173,198,255,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+@keyframes gridDrift{
+  0%{background-position:0 0}
+  100%{background-position:60px 60px}
+}
+
+.login-wrap{
+  position:relative;
+  z-index:10;
+  width:100%;
+  max-width:420px;
+  padding:0 20px;
+}
+
+/* Logo mark */
+.login-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:32px;
+}
+.login-logo-mark{
+  width:40px;height:40px;
+  border-radius:10px;
+  background:linear-gradient(135deg,rgba(173,198,255,0.2),rgba(173,198,255,0.06));
+  border:1px solid rgba(173,198,255,0.25);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 20px rgba(173,198,255,0.1);
+}
+.login-logo-mark .mat{color:var(--acc);font-size:22px}
+.login-logo-name{font-size:20px;font-weight:700;color:var(--acc);letter-spacing:-0.03em}
+.login-logo-tag{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--tx3);margin-top:-2px}
+
+/* Card */
+.login-card{
+  background:var(--s1);
+  border:1px solid var(--bd2);
+  border-radius:12px;
+  padding:28px 28px 24px;
+  box-shadow:0 32px 64px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.04) inset;
+}
+.login-card-title{font-size:18px;font-weight:700;color:var(--tx);margin-bottom:4px;letter-spacing:-0.02em}
+.login-card-sub{font-size:13px;color:var(--tx3);margin-bottom:22px}
+
+/* Form fields */
+.lf-group{margin-bottom:14px}
+.lf-label{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--tx3);display:block;margin-bottom:6px}
+.lf-input-wrap{position:relative;display:flex;align-items:center}
+.lf-input{
+  width:100%;
+  background:var(--bg);
+  border:1px solid var(--bd2);
+  border-radius:7px;
+  padding:10px 40px 10px 38px;
+  color:var(--tx);
+  font-size:13px;
+  font-family:'Inter',sans-serif;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  line-height:1;
+}
+.lf-input:focus{border-color:rgba(173,198,255,0.4);box-shadow:0 0 0 3px rgba(173,198,255,0.08)}
+.lf-input::placeholder{color:var(--tx3)}
+.lf-input.err{border-color:rgba(248,113,113,0.45);box-shadow:0 0 0 3px rgba(248,113,113,0.07)}
+.lf-icon{position:absolute;left:11px;color:var(--tx3);pointer-events:none;font-size:16px}
+.lf-toggle{position:absolute;right:10px;color:var(--tx3);cursor:pointer;padding:4px;border-radius:4px;font-size:16px;transition:color .15s}
+.lf-toggle:hover{color:var(--tx2)}
+
+/* Options row */
+.lf-opts{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;margin-top:-4px}
+.lf-check{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+.lf-check input[type=checkbox]{
+  width:14px;height:14px;
+  accent-color:var(--acc);
+  cursor:pointer;
+}
+.lf-check-label{font-size:12px;color:var(--tx2)}
+.lf-forgot{font-size:12px;color:var(--acc);text-decoration:none;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;padding:0;transition:opacity .15s}
+.lf-forgot:hover{opacity:0.7;text-decoration:underline}
+
+/* Error message */
+.lf-error{
+  display:none;
+  background:var(--re-d);
+  border:1px solid rgba(248,113,113,0.25);
+  border-radius:7px;
+  padding:10px 13px;
+  margin-bottom:14px;
+  font-size:12px;
+  color:var(--re);
+  align-items:flex-start;
+  gap:8px;
+}
+.lf-error.visible{display:flex}
+
+/* Success message */
+.lf-success{
+  display:none;
+  background:var(--gr-d);
+  border:1px solid rgba(74,222,128,0.25);
+  border-radius:7px;
+  padding:10px 13px;
+  margin-bottom:14px;
+  font-size:12px;
+  color:var(--gr);
+  align-items:flex-start;
+  gap:8px;
+}
+.lf-success.show{display:flex}
+
+/* Submit button */
+.lf-submit{
+  width:100%;
+  background:var(--acc);
+  color:#0a0d14;
+  font-size:13px;
+  font-weight:700;
+  padding:11px;
+  border-radius:7px;
+  border:none;
+  cursor:pointer;
+  font-family:'Inter',sans-serif;
+  letter-spacing:0.01em;
+  transition:all .2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  position:relative;
+  overflow:hidden;
+}
+.lf-submit:hover:not(:disabled){background:#c5d8ff;transform:translateY(-1px);box-shadow:0 6px 20px rgba(173,198,255,0.2)}
+.lf-submit:active{transform:translateY(0)}
+.lf-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+/* Loading spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 0.8s linear infinite;display:inline-block}
+
+/* Divider + forgot form */
+.lf-divider{height:1px;background:var(--bd);margin:18px 0;position:relative}
+.lf-divider::after{
+  content:'or';
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:var(--s1);padding:0 10px;
+  font-size:11px;font-weight:500;color:var(--tx3);
+  letter-spacing:0.05em;text-transform:uppercase;
+}
+
+/* Forgot password view */
+.fp-back{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx3);cursor:pointer;margin-bottom:16px;padding:4px 0;background:none;border:none;font-family:'Inter',sans-serif;transition:color .15s}
+.fp-back:hover{color:var(--tx)}
+.fp-back .mat{font-size:15px}
+
+/* Footer */
+.login-footer{text-align:center;margin-top:20px;font-size:11px;color:var(--tx3)}
+.login-footer a{color:var(--acc);text-decoration:none}
+
+/* Views */
+.auth-view{display:none}.auth-view.active{display:block}
+
+/* Session loading overlay */
+#authLoader{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:14px;
+  transition:opacity .3s;
+}
+#authLoader.fade{opacity:0;pointer-events:none}
+.loader-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.loader-logo .mat{color:var(--acc);font-size:26px}
+.loader-logo span{font-size:18px;font-weight:700;color:var(--acc);letter-spacing:-0.03em}
+.loader-bar{width:120px;height:2px;background:var(--bd);border-radius:2px;overflow:hidden}
+.loader-bar-fill{height:100%;background:var(--acc);border-radius:2px;animation:loaderPulse 1.2s ease-in-out infinite}
+@keyframes loaderPulse{0%,100%{width:20%}50%{width:80%}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     SESSION LOADER — shown while checking auth state
+═══════════════════════════════════════ -->
+<div id="authLoader">
+  <div class="loader-logo">
+    <span class="mat lg">bolt</span>
+    <span>NXTUP Lead</span>
+  </div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  <div style="font-size:11px;color:var(--tx3);letter-spacing:0.05em">Checking session…</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     LOGIN PAGE
+═══════════════════════════════════════ -->
+<div id="login-page" style="display:none">
+  <div class="login-wrap">
+
+    <!-- Logo -->
+    <div class="login-logo">
+      <div class="login-logo-mark"><span class="mat lg">bolt</span></div>
+      <div>
+        <div class="login-logo-name">NXTUP Lead</div>
+        <div class="login-logo-tag">Revenue Operating System</div>
+      </div>
+    </div>
+
+    <div class="login-card">
+
+      <!-- ── SIGN IN VIEW ── -->
+      <div class="auth-view active" id="view-signin">
+        <div class="login-card-title">Welcome back</div>
+        <div class="login-card-sub">Sign in to your workspace</div>
+
+        <div class="lf-error hidden" id="signin-error">
+          <span class="mat sm">error</span>
+          <span id="signin-error-msg">Invalid credentials. Please try again.</span>
+        </div>
+
+        <div class="lf-group">
+          <label class="lf-label" for="signin-email">Email address</label>
+          <div class="lf-input-wrap">
+            <span class="mat sm lf-icon">mail</span>
+            <input class="lf-input" id="signin-email" type="email" placeholder="you@company.com"
+              autocomplete="email" autocapitalize="off" spellcheck="false"/>
+          </div>
+        </div>
+
+        <div class="lf-group">
+          <label class="lf-label" for="signin-password">Password</label>
+          <div class="lf-input-wrap">
+            <span class="mat sm lf-icon">lock</span>
+            <input class="lf-input" id="signin-password" type="password" placeholder="Your password"
+              autocomplete="current-password"/>
+            <span class="mat sm lf-toggle" id="togglePwd" onclick="togglePassword('signin-password','togglePwd')">visibility</span>
+          </div>
+        </div>
+
+        <div class="lf-opts">
+          <label class="lf-check">
+            <input type="checkbox" id="rememberMe" checked/>
+            <span class="lf-check-label">Remember me</span>
+          </label>
+          <button class="lf-forgot" onclick="showView('view-forgot')">Forgot password?</button>
+        </div>
+
+        <button class="lf-submit" id="signin-btn" onclick="handleSignIn()">
+          <span class="mat sm">login</span>
+          Sign in
+        </button>
+      </div>
+
+      <!-- ── FORGOT PASSWORD VIEW ── -->
+      <div class="auth-view" id="view-forgot">
+        <button class="fp-back" onclick="showView('view-signin')">
+          <span class="mat">arrow_back</span> Back to sign in
+        </button>
+        <div class="login-card-title">Reset password</div>
+        <div class="login-card-sub">Enter your email and we'll send a reset link</div>
+
+        <div class="lf-error hidden" id="forgot-error">
+          <span class="mat sm">error</span>
+          <span id="forgot-error-msg">Something went wrong.</span>
+        </div>
+        <div class="lf-success" id="forgot-success">
+          <span class="mat sm">check_circle</span>
+          <span>Reset link sent! Check your inbox.</span>
+        </div>
+
+        <div class="lf-group">
+          <label class="lf-label" for="forgot-email">Email address</label>
+          <div class="lf-input-wrap">
+            <span class="mat sm lf-icon">mail</span>
+            <input class="lf-input" id="forgot-email" type="email" placeholder="you@company.com"
+              autocomplete="email" autocapitalize="off"/>
+          </div>
+        </div>
+
+        <button class="lf-submit" id="forgot-btn" onclick="handleForgotPassword()">
+          <span class="mat sm">send</span>
+          Send reset link
+        </button>
+      </div>
+
+    </div><!-- end card -->
+
+    <div class="login-footer">
+      NXTUP Lead · Revenue Operating System · v2.0
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════
+   SUPABASE CONFIG
+   Replace with your actual project credentials.
+   Set these before deploying.
+═══════════════════════════════════════ */
+// Credentials are loaded from supabase-config.js
+const SUPABASE_URL      = window.SUPABASE_URL      || '';
+const SUPABASE_ANON_KEY  = window.SUPABASE_ANON_KEY  || '';
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error('[NXTUP Auth] Missing Supabase credentials. Edit supabase-config.js first.');
+}
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  }
+});
+
+/* ═══════════════════════════════════════
+   BOOT — check session, redirect if needed
+═══════════════════════════════════════ */
+async function boot() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      // Already logged in → go to dashboard
+      window.location.replace('dashboard.html');
+      return;
+    }
+  } catch (e) {
+    console.error('Session check failed:', e);
+  }
+  // Not logged in → show login page
+  hideLoader();
+}
+
+function hideLoader() {
+  const loader = document.getElementById('authLoader');
+  loader.classList.add('fade');
+  setTimeout(() => {
+    loader.style.display = 'none';
+    document.getElementById('login-page').style.display = 'flex';
+  }, 320);
+}
+
+/* ═══════════════════════════════════════
+   VIEW SWITCHING
+═══════════════════════════════════════ */
+function showView(id) {
+  document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  clearErrors();
+}
+
+function clearErrors() {
+  document.querySelectorAll('.lf-error').forEach(e => e.classList.remove('visible'));
+  document.querySelectorAll('.lf-input').forEach(i => i.classList.remove('err'));
+  document.querySelectorAll('.lf-success').forEach(s => s.classList.remove('show'));
+}
+
+function showError(container, msg) {
+  const el = document.getElementById(container);
+  if (!el) return;
+  // Update the message span if present
+  const msgEl = document.getElementById(container + '-msg');
+  if (msgEl && msg) msgEl.textContent = msg;
+  el.classList.add('visible');
+}
+
+/* ═══════════════════════════════════════
+   PASSWORD TOGGLE
+═══════════════════════════════════════ */
+function togglePassword(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon  = document.getElementById(iconId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.textContent = 'visibility_off';
+  } else {
+    input.type = 'password';
+    icon.textContent = 'visibility';
+  }
+}
+
+/* ═══════════════════════════════════════
+   LOADING BUTTON STATE
+═══════════════════════════════════════ */
+function setLoading(btnId, loading, label, icon) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = loading;
+  if (loading) {
+    btn.innerHTML = `<span class="mat sm spin">sync</span> Signing in…`;
+  } else {
+    btn.innerHTML = `<span class="mat sm">${icon}</span> ${label}`;
+  }
+}
+
+/* ═══════════════════════════════════════
+   SIGN IN
+═══════════════════════════════════════ */
+async function handleSignIn() {
+  clearErrors();
+  const email    = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  const remember = document.getElementById('rememberMe').checked;
+
+  // Basic validation
+  if (!email) {
+    document.getElementById('signin-email').classList.add('err');
+    showError('signin-error', 'Please enter your email address.');
+    return;
+  }
+  if (!password) {
+    document.getElementById('signin-password').classList.add('err');
+    showError('signin-error', 'Please enter your password.');
+    return;
+  }
+
+  setLoading('signin-btn', true);
+
+  // If "Remember me" is unchecked, use session-only storage (cleared on tab close)
+  // Supabase v2 always persists by default; we handle this by signing out on unload if not remembered
+  if (!remember) {
+    window.addEventListener('beforeunload', () => {
+      // Non-persistent session: clear on tab close
+      supabase.auth.signOut();
+    }, { once: true });
+  }
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setLoading('signin-btn', false, 'Sign in', 'login');
+      // Map Supabase error messages to user-friendly text
+      const errMap = {
+        'Invalid login credentials': 'Incorrect email or password. Please check and try again.',
+        'Email not confirmed': 'Please confirm your email address before signing in.',
+        'Too many requests': 'Too many sign-in attempts. Please wait a minute and try again.',
+      };
+      const msg = errMap[error.message] || error.message || 'Sign in failed. Please try again.';
+      showError('signin-error', msg);
+      document.getElementById('signin-password').classList.add('err');
+      return;
+    }
+
+    // Success → redirect to dashboard
+    window.location.replace('dashboard.html');
+
+  } catch (e) {
+    setLoading('signin-btn', false, 'Sign in', 'login');
+    showError('signin-error', 'Connection error. Check your internet and try again.');
+    console.error('SignIn error:', e);
+  }
+}
+
+/* ═══════════════════════════════════════
+   FORGOT PASSWORD
+═══════════════════════════════════════ */
+async function handleForgotPassword() {
+  clearErrors();
+  const email = document.getElementById('forgot-email').value.trim();
+
+  if (!email) {
+    document.getElementById('forgot-email').classList.add('err');
+    showError('forgot-error', 'Please enter your email address.');
+    return;
+  }
+
+  const btn = document.getElementById('forgot-btn');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="mat sm spin">sync</span> Sending…`;
+
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/reset-password.html',
+    });
+
+    btn.disabled = false;
+    btn.innerHTML = `<span class="mat sm">send</span> Send reset link`;
+
+    if (error) {
+      showError('forgot-error', error.message || 'Failed to send reset link.');
+      return;
+    }
+
+    document.getElementById('forgot-success').classList.add('show');
+    document.getElementById('forgot-email').value = '';
+
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = `<span class="mat sm">send</span> Send reset link`;
+    showError('forgot-error', 'Connection error. Please try again.');
+    console.error('ForgotPassword error:', e);
+  }
+}
+
+/* ═══════════════════════════════════════
+   KEYBOARD — Enter key support
+═══════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const activeView = document.querySelector('.auth-view.active');
+    if (!activeView) return;
+    if (activeView.id === 'view-signin') handleSignIn();
+    if (activeView.id === 'view-forgot') handleForgotPassword();
+  }
+});
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+boot();
+</script>
+</body>
+</html>
