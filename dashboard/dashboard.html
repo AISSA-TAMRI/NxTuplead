@@ -1496,7 +1496,7 @@ function updateDashboard() {
   if(upEl){
     upEl.innerHTML=upcoming.length ? upcoming.map(l=>{
       const isToday=l.preferred_date.slice(0,10)===todayStr, sc=scClass(l.status);
-      return `<div class="csm" style="padding:10px 12px;cursor:pointer;${isToday?'border-color:rgba(210,187,255,0.3);background:var(--acc-g)':''}" onclick="openLead(${l.id})">`
+      return `<div class="csm" style="padding:10px 12px;cursor:pointer;${isToday?'border-color:rgba(210,187,255,0.3);background:var(--acc-g)':''}" onclick="openLead(${l.id})">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;font-weight:600;color:${isToday?'var(--acc)':'var(--tx3)'}">${fmtDate(l.preferred_date)}${l.preferred_time?' · '+l.preferred_time:''}</span><span class="badge ${sc}" style="font-size:9px">${l.status||'Potential'}</span></div>
         <div style="font-size:13px;font-weight:600">${l.company_name||'—'}</div>
         <div style="font-size:11px;color:var(--tx3)">${((l.first_name||'')+' '+(l.last_name||'')).trim()||'—'}</div>
