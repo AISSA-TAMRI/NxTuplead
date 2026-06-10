@@ -371,7 +371,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('[NXTUP Auth] Missing Supabase credentials. Edit supabase-config.js first.');
 }
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
@@ -384,7 +384,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 ═══════════════════════════════════════ */
 async function boot() {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await sb.auth.getSession();
     if (session) {
       // Already logged in → go to dashboard
       window.location.replace('dashboard.html');
@@ -486,12 +486,12 @@ async function handleSignIn() {
   if (!remember) {
     window.addEventListener('beforeunload', () => {
       // Non-persistent session: clear on tab close
-      supabase.auth.signOut();
+      sb.auth.signOut();
     }, { once: true });
   }
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await sb.auth.signInWithPassword({
       email,
       password,
     });
@@ -538,7 +538,7 @@ async function handleForgotPassword() {
   btn.innerHTML = `<span class="mat sm spin">sync</span> Sending…`;
 
   try {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/reset-password.html',
     });
 
