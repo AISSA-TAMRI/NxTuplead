@@ -13,13 +13,13 @@
  * ─────────────────────────────────────────────────────────────
  */
 
-window.SUPABASE_URL      = 'https://YOUR_PROJECT_ID.supabase.co';
-window.SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+window.SUPABASE_URL      = 'https://gfmcsuqehgbetdsszwyd.supabase.co';
+window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmbWNzdXFlaGdiZXRkc3N6d3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzE5NjAsImV4cCI6MjA5NjYwNzk2MH0.frXLKeNjyWFF15gog9Qr5Mfvl8Yaqlhuvmgp-O8drPg';
 
 /* ── Runtime validation — shows a clear error instead of silent failure ── */
 (function validateConfig() {
-  const PLACEHOLDER_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-  const PLACEHOLDER_KEY = 'YOUR_ANON_KEY_HERE';
+  const PLACEHOLDER_URL = 'https://gfmcsuqehgbetdsszwyd.supabase.co';
+  const PLACEHOLDER_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmbWNzdXFlaGdiZXRkc3N6d3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzE5NjAsImV4cCI6MjA5NjYwNzk2MH0.frXLKeNjyWFF15gog9Qr5Mfvl8Yaqlhuvmgp-O8drPg';
 
   const urlMissing  = !window.SUPABASE_URL  || window.SUPABASE_URL  === PLACEHOLDER_URL;
   const keyMissing  = !window.SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY === PLACEHOLDER_KEY;
