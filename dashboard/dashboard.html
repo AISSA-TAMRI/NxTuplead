@@ -940,7 +940,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 const SUPABASE_URL      = window.SUPABASE_URL      || '';
 const SUPABASE_ANON_KEY  = window.SUPABASE_ANON_KEY  || '';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
@@ -985,7 +985,7 @@ let pipelineDragId  = null;   // id of lead being dragged
 ═══════════════════════════════════════ */
 async function bootAuth() {
   try {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const { data: { session }, error } = await sb.auth.getSession();
 
     if (error || !session) {
       // No session → redirect to login
@@ -1004,7 +1004,7 @@ async function bootAuth() {
     // IMPORTANT: Only redirect on explicit SIGNED_OUT — do NOT redirect on
     // INITIAL_SESSION or when session is null during the initial event fire,
     // which would cause an infinite redirect loop.
-    supabase.auth.onAuthStateChange((event, session) => {
+    sb.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
         // Explicit sign out — always redirect
         redirectToLogin();
@@ -1043,7 +1043,7 @@ async function bootAuth() {
 
 async function loadUserProfile(user) {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('profiles')
       .select('id, email, full_name, role, created_at')
       .eq('id', user.id)
@@ -1114,7 +1114,7 @@ function redirectToLogin() {
 async function handleSignOut() {
   closeUserMenu();
   try {
-    await supabase.auth.signOut();
+    await sb.auth.signOut();
   } catch (e) {
     console.error('SignOut error:', e);
   }
