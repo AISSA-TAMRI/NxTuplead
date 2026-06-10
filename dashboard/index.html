@@ -387,7 +387,7 @@ async function boot() {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       // Already logged in → go to dashboard
-      window.location.replace('dashboard.html');
+      window.location.replace('dashboard/dashboard.html');
       return;
     }
   } catch (e) {
