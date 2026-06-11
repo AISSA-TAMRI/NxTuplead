@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NXTUP Lead | Revenue Operating System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="/dashboard/supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#0b1326;--s1:#131b2e;--s2:#171f33;--s3:#222a3d;
+  --acc:#d2bbff;--acc-d:rgba(210,187,255,0.12);--acc-g:rgba(210,187,255,0.08);
+  --pri-c:#7c3aed;
+  --tx:#dae2fd;--tx2:#ccc3d8;--tx3:#958da1;
+  --bd:rgba(74,68,85,0.6);--bd2:rgba(74,68,85,0.9);
+  --gr:#4ade80;--gr-d:rgba(74,222,128,0.1);
+  --re:#f87171;--re-d:rgba(248,113,113,0.1);
+  --am:#fbbf24;--am-d:rgba(251,191,36,0.1);
+  --bl:#89ceff;--bl-d:rgba(137,206,255,0.1);
+  --pu:#d2bbff;--pu-d:rgba(210,187,255,0.1)
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
+.mat{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;font-size:18px;line-height:1;vertical-align:middle;user-select:none}
+.mat.sm{font-size:15px}.mat.lg{font-size:22px}.mat.fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:10px}
+
+/* AUTH LOADER */
+#authLoader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;transition:opacity .3s}
+#authLoader.fade{opacity:0;pointer-events:none}
+.loader-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.loader-logo .mat{color:var(--acc);font-size:26px}
+.loader-logo span{font-size:18px;font-weight:700;color:var(--acc);letter-spacing:-0.03em}
+.loader-bar{width:120px;height:2px;background:var(--bd);border-radius:2px;overflow:hidden}
+.loader-bar-fill{height:100%;background:var(--acc);border-radius:2px;animation:loaderPulse 1.2s ease-in-out infinite}
+@keyframes loaderPulse{0%,100%{width:20%}50%{width:80%}}
+
+/* LAYOUT */
+#app{display:none;height:100vh;width:100vw;overflow:hidden;flex-direction:row}
+#app.ready{display:flex}
+#sidebar{width:220px;min-width:220px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;z-index:50;transition:width 0.2s}
+#main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+#topbar{height:52px;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:40;flex-shrink:0}
+#workspace{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--bg)}
+
+/* AMBIENT GLOW */
+.ambient-tr{position:fixed;top:0;right:0;width:33%;height:50%;background:rgba(124,58,237,0.04);filter:blur(80px);pointer-events:none;z-index:0}
+.ambient-bl{position:fixed;bottom:0;left:220px;width:25%;height:33%;background:rgba(137,206,255,0.04);filter:blur(80px);pointer-events:none;z-index:0}
+
+/* NAV */
+.nav-logo{padding:16px 16px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd)}
+.nav-logo .bolt{color:var(--acc);font-size:22px}
+.nav-logo-text .name{font-weight:700;font-size:15px;color:var(--acc);letter-spacing:-0.02em;white-space:nowrap;display:block}
+.nav-logo-text .sub{font-size:10px;font-weight:500;color:var(--tx3);letter-spacing:0.08em;text-transform:uppercase;display:block;margin-top:1px}
+.nav-section{padding:8px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;color:var(--tx2);transition:all 0.15s;white-space:nowrap;position:relative}
+.nav-item:hover{background:rgba(255,255,255,0.04);color:var(--tx)}
+.nav-item.active{background:rgba(210,187,255,0.1);color:var(--acc)}
+.nav-item.active::after{content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--pri-c);border-radius:2px 0 0 2px}
+.nav-item .mat{flex-shrink:0}
+.nav-item .lbl{font-size:13px;font-weight:500}
+.nbadge{margin-left:auto;background:var(--acc-d);color:var(--acc);font-size:10px;font-weight:600;padding:1px 5px;border-radius:10px}
+.nbadge.red{background:var(--re-d);color:var(--re)}
+.nav-bottom{padding:12px;border-top:1px solid var(--bd)}
+.av{width:28px;height:28px;border-radius:50%;background:var(--acc-d);border:1px solid var(--bd2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--acc)}
+.av.bl{background:var(--bl-d);color:var(--bl)}.av.pu{background:var(--pu-d);color:var(--pu)}.av.gr{background:var(--gr-d);color:var(--gr)}
+
+/* USER MENU */
+.user-menu-wrap{position:relative}
+.user-menu{position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:var(--s2);border:1px solid var(--bd2);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;display:none;z-index:100}
+.user-menu.open{display:block}
+.user-menu-item{display:flex;align-items:center;gap:9px;padding:9px 13px;font-size:12px;font-weight:500;color:var(--tx2);cursor:pointer;transition:background .12s}
+.user-menu-item:hover{background:rgba(255,255,255,0.05);color:var(--tx)}
+.user-menu-item.danger{color:var(--re)}
+.user-menu-item.danger:hover{background:var(--re-d)}
+.user-menu-item .mat{font-size:15px}
+.user-menu-divider{height:1px;background:var(--bd);margin:4px 0}
+.user-menu-email{padding:9px 13px 6px;font-size:10px;color:var(--tx3);letter-spacing:0.03em}
+
+/* TOPBAR */
+.search-box{flex:1;max-width:400px;position:relative;display:flex;align-items:center}
+.search-box input{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:7px;padding:6px 12px 6px 34px;color:var(--tx);font-size:13px;outline:none;transition:border-color 0.15s;font-family:'Inter',sans-serif}
+.search-box input:focus{border-color:rgba(210,187,255,0.3)}
+.search-box input::placeholder{color:var(--tx3)}
+.search-box .si{position:absolute;left:9px;color:var(--tx3);pointer-events:none}
+.search-box .kbd{position:absolute;right:9px;font-size:10px;font-weight:500;color:var(--tx3);background:var(--s2);padding:1px 5px;border-radius:4px;border:1px solid var(--bd)}
+.tbb{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;color:var(--tx2);cursor:pointer;transition:all 0.15s;position:relative;border:none;background:none}
+.tbb:hover{background:rgba(255,255,255,0.06);color:var(--tx)}
+.ptitle{font-size:14px;font-weight:600;color:var(--tx);margin-left:4px}
+.tdiv{width:1px;height:20px;background:var(--bd);flex-shrink:0}
+.qbtn{display:flex;align-items:center;gap:6px;background:var(--pri-c);color:#ede0ff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all 0.15s;border:none;font-family:'Inter',sans-serif}
+.qbtn:hover{background:#6d28d9;transform:translateY(-1px)}
+
+/* SHARED */
+.pc{padding:20px 24px}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.stitle{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--tx3)}
+.card{background:var(--s2);border:1px solid var(--bd);border-radius:8px}
+.csm{background:var(--s2);border:1px solid var(--bd);border-radius:6px}
+.glass-card{background:rgba(23,31,51,0.7);backdrop-filter:blur(8px);border:1px solid var(--bd);border-radius:10px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;letter-spacing:0.03em;white-space:nowrap}
+.badge.gr{background:var(--gr-d);color:var(--gr)}.badge.re{background:var(--re-d);color:var(--re)}
+.badge.am{background:var(--am-d);color:var(--am)}.badge.bl{background:var(--bl-d);color:var(--bl)}
+.badge.pu{background:var(--pu-d);color:var(--pu)}.badge.gy{background:rgba(255,255,255,0.06);color:var(--tx2)}
+.badge.ac{background:var(--acc-d);color:var(--acc)}
+.badge.st-Potential{background:var(--bl-d);color:var(--bl)}
+.badge.st-Won{background:var(--gr-d);color:var(--gr)}
+.badge.st-Lost{background:var(--re-d);color:var(--re)}
+.sbar{height:3px;border-radius:2px;background:rgba(255,255,255,0.07);overflow:hidden;flex:1}
+.sfill{height:100%;border-radius:2px;background:var(--acc);transition:width 0.3s}
+.mlbl{font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--tx3)}
+.mval{font-size:22px;font-weight:700;color:var(--tx);letter-spacing:-0.02em;line-height:1.1}
+.dt{width:100%;border-collapse:collapse}
+.dt th{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3);padding:10px 12px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+.dt td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;font-size:13px}
+.dt tr:hover td{background:rgba(255,255,255,0.025)}
+.dt tr:last-child td{border-bottom:none}
+.ftrack{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.ffill{height:100%;border-radius:3px;background:var(--acc)}
+.pv{display:none}.pv.active{display:block}
+.abtn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bd);background:none;color:var(--tx2);transition:all 0.15s;font-family:'Inter',sans-serif}
+.abtn:hover{background:rgba(255,255,255,0.05);color:var(--tx);border-color:var(--bd2)}
+.abtn:disabled{opacity:0.5;cursor:not-allowed}
+.abtn.pri{background:var(--pri-c);color:#ede0ff;border-color:transparent;font-weight:600}
+.abtn.pri:hover{background:#6d28d9}
+.abtn.danger{color:var(--re);border-color:rgba(248,113,113,0.25)}
+.abtn.danger:hover{background:var(--re-d);border-color:rgba(248,113,113,0.4)}
+.tgroup{display:flex;background:var(--s1);border-radius:6px;padding:3px;border:1px solid var(--bd)}
+.topt{padding:5px 12px;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;color:var(--tx2);transition:all 0.15s}
+.topt.active{background:var(--s2);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.arow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.arow:last-child{border-bottom:none}
+
+/* COMMAND PALETTE */
+#cmdpal{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;padding-top:100px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px)}
+#cmdpal.open{display:flex}
+.cmdbox{width:580px;background:var(--s2);border:1px solid rgba(210,187,255,0.2);border-radius:10px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.7)}
+.cmdin{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--bd)}
+.cmdin .mat{color:var(--tx3);font-size:20px}
+.cmdin input{flex:1;background:none;border:none;outline:none;color:var(--tx);font-size:15px;font-family:'Inter',sans-serif}
+.cmdin input::placeholder{color:var(--tx3)}
+.cesc{font-size:10px;font-weight:600;color:var(--tx3);background:rgba(255,255,255,0.06);padding:2px 7px;border-radius:4px;cursor:pointer}
+.csec{padding:8px}
+.cslbl{font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--tx3);padding:4px 8px 6px}
+.ci{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:6px;cursor:pointer;transition:background 0.1s}
+.ci:hover,.ci.sel{background:var(--acc-d)}
+.ci:hover .mat,.ci.sel .mat{color:var(--acc)}
+.ci .mat{color:var(--tx2);font-size:16px}
+.ci .clbl{font-size:13px;font-weight:500;flex:1}
+.ci .csc{font-size:10px;color:var(--tx3);background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px}
+.cfoot{padding:8px 16px;border-top:1px solid var(--bd);display:flex;gap:14px}
+.chint{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx3)}
+.chint kbd{background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;font-size:10px}
+
+/* LEAD PANEL */
+#leadPanel{position:fixed;top:0;right:-480px;width:480px;height:100%;background:var(--s1);border-left:1px solid var(--bd);overflow:hidden;transition:right .28s cubic-bezier(0.2,0,0,1);z-index:9999;display:flex;flex-direction:column}
+#leadPanel.lp-open{right:0}
+.lp-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:9998;display:none;backdrop-filter:blur(2px)}
+.lp-overlay.show{display:block}
+.lp-hd{padding:16px 18px 0;flex-shrink:0}
+.lp-hd-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.lp-company-icon{width:44px;height:44px;border-radius:8px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lp-company-icon .mat{font-size:22px;color:var(--acc)}
+.lp-company{font-size:20px;font-weight:800;color:var(--tx);letter-spacing:-0.02em;line-height:1.2}
+.lp-sub{font-size:11px;color:var(--tx3);margin-top:2px}
+.lp-tier{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--acc);margin-top:2px}
+.lp-badges-row{display:flex;align-items:center;gap:5px;margin-top:7px;flex-wrap:wrap}
+.lp-quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 18px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.lp-quick-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 8px;background:rgba(255,255,255,0.03);border:1px solid var(--bd);border-radius:7px;cursor:pointer;transition:all .15s;color:var(--tx2);text-decoration:none}
+.lp-quick-btn:hover{background:rgba(255,255,255,0.07);color:var(--tx);border-color:var(--bd2)}
+.lp-quick-btn .mat{font-size:18px}
+.lp-quick-btn span.qlabel{font-size:10px;font-weight:600;letter-spacing:0.04em}
+.lp-acts{display:flex;gap:6px;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.lp-body{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.lp-card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.lp-card-hd{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--bd);background:rgba(255,255,255,0.02)}
+.lp-card-hd .mat{font-size:15px;color:var(--acc)}
+.lp-card-title{font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--tx2);flex:1}
+.lp-rows{padding:3px 0}
+.lp-row{display:flex;align-items:center;gap:11px;padding:8px 13px;border-bottom:1px solid rgba(255,255,255,0.035);transition:background .12s}
+.lp-row:last-child{border-bottom:none}
+.lp-row:hover{background:rgba(255,255,255,0.025)}
+.lp-ri{width:26px;height:26px;border-radius:6px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.lp-ri .mat{font-size:13px;color:var(--tx3)}
+.lp-rl{font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--tx3);margin-bottom:1px}
+.lp-rv{font-size:13px;color:var(--tx);font-weight:500}
+.lp-rv a{color:var(--acc);text-decoration:none}
+.lp-rv a:hover{text-decoration:underline}
+.lp-bento{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 13px}
+.lp-bento-cell{padding:10px;background:var(--s3);border:1px solid var(--bd);border-radius:6px}
+.lp-bento-lbl{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3);margin-bottom:4px}
+.lp-bento-val{font-size:15px;font-weight:700;color:var(--tx)}
+.lp-notes{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font-family:'Inter',sans-serif;font-size:13px;padding:9px 11px;resize:vertical;min-height:80px;outline:none;transition:border-color .15s,box-shadow .15s;line-height:1.65}
+.lp-notes:focus{border-color:rgba(210,187,255,0.35);box-shadow:0 0 12px rgba(124,58,237,0.08)}
+.lp-notes::placeholder{color:var(--tx3)}
+.lp-tl-wrap{padding:4px 0 4px 6px;position:relative}
+.lp-tl-wrap::before{content:'';position:absolute;left:23px;top:12px;bottom:12px;width:1px;background:var(--bd)}
+.lp-tl-item{display:flex;gap:10px;padding:9px 13px;position:relative}
+.lp-tl-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--bd);background:var(--s2);position:relative;z-index:1;transition:transform .2s}
+.lp-tl-dot .mat{font-size:11px}
+.lp-tl-item:hover .lp-tl-dot{transform:scale(1.15)}
+.lp-tl-dot.ac{border-color:var(--acc);color:var(--acc)}.lp-tl-dot.gr{border-color:var(--gr);color:var(--gr)}
+.lp-tl-dot.re{border-color:var(--re);color:var(--re)}.lp-tl-dot.am{border-color:var(--am);color:var(--am)}
+.lp-tl-dot.bl{border-color:var(--bl);color:var(--bl)}.lp-tl-dot.gy{border-color:var(--tx3);color:var(--tx3)}
+.lp-tl-content{background:var(--bg);border:1px solid var(--bd);border-radius:7px;padding:9px 11px;flex:1}
+.lp-tl-txt{font-size:12px;font-weight:600;color:var(--tx)}
+.lp-tl-meta{font-size:11px;color:var(--tx3);margin-top:2px}
+.lp-footer{padding:12px 18px;border-top:1px solid var(--bd);flex-shrink:0;display:flex;gap:8px}
+.lp-footer .abtn.pri{flex:1;justify-content:center;padding:9px;font-size:13px}
+
+/* TOAST */
+.lp-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 18px;font-size:13px;font-weight:500;color:var(--tx);box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:99999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
+.lp-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.lp-toast.ok{border-color:rgba(74,222,128,0.3);color:var(--gr)}
+.lp-toast.err{border-color:rgba(248,113,113,0.3);color:var(--re)}
+
+/* MODAL */
+#modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px)}
+#modal.open{display:flex}
+.modal-box{background:var(--s1);border:1px solid var(--bd2);border-radius:10px;width:520px;max-width:95vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.7)}
+.modal-hd{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-hd-title{font-size:15px;font-weight:700;color:var(--tx)}
+.modal-body{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.modal-ft{padding:14px 20px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--tx3)}
+.form-input{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:8px 11px;color:var(--tx);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;width:100%}
+.form-input:focus{border-color:rgba(210,187,255,0.35)}
+.form-input::placeholder{color:var(--tx3)}
+.form-select{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:8px 11px;color:var(--tx);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;width:100%;cursor:pointer}
+.form-select:focus{border-color:rgba(210,187,255,0.35)}
+.form-textarea{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:8px 11px;color:var(--tx);font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:vertical;min-height:70px;width:100%;line-height:1.6}
+.form-textarea:focus{border-color:rgba(210,187,255,0.35)}
+.form-textarea::placeholder{color:var(--tx3)}
+.section-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3);padding:4px 0 8px;border-bottom:1px solid var(--bd);margin-bottom:4px;grid-column:1/-1}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:16px 18px;position:relative;overflow:hidden;transition:border-color .15s}
+.stat-card:hover{border-color:var(--bd2)}
+.stat-card.c-acc{border-left:3px solid var(--pri-c)}
+.stat-card.c-gr{border-left:3px solid var(--gr)}
+.stat-card.c-re{border-left:3px solid var(--re)}
+.stat-card.c-bl{border-left:3px solid var(--bl)}
+.stat-card.c-am{border-left:3px solid var(--am)}
+.stat-card.c-pu{border-left:3px solid var(--pu)}
+.stat-trend{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;margin-top:4px}
+.stat-trend.up{color:var(--gr)}.stat-trend.down{color:var(--re)}.stat-trend.neutral{color:var(--tx3)}
+.stat-trend .mat{font-size:13px}
+
+/* DASHBOARD HERO */
+.dash-hero{padding:20px 24px 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--bd);background:var(--s1)}
+.dash-hero-title{font-size:22px;font-weight:700;color:var(--tx);letter-spacing:-0.02em}
+.dash-hero-sub{font-size:13px;color:var(--tx3);margin-top:2px}
+.period-toggle{display:flex;background:var(--s3);border-radius:6px;padding:3px;border:1px solid var(--bd);gap:1px}
+.period-btn{padding:5px 14px;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;color:var(--tx2);transition:all 0.15s;border:none;background:none;font-family:'Inter',sans-serif}
+.period-btn.active{background:var(--s2);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.kpi-val-lg{font-size:22px;font-weight:700;letter-spacing:-0.02em;line-height:1.1;margin:5px 0 3px}
+.kpi-sub{font-size:11px;color:var(--tx3)}
+.kpi-warn{color:var(--am)}.kpi-good{color:var(--gr)}.kpi-muted{color:var(--tx3)}
+
+/* VELOCITY CHART */
+.velocity-chart{display:flex;align-items:flex-end;justify-content:space-between;gap:4px;height:80px;padding:0 4px}
+.vel-bar{flex:1;background:rgba(210,187,255,0.15);border-radius:3px 3px 0 0;cursor:pointer;transition:background .15s;min-width:14px}
+.vel-bar:hover{background:rgba(210,187,255,0.5)}
+.vel-bar.current{background:var(--pri-c)}
+.vel-labels{display:flex;justify-content:space-between;padding:0 4px;margin-top:4px}
+.vel-label{font-size:9px;font-weight:600;letter-spacing:0.05em;color:var(--tx3);flex:1;text-align:center}
+
+/* SOURCE BARS */
+.src-bar-wrap{display:flex;flex-direction:column;gap:10px}
+.src-row{display:flex;flex-direction:column;gap:4px}
+.src-row-hd{display:flex;justify-content:space-between;align-items:center}
+.src-row-name{font-size:12px;color:var(--tx2)}
+.src-row-pct{font-size:11px;font-weight:600;color:var(--tx3)}
+.src-bar-track{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.src-bar-fill{height:100%;border-radius:3px}
+
+/* FOLLOW-UP ALERTS */
+.alert-pulse{animation:alertPulse 3s cubic-bezier(0.4,0,0.6,1) infinite}
+@keyframes alertPulse{0%,100%{opacity:1}50%{opacity:0.7}}
+.followup-alert{padding:12px;border-radius:8px;border:1px solid;margin-bottom:0}
+.followup-alert.err{background:rgba(147,0,10,0.1);border-color:rgba(248,113,113,0.2)}
+.followup-alert.info{background:rgba(124,58,237,0.08);border-color:rgba(210,187,255,0.2)}
+.followup-alert-title{font-size:13px;font-weight:600;color:var(--tx)}
+.followup-alert-time{font-size:10px;font-weight:600}
+.followup-alert-body{font-size:11px;color:var(--tx3);margin-top:4px;line-height:1.5}
+
+/* HEALTH BAR */
+.health-bar-track{height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;margin:6px 0 4px}
+.health-bar-fill{height:100%;border-radius:2px;background:var(--bl);transition:width .5s ease}
+
+/* FLOATING COMMAND BAR */
+#floatBar{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);display:flex;align-items:center;gap:2px;padding:4px;background:rgba(23,31,51,0.9);backdrop-filter:blur(16px);border:1px solid var(--bd);border-radius:999px;box-shadow:0 8px 40px rgba(0,0,0,0.5);z-index:8000;opacity:0;transition:all .3s ease-out;pointer-events:none}
+#floatBar.visible{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all}
+.fbar-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:var(--tx2);cursor:pointer;transition:all .15s;border:none;background:none}
+.fbar-btn:hover{background:rgba(255,255,255,0.08);color:var(--acc)}
+.fbar-btn .mat{font-size:18px}
+.fbar-div{width:1px;height:20px;background:var(--bd);margin:0 4px}
+.fbar-hint{padding:0 12px;font-size:11px;font-weight:500;color:var(--tx3)}
+.fbar-hint kbd{background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;border:1px solid var(--bd);font-size:10px}
+
+/* FAB */
+#fab{position:fixed;bottom:28px;right:28px;width:52px;height:52px;background:var(--pri-c);color:#ede0ff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(124,58,237,0.4);cursor:pointer;z-index:8000;border:none;font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-size:24px;transition:all .2s}
+#fab:hover{background:#6d28d9;transform:scale(1.08)}
+#fab:active{transform:scale(0.96)}
+
+/* EMPTY / LOADING */
+.empty-state{text-align:center;padding:48px 24px;color:var(--tx3)}
+.empty-state .mat{font-size:36px;display:block;margin-bottom:10px;opacity:0.4}
+.empty-state p{font-size:13px;margin-bottom:14px}
+.loading-row td{text-align:center;padding:32px;color:var(--tx3)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin 1s linear infinite;display:inline-block}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--bd)}
+.cal-cell{background:var(--s2);min-height:90px;padding:6px;position:relative}
+.cal-cell.other-month{background:var(--bg);opacity:0.5}
+.cal-cell.today{background:rgba(210,187,255,0.05)}
+.cal-cell.today .cal-day{background:var(--pri-c);color:#ede0ff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-day{font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:4px;width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cal-event{font-size:10px;font-weight:500;padding:2px 5px;border-radius:3px;margin-bottom:2px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:opacity .15s}
+.cal-event:hover{opacity:0.8}
+.cal-event.st-Potential{background:var(--bl-d);color:var(--bl);border-left:2px solid var(--bl)}
+.cal-event.st-Won{background:var(--gr-d);color:var(--gr);border-left:2px solid var(--gr)}
+.cal-event.st-Lost{background:var(--re-d);color:var(--re);border-left:2px solid var(--re)}
+.cal-hdr{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3);padding:8px;text-align:center;background:var(--s1)}
+
+/* ACTIVITY */
+.activity-icon{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--bd)}
+.activity-icon.ac{background:var(--acc-d);color:var(--acc)}.activity-icon.gr{background:var(--gr-d);color:var(--gr)}
+.activity-icon.re{background:var(--re-d);color:var(--re)}.activity-icon.am{background:var(--am-d);color:var(--am)}
+.activity-icon.bl{background:var(--bl-d);color:var(--bl)}.activity-icon.gy{background:rgba(255,255,255,0.04);color:var(--tx2)}
+
+/* CONFIRM */
+#confirmDialog{position:fixed;inset:0;z-index:11000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)}
+#confirmDialog.open{display:flex}
+.confirm-box{background:var(--s1);border:1px solid var(--bd2);border-radius:10px;padding:24px;width:360px;max-width:95vw;box-shadow:0 16px 48px rgba(0,0,0,0.7)}
+.confirm-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.confirm-msg{font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:20px}
+.confirm-actions{display:flex;gap:8px;justify-content:flex-end}
+
+/* SESSION BANNER */
+#sessionBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:20000;background:var(--re-d);border-bottom:1px solid rgba(248,113,113,0.3);padding:10px 20px;align-items:center;justify-content:center;gap:10px;font-size:12px;color:var(--re);font-weight:500}
+#sessionBanner.show{display:flex}
+
+/* PIPELINE KANBAN */
+#pv-pipeline{display:none}
+#pv-pipeline.active{display:flex;flex-direction:column;height:100%}
+.pipeline-toolbar{height:52px;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
+.pipeline-board{flex:1;overflow-x:auto;overflow-y:hidden;padding:16px 20px;display:flex;gap:12px;align-items:flex-start}
+.pipeline-board::-webkit-scrollbar{height:6px}
+.kb-col{width:260px;min-width:260px;display:flex;flex-direction:column;background:transparent;max-height:calc(100vh - 164px);flex-shrink:0}
+.kb-col-hd{padding:0 4px 10px;display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+.kb-col-hd-top{display:flex;align-items:center;justify-content:space-between}
+.kb-col-name{font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase}
+.kb-col-count{font-size:10px;font-weight:600;color:var(--tx3);background:rgba(255,255,255,0.06);padding:1px 7px;border-radius:10px}
+.kb-col-value{font-size:11px;color:var(--tx3)}
+.kb-cards{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;min-height:60px;padding:2px 0}
+.kb-cards::-webkit-scrollbar{width:3px}
+.kb-col.drag-over .kb-cards{background:rgba(210,187,255,0.06);border-radius:6px;outline:1px dashed rgba(210,187,255,0.25)}
+.kb-card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:12px;cursor:grab;transition:all .15s;position:relative;user-select:none}
+.kb-card:hover{border-color:rgba(210,187,255,0.3);background:var(--s3);box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+.kb-card.dragging{opacity:0.4;cursor:grabbing}
+.kb-card-company{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-card-contact{font-size:11px;color:var(--tx3);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb-card-footer{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:4px}
+.kb-card-date{font-size:10px;color:var(--tx3);display:flex;align-items:center;gap:3px}
+.kb-card-open{opacity:0;transition:opacity .15s;background:none;border:none;color:var(--acc);cursor:pointer;padding:2px;border-radius:3px;font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;font-size:14px;line-height:1}
+.kb-card:hover .kb-card-open{opacity:1}
+.kb-card-status{font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;letter-spacing:0.04em;text-transform:uppercase}
+.kb-card-status.won{background:var(--gr-d);color:var(--gr)}
+.kb-card-status.lost{background:var(--re-d);color:var(--re)}
+.kb-col[data-stage="Won"] .kb-card{border-left:2px solid rgba(74,222,128,0.3)}
+.kb-col[data-stage="Lost"] .kb-card{border-left:2px solid rgba(248,113,113,0.2);opacity:0.75}
+.kb-empty{text-align:center;padding:20px 8px;color:var(--tx3);font-size:11px;border:1px dashed rgba(255,255,255,0.08);border-radius:6px}
+.kb-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:0.92;box-shadow:0 12px 40px rgba(0,0,0,0.6);transform:rotate(2deg);width:240px}
+
+/* MOBILE */
+#mobileSidebarOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:45;backdrop-filter:blur(2px)}
+#mobileSidebarOverlay.show{display:block}
+@media(max-width:768px){
+  #sidebar{position:fixed;top:0;left:-220px;height:100%;z-index:200;width:220px !important;min-width:220px !important;transition:left .25s cubic-bezier(0.2,0,0,1)}
+  #sidebar.mobile-open{left:0}
+  #main{width:100vw}
+  #leadPanel{width:100vw;right:-100vw}
+  #leadPanel.lp-open{right:0}
+  .search-box{display:none}
+  .lp-body{padding:10px 14px}
+  .lp-acts{padding:8px 14px}
+  .lp-hd{padding:12px 14px 0}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  #fab{display:none}
+}
+</style>
+</head>
+<body>
+<div class="ambient-tr"></div>
+<div class="ambient-bl"></div>
+
+<div id="authLoader">
+  <div class="loader-logo"><span class="mat lg">bolt</span><span>NXTUP Lead</span></div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  <div style="font-size:11px;color:var(--tx3);letter-spacing:0.05em">Authenticating…</div>
+</div>
+
+<div id="sessionBanner">
+  <span class="mat sm">warning</span> Your session has expired.
+  <button class="abtn danger" style="padding:3px 10px;font-size:11px" onclick="window.location.replace('index.html')">Sign in again</button>
+</div>
+
+<div class="lp-overlay" id="lpOverlay" onclick="closeLeadPanel()"></div>
+<div class="lp-toast" id="lpToast"></div>
+
+<div id="confirmDialog">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+    <div class="confirm-msg" id="confirmMsg">This action cannot be undone.</div>
+    <div class="confirm-actions">
+      <button class="abtn" onclick="confirmCancel()">Cancel</button>
+      <button class="abtn danger" id="confirmOkBtn" onclick="confirmOk()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <span class="modal-hd-title" id="modalTitle">New Lead</span>
+      <button class="tbb" onclick="closeModal()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="modalLeadId"/>
+      <div class="form-row">
+        <div class="form-group"><div class="section-label">Contact Information</div></div>
+        <div class="form-group"></div>
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="mFirstName" placeholder="John"/></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="mLastName" placeholder="Smith"/></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="mEmail" type="email" placeholder="john@company.com"/></div>
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="mPhone" type="tel" placeholder="+1 555 000 0000"/></div>
+        <div class="form-group full"><label class="form-label">Company Name</label><input class="form-input" id="mCompany" placeholder="Acme Corp"/></div>
+        <div class="form-group"><div class="section-label" style="margin-top:4px">Status & Assignment</div></div><div class="form-group"></div>
+        <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="mStatus"><option value="Potential">Potential</option><option value="Won">Won</option><option value="Lost">Lost</option></select></div>
+        <div class="form-group"><label class="form-label">Owner / Agent</label><input class="form-input" id="mOwner" placeholder="Owner name or ID"/></div>
+        <div class="form-group"><div class="section-label" style="margin-top:4px">Scheduling</div></div><div class="form-group"></div>
+        <div class="form-group"><label class="form-label">Preferred Date</label><input class="form-input" id="mPrefDate" type="date"/></div>
+        <div class="form-group"><label class="form-label">Preferred Time</label><input class="form-input" id="mPrefTime" type="time"/></div>
+        <div class="form-group"><div class="section-label" style="margin-top:4px">UTM / Source</div></div><div class="form-group"></div>
+        <div class="form-group"><label class="form-label">Source</label><input class="form-input" id="mUtmSource" placeholder="google, facebook…"/></div>
+        <div class="form-group"><label class="form-label">Campaign</label><input class="form-input" id="mUtmCampaign" placeholder="Campaign name"/></div>
+        <div class="form-group"><label class="form-label">Medium</label><input class="form-input" id="mUtmMedium" placeholder="cpc, organic…"/></div>
+        <div class="form-group"><label class="form-label">Content</label><input class="form-input" id="mUtmContent" placeholder="Ad variant"/></div>
+        <div class="form-group full" style="margin-top:4px"><label class="form-label">Notes</label><textarea class="form-textarea" id="mNotes" placeholder="Internal notes…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="closeModal()">Cancel</button>
+      <button class="abtn pri" id="modalSaveBtn" onclick="saveLeadModal()"><span class="mat sm">save</span>Save Lead</button>
+    </div>
+  </div>
+</div>
+
+<div id="cmdpal" onclick="if(event.target===this)closeCmdPal()">
+  <div class="cmdbox">
+    <div class="cmdin">
+      <span class="mat">search</span>
+      <input id="cmdinput" type="text" placeholder="Search leads, companies, actions…" autocomplete="off"/>
+      <span class="cesc" onclick="closeCmdPal()">esc</span>
+    </div>
+    <div class="csec">
+      <div class="cslbl">Quick Actions</div>
+      <div class="ci" onclick="openCreateLead();closeCmdPal()"><span class="mat">add_circle</span><span class="clbl">Create Lead</span><span class="csc">L</span></div>
+      <div class="ci" onclick="handleSignOut();closeCmdPal()"><span class="mat">logout</span><span class="clbl">Sign Out</span></div>
+    </div>
+    <div class="csec">
+      <div class="cslbl">Navigate</div>
+      <div class="ci" onclick="navigate('dashboard');closeCmdPal()"><span class="mat">dashboard</span><span class="clbl">Dashboard</span></div>
+      <div class="ci" onclick="navigate('opportunities');closeCmdPal()"><span class="mat">people</span><span class="clbl">Leads</span></div>
+      <div class="ci" onclick="navigate('clients');closeCmdPal()"><span class="mat">verified_user</span><span class="clbl">Clients</span></div>
+      <div class="ci" onclick="navigate('activity');closeCmdPal()"><span class="mat">activity_zone</span><span class="clbl">Activity</span></div>
+      <div class="ci" onclick="navigate('pipeline');closeCmdPal()"><span class="mat">view_kanban</span><span class="clbl">Pipeline</span></div>
+      <div class="ci" onclick="navigate('calendar');closeCmdPal()"><span class="mat">calendar_today</span><span class="clbl">Calendar</span></div>
+      <div class="ci" onclick="navigate('analytics');closeCmdPal()"><span class="mat">bar_chart</span><span class="clbl">Analytics</span></div>
+    </div>
+    <div class="cfoot">
+      <span class="chint"><kbd>↑↓</kbd> Navigate</span>
+      <span class="chint"><kbd>↵</kbd> Select</span>
+      <span class="chint"><kbd>Esc</kbd> Close</span>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING COMMAND BAR -->
+<div id="floatBar">
+  <button class="fbar-btn" onclick="openCreateLead()" title="New Lead"><span class="mat">add</span></button>
+  <div class="fbar-div"></div>
+  <button class="fbar-btn" onclick="navigate('calendar')" title="Calendar"><span class="mat">calendar_today</span></button>
+  <button class="fbar-btn" onclick="navigate('pipeline')" title="Pipeline"><span class="mat">view_kanban</span></button>
+  <button class="fbar-btn" onclick="navigate('activity')" title="Activity"><span class="mat">activity_zone</span></button>
+  <div class="fbar-div"></div>
+  <div class="fbar-hint">Press <kbd>⌘K</kbd> for menu</div>
+</div>
+
+<!-- FAB -->
+<button id="fab" onclick="openCreateLead()" title="New Lead">add</button>
+
+<!-- APP SHELL -->
+<div id="app">
+  <aside id="sidebar">
+    <div class="nav-logo">
+      <span class="mat lg bolt fill" style="color:var(--acc)">bolt</span>
+      <div class="nav-logo-text">
+        <span class="name">NXTUP Lead</span>
+        <span class="sub">Revenue OS</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-item" data-page="dashboard" onclick="navigate('dashboard')"><span class="mat">dashboard</span><span class="lbl">Dashboard</span></div>
+      <div class="nav-item" data-page="opportunities" onclick="navigate('opportunities')"><span class="mat">people</span><span class="lbl">Leads</span><span class="nbadge" id="navCountLeads">—</span></div>
+      <div class="nav-item" data-page="pipeline" onclick="navigate('pipeline')"><span class="mat">view_kanban</span><span class="lbl">Pipeline</span></div>
+      <div class="nav-item" data-page="clients" onclick="navigate('clients')"><span class="mat">verified_user</span><span class="lbl">Clients</span><span class="nbadge" id="navCountClients" style="background:var(--gr-d);color:var(--gr)">—</span></div>
+      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
+      <div class="nav-item" data-page="activity" onclick="navigate('activity')"><span class="mat">activity_zone</span><span class="lbl">Activity</span></div>
+      <div class="nav-item" data-page="calendar" onclick="navigate('calendar')"><span class="mat">calendar_today</span><span class="lbl">Calendar</span></div>
+      <div class="nav-item" data-page="meetings" onclick="navigate('meetings')"><span class="mat">event</span><span class="lbl">Meetings</span><span class="nbadge" id="navCountMeetings" style="display:none">—</span></div>
+      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
+      <div class="nav-item" data-page="analytics" onclick="navigate('analytics')"><span class="mat">bar_chart</span><span class="lbl">Analytics</span></div>
+      <div class="nav-item" data-page="reports" onclick="navigate('reports')"><span class="mat">summarize</span><span class="lbl">Reports</span></div>
+      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
+      <div class="nav-item" data-page="settings" onclick="navigate('settings')"><span class="mat">settings</span><span class="lbl">Settings</span></div>
+    </div>
+    <div class="nav-bottom">
+      <div id="sidebarAlert" style="display:none;background:var(--re-d);border:1px solid rgba(248,113,113,0.2);border-radius:6px;padding:10px 12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span class="mat sm" style="color:var(--re);font-size:13px">warning</span><span style="font-size:11px;font-weight:600;color:var(--re)" id="sidebarAlertTitle">Follow-ups needed</span></div>
+        <div style="font-size:11px;color:var(--tx2)" id="sidebarAlertBody">—</div>
+      </div>
+      <div class="user-menu-wrap">
+        <div id="userMenu" class="user-menu">
+          <div class="user-menu-email" id="userMenuEmail">—</div>
+          <div class="user-menu-divider"></div>
+          <div class="user-menu-item" onclick="navigate('settings');closeUserMenu()"><span class="mat">settings</span> Settings</div>
+          <div class="user-menu-divider"></div>
+          <div class="user-menu-item danger" onclick="handleSignOut()"><span class="mat">logout</span> Sign out</div>
+        </div>
+        <div id="userTrigger" style="display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''" onclick="toggleUserMenu()">
+          <div class="av" id="userAvatar">?</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="userDisplayName">Loading…</div>
+            <div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:0.07em" id="userRoleLabel">Agent</div>
+          </div>
+          <span class="mat sm" style="color:var(--tx3);font-size:13px">expand_less</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div id="mobileSidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <div id="main">
+    <header id="topbar">
+      <button class="tbb" id="sidebarToggle"><span class="mat">menu</span></button>
+      <div class="tdiv"></div>
+      <span class="ptitle" id="ptitle">Dashboard</span>
+      <div style="flex:1"></div>
+      <div class="search-box">
+        <span class="mat si sm">search</span>
+        <input type="text" placeholder="Search anything… ⌘K" onclick="openCmdPal()" readonly/>
+        <span class="kbd">⌘K</span>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <button class="tbb" title="Notifications"><span class="mat">notifications</span></button>
+        <button class="tbb" title="Help"><span class="mat">help_outline</span></button>
+        <div class="tdiv" style="margin:0 4px"></div>
+        <button class="qbtn" onclick="openCreateLead()"><span class="mat sm" style="font-size:14px">add</span>New Lead</button>
+      </div>
+    </header>
+
+    <div id="workspace">
+
+      <!-- DASHBOARD -->
+      <div class="pv" id="pv-dashboard">
+        <div class="dash-hero">
+          <div>
+            <div class="dash-hero-title">Performance Overview</div>
+            <div class="dash-hero-sub" id="dashDate">Real-time pipeline health and revenue operations.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--bl)">schedule</span><span style="font-size:12px;color:var(--tx2)"><strong id="dashMeetingsToday" style="color:var(--bl)">—</strong> today</span></div>
+            <div style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--am)">date_range</span><span style="font-size:12px;color:var(--tx2)"><strong id="dashMeetingsWeek" style="color:var(--am)">—</strong> this week</span></div>
+            <div class="period-toggle" id="periodToggle">
+              <button class="period-btn active" onclick="setPeriod('daily',this)">Daily</button>
+              <button class="period-btn" onclick="setPeriod('weekly',this)">Weekly</button>
+              <button class="period-btn" onclick="setPeriod('monthly',this)">Monthly</button>
+            </div>
+          </div>
+        </div>
+        <div class="pc">
+          <!-- KPI Cards -->
+          <div class="stat-grid">
+            <div class="stat-card c-acc">
+              <div class="mlbl">Total Leads</div>
+              <div class="mval" style="margin:5px 0 0" id="statTotal"><span class="spin mat sm">sync</span></div>
+              <div class="stat-trend neutral"><span class="mat">remove</span><span>all time</span></div>
+            </div>
+            <div class="stat-card c-bl">
+              <div class="mlbl">Potential</div>
+              <div class="mval" style="margin:5px 0 0;color:var(--bl)" id="statPotential">—</div>
+              <div class="stat-trend neutral"><span class="mat">radio_button_unchecked</span><span>active pipeline</span></div>
+            </div>
+            <div class="stat-card c-gr">
+              <div class="mlbl">Won</div>
+              <div class="mval" style="margin:5px 0 0;color:var(--gr)" id="statWon">—</div>
+              <div class="stat-trend up"><span class="mat">trending_up</span><span id="trendWonLabel">converted</span></div>
+            </div>
+            <div class="stat-card c-re">
+              <div class="mlbl">Lost</div>
+              <div class="mval" style="margin:5px 0 0;color:var(--re)" id="statLost">—</div>
+              <div class="stat-trend down"><span class="mat">trending_down</span><span>closed lost</span></div>
+            </div>
+          </div>
+          <!-- KPI Row 2 -->
+          <div class="kpi-row">
+            <div class="stat-card c-gr"><div class="mlbl">Win Rate</div><div class="kpi-val-lg" id="statWinRate">—</div><div class="kpi-sub">won ÷ (won + lost)</div></div>
+            <div class="stat-card c-am"><div class="mlbl">Never Contacted</div><div class="kpi-val-lg" id="statNeverContacted">—</div><div class="kpi-sub" id="statNeverContactedSub">potential leads, no contact</div></div>
+            <div class="stat-card c-acc"><div class="mlbl">Avg. Close Time</div><div class="kpi-val-lg" id="statVelocity">—</div><div class="kpi-sub">days to convert (won leads)</div></div>
+          </div>
+          <!-- 3-column grid -->
+          <div style="display:grid;grid-template-columns:260px 1fr 280px;gap:16px;align-items:start">
+            <!-- Col 1: Analytics -->
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="glass-card" style="overflow:hidden">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;border-bottom:1px solid var(--bd)">
+                  <span class="stitle" style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">show_chart</span>Pipeline Velocity</span>
+                  <span class="mat sm" style="color:var(--tx3)">more_horiz</span>
+                </div>
+                <div style="padding:14px">
+                  <div class="velocity-chart" id="velocityChart">
+                    <div class="vel-bar" style="height:30%"></div><div class="vel-bar" style="height:45%"></div><div class="vel-bar" style="height:60%"></div>
+                    <div class="vel-bar current" style="height:85%"></div><div class="vel-bar" style="height:50%"></div><div class="vel-bar" style="height:40%"></div>
+                  </div>
+                  <div class="vel-labels"><span class="vel-label">WK1</span><span class="vel-label">WK2</span><span class="vel-label">WK3</span><span class="vel-label">WK4</span><span class="vel-label">WK5</span><span class="vel-label">WK6</span></div>
+                </div>
+              </div>
+              <div class="glass-card" style="padding:14px">
+                <div class="stitle" style="margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">donut_large</span>Lead Breakdown</div>
+                <div style="display:flex;flex-direction:column;gap:10px" id="dashBreakdown"><div style="text-align:center;padding:20px;color:var(--tx3);font-size:12px"><span class="spin mat sm">sync</span></div></div>
+                <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+                  <div style="width:36px;height:36px;border-radius:8px;background:var(--gr-d);display:flex;align-items:center;justify-content:center"><span class="mat" style="color:var(--gr);font-size:18px">verified_user</span></div>
+                  <div style="flex:1"><div class="mlbl">Total Clients</div><div style="font-size:18px;font-weight:700;color:var(--gr);margin-top:2px" id="statClients">—</div></div>
+                  <a style="font-size:11px;color:var(--acc);cursor:pointer" onclick="navigate('clients')">View →</a>
+                </div>
+              </div>
+              <div class="glass-card" style="padding:14px">
+                <div class="stitle" style="margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">ads_click</span>Source Efficiency</div>
+                <div class="src-bar-wrap" id="dashSourceEfficiency"><div style="text-align:center;padding:12px;color:var(--tx3);font-size:11px"><span class="spin mat sm">sync</span></div></div>
+              </div>
+            </div>
+            <!-- Col 2: Latest Leads + Health -->
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="glass-card" style="overflow:hidden">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--bd)">
+                  <span class="stitle" style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">person_add</span>Latest Leads</span>
+                  <a style="font-size:11px;color:var(--acc);cursor:pointer" onclick="navigate('opportunities')">View all →</a>
+                </div>
+                <table class="dt">
+                  <thead><tr><th>Contact</th><th>Company</th><th>Status</th><th>Created</th><th style="width:32px"></th></tr></thead>
+                  <tbody id="dashLatestLeads"><tr class="loading-row"><td colspan="5"><span class="spin mat sm">sync</span> Loading…</td></tr></tbody>
+                </table>
+              </div>
+              <div class="glass-card" style="padding:14px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+                  <span class="stitle" style="display:flex;align-items:center;gap:5px"><span class="mat sm" style="color:var(--bl)">health_and_safety</span>Pipeline Health</span>
+                  <span style="font-size:10px;font-weight:700;color:var(--bl)" id="healthLabel">GOOD</span>
+                </div>
+                <div class="health-bar-track"><div class="health-bar-fill" id="healthBar" style="width:0%"></div></div>
+                <div style="font-size:11px;color:var(--tx3)" id="healthDesc">Calculating pipeline health…</div>
+              </div>
+            </div>
+            <!-- Col 3: Meetings + Alerts -->
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="glass-card" style="overflow:hidden">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--bd);background:rgba(255,255,255,0.02)">
+                  <span class="stitle" style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">today</span>Upcoming Meetings</span>
+                  <span style="font-size:9px;font-weight:700;color:var(--pri-c);background:rgba(124,58,237,0.15);padding:2px 7px;border-radius:3px;letter-spacing:0.06em">TODAY</span>
+                </div>
+                <div id="dashUpcomingMeetings" style="display:flex;flex-direction:column"><div style="text-align:center;padding:20px;color:var(--tx3);font-size:12px"><span class="spin mat sm">sync</span></div></div>
+                <button style="width:100%;padding:10px;text-align:center;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3);background:none;border:none;border-top:1px solid var(--bd);cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''" onclick="navigate('calendar')">Calendar View</button>
+              </div>
+              <div class="glass-card" style="padding:14px">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:12px"><span class="mat sm" style="color:var(--bl)">error_outline</span><span class="stitle">Follow-up Alerts</span></div>
+                <div id="dashAlerts" style="display:flex;flex-direction:column;gap:8px"><div style="text-align:center;padding:12px;color:var(--tx3);font-size:11px"><span class="spin mat sm">sync</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEADS -->
+      <div class="pv" id="pv-opportunities">
+        <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
+          <div class="tgroup" id="leadsFilterGroup">
+            <div class="topt active" onclick="filterLeads('all',this)">All</div>
+            <div class="topt" onclick="filterLeads('Potential',this)">Potential</div>
+            <div class="topt" onclick="filterLeads('Won',this)">Won</div>
+            <div class="topt" onclick="filterLeads('Lost',this)">Lost</div>
+          </div>
+          <div style="flex:1"></div>
+          <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button>
+        </div>
+        <div class="pc">
+          <div class="card" style="overflow:hidden">
+            <table class="dt">
+              <thead><tr>
+                <th style="width:24px"><input type="checkbox" style="accent-color:var(--acc)"/></th>
+                <th>Company</th><th>Contact</th><th>Status</th><th>Phone</th><th>Source</th><th>Scheduled</th><th>Last Contacted</th><th></th>
+              </tr></thead>
+              <tbody id="leadsTable"></tbody>
+            </table>
+          </div>
+          <div style="padding:10px 14px;display:flex;align-items:center;border-top:1px solid var(--bd)"><span style="font-size:12px;color:var(--tx3)" id="leadsCount">—</span></div>
+        </div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div class="pv" id="pv-clients">
+        <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
+          <span style="font-size:13px;font-weight:600;color:var(--tx)">Client Database</span>
+          <div style="flex:1"></div>
+          <button class="abtn" onclick="loadClients()"><span class="mat sm">refresh</span>Refresh</button>
+        </div>
+        <div class="pc">
+          <div class="card" style="overflow:hidden">
+            <table class="dt">
+              <thead><tr><th>Company</th><th>Contact</th><th>Email</th><th>Phone</th><th>Converted</th><th>Manager</th><th></th></tr></thead>
+              <tbody id="clientsTable"><tr class="loading-row"><td colspan="7"><span class="spin mat sm">sync</span> Loading clients…</td></tr></tbody>
+            </table>
+          </div>
+          <div style="padding:10px 14px;border-top:1px solid var(--bd)"><span style="font-size:12px;color:var(--tx3)" id="clientsCount">—</span></div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="pv" id="pv-activity">
+        <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
+          <span style="font-size:13px;font-weight:600;color:var(--tx)">Activity Feed</span>
+          <div style="flex:1"></div>
+          <button class="abtn" onclick="loadActivity()"><span class="mat sm">refresh</span>Refresh</button>
+        </div>
+        <div class="pc">
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+            <div class="card" style="padding:16px">
+              <div class="stitle" style="margin-bottom:14px">Recent Activity</div>
+              <div id="activityFeed"><div style="text-align:center;padding:32px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div></div>
+            </div>
+            <div class="card" style="padding:14px">
+              <div class="stitle" style="margin-bottom:12px">Lead Status Summary</div>
+              <div id="activitySummary" style="display:flex;flex-direction:column;gap:8px"><div style="text-align:center;padding:16px;color:var(--tx3);font-size:12px"><span class="spin mat sm">sync</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CALENDAR -->
+      <div class="pv" id="pv-calendar">
+        <div style="border-bottom:1px solid var(--bd);padding:12px 24px;background:var(--s1);display:flex;align-items:center;gap:16px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <button class="tbb" onclick="calPrev()"><span class="mat sm">chevron_left</span></button>
+            <span style="font-size:16px;font-weight:700;color:var(--tx);min-width:160px;text-align:center" id="calMonthTitle">—</span>
+            <button class="tbb" onclick="calNext()"><span class="mat sm">chevron_right</span></button>
+          </div>
+          <button class="abtn" onclick="calGoToday()">Today</button>
+          <div style="flex:1"></div>
+          <div style="display:flex;gap:10px;font-size:11px;color:var(--tx3)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:var(--bl);display:inline-block"></span>Potential</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:var(--gr);display:inline-block"></span>Won</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:var(--re);display:inline-block"></span>Lost</span>
+          </div>
+        </div>
+        <div class="pc">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:1px">
+            <div class="cal-hdr">Mon</div><div class="cal-hdr">Tue</div><div class="cal-hdr">Wed</div>
+            <div class="cal-hdr">Thu</div><div class="cal-hdr">Fri</div><div class="cal-hdr">Sat</div><div class="cal-hdr">Sun</div>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden"><div id="calGrid" class="cal-grid"><div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--tx3);font-size:12px"><span class="spin mat sm">sync</span> Loading…</div></div></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="pv" id="pv-settings">
+        <div class="pc">
+          <div style="font-size:16px;font-weight:700;letter-spacing:-0.01em;margin-bottom:16px">Settings</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="card" style="padding:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:6px">Account</div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:7px;border:1px solid var(--bd)">
+                  <div class="av" style="width:36px;height:36px;font-size:14px" id="settingsAvatar">?</div>
+                  <div><div style="font-size:13px;font-weight:600" id="settingsName">—</div><div style="font-size:11px;color:var(--tx3)" id="settingsEmail">—</div><div style="font-size:10px;color:var(--acc);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px" id="settingsRole">—</div></div>
+                </div>
+                <button class="abtn danger" style="justify-content:center" onclick="handleSignOut()"><span class="mat sm">logout</span> Sign out of NXTUP Lead</button>
+              </div>
+            </div>
+            <div class="card" style="padding:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:6px">Webhook Endpoints</div>
+              <div style="font-size:12px;color:var(--tx3);margin-bottom:10px">Connected N8N integrations</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg);border-radius:5px;border:1px solid var(--bd)"><span style="font-size:12px;color:var(--tx2)">GET Leads</span><span class="badge gr">Active</span></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg);border-radius:5px;border:1px solid var(--bd)"><span style="font-size:12px;color:var(--tx2)">GET Clients</span><span class="badge gr">Active</span></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg);border-radius:5px;border:1px solid var(--bd)"><span style="font-size:12px;color:var(--tx2)">Lead Management</span><span class="badge gr">Active</span></div>
+              </div>
+            </div>
+            <div class="card" style="padding:16px">
+              <div style="font-size:14px;font-weight:600;margin-bottom:6px">About</div>
+              <div style="font-size:12px;color:var(--tx3);line-height:1.7">NXTUP Lead — Revenue Operating System<br/>Version 3.0 — Production<br/><br/>Auth: Supabase · Data: PostgreSQL via N8N</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIPELINE -->
+      <div class="pv" id="pv-pipeline">
+        <div class="pipeline-toolbar">
+          <span style="font-size:13px;font-weight:600;color:var(--tx)">Pipeline</span>
+          <div id="pipelineSummary" style="display:flex;align-items:center;gap:10px;font-size:11px;color:var(--tx3)"></div>
+          <div style="flex:1"></div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx3)"><span class="mat sm">drag_indicator</span>Drag to update stage</div>
+          <button class="abtn" onclick="loadLeads().then(renderPipeline)" style="margin-left:8px"><span class="mat sm">refresh</span>Refresh</button>
+          <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button>
+        </div>
+        <div class="pipeline-board" id="pipelineBoard">
+          <div style="display:flex;align-items:center;justify-content:center;width:100%;padding:60px;color:var(--tx3)"><span class="spin mat sm" style="margin-right:8px">sync</span> Loading pipeline…</div>
+        </div>
+      </div>
+
+      <!-- MEETINGS -->
+      <div class="pv" id="pv-meetings">
+        <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--tx)">Meetings</span></div>
+        <div class="pc" style="display:flex;align-items:center;justify-content:center;height:300px;color:var(--tx3)"><div style="text-align:center"><span class="mat" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.3">event</span>Meetings module coming next</div></div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="pv" id="pv-analytics">
+        <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--tx)">Analytics</span></div>
+        <div class="pc" style="display:flex;align-items:center;justify-content:center;height:300px;color:var(--tx3)"><div style="text-align:center"><span class="mat" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.3">bar_chart</span>Analytics module coming soon</div></div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="pv" id="pv-reports">
+        <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--tx)">Reports</span></div>
+        <div class="pc" style="display:flex;align-items:center;justify-content:center;height:300px;color:var(--tx3)"><div style="text-align:center"><span class="mat" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.3">summarize</span>Reports module coming soon</div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- LEAD PANEL -->
+<div id="leadPanel">
+  <div class="lp-hd">
+    <div class="lp-hd-top">
+      <div style="display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0">
+        <div class="lp-company-icon"><span class="mat fill">business</span></div>
+        <div style="min-width:0;flex:1">
+          <div class="lp-company" id="lp-company">—</div>
+          <div class="lp-tier" id="lp-tier">Lead</div>
+          <div class="lp-sub" id="lp-sub">—</div>
+          <div class="lp-badges-row" id="lp-badges"></div>
+        </div>
+      </div>
+      <button class="tbb" onclick="closeLeadPanel()"><span class="mat">close</span></button>
+    </div>
+  </div>
+  <div class="lp-quick-grid" id="lp-quick-grid"></div>
+  <div class="lp-acts">
+    <button class="abtn" onclick="lpEdit()"><span class="mat sm">edit</span>Edit</button>
+    <button class="abtn" id="btnWon" style="color:var(--gr);border-color:rgba(74,222,128,0.25)" onclick="lpStatus('Won')"><span class="mat sm">check_circle</span>Won</button>
+    <button class="abtn" id="btnLost" style="color:var(--re);border-color:rgba(248,113,113,0.25)" onclick="lpStatus('Lost')"><span class="mat sm">cancel</span>Lost</button>
+    <button class="abtn" id="btnPotential" style="color:var(--bl);border-color:rgba(137,206,255,0.25)" onclick="lpStatus('Potential')"><span class="mat sm">radio_button_unchecked</span>Active</button>
+    <button class="abtn danger" onclick="lpDelete()"><span class="mat sm">delete</span></button>
+  </div>
+  <div class="lp-body" id="leadContent"></div>
+  <div class="lp-footer">
+    <button class="abtn pri" onclick="lpConvert()"><span class="mat sm">rocket_launch</span>Convert to Client</button>
+    <button class="abtn" style="padding:9px 12px" onclick="lpEdit()"><span class="mat sm">more_vert</span></button>
+  </div>
+</div>
+<script>
+'use strict';
+const SUPABASE_URL=window.SUPABASE_URL||'';
+const SUPABASE_ANON_KEY=window.SUPABASE_ANON_KEY||'';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const API={getLeads:'https://n8n.upleaddigital.com/webhook/get-leads',getClients:'https://n8n.upleaddigital.com/webhook/get-clients',leadManagement:'https://n8n.upleaddigital.com/webhook/lead-management'};
+const PAGE_TITLES={dashboard:'Dashboard',opportunities:'Leads',pipeline:'Pipeline',clients:'Clients',activity:'Activity',calendar:'Calendar',meetings:'Meetings',analytics:'Analytics',reports:'Reports',settings:'Settings'};
+const VALID_PAGES=Object.keys(PAGE_TITLES);
+let allLeads=[],allClients=[],currentLead=null,activeFilter='all',calYear=new Date().getFullYear(),calMonth=new Date().getMonth(),confirmCallback=null,activityLoaded=false,clientsLoaded=false,currentUser=null,currentProfile=null,pipelineDragId=null;
+
+async function bootAuth(){
+  try{
+    const{data:{session},error}=await sb.auth.getSession();
+    if(error||!session){redirectToLogin();return;}
+    currentUser=session.user;
+    await loadUserProfile(currentUser);renderUserUI();showApp();
+    sb.auth.onAuthStateChange((event,session)=>{
+      if(event==='SIGNED_OUT'){redirectToLogin();return;}
+      if(event==='INITIAL_SESSION')return;
+      if(event==='TOKEN_REFRESHED'&&session){currentUser=session.user;return;}
+      if(event==='USER_UPDATED'&&session){currentUser=session.user;loadUserProfile(currentUser).then(renderUserUI);return;}
+      if(!session&&event!=='PASSWORD_RECOVERY')redirectToLogin();
+    });
+    bootPage();await loadLeads();await preloadClientsCount();
+  }catch(e){console.error('Auth boot failed:',e);redirectToLogin();}
+}
+async function loadUserProfile(user){
+  try{
+    const{data,error}=await sb.from('profiles').select('id,email,full_name,role,created_at').eq('id',user.id).single();
+    if(error){currentProfile={id:user.id,email:user.email,full_name:user.user_metadata?.full_name||user.email?.split('@')[0]||'User',role:user.user_metadata?.role||'Agent'};}
+    else{currentProfile=data;}
+  }catch(e){currentProfile={id:user.id,email:user.email,full_name:user.email?.split('@')[0]||'User',role:'Agent'};}
+}
+function renderUserUI(){
+  if(!currentProfile)return;
+  const name=currentProfile.full_name||currentProfile.email||'User',role=currentProfile.role||'Agent';
+  const initls=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  setEl('userDisplayName',name);setEl('userRoleLabel',role);setEl('userAvatar',initls);setEl('userMenuEmail',currentProfile.email||'—');
+  setEl('settingsName',name);setEl('settingsEmail',currentProfile.email||'—');setEl('settingsRole',role);setEl('settingsAvatar',initls);
+}
+function setEl(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+function showApp(){const loader=document.getElementById('authLoader');loader.classList.add('fade');setTimeout(()=>{loader.style.display='none';document.getElementById('app').classList.add('ready');},320);}
+function redirectToLogin(){window.location.replace('index.html');}
+async function handleSignOut(){closeUserMenu();try{await sb.auth.signOut();}catch(e){console.error('SignOut error:',e);}redirectToLogin();}
+function toggleUserMenu(){document.getElementById('userMenu').classList.toggle('open');}
+function closeUserMenu(){document.getElementById('userMenu').classList.remove('open');}
+document.addEventListener('click',e=>{const wrap=document.querySelector('.user-menu-wrap');if(wrap&&!wrap.contains(e.target))closeUserMenu();});
+
+function navigate(p,pushState=true){
+  if(!VALID_PAGES.includes(p))p='dashboard';
+  if(pushState&&location.hash!=='#'+p)history.pushState({page:p},'','#'+p);
+  document.querySelectorAll('.pv').forEach(x=>x.classList.remove('active'));
+  const pv=document.getElementById('pv-'+p);if(pv)pv.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const nav=document.querySelector(`.nav-item[data-page="${p}"]`);if(nav)nav.classList.add('active');
+  document.getElementById('ptitle').textContent=PAGE_TITLES[p]||p;
+  closeCmdPal();closeUserMenu();closeMobileSidebar();
+  if(p==='clients'&&!clientsLoaded){loadClients();clientsLoaded=true;}
+  if(p==='activity'&&!activityLoaded){loadActivity();activityLoaded=true;}
+  if(p==='calendar')renderCalendar();
+  if(p==='pipeline')renderPipeline();
+  if(p==='meetings')renderMeetings();
+  if(p==='analytics')renderAnalytics();
+  if(p==='reports')renderReports();
+}
+window.addEventListener('popstate',e=>{navigate((e.state&&e.state.page)||pageFromHash(),false);});
+function pageFromHash(){const h=location.hash.replace('#','');return VALID_PAGES.includes(h)?h:'dashboard';}
+function bootPage(){const p=pageFromHash();navigate(p,false);history.replaceState({page:p},'','#'+p);}
+function page(){return location.hash.replace('#','')||'dashboard';}
+
+document.getElementById('sidebarToggle').addEventListener('click',()=>{
+  const s=document.getElementById('sidebar');
+  const collapsed=s.style.width==='56px';
+  s.style.width=collapsed?'220px':'56px';s.style.minWidth=collapsed?'220px':'56px';
+  s.querySelectorAll('.lbl,.nbadge,.nav-logo-text').forEach(el=>{el.style.display=collapsed?'':'none';});
+});
+function closeMobileSidebar(){document.getElementById('sidebar').classList.remove('mobile-open');document.getElementById('mobileSidebarOverlay').classList.remove('show');}
+document.getElementById('sidebarToggle').addEventListener('click',()=>{
+  if(window.innerWidth>768)return;
+  const sidebar=document.getElementById('sidebar');
+  const isOpen=sidebar.classList.contains('mobile-open');
+  if(isOpen){closeMobileSidebar();}else{sidebar.classList.add('mobile-open');document.getElementById('mobileSidebarOverlay').classList.add('show');}
+});
+
+function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
+function fmtTime(t){return t||'—';}
+function scClass(status){return{Won:'gr',Lost:'re',Potential:'bl'}[status]||'gy';}
+function initials(s){if(!s)return'?';return s.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+function toast(msg,type='ok'){const el=document.getElementById('lpToast');el.textContent=msg;el.className=`lp-toast ${type} show`;setTimeout(()=>{el.className='lp-toast';},3000);}
+function showConfirm(title,msg,okLabel,okClass,cb){
+  document.getElementById('confirmTitle').textContent=title;document.getElementById('confirmMsg').textContent=msg;
+  const btn=document.getElementById('confirmOkBtn');btn.textContent=okLabel;btn.className=`abtn ${okClass}`;
+  confirmCallback=cb;document.getElementById('confirmDialog').classList.add('open');
+}
+function confirmCancel(){document.getElementById('confirmDialog').classList.remove('open');confirmCallback=null;}
+function confirmOk(){document.getElementById('confirmDialog').classList.remove('open');if(typeof confirmCallback==='function')confirmCallback();confirmCallback=null;}
+function openCmdPal(){document.getElementById('cmdpal').classList.add('open');setTimeout(()=>document.getElementById('cmdinput').focus(),50);}
+function closeCmdPal(){document.getElementById('cmdpal').classList.remove('open');}
+function setPeriod(period,el){document.querySelectorAll('#periodToggle .period-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+
+window.addEventListener('mousemove',e=>{
+  const bar=document.getElementById('floatBar');
+  if(window.innerHeight-e.clientY<120){bar.classList.add('visible');}else{bar.classList.remove('visible');}
+});
+
+async function loadLeads(){
+  renderTableLoading();
+  try{
+    const res=await fetch(API.getLeads);const data=await res.json();
+    allLeads=Array.isArray(data)?data:[];
+    renderTable(allLeads);updateSidebarCounts();updateDashboard();
+    if(page()==='pipeline')renderPipeline();
+    if(page()==='meetings')renderMeetings();
+    if(page()==='analytics')renderAnalytics();
+    if(page()==='reports')renderReports();
+    updateMeetingsBadge();
+  }catch(e){document.getElementById('leadsTable').innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--re)"><span class="mat sm">error</span> Failed to load leads.</td></tr>`;}
+}
+function renderTableLoading(){document.getElementById('leadsTable').innerHTML=`<tr class="loading-row"><td colspan="9"><span class="spin mat sm">sync</span> Loading leads…</td></tr>`;}
+function renderTable(leads){
+  const tbody=document.getElementById('leadsTable');
+  const count=document.getElementById('leadsCount');
+  if(count)count.textContent=`${leads.length} lead${leads.length!==1?'s':''}`;
+  if(!leads.length){tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><span class="mat">person_search</span><p>No leads found.</p><button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>Add First Lead</button></div></td></tr>`;return;}
+  tbody.innerHTML=leads.map(lead=>{
+    const name=((lead.first_name||'')+' '+(lead.last_name||'')).trim()||'—';
+    const date=lead.preferred_date?`${fmtDate(lead.preferred_date)}${lead.preferred_time?' '+lead.preferred_time:''}`:'—';
+    const last=lead.last_contacted_at?fmtDate(lead.last_contacted_at):'<span style="color:var(--tx3)">Never</span>';
+    const init=initials(lead.company_name||name);
+    return `<tr onclick="openLead(${lead.id})" style="cursor:pointer">
+      <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--acc)"></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div style="width:26px;height:26px;border-radius:5px;background:rgba(124,58,237,0.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--acc);flex-shrink:0">${init}</div><div><div style="font-weight:600">${lead.company_name||'—'}</div><div style="font-size:11px;color:var(--tx3)">${lead.utm_source||'—'}</div></div></div></td>
+      <td><div>${name}</div><div style="font-size:11px;color:var(--tx3)">${lead.email||''}</div></td>
+      <td><span class="badge st-${lead.status||'Potential'}">${lead.status||'Potential'}</span></td>
+      <td style="color:var(--tx2)">${lead.phone||'—'}</td>
+      <td>${lead.utm_campaign?`<span class="badge ac" style="font-size:10px">${lead.utm_campaign}</span>`:'<span style="color:var(--tx3)">—</span>'}</td>
+      <td style="color:var(--tx2);font-size:12px">${date}</td>
+      <td style="font-size:12px">${last}</td>
+      <td onclick="event.stopPropagation()"><button class="tbb" style="width:28px;height:28px" onclick="openLead(${lead.id})"><span class="mat sm">open_in_new</span></button></td>
+    </tr>`;
+  }).join('');
+}
+function filterLeads(filter,el){
+  activeFilter=filter;
+  document.querySelectorAll('#leadsFilterGroup .topt').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderTable(filter==='all'?allLeads:allLeads.filter(l=>l.status===filter));
+}
+function updateSidebarCounts(){
+  const potential=allLeads.filter(l=>l.status==='Potential').length;
+  const el=document.getElementById('navCountLeads');if(el)el.textContent=potential;
+  const neverContacted=allLeads.filter(l=>!l.last_contacted_at&&l.status==='Potential').length;
+  const alertBox=document.getElementById('sidebarAlert');
+  if(neverContacted>0&&alertBox){alertBox.style.display='';document.getElementById('sidebarAlertTitle').textContent=`${neverContacted} untouched lead${neverContacted!==1?'s':''}`;document.getElementById('sidebarAlertBody').textContent=`${neverContacted} potential lead${neverContacted!==1?'s':''} never contacted`;}
+  else if(alertBox){alertBox.style.display='none';}
+}
+function updateDashboard(){
+  const total=allLeads.length,potential=allLeads.filter(l=>l.status==='Potential').length,won=allLeads.filter(l=>l.status==='Won').length,lost=allLeads.filter(l=>l.status==='Lost').length;
+  setEl('statTotal',total);setEl('statPotential',potential);setEl('statWon',won);setEl('statLost',lost);
+  const now=new Date(),todayStr=now.toISOString().slice(0,10);
+  const weekEnd=new Date(now);weekEnd.setDate(now.getDate()+6);const weekStr=weekEnd.toISOString().slice(0,10);
+  const mt=allLeads.filter(l=>l.preferred_date&&l.preferred_date.slice(0,10)===todayStr).length;
+  const mw=allLeads.filter(l=>{if(!l.preferred_date)return false;const d=l.preferred_date.slice(0,10);return d>=todayStr&&d<=weekStr;}).length;
+  setEl('dashMeetingsToday',mt);setEl('dashMeetingsWeek',mw);
+  const winPct=(won+lost)>0?((won/(won+lost))*100).toFixed(0):null;
+  const twl=document.getElementById('trendWonLabel');if(twl)twl.textContent=winPct!==null?`${winPct}% win rate`:'converted';
+  // Breakdown
+  const bkEl=document.getElementById('dashBreakdown');
+  if(bkEl&&total>0){
+    bkEl.innerHTML=`
+      <div class="src-row"><div class="src-row-hd"><span class="src-row-name">Potential</span><span class="src-row-pct">${potential}</span></div><div class="src-bar-track"><div class="src-bar-fill" style="width:${(potential/total*100).toFixed(0)}%;background:var(--bl)"></div></div></div>
+      <div class="src-row"><div class="src-row-hd"><span class="src-row-name">Won</span><span class="src-row-pct">${won}</span></div><div class="src-bar-track"><div class="src-bar-fill" style="width:${(won/total*100).toFixed(0)}%;background:var(--gr)"></div></div></div>
+      <div class="src-row"><div class="src-row-hd"><span class="src-row-name">Lost</span><span class="src-row-pct">${lost}</span></div><div class="src-bar-track"><div class="src-bar-fill" style="width:${(lost/total*100).toFixed(0)}%;background:var(--re)"></div></div></div>`;
+  }else if(bkEl){bkEl.innerHTML=`<div style="text-align:center;padding:12px;color:var(--tx3);font-size:12px">No leads yet</div>`;}
+  // Latest leads
+  const latest=[...allLeads].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,6);
+  const latestEl=document.getElementById('dashLatestLeads');
+  if(latestEl){
+    latestEl.innerHTML=latest.length?latest.map(l=>{
+      const nm=((l.first_name||'')+' '+(l.last_name||'')).trim()||'—';
+      return `<tr onclick="openLead(${l.id})" style="cursor:pointer">
+        <td><div style="display:flex;align-items:center;gap:8px"><div style="width:26px;height:26px;border-radius:5px;background:rgba(124,58,237,0.15);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--acc)">${initials(nm)}</div><span style="font-size:13px;font-weight:500">${nm}</span></div></td>
+        <td style="font-size:12px;color:var(--bl)">${l.company_name||'—'}</td>
+        <td><span class="badge st-${l.status||'Potential'}">${l.status||'Potential'}</span></td>
+        <td style="font-size:11px;color:var(--tx3)">${fmtDate(l.created_at)}</td>
+        <td style="text-align:right"><span class="mat sm" style="color:var(--tx3);font-size:14px">arrow_forward_ios</span></td>
+      </tr>`;
+    }).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--tx3)">No leads yet</td></tr>`;
+  }
+  // Upcoming meetings
+  const upcoming=allLeads.filter(l=>l.preferred_date&&l.preferred_date.slice(0,10)>=todayStr).sort((a,b)=>a.preferred_date.localeCompare(b.preferred_date)).slice(0,4);
+  const upEl=document.getElementById('dashUpcomingMeetings');
+  if(upEl){
+    upEl.innerHTML=upcoming.length?upcoming.map(l=>{
+      const isToday=l.preferred_date.slice(0,10)===todayStr;
+      const nm=((l.first_name||'')+' '+(l.last_name||'')).trim()||'—';
+      return `<div style="padding:10px 14px;cursor:pointer;border-bottom:1px solid rgba(74,68,85,0.3);transition:background .12s" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''" onclick="openLead(${l.id})">
+        <div style="font-size:10px;font-weight:700;color:${isToday?'var(--pri-c)':'var(--tx3)'};margin-bottom:3px">${fmtDate(l.preferred_date)}${l.preferred_time?' — '+l.preferred_time:''}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--tx)">${l.company_name||'—'}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px"><div style="width:16px;height:16px;border-radius:50%;background:var(--acc-d);display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:var(--acc)">${initials(nm)}</div><span style="font-size:11px;color:var(--tx3)">${nm}</span></div>
+      </div>`;
+    }).join(''):`<div style="text-align:center;padding:24px;color:var(--tx3);font-size:12px"><span class="mat" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.4">event_busy</span>No upcoming meetings</div>`;
+  }
+  // KPI row
+  const decided=won+lost,wr=decided>0?Math.round((won/decided)*100):null;
+  const wrEl=document.getElementById('statWinRate');if(wrEl){wrEl.textContent=wr!==null?wr+'%':'—';wrEl.className='kpi-val-lg '+(wr===null?'kpi-muted':wr>=50?'kpi-good':'kpi-warn');}
+  const neverCont=allLeads.filter(l=>!l.last_contacted_at&&l.status==='Potential').length;
+  const ncEl=document.getElementById('statNeverContacted');if(ncEl){ncEl.textContent=neverCont||'—';ncEl.className='kpi-val-lg '+(neverCont>0?'kpi-warn':'kpi-good');}
+  const ncSubEl=document.getElementById('statNeverContactedSub');if(ncSubEl){const pct=potential>0?Math.round((neverCont/potential)*100):0;ncSubEl.textContent=neverCont>0?`${pct}% of potential pipeline`:'all potential leads contacted';}
+  const velEl=document.getElementById('statVelocity');if(velEl){const cl=allLeads.filter(l=>l.status==='Won'&&l.converted_at&&l.created_at);if(cl.length){const avgMs=cl.reduce((s,l)=>s+Math.max(0,new Date(l.converted_at)-new Date(l.created_at)),0)/cl.length;velEl.textContent=Math.round(avgMs/86400000)+'d';velEl.className='kpi-val-lg kpi-good';}else{velEl.textContent='—';velEl.className='kpi-val-lg kpi-muted';}}
+  updateSourceEfficiency();updatePipelineHealth(total,potential,won,lost,neverCont);updateFollowupAlerts(neverCont,potential);updateVelocityChart();
+}
+function updateSourceEfficiency(){
+  const el=document.getElementById('dashSourceEfficiency');if(!el)return;
+  const sources={};
+  allLeads.forEach(l=>{const src=l.utm_source||'Direct';if(!sources[src])sources[src]={total:0,won:0};sources[src].total++;if(l.status==='Won')sources[src].won++;});
+  const entries=Object.entries(sources).sort((a,b)=>b[1].total-a[1].total).slice(0,5);
+  if(!entries.length){el.innerHTML=`<div style="font-size:11px;color:var(--tx3);text-align:center;padding:8px">No source data yet</div>`;return;}
+  const maxTotal=entries[0][1].total;
+  const colors=['var(--acc)','var(--bl)','var(--am)','var(--gr)','var(--pu)'];
+  el.innerHTML=entries.map(([src,data],i)=>{const pct=Math.round((data.total/maxTotal)*100);return `<div class="src-row"><div class="src-row-hd"><span class="src-row-name">${src}</span><span class="src-row-pct">${pct}%</span></div><div class="src-bar-track"><div class="src-bar-fill" style="width:${pct}%;background:${colors[i%colors.length]}"></div></div></div>`;}).join('');
+}
+function updatePipelineHealth(total,potential,won,lost,neverCont){
+  const hb=document.getElementById('healthBar'),hl=document.getElementById('healthLabel'),hd=document.getElementById('healthDesc');if(!hb)return;
+  if(total===0){hb.style.width='0%';if(hl)hl.textContent='NO DATA';if(hd)hd.textContent='Add leads to track pipeline health.';return;}
+  const wr=(won+lost)>0?won/(won+lost):0.5,cr=total>0?1-(neverCont/total):1,score=Math.round((wr*0.5+cr*0.5)*100);
+  hb.style.width=score+'%';hb.style.background=score>=70?'var(--gr)':score>=40?'var(--am)':'var(--re)';
+  if(hl){hl.textContent=score>=70?'GOOD':score>=40?'FAIR':'POOR';hl.style.color=score>=70?'var(--gr)':score>=40?'var(--am)':'var(--re)';}
+  if(hd)hd.textContent=`${score}% score · ${neverCont} leads need contact · ${potential} active opportunities`;
+}
+function updateFollowupAlerts(neverCont,potential){
+  const el=document.getElementById('dashAlerts');if(!el)return;
+  const alerts=[];
+  if(neverCont>0)alerts.push({type:'err',title:`${neverCont} Untouched Lead${neverCont!==1?'s':''}`,time:'Action needed',body:`${neverCont} potential lead${neverCont!==1?'s':''} have never been contacted.`,action:'View Leads',onclick:`navigate('opportunities')`});
+  const overdue=allLeads.filter(l=>l.next_followup_at&&new Date(l.next_followup_at)<new Date()&&l.status==='Potential');
+  if(overdue.length>0)alerts.push({type:'err',title:`${overdue.length} Overdue Follow-up${overdue.length!==1?'s':''}`,time:`${overdue.length} overdue`,body:`${overdue[0].company_name||'A lead'} has a past-due follow-up date.`,action:'View Lead',onclick:`openLead(${overdue[0].id})`});
+  const recent=allLeads.filter(l=>{if(!l.created_at)return false;const hrs=(Date.now()-new Date(l.created_at))/3600000;return hrs<24&&l.status==='Potential';});
+  if(recent.length>0)alerts.push({type:'info',title:`${recent.length} New Lead${recent.length!==1?'s':''} Today`,time:'Just now',body:`${recent[0].company_name||'A new lead'} was added in the last 24 hours.`,action:'View Lead',onclick:`openLead(${recent[0].id})`});
+  if(!alerts.length){el.innerHTML=`<div style="text-align:center;padding:14px;font-size:12px;color:var(--tx3)"><span class="mat sm" style="display:block;margin-bottom:6px;font-size:22px;opacity:0.4">check_circle</span>No alerts — pipeline looks healthy</div>`;return;}
+  el.innerHTML=alerts.map(a=>`<div class="followup-alert ${a.type}"><div style="display:flex;justify-content:space-between;align-items:flex-start"><span class="followup-alert-title">${a.title}</span><span class="followup-alert-time" style="color:${a.type==='err'?'var(--re)':'var(--acc)'}">${a.time}</span></div><div class="followup-alert-body">${a.body}</div><button onclick="${a.onclick}" style="margin-top:6px;font-size:10px;font-weight:700;color:${a.type==='err'?'var(--re)':'var(--acc)'};background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0;text-transform:uppercase;letter-spacing:0.04em">${a.action} →</button></div>`).join('');
+}
+function updateVelocityChart(){
+  const chart=document.getElementById('velocityChart');if(!chart)return;
+  const weeks=[0,0,0,0,0,0],now=Date.now();
+  allLeads.forEach(l=>{if(!l.created_at)return;const wa=Math.floor((now-new Date(l.created_at))/604800000);if(wa>=0&&wa<6)weeks[5-wa]++;});
+  const max=Math.max(...weeks,1);
+  chart.innerHTML=weeks.map((v,i)=>{const h=Math.max(8,Math.round((v/max)*90));return `<div class="vel-bar${i===5?' current':''}" style="height:${h}%" title="WK${i+1}: ${v} leads"></div>`;}).join('');
+}
+async function preloadClientsCount(){
+  try{const res=await fetch(API.getClients);const data=await res.json();allClients=Array.isArray(data)?data:[];const el=document.getElementById('navCountClients');if(el)el.textContent=allClients.length;const dEl=document.getElementById('statClients');if(dEl)dEl.textContent=allClients.length;if(page()==='clients'){renderClientsTable(allClients);clientsLoaded=true;}}catch(e){console.warn('Could not preload clients:',e);}
+}
+async function loadClients(){
+  document.getElementById('clientsTable').innerHTML=`<tr class="loading-row"><td colspan="7"><span class="spin mat sm">sync</span> Loading clients…</td></tr>`;
+  try{const res=await fetch(API.getClients);const data=await res.json();allClients=Array.isArray(data)?data:[];renderClientsTable(allClients);const el=document.getElementById('navCountClients');if(el)el.textContent=allClients.length;const dEl=document.getElementById('statClients');if(dEl)dEl.textContent=allClients.length;}
+  catch(e){document.getElementById('clientsTable').innerHTML=`<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--re)"><span class="mat sm">error</span> Failed to load clients.</td></tr>`;}
+}
+function renderClientsTable(clients){
+  const tbody=document.getElementById('clientsTable'),count=document.getElementById('clientsCount');
+  if(count)count.textContent=`${clients.length} client${clients.length!==1?'s':''}`;
+  if(!clients.length){tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><span class="mat">group</span><p>No clients yet.</p><button class="abtn pri" onclick="navigate('opportunities')">View Leads →</button></div></td></tr>`;return;}
+  tbody.innerHTML=clients.map(c=>{const name=((c.first_name||'')+' '+(c.last_name||'')).trim()||'—';const mgr=c.account_manager_id||c.account_manager||c.owner_id||'—';
+    return `<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av gr" style="font-size:10px">${initials(c.company_name||name)}</div><div><div style="font-weight:600">${c.company_name||'—'}</div><div style="font-size:11px;color:var(--tx3)">${c.id?'#'+c.id:''}</div></div></div></td>
+      <td style="font-size:13px">${name}</td><td>${c.email?`<a href="mailto:${c.email}" style="color:var(--acc);text-decoration:none;font-size:13px">${c.email}</a>`:'<span style="color:var(--tx3)">—</span>'}</td>
+      <td style="color:var(--tx2);font-size:13px">${c.phone||'—'}</td><td style="font-size:12px;color:var(--gr)">${fmtDate(c.converted_at||c.created_at)}</td>
+      <td style="font-size:12px;color:var(--tx2)">${mgr}</td><td>${c.email?`<a href="mailto:${c.email}"><button class="tbb" style="width:28px;height:28px"><span class="mat sm">mail</span></button></a>`:''}</td></tr>`;
+  }).join('');
+}
+async function loadActivity(){
+  document.getElementById('activityFeed').innerHTML=`<div style="text-align:center;padding:32px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div>`;
+  try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_activities'})});const data=await res.json();renderActivityFeed(Array.isArray(data)?data:(data.activities||[]));}
+  catch(e){renderActivityFeed(deriveSyntheticActivity(allLeads));}
+  renderActivitySummary();
+}
+function deriveSyntheticActivity(leads){const events=[];leads.forEach(l=>{if(l.created_at)events.push({type:'created',description:`Lead created — ${l.company_name||'Unknown'}`,created_at:l.created_at,lead_id:l.id});if(l.last_contacted_at)events.push({type:'contacted',description:`Contacted — ${l.company_name||'Unknown'}`,created_at:l.last_contacted_at,lead_id:l.id});if(l.converted_at)events.push({type:'converted',description:`Converted to client — ${l.company_name||'Unknown'}`,created_at:l.converted_at,lead_id:l.id});});return events.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,30);}
+function activityIcon(type){const map={created:{cls:'ac',icon:'add_circle'},contacted:{cls:'bl',icon:'call'},converted:{cls:'gr',icon:'verified'},won:{cls:'gr',icon:'check_circle'},lost:{cls:'re',icon:'cancel'},note:{cls:'am',icon:'sticky_note_2'},meeting:{cls:'pu',icon:'event'},email:{cls:'ac',icon:'mail'},status:{cls:'am',icon:'swap_horiz'},default:{cls:'gy',icon:'history'}};const t=(type||'').toLowerCase();for(const[k,v]of Object.entries(map)){if(t.includes(k))return v;}return map.default;}
+function renderActivityFeed(activities){const el=document.getElementById('activityFeed');if(!activities.length){el.innerHTML=`<div class="empty-state"><span class="mat">history_toggle_off</span><p>No activity recorded yet.</p></div>`;return;}el.innerHTML=activities.map((a,i)=>{const{cls,icon}=activityIcon(a.type||a.activity_type||'');return `<div class="arow" style="${i===activities.length-1?'border-bottom:none':''}"><div class="activity-icon ${cls}"><span class="mat sm">${icon}</span></div><div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;color:var(--tx)">${a.description||a.message||a.text||'Activity recorded'}</div><div style="font-size:10px;color:var(--tx3);margin-top:2px">${fmtDate(a.created_at||a.date)}${a.lead_id?' · Lead #'+a.lead_id:''}</div></div></div>`;}).join('');}
+function renderActivitySummary(){const el=document.getElementById('activitySummary');if(!el)return;const total=allLeads.length,potential=allLeads.filter(l=>l.status==='Potential').length,won=allLeads.filter(l=>l.status==='Won').length,lost=allLeads.filter(l=>l.status==='Lost').length,nc=allLeads.filter(l=>!l.last_contacted_at).length;el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:12px;color:var(--tx2)">Total Leads</span><span style="font-weight:700;font-size:14px">${total}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:12px;color:var(--tx2)">Potential</span><span style="font-weight:700;color:var(--bl)">${potential}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:12px;color:var(--tx2)">Won</span><span style="font-weight:700;color:var(--gr)">${won}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:12px;color:var(--tx2)">Lost</span><span style="font-weight:700;color:var(--re)">${lost}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:${nc>0?'var(--re-d)':'var(--bg)'};border-radius:5px"><span style="font-size:12px;color:var(--tx2)">Never Contacted</span><span style="font-weight:700;color:${nc>0?'var(--re)':'var(--tx3)'}">${nc}</span></div>`;}
+
+function renderCalendar(){
+  const mn=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  setEl('calMonthTitle',`${mn[calMonth]} ${calYear}`);
+  const today=new Date(),todayStr=today.toISOString().slice(0,10),eventMap={};
+  allLeads.forEach(l=>{if(!l.preferred_date)return;const d=l.preferred_date.slice(0,10);if(!eventMap[d])eventMap[d]=[];eventMap[d].push(l);});
+  const firstDay=new Date(calYear,calMonth,1),lastDay=new Date(calYear,calMonth+1,0);
+  let startOffset=(firstDay.getDay()+6)%7,html='';
+  for(let i=0;i<startOffset;i++){const d=new Date(firstDay);d.setDate(d.getDate()-(startOffset-i));html+=`<div class="cal-cell other-month"><div class="cal-day" style="color:var(--tx3)">${d.getDate()}</div></div>`;}
+  for(let day=1;day<=lastDay.getDate();day++){const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;const isToday=ds===todayStr,events=eventMap[ds]||[];const evHtml=events.slice(0,3).map(l=>`<div class="cal-event st-${l.status||'Potential'}" onclick="event.stopPropagation();openLead(${l.id})" title="${l.company_name||'Lead'}">${l.preferred_time?`<span style="opacity:0.7">${l.preferred_time}</span> `:''} ${l.company_name||'Lead'}</div>`).join('');const more=events.length>3?`<div style="font-size:9px;color:var(--tx3);padding:1px 4px">+${events.length-3} more</div>`:'';html+=`<div class="cal-cell${isToday?' today':''}"><div class="cal-day">${day}</div>${evHtml}${more}</div>`;}
+  const remainder=(startOffset+lastDay.getDate())%7===0?0:7-((startOffset+lastDay.getDate())%7);
+  for(let i=1;i<=remainder;i++)html+=`<div class="cal-cell other-month"><div class="cal-day" style="color:var(--tx3)">${i}</div></div>`;
+  document.getElementById('calGrid').innerHTML=html;
+}
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+function calGoToday(){const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();renderCalendar();}
+
+function openLead(id){
+  const lead=allLeads.find(l=>l.id==id);if(!lead)return;
+  currentLead=lead;
+  const sc=scClass(lead.status),name=((lead.first_name||'')+' '+(lead.last_name||'')).trim()||'—',status=lead.status||'Potential';
+  document.getElementById('lp-company').textContent=lead.company_name||'—';
+  document.getElementById('lp-tier').textContent=lead.utm_source?`Source: ${lead.utm_source}`:'Lead';
+  document.getElementById('lp-sub').textContent=name+(lead.utm_campaign?' · '+lead.utm_campaign:'');
+  document.getElementById('lp-badges').innerHTML=`<span class="badge ${sc}">${status}</span>`+(lead.utm_source?`<span class="badge gy">${lead.utm_source}</span>`:'')+( lead.converted_at?`<span class="badge gr"><span class="mat sm" style="font-size:10px">verified</span>Converted</span>`:'');
+  const qg=document.getElementById('lp-quick-grid');
+  if(qg){
+    const eb=lead.email?`<a class="lp-quick-btn" href="mailto:${lead.email}"><span class="mat">mail</span><span class="qlabel">Email</span></a>`:`<div class="lp-quick-btn" style="opacity:0.4;cursor:not-allowed"><span class="mat">mail</span><span class="qlabel">Email</span></div>`;
+    const cb=lead.phone?`<a class="lp-quick-btn" href="tel:${lead.phone}"><span class="mat">call</span><span class="qlabel">Call</span></a>`:`<div class="lp-quick-btn" style="opacity:0.4;cursor:not-allowed"><span class="mat">call</span><span class="qlabel">Call</span></div>`;
+    qg.innerHTML=eb+cb+`<div class="lp-quick-btn" onclick="navigate('calendar')"><span class="mat">calendar_today</span><span class="qlabel">Schedule</span></div>`;
+  }
+  document.getElementById('btnWon').disabled=status==='Won';
+  document.getElementById('btnLost').disabled=status==='Lost';
+  document.getElementById('btnPotential').disabled=status==='Potential';
+  document.getElementById('leadContent').innerHTML=`
+    <div class="lp-card"><div class="lp-card-hd"><span class="mat">payments</span><span class="lp-card-title">Deal Metadata</span></div>
+    <div class="lp-bento">
+      <div class="lp-bento-cell"><div class="lp-bento-lbl">Status</div><div class="lp-bento-val"><span class="badge ${sc}">${status}</span></div></div>
+      <div class="lp-bento-cell"><div class="lp-bento-lbl">Source</div><div class="lp-bento-val" style="font-size:13px">${lead.utm_source||'—'}</div></div>
+      <div class="lp-bento-cell"><div class="lp-bento-lbl">Pipeline Stage</div><div class="lp-bento-val" style="font-size:13px">${lead.pipeline_stage||'New'}</div></div>
+      <div class="lp-bento-cell"><div class="lp-bento-lbl">Owner</div><div class="lp-bento-val" style="font-size:13px">${lead.owner_id||'—'}</div></div>
+    </div></div>
+    <div class="lp-card"><div class="lp-card-hd"><span class="mat">person</span><span class="lp-card-title">Contact</span><span class="mat sm" style="margin-left:auto;cursor:pointer;color:var(--tx3)" onclick="lpEdit()">edit</span></div>
+    <div class="lp-rows">
+      <div class="lp-row"><div class="lp-ri"><span class="mat">badge</span></div><div><div class="lp-rl">Full Name</div><div class="lp-rv">${name}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">mail</span></div><div><div class="lp-rl">Email</div><div class="lp-rv">${lead.email?`<a href="mailto:${lead.email}">${lead.email}</a>`:'—'}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">call</span></div><div><div class="lp-rl">Phone</div><div class="lp-rv">${lead.phone?`<a href="tel:${lead.phone}">${lead.phone}</a>`:'—'}</div></div></div>
+    </div></div>
+    <div class="lp-card"><div class="lp-card-hd"><span class="mat">calendar_today</span><span class="lp-card-title">Scheduling</span></div>
+    <div class="lp-rows">
+      <div class="lp-row"><div class="lp-ri"><span class="mat">event</span></div><div><div class="lp-rl">Preferred Date</div><div class="lp-rv">${fmtDate(lead.preferred_date)}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">schedule</span></div><div><div class="lp-rl">Preferred Time</div><div class="lp-rv">${fmtTime(lead.preferred_time)}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">history</span></div><div><div class="lp-rl">Last Contacted</div><div class="lp-rv" style="${!lead.last_contacted_at?'color:var(--tx3)':''}">${lead.last_contacted_at?fmtDate(lead.last_contacted_at):'Never contacted'}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">alarm</span></div><div><div class="lp-rl">Next Follow-Up</div><div class="lp-rv" style="${lead.next_followup_at?'color:var(--am)':'color:var(--tx3)'}">${lead.next_followup_at?fmtDate(lead.next_followup_at):'Not set'}</div></div></div>
+      ${lead.converted_at?`<div class="lp-row"><div class="lp-ri"><span class="mat">verified</span></div><div><div class="lp-rl">Converted At</div><div class="lp-rv" style="color:var(--gr)">${fmtDate(lead.converted_at)}</div></div></div>`:''}
+    </div></div>
+    <div class="lp-card"><div class="lp-card-hd"><span class="mat">sticky_note_2</span><span class="lp-card-title">Strategic Notes</span>
+      <span style="font-size:10px;color:var(--tx3);margin-left:auto">${lead.notes?'Has notes':'No notes'}</span>
+      <button class="abtn" style="margin-left:8px;padding:3px 9px;font-size:11px" onclick="saveNote()"><span class="mat sm">save</span>Save</button>
+    </div>
+    <div style="padding:10px 13px"><textarea class="lp-notes" id="noteArea" placeholder="Add strategic notes about this lead…">${lead.notes||''}</textarea></div></div>
+    <div class="lp-card"><div class="lp-card-hd"><span class="mat">timeline</span><span class="lp-card-title">Communication Log</span></div>
+    <div class="lp-tl-wrap">${buildTimeline(lead)}</div></div>`;
+  document.getElementById('leadPanel').classList.add('lp-open');
+  document.getElementById('lpOverlay').classList.add('show');
+}
+function buildTimeline(lead){
+  const events=[];
+  if(lead.created_at)events.push({dot:'ac',icon:'add_circle',text:'Lead created',meta:fmtDate(lead.created_at)});
+  if(lead.last_contacted_at)events.push({dot:'bl',icon:'call',text:'Last contacted',meta:fmtDate(lead.last_contacted_at)});
+  if(lead.preferred_date)events.push({dot:'am',icon:'event',text:'Appointment scheduled',meta:`${fmtDate(lead.preferred_date)} ${fmtTime(lead.preferred_time)}`});
+  if(lead.next_followup_at)events.push({dot:'am',icon:'alarm',text:'Follow-up scheduled',meta:fmtDate(lead.next_followup_at)});
+  if(lead.converted_at)events.push({dot:'gr',icon:'verified',text:'Converted to client',meta:fmtDate(lead.converted_at)});
+  if(lead.status==='Won'&&!lead.converted_at)events.push({dot:'gr',icon:'check_circle',text:'Marked as Won',meta:'Status update'});
+  if(lead.status==='Lost')events.push({dot:'re',icon:'cancel',text:'Marked as Lost',meta:'Status update'});
+  if(lead.notes)events.push({dot:'gy',icon:'sticky_note_2',text:'Note on file',meta:'See Strategic Notes'});
+  if(!events.length)return`<div style="padding:16px;text-align:center;font-size:12px;color:var(--tx3)">No activity recorded yet.</div>`;
+  return events.map(e=>`<div class="lp-tl-item"><div class="lp-tl-dot ${e.dot}"><span class="mat">${e.icon}</span></div><div class="lp-tl-content"><div class="lp-tl-txt">${e.text}</div><div class="lp-tl-meta">${e.meta}</div></div></div>`).join('');
+}
+function closeLeadPanel(){document.getElementById('leadPanel').classList.remove('lp-open');document.getElementById('lpOverlay').classList.remove('show');}
+async function lpStatus(newStatus){
+  if(!currentLead)return;
+  const btnMap={Won:'btnWon',Lost:'btnLost',Potential:'btnPotential'};
+  const btn=document.getElementById(btnMap[newStatus]);if(btn)btn.disabled=true;
+  try{
+    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_status',id:currentLead.id,status:newStatus})});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    currentLead.status=newStatus;const idx=allLeads.findIndex(l=>l.id===currentLead.id);if(idx>-1)allLeads[idx].status=newStatus;
+    renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();
+    if(activityLoaded){activityLoaded=false;loadActivity();activityLoaded=true;}
+    openLead(currentLead.id);toast(`✓ Status updated to ${newStatus}`,'ok');
+  }catch(e){toast('Failed to update status.','err');if(btn)btn.disabled=false;}
+}
+async function saveNote(){
+  if(!currentLead)return;const note=document.getElementById('noteArea').value;
+  try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_lead',id:currentLead.id,notes:note})});if(!res.ok)throw new Error(`HTTP ${res.status}`);currentLead.notes=note;const idx=allLeads.findIndex(l=>l.id===currentLead.id);if(idx>-1)allLeads[idx].notes=note;toast('✓ Note saved','ok');}
+  catch(e){toast('Failed to save note.','err');}
+}
+function lpEdit(){
+  if(!currentLead)return;
+  document.getElementById('modalTitle').textContent='Edit Lead';document.getElementById('modalLeadId').value=currentLead.id;
+  document.getElementById('mFirstName').value=currentLead.first_name||'';document.getElementById('mLastName').value=currentLead.last_name||'';
+  document.getElementById('mEmail').value=currentLead.email||'';document.getElementById('mPhone').value=currentLead.phone||'';
+  document.getElementById('mCompany').value=currentLead.company_name||'';document.getElementById('mStatus').value=currentLead.status||'Potential';
+  document.getElementById('mOwner').value=currentLead.owner_id||'';document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
+  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';document.getElementById('mUtmSource').value=currentLead.utm_source||'';
+  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
+  document.getElementById('mUtmContent').value=currentLead.utm_content||'';document.getElementById('mNotes').value=currentLead.notes||'';
+  document.getElementById('modal').classList.add('open');
+}
+async function lpConvert(){
+  if(!currentLead)return;
+  showConfirm('Convert to Client','This will mark the lead as Won and create a client record. Continue?','Convert','pri',async()=>{
+    try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'convert_lead',id:currentLead.id})});if(!res.ok)throw new Error(`HTTP ${res.status}`);
+      currentLead.status='Won';currentLead.converted_at=new Date().toISOString();const idx=allLeads.findIndex(l=>l.id===currentLead.id);if(idx>-1){allLeads[idx].status='Won';allLeads[idx].converted_at=currentLead.converted_at;}
+      renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();openLead(currentLead.id);toast('✓ Lead converted to client','ok');await preloadClientsCount();}
+    catch(e){toast('Conversion failed. Check webhook.','err');}
+  });
+}
+async function lpDelete(){
+  if(!currentLead)return;
+  showConfirm('Delete Lead',`Delete "${currentLead.company_name||'this lead'}"? This cannot be undone.`,'Delete','danger',async()=>{
+    try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete_lead',id:currentLead.id})});if(!res.ok)throw new Error(`HTTP ${res.status}`);
+      allLeads=allLeads.filter(l=>l.id!==currentLead.id);closeLeadPanel();renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();toast('Lead deleted','ok');}
+    catch(e){toast('Failed to delete lead.','err');}
+  });
+}
+function openCreateLead(){
+  document.getElementById('modalTitle').textContent='New Lead';document.getElementById('modalLeadId').value='';
+  ['mFirstName','mLastName','mEmail','mPhone','mCompany','mOwner','mPrefDate','mPrefTime','mUtmSource','mUtmCampaign','mUtmMedium','mUtmContent','mNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('mStatus').value='Potential';document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+async function saveLeadModal(){
+  const id=document.getElementById('modalLeadId').value,isEdit=!!id;
+  const btn=document.getElementById('modalSaveBtn');btn.disabled=true;btn.innerHTML='<span class="mat sm">hourglass_top</span>Saving…';
+  const payload={action:isEdit?'update_lead':'create_lead',first_name:document.getElementById('mFirstName').value.trim(),last_name:document.getElementById('mLastName').value.trim(),email:document.getElementById('mEmail').value.trim(),phone:document.getElementById('mPhone').value.trim(),company_name:document.getElementById('mCompany').value.trim(),status:document.getElementById('mStatus').value,owner_id:document.getElementById('mOwner').value.trim(),preferred_date:document.getElementById('mPrefDate').value||null,preferred_time:document.getElementById('mPrefTime').value||null,utm_source:document.getElementById('mUtmSource').value.trim(),utm_campaign:document.getElementById('mUtmCampaign').value.trim(),utm_medium:document.getElementById('mUtmMedium').value.trim(),utm_content:document.getElementById('mUtmContent').value.trim(),notes:document.getElementById('mNotes').value.trim()};
+  if(isEdit)payload.id=parseInt(id);
+  if(!payload.company_name&&!payload.email){toast('Company name or email required.','err');btn.disabled=false;btn.innerHTML=`<span class="mat sm">save</span>${isEdit?'Update Lead':'Save Lead'}`;return;}
+  try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    closeModal();toast(isEdit?'✓ Lead updated':'✓ Lead created','ok');
+    if(isEdit){const idx=allLeads.findIndex(l=>l.id==id);if(idx>-1)allLeads[idx]={...allLeads[idx],...payload};if(currentLead&&currentLead.id==id){currentLead={...currentLead,...payload};openLead(currentLead.id);}}
+    else{await loadLeads();}
+    renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();if(page()==='calendar')renderCalendar();}
+  catch(e){toast(isEdit?'Failed to update lead.':'Failed to create lead.','err');}
+  finally{btn.disabled=false;btn.innerHTML=`<span class="mat sm">save</span>${isEdit?'Update Lead':'Save Lead'}`;}
+}
+
+const PIPELINE_STAGES=[{id:'New',label:'New',color:'#8e909a',dot:'rgba(142,144,154,0.5)'},{id:'Contacted',label:'Contacted',color:'#89ceff',dot:'#89ceff'},{id:'Qualified',label:'Qualified',color:'#d2bbff',dot:'#d2bbff'},{id:'Appointment',label:'Appointment',color:'#fbbf24',dot:'#fbbf24'},{id:'Proposal',label:'Proposal',color:'#f97316',dot:'#f97316'},{id:'Negotiation',label:'Negotiation',color:'#e879f9',dot:'#e879f9'},{id:'Won',label:'Won',color:'#4ade80',dot:'#4ade80'},{id:'Lost',label:'Lost',color:'#f87171',dot:'#f87171'}];
+function defaultStage(lead){if(lead.pipeline_stage)return lead.pipeline_stage;if(lead.status==='Won')return'Won';if(lead.status==='Lost')return'Lost';return'New';}
+function renderPipeline(){
+  const board=document.getElementById('pipelineBoard');if(!board)return;
+  if(!allLeads.length){board.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;width:100%;padding:60px;color:var(--tx3);flex-direction:column;gap:10px"><span class="mat" style="font-size:32px;opacity:0.3">view_kanban</span><p style="font-size:13px">No leads yet. <a style="color:var(--acc);cursor:pointer" onclick="openCreateLead()">Create your first lead →</a></p></div>`;return;}
+  const grouped={};PIPELINE_STAGES.forEach(s=>grouped[s.id]=[]);
+  allLeads.forEach(lead=>{const stage=defaultStage(lead);if(grouped[stage])grouped[stage].push(lead);else grouped['New'].push(lead);});
+  const se=document.getElementById('pipelineSummary');if(se){const active=allLeads.filter(l=>!['Won','Lost'].includes(defaultStage(l))).length;se.innerHTML=`<span>${allLeads.length} total</span><span style="color:var(--bd)">·</span><span style="color:var(--gr)">${grouped['Won'].length} won</span><span style="color:var(--bd)">·</span><span style="color:var(--bl)">${active} active</span>`;}
+  board.innerHTML=PIPELINE_STAGES.map(stage=>{
+    const leads=grouped[stage.id];const cards=leads.length?leads.map(lead=>buildKanbanCard(lead)).join(''):`<div class="kb-empty">Drop leads here</div>`;
+    return `<div class="kb-col" data-stage="${stage.id}" ondragover="kbDragOver(event,this)" ondragleave="kbDragLeave(this)" ondrop="kbDrop(event,this,'${stage.id}')">
+      <div class="kb-col-hd"><div class="kb-col-hd-top"><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:${stage.dot};flex-shrink:0"></div><span class="kb-col-name" style="color:${stage.color}">${stage.label}</span></div><span class="kb-col-count">${leads.length}</span></div><div class="kb-col-value">${leads.length} deal${leads.length!==1?'s':''}</div></div>
+      <div class="kb-cards" id="kbCards-${stage.id}">${cards}</div></div>`;
+  }).join('');
+  board.querySelectorAll('.kb-card').forEach(card=>{card.addEventListener('dragstart',kbDragStart);card.addEventListener('dragend',kbDragEnd);});
+}
+function buildKanbanCard(lead){
+  const name=((lead.first_name||'')+' '+(lead.last_name||'')).trim()||'—',company=lead.company_name||'—';
+  const src=lead.utm_source?`<span class="badge gy" style="font-size:9px;padding:1px 5px">${lead.utm_source}</span>`:'';
+  const stageId=defaultStage(lead);
+  const statusBadge=stageId==='Won'?`<span class="kb-card-status won">WON</span>`:stageId==='Lost'?`<span class="kb-card-status lost">LOST</span>`:'';
+  return `<div class="kb-card" draggable="true" data-id="${lead.id}">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px">
+      <div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0">
+        <div style="width:22px;height:22px;border-radius:4px;background:rgba(124,58,237,0.12);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--acc);flex-shrink:0">${initials(company)}</div>
+        <div class="kb-card-company" style="flex:1">${company}</div>
+      </div>${statusBadge}<button class="kb-card-open" onclick="event.stopPropagation();openLead(${lead.id})" title="Open lead">open_in_new</button>
+    </div>
+    <div class="kb-card-contact">${name}</div>
+    <div class="kb-card-footer">${src}${lead.preferred_date?`<div class="kb-card-date"><span class="mat sm" style="font-size:11px">event</span>${fmtDate(lead.preferred_date)}</div>`:''}</div>
+  </div>`;
+}
+let _dragGhost=null;
+function kbDragStart(e){const card=e.currentTarget;pipelineDragId=parseInt(card.dataset.id);card.classList.add('dragging');_dragGhost=card.cloneNode(true);_dragGhost.className='kb-card kb-ghost';_dragGhost.style.width=card.offsetWidth+'px';document.body.appendChild(_dragGhost);e.dataTransfer.setDragImage(_dragGhost,_dragGhost.offsetWidth/2,20);e.dataTransfer.effectAllowed='move';}
+function kbDragEnd(e){e.currentTarget.classList.remove('dragging');if(_dragGhost){_dragGhost.remove();_dragGhost=null;}document.querySelectorAll('.kb-col.drag-over').forEach(c=>c.classList.remove('drag-over'));pipelineDragId=null;}
+function kbDragOver(e,col){e.preventDefault();e.dataTransfer.dropEffect='move';col.classList.add('drag-over');}
+function kbDragLeave(col){col.classList.remove('drag-over');}
+async function kbDrop(e,col,newStage){
+  e.preventDefault();col.classList.remove('drag-over');if(!pipelineDragId)return;
+  const lead=allLeads.find(l=>l.id===pipelineDragId);if(!lead)return;
+  const oldStage=defaultStage(lead);if(oldStage===newStage)return;
+  lead.pipeline_stage=newStage;
+  if(newStage==='Won'||newStage==='Lost')lead.status=newStage;
+  if((oldStage==='Won'||oldStage==='Lost')&&newStage!=='Won'&&newStage!=='Lost')lead.status='Potential';
+  renderPipeline();renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();
+  try{const payload={action:'update_pipeline_stage',id:lead.id,pipeline_stage:newStage};if(newStage==='Won'||newStage==='Lost')payload.status=newStage;else if((oldStage==='Won'||oldStage==='Lost')&&newStage!=='Won'&&newStage!=='Lost')payload.status='Potential';
+    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error(`HTTP ${res.status}`);toast(`✓ Moved to ${newStage}`,'ok');}
+  catch(err){lead.pipeline_stage=oldStage;renderPipeline();toast('Failed to update stage. Check n8n webhook.','err');console.error('Pipeline stage update failed:',err);}
+}
+function updateMeetingsBadge(){const today=new Date().toISOString().slice(0,10),todayCount=allLeads.filter(l=>l.preferred_date&&l.preferred_date.slice(0,10)===today).length,el=document.getElementById('navCountMeetings');if(!el)return;if(todayCount>0){el.style.display='';el.style.background='var(--re-d)';el.style.color='var(--re)';el.textContent=todayCount;}else{el.style.display='none';}}
+function renderMeetings(){}function renderAnalytics(){}function renderReports(){}
+
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openCmdPal();}
+  if(e.key==='Escape'){if(document.getElementById('modal').classList.contains('open')){closeModal();return;}if(document.getElementById('confirmDialog').classList.contains('open')){confirmCancel();return;}if(document.getElementById('userMenu').classList.contains('open')){closeUserMenu();return;}closeCmdPal();closeLeadPanel();}
+  if(e.key==='l'&&!e.metaKey&&!e.ctrlKey&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')openCreateLead();
+});
+bootAuth();
+</script>
+</body>
+</html>
