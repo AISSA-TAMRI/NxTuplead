@@ -1829,6 +1829,7 @@ function kbDragEnd(e){e.currentTarget.classList.remove('dragging');if(_dragGhost
 function kbDragOver(e,col){e.preventDefault();e.dataTransfer.dropEffect='move';col.classList.add('drag-over');}
 function kbDragLeave(col){col.classList.remove('drag-over');}
 async function kbDrop(e,col,newStage){
+  console.log('DROP', newStage);
   e.preventDefault();col.classList.remove('drag-over');if(!pipelineDragId)return;
   const lead=allLeads.find(l=>l.id===pipelineDragId);if(!lead)return;
   const oldStage=defaultStage(lead);if(oldStage===newStage)return;
