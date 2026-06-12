@@ -1784,7 +1784,9 @@ async function saveLeadModal(){
     closeModal();toast(isEdit?'✓ Lead updated':'✓ Lead created','ok');
     if(isEdit){const idx=allLeads.findIndex(l=>l.id==id);if(idx>-1)allLeads[idx]={...allLeads[idx],...payload};if(currentLead&&currentLead.id==id){currentLead={...currentLead,...payload};openLead(currentLead.id);}}
     else{await loadLeads();}
-    renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();if(page()==='meetings'){renderMhKpis();renderCalendar();}
+      
+    renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();if(page()==='meetings'){renderMhKpis();renderCalendar();} 
+     }
   catch(e){toast(isEdit?'Failed to update lead.':'Failed to create lead.','err');}
   finally{btn.disabled=false;btn.innerHTML=`<span class="mat sm">save</span>${isEdit?'Update Lead':'Save Lead'}`;}
 }
