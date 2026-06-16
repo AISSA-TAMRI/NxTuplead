@@ -2044,7 +2044,7 @@ async function cdpDelete(){
     const navEl=document.getElementById('navCountClients');if(navEl)navEl.textContent=allClients.length;
     toast('Client deleted','ok');
   });
-}.join('');
+
 }
 async function loadActivity(){
   document.getElementById('activityFeed').innerHTML=`<div style="text-align:center;padding:32px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div>`;
