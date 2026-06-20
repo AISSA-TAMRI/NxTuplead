@@ -1601,9 +1601,9 @@ function renderTable(leads){
   if(!leads.length){tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><span class="mat">person_search</span><p>No leads found.</p><button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>Add First Lead</button></div></td></tr>`;return;}
   tbody.innerHTML=leads.map(lead=>{
     const name=((lead.first_name||'')+' '+(lead.last_name||'')).trim()||'—';
-    const date=lead.preferred_date?`${fmtDate(lead.preferred_date)}${lead.preferred_time?' '+lead.preferred_time:''}`:'—';
-    const last=lead.last_contacted_at?fmtDate(lead.last_contacted_at):'<span style="color:var(--tx3)">Never</span>';
-    const init=initials(lead.company_name||name);
+   const date='TEST';
+    const last='TEST';
+    const init='XX';
     return `<tr onclick="openLead(${lead.id})" style="cursor:pointer">
       <td onclick="event.stopPropagation()"><input type="checkbox" style="accent-color:var(--acc)"></td>
       <td><div style="display:flex;align-items:center;gap:8px"><div style="width:26px;height:26px;border-radius:5px;background:rgba(124,58,237,0.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--acc);flex-shrink:0">${init}</div><div><div style="font-weight:600">${lead.company_name||'—'}</div><div style="font-size:11px;color:var(--tx3)">${lead.utm_source||'—'}</div></div></div></td>
