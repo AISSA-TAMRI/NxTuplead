@@ -1735,7 +1735,13 @@ function renderClientsTable(clients){
 let cwOpenClientId=null;
 function cwHandleEscape(e){if(e.key==='Escape')cwCloseClientDetail();}
 function cwRenderClientsTable(clients){
-  const tbody=document.getElementById('cwClientsTable'),count=document.getElementById('cwClientsCount');
+  console.log('CW RENDER', clients);
+
+  const tbody=document.getElementById('cwClientsTable'),
+        count=document.getElementById('cwClientsCount');
+
+  console.log('TBODY', tbody);
+
   if(!tbody)return;
   if(count)count.textContent=`${clients.length} client${clients.length!==1?'s':''}`;
   if(!clients.length){tbody.innerHTML=`<tr><td colspan="6"><div class="cw-empty"><span class="mat">group</span><p>No clients yet.</p><button class="abtn pri" onclick="navigate('opportunities')" style="margin-top:8px">View Leads →</button></div></td></tr>`;return;}
