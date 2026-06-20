@@ -1583,6 +1583,7 @@ async function loadLeads(){
   try{
     const res=await fetch(API.getLeads);const data=await res.json();
     allLeads=Array.isArray(data)?data:[];
+    console.log('ALL LEADS:', allLeads);
     renderTable(allLeads);updateSidebarCounts();updateDashboard();
     if(page()==='pipeline')renderPipeline();
     if(page()==='meetings')renderMeetingsHub();
@@ -1593,6 +1594,7 @@ async function loadLeads(){
 }
 function renderTableLoading(){document.getElementById('leadsTable').innerHTML=`<tr class="loading-row"><td colspan="9"><span class="spin mat sm">sync</span> Loading leads…</td></tr>`;}
 function renderTable(leads){
+  console.log('RENDER TABLE:', leads);
   const tbody=document.getElementById('leadsTable');
   const count=document.getElementById('leadsCount');
   if(count)count.textContent=`${leads.length} lead${leads.length!==1?'s':''}`;
