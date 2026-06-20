@@ -1735,12 +1735,8 @@ function renderClientsTable(clients){
 let cwOpenClientId=null;
 function cwHandleEscape(e){if(e.key==='Escape')cwCloseClientDetail();}
 function cwRenderClientsTable(clients){
-  console.log('CW RENDER', clients);
 
-  const tbody=document.getElementById('cwClientsTable'),
-        count=document.getElementById('cwClientsCount');
-
-  console.log('TBODY', tbody);
+  const tbody=document.getElementById('cwClientsTable'),count=document.getElementById('cwClientsCount');
 
   if(!tbody)return;
   if(count)count.textContent=`${clients.length} client${clients.length!==1?'s':''}`;
