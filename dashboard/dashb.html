@@ -1550,7 +1550,17 @@ document.getElementById('sidebarToggle').addEventListener('click',()=>{
 function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
 function fmtTime(t){return t||'—';}
 function scClass(status){return{Won:'gr',Lost:'re',Potential:'bl'}[status]||'gy';}
-function initials(s){if(!s)return'?';return s.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
+function initials(s){
+  s = String(s || '');
+
+  return s
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(x => x[0])
+    .join('')
+    .slice(0,2)
+    .toUpperCase();
+}
 function toast(msg,type='ok'){const el=document.getElementById('lpToast');el.textContent=msg;el.className=`lp-toast ${type} show`;setTimeout(()=>{el.className='lp-toast';},3000);}
 function showConfirm(title,msg,okLabel,okClass,cb){
   document.getElementById('confirmTitle').textContent=title;document.getElementById('confirmMsg').textContent=msg;
