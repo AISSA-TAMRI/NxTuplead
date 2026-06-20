@@ -840,7 +840,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
           <!-- Table area -->
           <div style="flex:1;overflow-y:auto;padding:20px 24px;transition:margin-right .28s" id="clientsTableWrap">
 
-            <!-- here -->
+
 
             <!-- Table card -->
             <div class="card" style="overflow:hidden">
@@ -1598,7 +1598,7 @@ function navigate(p,pushState=true){
   closeCmdPal();closeUserMenu();closeMobileSidebar();
   if(p==='clients'){
     const pvC=document.getElementById('pv-clients');
-    if(pvC&&pvC.classList.contains('active'))pvC.style.display='flex';
+    
     if(!clientsLoaded){loadClients();clientsLoaded=true;}
   }
   if(p==='activity'&&!activityLoaded){loadActivity();activityLoaded=true;}
