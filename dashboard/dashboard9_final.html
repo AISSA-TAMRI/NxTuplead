@@ -674,11 +674,11 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
           <div style="display:flex;align-items:center;gap:14px">
             <div style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--bl)">schedule</span><span style="font-size:12px;color:var(--tx2)"><strong id="dashMeetingsToday" style="color:var(--bl)">—</strong> today</span></div>
             <div style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--am)">date_range</span><span style="font-size:12px;color:var(--tx2)"><strong id="dashMeetingsWeek" style="color:var(--am)">—</strong> this week</span></div>
-            <div class="period-toggle" id="periodToggle">
+          <!-- Daily <div class="period-toggle" id="periodToggle">
               <button class="period-btn active" onclick="setPeriod('daily',this)">Daily</button>
               <button class="period-btn" onclick="setPeriod('weekly',this)">Weekly</button>
               <button class="period-btn" onclick="setPeriod('monthly',this)">Monthly</button>
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="pc">
@@ -791,9 +791,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             <div class="topt" onclick="filterLeads('Won',this)">Won</div>
             <div class="topt" onclick="filterLeads('Lost',this)">Lost</div>
           </div>
-          <div style="flex:1"></div>
-          <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button>
-        </div>
+          
         <div class="pc">
           <div class="card" style="overflow:hidden">
             <table class="dt">
@@ -829,8 +827,9 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             <div class="topt" onclick="filterClientsByStatus('Active',this)">Active</div>
             <div class="topt" onclick="filterClientsByStatus('Won',this)">Won</div>
           </div>
-          <button class="abtn" onclick="loadClients()"><span class="mat sm">refresh</span>Refresh</button>
-          <button class="abtn"><span class="mat sm">filter_list</span>Filters</button>
+          
+        <button class="abtn" onclick="loadClients()"><span class="mat sm">refresh</span>Refresh</button>
+         <!--  filter <button class="abtn"><span class="mat sm">filter_list</span>Filters</button> -->
           <button class="abtn"><span class="mat sm">download</span>Export</button>
         </div>
 
@@ -1014,7 +1013,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
           <span style="font-size:14px;font-weight:700;color:var(--tx)">Meetings Hub</span>
           <div style="flex:1"></div>
           <button class="abtn" onclick="openScheduleMeetingModal()"><span class="mat sm">schedule</span>Schedule Meeting</button>
-          <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button>
+          
         </div>
 
         <div class="pc" style="display:flex;flex-direction:column;flex:1;min-height:0">
