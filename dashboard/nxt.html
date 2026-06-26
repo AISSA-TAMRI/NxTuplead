@@ -792,7 +792,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             <div class="topt" onclick="filterLeads('Lost',this)">Lost</div>
           </div>
           <div style="flex:1"></div>
-          <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button>
+         <!-- <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button> -->
         </div>
         <div class="pc">
           <div class="card" style="overflow:hidden">
@@ -808,7 +808,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         </div>
       </div>
 
-      <!-- CLIENTS WORKSPACE — Stitch Design -->
+      <!-- CLIENTS WORKSPACE -->
       <div class="pv" id="pv-clients" style="flex-direction:column;height:100%">
 
         <!-- Topbar -->
@@ -1313,7 +1313,8 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
           <div style="flex:1"></div>
           <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx3)"><span class="mat sm">drag_indicator</span>Drag to update stage</div>
           <button class="abtn" onclick="loadLeads().then(renderPipeline)" style="margin-left:8px"><span class="mat sm">refresh</span>Refresh</button>
-          <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button>
+      <!--
+    <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button> -->
         </div>
         <div class="pipeline-board" id="pipelineBoard">
           <div style="display:flex;align-items:center;justify-content:center;width:100%;padding:60px;color:var(--tx3)"><span class="spin mat sm" style="margin-right:8px">sync</span> Loading pipeline…</div>
