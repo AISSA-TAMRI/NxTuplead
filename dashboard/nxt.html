@@ -2145,14 +2145,54 @@ function lpEdit(){
   document.getElementById('mUtmContent').value=currentLead.utm_content||'';document.getElementById('mNotes').value=currentLead.notes||'';
   document.getElementById('modal').classList.add('open');
 }
-async function lpConvert(){
-  if(!currentLead)return;
-  showConfirm('Convert to Client','This will mark the lead as Won and create a client record. Continue?','Convert','pri',async()=>{
-    try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'convert_lead',id:currentLead.id})});if(!res.ok)throw new Error(`HTTP ${res.status}`);
-      currentLead.status='Won';currentLead.converted_at=new Date().toISOString();const idx=allLeads.findIndex(l=>l.id===currentLead.id);if(idx>-1){allLeads[idx].status='Won';allLeads[idx].converted_at=currentLead.converted_at;}
-      renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();openLead(currentLead.id);toast('✓ Lead converted to client','ok');await preloadClientsCount();}
-    catch(e){toast('Conversion failed. Check webhook.','err');}
-  });
+async function lpConvert() {
+  if (!currentLead) return;
+
+  showConfirm(
+    'Convert to Client',
+    'This will mark the lead as Won and create a client record. Continue?',
+    'Convert',
+    'pri',
+    async () => {
+      try {
+        const res = await fetch(API.leadManagement, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'update_status',
+            id: currentLead.id,
+            status: 'Won'
+          })
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        await loadLeads();
+
+        if (typeof loadClients === 'function') {
+          await loadClients();
+        }
+
+        updateDashboard();
+        updateSidebarCounts();
+
+        const updatedLead = allLeads.find(l => l.id === currentLead.id);
+        if (updatedLead) {
+          openLead(updatedLead.id);
+        }
+
+        toast('✓ Lead converted successfully', 'ok');
+
+      } catch (e) {
+        console.error(e);
+        toast('Conversion failed. Check webhook.', 'err');
+      }
+    }
+  );
 }
 async function lpDelete(){
   if(!currentLead)return;
