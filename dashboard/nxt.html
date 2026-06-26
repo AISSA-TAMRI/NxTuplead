@@ -2122,10 +2122,34 @@ async function lpStatus(newStatus){
   try{
     const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_status',id:currentLead.id,status:newStatus})});
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
-    currentLead.status=newStatus;const idx=allLeads.findIndex(l=>l.id===currentLead.id);if(idx>-1)allLeads[idx].status=newStatus;
-    renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();
-    if(activityLoaded){activityLoaded=false;loadActivity();activityLoaded=true;}
-    openLead(currentLead.id);toast(`✓ Status updated to ${newStatus}`,'ok');
+   await loadLeads();
+
+if (typeof loadClients === 'function') {
+  await loadClients();
+}
+
+renderTable(
+  activeFilter === 'all'
+    ? allLeads
+    : allLeads.filter(l => l.status === activeFilter)
+);
+
+updateDashboard();
+updateSidebarCounts();
+
+if (activityLoaded) {
+  activityLoaded = false;
+  loadActivity();
+  activityLoaded = true;
+}
+
+const updatedLead = allLeads.find(l => l.id === currentLead.id);
+if (updatedLead) {
+  currentLead = updatedLead;
+  openLead(updatedLead.id);
+}
+
+toast(`✓ Status updated to ${newStatus}`, 'ok');
   }catch(e){toast('Failed to update status.','err');if(btn)btn.disabled=false;}
 }
 async function saveNote(){
