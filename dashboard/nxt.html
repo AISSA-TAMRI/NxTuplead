@@ -1939,7 +1939,46 @@ function openClientDetail(id){
   buildCdpTimeline(c,relLead);
   document.getElementById('clientDetailPanel').style.right='0';
   document.getElementById('clientsTableWrap').style.marginRight='480px';
-  switchCdpTab('overview');
+  switchCdpTab('overview'); 
+}
+  async function cdpDelete() {
+  if (!currentClient) return;
+
+  showConfirm(
+    'Delete Client',
+    'This will delete the client record only. The original lead will remain untouched. Continue?',
+    'Delete',
+    'danger',
+    async () => {
+      try {
+        const res = await fetch(API.leadManagement, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            action: 'delete_client',
+            id: currentClient.id
+          })
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        await loadClients();
+
+        document.getElementById('clientDetailPanel').style.right = '-500px';
+        document.getElementById('clientsTableWrap').style.marginRight = '0';
+
+        currentClient = null;
+
+        toast('✓ Client deleted successfully', 'ok');
+
+      } catch (e) {
+        console.error(e);
+        toast('Failed to delete client.', 'err');
+      }
+    }
+  );
 }
 
 function buildCdpTimeline(c,relLead){
