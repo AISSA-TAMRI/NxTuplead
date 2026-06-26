@@ -2049,7 +2049,7 @@ async function cdpDelete(){
     const lid=currentClient.lead_id;
     if(lid){
       try{
-        const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete_lead',id:parseInt(lid)})});
+        const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete_client',id:parseInt(lid)})});
         if(!res.ok)throw new Error();
         allLeads=allLeads.filter(l=>l.id!=lid);
       }catch(e){toast('Failed to delete linked lead.','err');return;}
