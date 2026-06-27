@@ -1626,6 +1626,32 @@ document.getElementById('sidebarToggle').addEventListener('click', () => {
     el.style.display = collapsed ? '' : 'none';
   });
 
+  const user = document.getElementById('userTrigger');
+if (user) {
+  user.style.display = 'flex';
+
+  const texts = user.querySelectorAll('.lbl,.user-name,.user-role');
+
+  if (collapsed) {
+    user.style.justifyContent = '';
+    user.style.padding = '';
+
+    texts.forEach(el => el.style.display = '');
+
+    const role = document.getElementById('userRoleLabel');
+    if (role) role.style.display = '';
+
+  } else {
+    user.style.justifyContent = 'center';
+    user.style.padding = '8px';
+
+    texts.forEach(el => el.style.display = 'none');
+
+    const role = document.getElementById('userRoleLabel');
+    if (role) role.style.display = 'none';
+  }
+}
+
   const alert = document.getElementById('sidebarAlert');
   if (alert) {
     alert.style.display = collapsed ? '' : 'none';
