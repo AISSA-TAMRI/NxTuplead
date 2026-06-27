@@ -1613,11 +1613,42 @@ function pageFromHash(){const h=location.hash.replace('#','');if(h==='calendar')
 function bootPage(){const p=pageFromHash();navigate(p,false);history.replaceState({page:p},'','#'+p);}
 function page(){return location.hash.replace('#','')||'dashboard';}
 
-document.getElementById('sidebarToggle').addEventListener('click',()=>{
-  const s=document.getElementById('sidebar');
-  const collapsed=s.style.width==='56px';
-  s.style.width=collapsed?'220px':'56px';s.style.minWidth=collapsed?'220px':'56px';
-  s.querySelectorAll('.lbl,.nbadge,.nav-logo-text').forEach(el=>{el.style.display=collapsed?'':'none';});
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  if (window.innerWidth <= 768) return;
+
+  const s = document.getElementById('sidebar');
+  const collapsed = s.style.width === '56px';
+
+  s.style.width = collapsed ? '220px' : '56px';
+  s.style.minWidth = collapsed ? '220px' : '56px';
+
+  s.querySelectorAll('.lbl,.nbadge,.nav-logo-text').forEach(el => {
+    el.style.display = collapsed ? '' : 'none';
+  });
+
+  const alert = document.getElementById('sidebarAlert');
+  if (alert) {
+    alert.style.display = collapsed ? '' : 'none';
+  }
+
+  const user = document.getElementById('userTrigger');
+  if (user) {
+    user.style.display = 'flex';
+
+    const texts = user.querySelectorAll('.lbl,.user-name,.user-role');
+
+    if (collapsed) {
+      user.style.justifyContent = '';
+      user.style.padding = '';
+
+      texts.forEach(el => el.style.display = '');
+    } else {
+      user.style.justifyContent = 'center';
+      user.style.padding = '8px';
+
+      texts.forEach(el => el.style.display = 'none');
+    }
+  }
 });
 function closeMobileSidebar(){document.getElementById('sidebar').classList.remove('mobile-open');document.getElementById('mobileSidebarOverlay').classList.remove('show');}
 document.getElementById('sidebarToggle').addEventListener('click',()=>{
