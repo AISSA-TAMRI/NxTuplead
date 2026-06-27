@@ -1665,8 +1665,18 @@ function renderTableLoading(){document.getElementById('leadsTable').innerHTML=`<
 function renderTable(leads){
   const tbody=document.getElementById('leadsTable');
   const count=document.getElementById('leadsCount');
-  if(count)count.textContent=`${leads.length} lead${leads.length!==1?'s':''}`;
-  if(!leads.length){tbody.innerHTML=`<tr><td colspan="9"><div class="empty-state"><span class="mat">person_search</span><p>No leads found.</p><button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>Add First Lead</button></div></td></tr>`;return;}
+if(!leads.length){
+  tbody.innerHTML=`
+    <tr>
+      <td colspan="9">
+        <div class="empty-state">
+          <span class="mat">person_search</span>
+          <p>No leads found.</p>
+        </div>
+      </td>
+    </tr>`;
+  return;
+}
   tbody.innerHTML=leads.map(lead=>{
     const name=((lead.first_name||'')+' '+(lead.last_name||'')).trim()||'—';
     const date=lead.preferred_date?`${fmtDate(lead.preferred_date)}${lead.preferred_time?' '+lead.preferred_time:''}`:'—';
