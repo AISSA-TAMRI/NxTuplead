@@ -2987,6 +2987,72 @@ document.addEventListener('keydown',e=>{
   if(e.key==='l'&&!e.metaKey&&!e.ctrlKey&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')openCreateLead();
 });
 bootAuth();
+const FilterPopover = (function () {
+
+    const popover = document.getElementById('filterPopover');
+    const button = document.getElementById('filterToggleBtn');
+
+    function isOpen() {
+        return popover && popover.classList.contains('visible-state');
+    }
+
+    function open() {
+        if (!popover || !button) return;
+
+        popover.classList.remove('hidden-state');
+        popover.classList.add('visible-state');
+
+        button.setAttribute('aria-expanded', 'true');
+        popover.setAttribute('aria-hidden', 'false');
+    }
+
+    function close() {
+        if (!popover || !button) return;
+
+        popover.classList.remove('visible-state');
+        popover.classList.add('hidden-state');
+
+        button.setAttribute('aria-expanded', 'false');
+        popover.setAttribute('aria-hidden', 'true');
+    }
+
+    function toggle(event) {
+        if (event) event.stopPropagation();
+
+        if (isOpen()) {
+            close();
+        } else {
+            open();
+        }
+    }
+
+    document.addEventListener('click', function (e) {
+        if (!popover) return;
+
+        if (
+            popover.contains(e.target) ||
+            e.target.closest('#filterToggleBtn')
+        ) {
+            return;
+        }
+
+        close();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            close();
+        }
+    });
+
+    return {
+        open,
+        close,
+        toggle
+    };
+
+})();
+    
 </script>
 </body>
 </html>
