@@ -830,7 +830,62 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             <div class="topt" onclick="filterClientsByStatus('Won',this)">Won</div>
           </div>
           <button class="abtn" onclick="loadClients()"><span class="mat sm">refresh</span>Refresh</button>
-          <button class="abtn"><span class="mat sm">filter_list</span>Filters</button>
+          <div style="position:relative;display:inline-block">
+
+    <button
+        id="filterToggleBtn"
+        class="abtn"
+        aria-controls="filterPopover"
+        aria-expanded="false"
+        aria-haspopup="dialog"
+        onclick="FilterPopover.toggle(event)">
+
+        <span class="mat sm">filter_list</span>
+
+        Filters
+
+        <span id="filterCountWrap" class="is-hidden">
+            <span style="opacity:.45;padding:0 4px;">•</span>
+            <span id="filterCount"></span>
+        </span>
+
+    </button>
+
+  <div class="p-4 border-b border-outline-variant flex justify-between items-center">
+
+    <div>
+
+        <h3
+            id="filterPopoverTitle"
+            class="font-headline-sm text-headline-sm text-on-surface">
+
+            Filter Clients
+
+        </h3>
+
+        <p
+            id="resultCounter"
+            class="text-label-sm text-primary">
+
+            Showing 0 clients
+
+        </p>
+
+    </div>
+
+    <button
+        onclick="FilterPopover.close()"
+        class="p-1.5 rounded-full">
+
+        <span class="material-symbols-outlined">
+            close
+        </span>
+
+    </button>
+
+</div>
+
+</div>
           <button class="abtn"><span class="mat sm">download</span>Export</button>
         </div>
 
