@@ -10,59 +10,6 @@
 <script src="/dashboard/supabase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-
-#filterPopover{
-
-position:absolute;
-
-top:calc(100% + 8px);
-
-right:0;
-
-width:380px;
-
-background:var(--s2);
-
-border:1px solid var(--bd);
-
-border-radius:10px;
-
-box-shadow:0 18px 45px rgba(0,0,0,.35);
-
-z-index:99999;
-
-overflow:hidden;
-
-transition:.22s;
-
-}
-
-#filterPopover.hidden-state{
-
-opacity:0;
-
-pointer-events:none;
-
-transform:translateY(8px) scale(.98);
-
-}
-
-#filterPopover.visible-state{
-
-opacity:1;
-
-pointer-events:auto;
-
-transform:translateY(0) scale(1);
-
-}
-
-.is-hidden{
-
-display:none;
-
-}
-  
 :root{
   --bg:#0b1326;--s1:#131b2e;--s2:#171f33;--s3:#222a3d;
   --acc:#d2bbff;--acc-d:rgba(210,187,255,0.12);--acc-g:rgba(210,187,255,0.08);
@@ -186,6 +133,8 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .tgroup{display:flex;background:var(--s1);border-radius:6px;padding:3px;border:1px solid var(--bd)}
 .topt{padding:5px 12px;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;color:var(--tx2);transition:all 0.15s}
 .topt.active{background:var(--s2);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+#clientsFiltersPopover{display:none}
+#clientsFiltersPopover.open{display:block}
 .arow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
 .arow:last-child{border-bottom:none}
 
@@ -878,156 +827,51 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
               oninput="filterClientsTable(this.value)"/>
           </div>
           <div class="tgroup" id="clientsFilterGroup">
-            <div class="topt active" onclick="filterClientsByStatus('all',this)">All</div>
-            <div class="topt" onclick="filterClientsByStatus('Active',this)">Active</div>
-            <div class="topt" onclick="filterClientsByStatus('Won',this)">Won</div>
+            <div class="topt client-status-opt active" data-status="all" onclick="filterClientsByStatus('all')">All</div>
+            <div class="topt client-status-opt" data-status="Active" onclick="filterClientsByStatus('Active')">Active</div>
+            <div class="topt client-status-opt" data-status="Won" onclick="filterClientsByStatus('Won')">Won</div>
           </div>
           <button class="abtn" onclick="loadClients()"><span class="mat sm">refresh</span>Refresh</button>
-          <div style="position:relative;display:inline-block">
-
-    <div style="position:relative;display:inline-block">
-
-    <button
-        id="filterToggleBtn"
-        class="abtn"
-        aria-controls="filterPopover"
-        aria-expanded="false"
-        aria-haspopup="dialog"
-        onclick="FilterPopover.toggle(event)">
-
-        <span class="mat sm">filter_list</span>
-        Filters
-
-        <span id="filterCountWrap" class="is-hidden">
-            <span style="opacity:.45;padding:0 4px;">•</span>
-            <span id="filterCount"></span>
-        </span>
-
-    </button>
-
-    <div
-        id="filterPopover"
-        class="hidden-state"
-        aria-hidden="true"
-        role="dialog">
-
-       <div style="padding:18px">
-
-    <!-- STATUS -->
-
-    <div style="margin-bottom:18px">
-
-        <div style="font-size:11px;
-                    text-transform:uppercase;
-                    letter-spacing:.08em;
-                    color:var(--tx3);
-                    margin-bottom:8px">
-
-            Status
-
-        </div>
-
-        <div id="statusSegmentedControl"
-             style="display:flex;
-                    gap:6px">
-
-            <button class="abtn">All</button>
-            <button class="abtn">Active</button>
-            <button class="abtn">Won</button>
-            <button class="abtn">Lost</button>
-
-        </div>
-
-    </div>
-
-
-    <!-- ACCOUNT MANAGER -->
-
-    <div style="margin-bottom:16px">
-
-        <div style="font-size:11px;
-                    text-transform:uppercase;
-                    letter-spacing:.08em;
-                    color:var(--tx3);
-                    margin-bottom:8px">
-
-            Account Manager
-
-        </div>
-
-        <input
-            id="managerSearchInput"
-            class="ipt"
-            placeholder="Search manager...">
-
-    </div>
-
-
-    <!-- COMPANY -->
-
-    <div style="margin-bottom:20px">
-
-        <div style="font-size:11px;
-                    text-transform:uppercase;
-                    letter-spacing:.08em;
-                    color:var(--tx3);
-                    margin-bottom:8px">
-
-            Company
-
-        </div>
-
-        <input
-            id="companySearchInput"
-            class="ipt"
-            placeholder="Search company...">
-
-    </div>
-
-
-    <!-- ACTIVE FILTERS -->
-
-    <div id="activeFiltersSection"
-         class="is-hidden"
-         style="margin-bottom:18px">
-
-        <div style="font-size:11px;
-                    text-transform:uppercase;
-                    letter-spacing:.08em;
-                    color:var(--tx3);
-                    margin-bottom:8px">
-
-            Active Filters
-
-        </div>
-
-        <div id="activeFiltersList"
-             style="display:flex;
-                    flex-wrap:wrap;
-                    gap:8px">
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<div style="
-padding:14px;
-border-top:1px solid var(--bd);
-text-align:center;">
-
-<button
-class="abtn"
-onclick="FilterPopover.close()">
-
-Clear All Filters
-
-</button>
-
-</div>
-</div>
+          <div style="position:relative;display:flex" id="clientsFiltersWrap">
+            <button class="abtn" id="clientsFiltersBtn" onclick="toggleFiltersPopover(event)">
+              <span class="mat sm">filter_list</span>Filters<span id="clientsFiltersBadge" class="badge" style="display:none;margin-left:2px;background:var(--acc-d);color:var(--acc)">0</span>
+            </button>
+            <div class="card" id="clientsFiltersPopover" style="position:absolute;top:calc(100% + 8px);right:0;width:300px;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,0.5);padding:0">
+              <div style="padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
+                <div style="font-size:13px;font-weight:700;color:var(--tx)">Filter Clients</div>
+                <button class="tbb" style="width:24px;height:24px" onclick="closeFiltersPopover()"><span class="mat sm">close</span></button>
+              </div>
+              <div style="padding:14px;display:flex;flex-direction:column;gap:14px">
+                <div class="form-group">
+                  <label class="form-label">Status</label>
+                  <div class="tgroup" id="advStatusGroup" style="width:100%">
+                    <div class="topt client-status-opt active" data-status="all" onclick="filterClientsByStatus('all')" style="flex:1;text-align:center">All</div>
+                    <div class="topt client-status-opt" data-status="Active" onclick="filterClientsByStatus('Active')" style="flex:1;text-align:center">Active</div>
+                    <div class="topt client-status-opt" data-status="Won" onclick="filterClientsByStatus('Won')" style="flex:1;text-align:center">Won</div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Account Manager</label>
+                  <select class="form-select" id="advFilterManager"><option value="">All Managers</option></select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Lead Source</label>
+                  <select class="form-select" id="advFilterSource"><option value="">All Sources</option></select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Date Created</label>
+                  <div style="display:flex;gap:8px">
+                    <input type="date" class="form-input" id="advFilterDateFrom"/>
+                    <input type="date" class="form-input" id="advFilterDateTo"/>
+                  </div>
+                </div>
+              </div>
+              <div style="padding:12px 14px;border-top:1px solid var(--bd);display:flex;gap:8px">
+                <button class="abtn" style="flex:1;justify-content:center" onclick="resetAdvancedFilters()">Reset</button>
+                <button class="abtn pri" style="flex:1;justify-content:center" onclick="applyAdvancedFilters()">Apply Filters</button>
+              </div>
+            </div>
+          </div>
           <button class="abtn"><span class="mat sm">download</span>Export</button>
         </div>
 
@@ -2054,7 +1898,7 @@ async function preloadClientsCount(){
   }catch(e){console.warn('Could not preload clients:',e);}
 }
 /* ═══ CLIENTS WORKSPACE ══════════════════════════════════════════ */
-let currentClient=null,clientsFilterMode='all',clientsSearchQuery='';
+let currentClient=null,clientsFilterMode='all',clientsSearchQuery='',clientsAdvFilters={manager:'',source:'',dateFrom:'',dateTo:''};
 
 function renderClientsKpis(clients){
   const total=clients.length;
@@ -2085,6 +1929,13 @@ async function loadClients(){
   }
 }
 
+function clientManagerOf(c){return c.account_manager_id||c.account_manager||c.owner_id||'';}
+function clientSourceOf(c){
+  if(c.utm_source)return c.utm_source;
+  const rl=c.lead_id?allLeads.find(l=>l.id==c.lead_id):null;
+  return (rl&&rl.utm_source)||'';
+}
+
 function getFilteredClients(){
   let list=allClients;
   if(clientsFilterMode!=='all'){
@@ -2097,17 +1948,92 @@ function getFilteredClients(){
       return (c.company_name||'').toLowerCase().includes(q)||name.toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q);
     });
   }
+  // --- Advanced filters (modular: add a new key to clientsAdvFilters + a condition here to extend) ---
+  if(clientsAdvFilters.manager){
+    list=list.filter(c=>clientManagerOf(c)===clientsAdvFilters.manager);
+  }
+  if(clientsAdvFilters.source){
+    list=list.filter(c=>clientSourceOf(c)===clientsAdvFilters.source);
+  }
+  if(clientsAdvFilters.dateFrom){
+    list=list.filter(c=>{const d=c.created_at||c.converted_at;return !!d&&d.slice(0,10)>=clientsAdvFilters.dateFrom;});
+  }
+  if(clientsAdvFilters.dateTo){
+    list=list.filter(c=>{const d=c.created_at||c.converted_at;return !!d&&d.slice(0,10)<=clientsAdvFilters.dateTo;});
+  }
   return list;
 }
 
 function filterClientsTable(q){clientsSearchQuery=q;renderClientsTable(getFilteredClients());}
 
-function filterClientsByStatus(mode,el){
+function filterClientsByStatus(mode){
   clientsFilterMode=mode;
-  document.querySelectorAll('#clientsFilterGroup .topt').forEach(t=>t.classList.remove('active'));
-  if(el)el.classList.add('active');
+  document.querySelectorAll('.client-status-opt').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll(`.client-status-opt[data-status="${mode}"]`).forEach(t=>t.classList.add('active'));
   renderClientsTable(getFilteredClients());
 }
+
+function populateAdvancedFilterOptions(){
+  const mgrSel=document.getElementById('advFilterManager');
+  if(mgrSel){
+    const managers=[...new Set(allClients.map(clientManagerOf).filter(Boolean))].sort();
+    mgrSel.innerHTML='<option value="">All Managers</option>'+managers.map(m=>`<option value="${m}">${m}</option>`).join('');
+    mgrSel.value=clientsAdvFilters.manager;
+  }
+  const srcSel=document.getElementById('advFilterSource');
+  if(srcSel){
+    const sources=[...new Set(allClients.map(clientSourceOf).filter(Boolean))].sort();
+    srcSel.innerHTML='<option value="">All Sources</option>'+sources.map(s=>`<option value="${s}">${s}</option>`).join('');
+    srcSel.value=clientsAdvFilters.source;
+  }
+  const dfEl=document.getElementById('advFilterDateFrom');if(dfEl)dfEl.value=clientsAdvFilters.dateFrom;
+  const dtEl=document.getElementById('advFilterDateTo');if(dtEl)dtEl.value=clientsAdvFilters.dateTo;
+}
+
+function updateFiltersBadge(){
+  const badgeEl=document.getElementById('clientsFiltersBadge');if(!badgeEl)return;
+  let count=0;
+  if(clientsAdvFilters.manager)count++;
+  if(clientsAdvFilters.source)count++;
+  if(clientsAdvFilters.dateFrom)count++;
+  if(clientsAdvFilters.dateTo)count++;
+  if(count>0){badgeEl.style.display='inline-flex';badgeEl.textContent=count;}
+  else{badgeEl.style.display='none';}
+}
+
+function toggleFiltersPopover(event){
+  if(event)event.stopPropagation();
+  const pop=document.getElementById('clientsFiltersPopover');if(!pop)return;
+  if(pop.classList.contains('open')){closeFiltersPopover();}
+  else{populateAdvancedFilterOptions();pop.classList.add('open');}
+}
+
+function closeFiltersPopover(){
+  const pop=document.getElementById('clientsFiltersPopover');
+  if(pop)pop.classList.remove('open');
+}
+
+function applyAdvancedFilters(){
+  clientsAdvFilters.manager=document.getElementById('advFilterManager').value;
+  clientsAdvFilters.source=document.getElementById('advFilterSource').value;
+  clientsAdvFilters.dateFrom=document.getElementById('advFilterDateFrom').value;
+  clientsAdvFilters.dateTo=document.getElementById('advFilterDateTo').value;
+  renderClientsTable(getFilteredClients());
+  updateFiltersBadge();
+  closeFiltersPopover();
+}
+
+function resetAdvancedFilters(){
+  clientsAdvFilters={manager:'',source:'',dateFrom:'',dateTo:''};
+  populateAdvancedFilterOptions();
+  updateFiltersBadge();
+  filterClientsByStatus('all');
+}
+
+document.addEventListener('click',e=>{
+  const wrap=document.getElementById('clientsFiltersWrap');
+  if(wrap&&!wrap.contains(e.target))closeFiltersPopover();
+});
 
 function toggleSelectAllClients(cb){
   document.querySelectorAll('#clientsTable input[type=checkbox]').forEach(c=>c.checked=cb.checked);
@@ -3118,77 +3044,10 @@ function renderAnalytics(){
 
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openCmdPal();}
-  if(e.key==='Escape'){if(document.getElementById('modal').classList.contains('open')){closeModal();return;}if(document.getElementById('confirmDialog').classList.contains('open')){confirmCancel();return;}if(document.getElementById('userMenu').classList.contains('open')){closeUserMenu();return;}closeCmdPal();closeLeadPanel();}
+  if(e.key==='Escape'){if(document.getElementById('modal').classList.contains('open')){closeModal();return;}if(document.getElementById('confirmDialog').classList.contains('open')){confirmCancel();return;}if(document.getElementById('userMenu').classList.contains('open')){closeUserMenu();return;}const cfp=document.getElementById('clientsFiltersPopover');if(cfp&&cfp.classList.contains('open')){closeFiltersPopover();return;}closeCmdPal();closeLeadPanel();}
   if(e.key==='l'&&!e.metaKey&&!e.ctrlKey&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')openCreateLead();
 });
 bootAuth();
-
-const FilterPopover=(function(){
-
-const popover=document.getElementById("filterPopover");
-
-const button=document.getElementById("filterToggleBtn");
-
-function open(){
-
-popover.classList.remove("hidden-state");
-
-popover.classList.add("visible-state");
-
-button.setAttribute("aria-expanded","true");
-
-}
-
-function close(){
-
-popover.classList.remove("visible-state");
-
-popover.classList.add("hidden-state");
-
-button.setAttribute("aria-expanded","false");
-
-}
-
-function toggle(e){
-
-if(e)e.stopPropagation();
-
-popover.classList.contains("visible-state")
-
-?close()
-
-:open();
-
-}
-
-document.addEventListener("click",(e)=>{
-
-if(popover.contains(e.target))return;
-
-if(e.target.closest("#filterToggleBtn"))return;
-
-close();
-
-});
-
-document.addEventListener("keydown",(e)=>{
-
-if(e.key==="Escape")close();
-
-});
-
-return{
-
-open,
-
-close,
-
-toggle
-
-};
-
-})();
-      
 </script>
 </body>
 </html>
