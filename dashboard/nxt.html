@@ -864,31 +864,139 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             <div class="topt" onclick="filterClientsByStatus('Won',this)">Won</div>
           </div>
           <button class="abtn" onclick="loadClients()"><span class="mat sm">refresh</span>Refresh</button>
-          <div style="position:relative">
+        <div style="position:relative;display:inline-block">
 
-<button
-    id="filterToggleBtn"
-    class="abtn"
-    aria-expanded="false"
-    aria-haspopup="dialog"
-    aria-controls="filterPopover"
-    onclick="FilterPopover.toggle(event)">
+    <button
+        id="filterToggleBtn"
+        class="abtn"
+        onclick="FilterPopover.toggle(event)"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="filterPopover">
 
-    <span class="mat sm">filter_list</span>
+        <span class="mat sm">filter_list</span>
 
-    Filters
+        Filters
 
-    <span id="filterCountWrap" class="is-hidden">
-        &nbsp;•&nbsp;<span id="filterCount"></span>
-    </span>
+        <span id="filterCountWrap" class="is-hidden">
+            <span style="opacity:.45;padding:0 3px;">•</span>
+            <span id="filterCount"></span>
+        </span>
 
-</button>
+    </button>
 
-<div
-    id="filterPopover"
-    class="hidden-state"
-    aria-hidden="true"
-    role="dialog">
+    <div id="filterPopover"
+class="absolute top-full right-0 mt-2 w-[380px] bg-surface-container-high border border-outline-variant rounded-lg shadow-2xl z-50 flex flex-col overflow-hidden hidden-state">
+
+    <div class="p-4 border-b border-outline-variant flex justify-between items-center">
+
+        <div>
+
+            <h3 id="filterPopoverTitle"
+            class="font-headline-sm text-headline-sm text-on-surface">
+
+                Filter Clients
+
+            </h3>
+
+            <p id="resultCounter"
+            class="text-label-sm text-primary mt-1">
+
+                Showing 0 clients
+
+            </p>
+
+        </div>
+
+        <button
+        onclick="FilterPopover.close()"
+        class="p-1 rounded-full hover:bg-surface-variant">
+
+            <span class="material-symbols-outlined">
+
+                close
+
+            </span>
+
+        </button>
+
+    </div>
+
+    <div class="p-4 space-y-6">
+
+        <div>
+
+            <label class="text-label-sm font-bold uppercase">
+
+                Status
+
+            </label>
+
+            <div
+            id="statusSegmentedControl"
+            class="segmented-control flex bg-surface-container-low p-1 rounded border border-outline-variant relative h-9">
+
+                <div
+                id="statusIndicator"
+                class="segmented-indicator bg-primary-container rounded"></div>
+
+                <button role="tab" aria-selected="true">All</button>
+
+                <button role="tab">Active</button>
+
+                <button role="tab">Won</button>
+
+                <button role="tab">Lost</button>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <label>Account Manager</label>
+
+            <input
+            id="managerSearchInput"
+            type="text"
+            placeholder="Search managers...">
+
+        </div>
+
+        <div>
+
+            <label>Company</label>
+
+            <input
+            id="companySearchInput"
+            type="text"
+            placeholder="Search companies...">
+
+        </div>
+
+        <div
+        id="activeFiltersSection"
+        class="is-hidden">
+
+            <label>Active Filters</label>
+
+            <div id="activeFiltersList"></div>
+
+        </div>
+
+    </div>
+
+    <div class="p-3 border-top">
+
+        <button onclick="FilterPopover.clearAllFilters()">
+
+            Clear All Filters
+
+        </button>
+
+    </div>
+
+</div>
 
 </div>
 
