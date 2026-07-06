@@ -10,6 +10,40 @@
 <script src="/dashboard/supabase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+.is-hidden {
+    display: none;
+}
+
+#filterPopover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 380px;
+    background: var(--s2);
+    border: 1px solid var(--bd);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0,0,0,.35);
+    z-index: 9999;
+    overflow: hidden;
+
+    transition: opacity .2s ease,
+                transform .2s ease;
+
+    transform-origin: top right;
+}
+
+#filterPopover.hidden-state{
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(8px) scale(.98);
+}
+
+#filterPopover.visible-state{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0) scale(1);
+}
+  
 :root{
   --bg:#0b1326;--s1:#131b2e;--s2:#171f33;--s3:#222a3d;
   --acc:#d2bbff;--acc-d:rgba(210,187,255,0.12);--acc-g:rgba(210,187,255,0.08);
