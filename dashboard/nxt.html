@@ -830,7 +830,35 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             <div class="topt" onclick="filterClientsByStatus('Won',this)">Won</div>
           </div>
           <button class="abtn" onclick="loadClients()"><span class="mat sm">refresh</span>Refresh</button>
-          <button class="abtn"><span class="mat sm">filter_list</span>Filters</button>
+          <div style="position:relative">
+
+<button
+    id="filterToggleBtn"
+    class="abtn"
+    aria-expanded="false"
+    aria-haspopup="dialog"
+    aria-controls="filterPopover"
+    onclick="FilterPopover.toggle(event)">
+
+    <span class="mat sm">filter_list</span>
+
+    Filters
+
+    <span id="filterCountWrap" class="is-hidden">
+        &nbsp;•&nbsp;<span id="filterCount"></span>
+    </span>
+
+</button>
+
+<div
+    id="filterPopover"
+    class="hidden-state"
+    aria-hidden="true"
+    role="dialog">
+
+</div>
+
+</div>
           <button class="abtn"><span class="mat sm">download</span>Export</button>
         </div>
 
