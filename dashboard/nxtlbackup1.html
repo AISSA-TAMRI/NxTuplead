@@ -2506,6 +2506,7 @@ function defaultStage(lead){
     if (lead.status === 'Lost') return 'Lost';
     if (lead.status === 'Disqualified') return 'Disqualified';
     return 'New';
+  }
 function renderPipeline(){
   const board=document.getElementById('pipelineBoard');if(!board)return;
   if(!allLeads.length){board.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;width:100%;padding:60px;color:var(--tx3);flex-direction:column;gap:10px"><span class="mat" style="font-size:32px;opacity:0.3">view_kanban</span><p style="font-size:13px">No leads yet. <a style="color:var(--acc);cursor:pointer" onclick="openCreateLead()">Create your first lead →</a></p></div>`;return;}
