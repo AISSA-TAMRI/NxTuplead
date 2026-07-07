@@ -2498,14 +2498,14 @@ async function saveLeadModal(){
   finally{btn.disabled=false;btn.innerHTML=`<span class="mat sm">save</span>${isEdit?'Update Lead':'Save Lead'}`;}
 }
 
-const PIPELINE_STAGES=[{id:'New',label:'New',color:'#8e909a',dot:'rgba(142,144,154,0.5)'},{id:'Contacted',label:'Contacted',color:'#89ceff',dot:'#89ceff'},{id:'Qualified',label:'Qualified',color:'#d2bbff',dot:'#d2bbff'},{id:'Appointment',label:'Appointment',color:'#fbbf24',dot:'#fbbf24'},{id:'Proposal',label:'Proposal',color:'#f97316',dot:'#f97316'},{id:'Negotiation',label:'Negotiation',color:'#e879f9',dot:'#e879f9'},{id:'Won',label:'Won',color:'#4ade80',dot:'#4ade80'},{id:'Lost',label:'Lost',color:'#f87171',dot:'#f87171'}];
-function defaultStage(lead){if(lead.pipeline_stage)return lead.pipeline_stage;if(lead.status==='Won')return'Won';if(lead.status==='Lost')return'Lost';return'New';}
+const PIPELINE_STAGES=[{id:'New',label:'New',color:'#8e909a',dot:'rgba(142,144,154,0.5)'},{id:'Contacted',label:'Contacted',color:'#89ceff',dot:'#89ceff'},{id:'Qualified',label:'Qualified',color:'#d2bbff',dot:'#d2bbff'},{id:'Appointment',label:'Appointment',color:'#fbbf24',dot:'#fbbf24'},{id:'Proposal',label:'Proposal',color:'#f97316',dot:'#f97316'},{id:'Negotiation',label:'Negotiation',color:'#e879f9',dot:'#e879f9'},{id:'Won',label:'Won',color:'#4ade80',dot:'#4ade80'},{id:'Lost',label:'Lost',color:'#f87171',dot:'#f87171'}{id:'Disqualified',label:'Disqualified',color:'#64748b',dot:'#64748b'}];
+function defaultStage(lead){if(lead.pipeline_stage)return lead.pipeline_stage;if(lead.status==='Won')return'Won';if(lead.status==='Lost')return'Lost';return'New';if(lead.status==='Disqualified') return 'Disqualified';}
 function renderPipeline(){
   const board=document.getElementById('pipelineBoard');if(!board)return;
   if(!allLeads.length){board.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;width:100%;padding:60px;color:var(--tx3);flex-direction:column;gap:10px"><span class="mat" style="font-size:32px;opacity:0.3">view_kanban</span><p style="font-size:13px">No leads yet. <a style="color:var(--acc);cursor:pointer" onclick="openCreateLead()">Create your first lead →</a></p></div>`;return;}
   const grouped={};PIPELINE_STAGES.forEach(s=>grouped[s.id]=[]);
   allLeads.forEach(lead=>{const stage=defaultStage(lead);if(grouped[stage])grouped[stage].push(lead);else grouped['New'].push(lead);});
-  const se=document.getElementById('pipelineSummary');if(se){const active=allLeads.filter(l=>!['Won','Lost'].includes(defaultStage(l))).length;se.innerHTML=`<span>${allLeads.length} total</span><span style="color:var(--bd)">·</span><span style="color:var(--gr)">${grouped['Won'].length} won</span><span style="color:var(--bd)">·</span><span style="color:var(--bl)">${active} active</span>`;}
+  const se=document.getElementById('pipelineSummary');if(se){const active=allLeads.filter(l=>!['Won','Lost','Disqualified'].includes(defaultStage(l))).length;se.innerHTML=`<span>${allLeads.length} total</span><span style="color:var(--bd)">·</span><span style="color:var(--gr)">${grouped['Won'].length} won</span><span style="color:var(--bd)">·</span><span style="color:var(--bl)">${active} active</span>`;}
   board.innerHTML=PIPELINE_STAGES.map(stage=>{
     const leads=grouped[stage.id];const cards=leads.length?leads.map(lead=>buildKanbanCard(lead)).join(''):`<div class="kb-empty">Drop leads here</div>`;
     return `<div class="kb-col" data-stage="${stage.id}" ondragover="kbDragOver(event,this)" ondragleave="kbDragLeave(this)" ondrop="kbDrop(event,this,'${stage.id}')">
