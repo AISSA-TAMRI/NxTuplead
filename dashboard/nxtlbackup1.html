@@ -2567,17 +2567,17 @@ async function kbDrop(e,col,newStage){
     newStage === 'Won' ||
     newStage === 'Lost' ||
     newStage === 'Disqualified'
-){
+) {
     payload.status =
         newStage === 'Disqualified'
             ? 'Lost'
             : newStage;
-}payload.status=newStage;else if(
-    ['Won','Lost','Disqualified'].includes(oldStage) &&
-    !['Won','Lost','Disqualified'].includes(newStage)
-){
-    payload.status='Potential';
-}&&newStage!=='Won'&&newStage!=='Lost')payload.status='Potential';
+} else if (
+    ['Won', 'Lost', 'Disqualified'].includes(oldStage) &&
+    !['Won', 'Lost', 'Disqualified'].includes(newStage)
+) {
+    payload.status = 'Potential';
+}
     const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error(`HTTP ${res.status}`);toast(`✓ Moved to ${newStage}`,'ok');}
   catch(err){lead.pipeline_stage=oldStage;renderPipeline();toast('Failed to update stage. Check n8n webhook.','err');console.error('Pipeline stage update failed:',err);}
 }
