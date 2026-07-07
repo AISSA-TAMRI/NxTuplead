@@ -3,7 +3,6 @@ import { google } from 'googleapis';
 const CALENDAR_ID = 'issatamri1999@gmail.com';
 
 export default async function handler(req, res) {
-
   if (req.method !== 'POST') {
     return res.status(405).json({
       success: false,
@@ -12,7 +11,6 @@ export default async function handler(req, res) {
   }
 
   try {
-
     const {
       first_name,
       last_name,
@@ -38,9 +36,7 @@ export default async function handler(req, res) {
 
     const event = await calendar.events.insert({
       calendarId: CALENDAR_ID,
-
       conferenceDataVersion: 1,
-      sendUpdates: 'all',
 
       requestBody: {
         summary: `Strategy Call - ${first_name} ${last_name}`,
@@ -62,13 +58,6 @@ Company: ${company_name}
           timeZone: 'Africa/Algiers'
         },
 
-        attendees: [
-          {
-            email: email,
-            displayName: `${first_name} ${last_name}`
-          }
-        ],
-
         conferenceData: {
           createRequest: {
             requestId: `strategy-${Date.now()}`,
@@ -88,13 +77,14 @@ Company: ${company_name}
     });
 
   } catch (error) {
-
     console.error(error);
 
     return res.status(500).json({
       success: false,
       error: error.message
     });
+  }
+}
 
   }
 
