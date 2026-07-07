@@ -2499,7 +2499,13 @@ async function saveLeadModal(){
 }
 
 const PIPELINE_STAGES=[{id:'New',label:'New',color:'#8e909a',dot:'rgba(142,144,154,0.5)'},{id:'Contacted',label:'Contacted',color:'#89ceff',dot:'#89ceff'},{id:'Qualified',label:'Qualified',color:'#d2bbff',dot:'#d2bbff'},{id:'Appointment',label:'Appointment',color:'#fbbf24',dot:'#fbbf24'},{id:'Proposal',label:'Proposal',color:'#f97316',dot:'#f97316'},{id:'Negotiation',label:'Negotiation',color:'#e879f9',dot:'#e879f9'},{id:'Won',label:'Won',color:'#4ade80',dot:'#4ade80'},{id:'Lost',label:'Lost',color:'#f87171',dot:'#f87171'},{id:'Disqualified',label:'Disqualified',color:'#64748b',dot:'#64748b'}];
-function defaultStage(lead){if(lead.pipeline_stage)return lead.pipeline_stage;if(lead.status==='Won')return'Won';if(lead.status==='Lost')return'Lost';return'New';if(lead.status==='Disqualified') return'Disqualified';return'New';}
+function defaultStage(lead){
+    if (lead.pipeline_stage) return lead.pipeline_stage;
+
+    if (lead.status === 'Won') return 'Won';
+    if (lead.status === 'Lost') return 'Lost';
+    if (lead.status === 'Disqualified') return 'Disqualified';
+    return 'New';
 function renderPipeline(){
   const board=document.getElementById('pipelineBoard');if(!board)return;
   if(!allLeads.length){board.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;width:100%;padding:60px;color:var(--tx3);flex-direction:column;gap:10px"><span class="mat" style="font-size:32px;opacity:0.3">view_kanban</span><p style="font-size:13px">No leads yet. <a style="color:var(--acc);cursor:pointer" onclick="openCreateLead()">Create your first lead →</a></p></div>`;return;}
@@ -2541,10 +2547,37 @@ async function kbDrop(e,col,newStage){
   const lead=allLeads.find(l=>l.id===pipelineDragId);if(!lead)return;
   const oldStage=defaultStage(lead);if(oldStage===newStage)return;
   lead.pipeline_stage=newStage;
-  if(newStage==='Won'||newStage==='Lost')lead.status=newStage;
-  if((oldStage==='Won'||oldStage==='Lost')&&newStage!=='Won'&&newStage!=='Lost')lead.status='Potential';
+  if (
+    newStage === 'Won' ||
+    newStage === 'Lost' ||
+    newStage === 'Disqualified'
+){
+    lead.status = newStage === 'Disqualified'
+        ? 'Lost'
+        : newStage;
+}
+  if(
+    ['Won','Lost','Disqualified'].includes(oldStage) &&
+    !['Won','Lost','Disqualified'].includes(newStage)
+){
+    lead.status='Potential';
+}
   renderPipeline();renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();
-  try{const payload={action:'update_pipeline_stage',id:lead.id,pipeline_stage:newStage};if(newStage==='Won'||newStage==='Lost')payload.status=newStage;else if((oldStage==='Won'||oldStage==='Lost')&&newStage!=='Won'&&newStage!=='Lost')payload.status='Potential';
+  try{const payload={action:'update_pipeline_stage',id:lead.id,pipeline_stage:newStage};if (
+    newStage === 'Won' ||
+    newStage === 'Lost' ||
+    newStage === 'Disqualified'
+){
+    payload.status =
+        newStage === 'Disqualified'
+            ? 'Lost'
+            : newStage;
+}payload.status=newStage;else if(
+    ['Won','Lost','Disqualified'].includes(oldStage) &&
+    !['Won','Lost','Disqualified'].includes(newStage)
+){
+    payload.status='Potential';
+}&&newStage!=='Won'&&newStage!=='Lost')payload.status='Potential';
     const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error(`HTTP ${res.status}`);toast(`✓ Moved to ${newStage}`,'ok');}
   catch(err){lead.pipeline_stage=oldStage;renderPipeline();toast('Failed to update stage. Check n8n webhook.','err');console.error('Pipeline stage update failed:',err);}
 }
