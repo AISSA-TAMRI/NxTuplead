@@ -531,7 +531,13 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         <div class="form-group full"><label class="form-label">Company Name</label><input class="form-input" id="mCompany" placeholder="Acme Corp"/></div>
         <div class="form-group"><div class="section-label" style="margin-top:4px">Status & Assignment</div></div><div class="form-group"></div>
         <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="mStatus"><option value="Potential">Potential</option><option value="Won">Won</option><option value="Lost">Lost</option></select></div>
-        <div class="form-group"><label class="form-label">Owner / Agent</label><input class="form-input" id="mOwner" placeholder="Owner name or ID"/></div>
+        <div class="form-group">
+    <label class="form-label">ASSIGNED CLOSER</label>
+
+    <select class="form-input" id="mOwner">
+        <option value="">Select a closer...</option>
+    </select>
+</div>
         <div class="form-group"><div class="section-label" style="margin-top:4px">Scheduling</div></div><div class="form-group"></div>
         <div class="form-group"><label class="form-label">Preferred Date</label><input class="form-input" id="mPrefDate" type="date"/></div>
         <div class="form-group"><label class="form-label">Preferred Time</label><input class="form-input" id="mPrefTime" type="time"/></div>
@@ -2475,10 +2481,84 @@ async function lpDelete(){
     catch(e){toast('Failed to delete lead.','err');}
   });
 }
-function openCreateLead(){
-  document.getElementById('modalTitle').textContent='New Lead';document.getElementById('modalLeadId').value='';
-  ['mFirstName','mLastName','mEmail','mPhone','mCompany','mOwner','mPrefDate','mPrefTime','mUtmSource','mUtmCampaign','mUtmMedium','mUtmContent','mNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('mStatus').value='Potential';document.getElementById('modal').classList.add('open');
+async function loadClosers() {
+
+    const select = document.getElementById("mOwner");
+
+    select.innerHTML = '<option value="">Loading...</option>';
+
+    try {
+
+        const response = await fetch(
+            "https://n8n.upleaddigital.com/webhook/get-closers",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error();
+        }
+
+        const closers = await response.json();
+
+        select.innerHTML = '<option value="">Select a closer...</option>';
+
+        closers.forEach(user => {
+
+            const option = document.createElement("option");
+
+            option.value = user.id;
+
+            option.textContent = user.full_name;
+
+            select.appendChild(option);
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        select.innerHTML =
+            '<option value="">Unable to load closers</option>';
+
+    }
+
+}  
+async function openCreateLead() {
+
+  await loadClosers();
+
+  document.getElementById('modalTitle').textContent = 'New Lead';
+  document.getElementById('modalLeadId').value = '';
+
+  [
+    'mFirstName',
+    'mLastName',
+    'mEmail',
+    'mPhone',
+    'mCompany',
+    'mPrefDate',
+    'mPrefTime',
+    'mUtmSource',
+    'mUtmCampaign',
+    'mUtmMedium',
+    'mUtmContent',
+    'mNotes'
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  document.getElementById('mOwner').selectedIndex = 0;
+  document.getElementById('mStatus').value = 'Potential';
+
+  document.getElementById('modal').classList.add('open');
+
 }
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 async function saveLeadModal(){
