@@ -532,7 +532,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         <div class="form-group"><div class="section-label" style="margin-top:4px">Status & Assignment</div></div><div class="form-group"></div>
         <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="mStatus"><option value="Potential">Potential</option><option value="Won">Won</option><option value="Lost">Lost</option></select></div>
         <div class="form-group">
-    <label class="form-label">ASSIGNED CLOSE</label>
+    <label class="form-label">ASSIGNED CLOSER</label>
 
     <select class="form-input" id="mOwner">
         <option value="">Select a closer...</option>
@@ -2490,45 +2490,27 @@ async function loadClosers() {
     try {
 
         const response = await fetch(
-            "https://n8n.upleaddigital.com/webhook/get-closers",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            }
+            "https://n8n.upleaddigital.com/webhook/get-closers"
         );
 
-        if (!response.ok) {
-            throw new Error();
-        }
+        if (!response.ok) throw new Error(await response.text());
 
         const closers = await response.json();
 
         select.innerHTML = '<option value="">Select a closer...</option>';
 
         closers.forEach(user => {
-
             const option = document.createElement("option");
-
             option.value = user.id;
-
             option.textContent = user.full_name;
-
             select.appendChild(option);
-
         });
 
     } catch (err) {
-
         console.error(err);
-
-        select.innerHTML =
-            '<option value="">Unable to load closers</option>';
-
+        select.innerHTML = '<option value="">Unable to load closers</option>';
     }
-
-}  
+} 
 async function openCreateLead() {
 
   await loadClosers();
