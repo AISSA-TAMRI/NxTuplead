@@ -1931,7 +1931,7 @@ async function loadClients(){
     const dashEl=document.getElementById('statClients');if(dashEl)dashEl.textContent=allClients.length;
   }catch(e){
     const tbody2=document.getElementById('clientsTable');
-    if(tbody2)tbody2.innerHTML='<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--re)"><span class="mat sm">error</span> Failed to load clients.</td></tr>';
+    if(tbody2)tbody2.innerHTML='<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--re)"><span class="mat sm">error</span>No Clients</td></tr>';
   }
 }
 
