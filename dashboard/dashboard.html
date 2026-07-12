@@ -1748,7 +1748,7 @@ async function loadLeads(){
     if(page()==='analytics')renderAnalytics();
     if(page()==='reports')renderReports();
     updateMeetingsBadge();
-  }catch(e){document.getElementById('leadsTable').innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--re)"><span class="mat sm">error</span> Failed to load leads.</td></tr>`;}
+  }catch(e){document.getElementById('leadsTable').innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--re)"><span class="mat sm">error</span> No Leads</td></tr>`;}
 }
 function renderTableLoading(){document.getElementById('leadsTable').innerHTML=`<tr class="loading-row"><td colspan="9"><span class="spin mat sm">sync</span> Loading leads…</td></tr>`;}
 function renderTable(leads){
