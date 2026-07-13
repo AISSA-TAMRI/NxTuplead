@@ -1248,32 +1248,50 @@ tailwind.config = {
     }catch(e){}
   }
 
-  // ================= PARTIAL LEAD CAPTURE =================
-  // Fires as soon as the visitor fills in contact fields, even if they never hit submit,
-  // so no partially-completed lead is lost.
+  
   const PARTIAL_LEAD_KEY = 'uplead_partial_lead';
-  function capturePartialLead(payload){
-    try{
-      const existing = JSON.parse(localStorage.getItem(PARTIAL_LEAD_KEY) || '{}');
-      const merged = Object.assign({ status: 'partial' }, existing, payload, { updated_at: new Date().toISOString() });
-      localStorage.setItem(PARTIAL_LEAD_KEY, JSON.stringify(merged));
 
-      const { first_name, last_name } = splitName(merged.name);
-      sendLead({
-        first_name: first_name,
-        last_name: last_name,
-        email: merged.email || '',
-        phone: merged.phone || '',
-        company_name: merged.business || '',
-        country_code: merged.countryCode || '',
-        country_iso: merged.countryIso || '',
-        note: buildNote(merged),
-        status: merged.status,
-        source: merged.source || 'website',
-        updated_at: merged.updated_at
-      });
-    }catch(e){}
-  }
+function capturePartialLead(payload) {
+  try {
+
+    const existing = JSON.parse(localStorage.getItem(PARTIAL_LEAD_KEY) || '{}');
+
+    const merged = {
+      ...existing,
+      ...payload,
+      status: 'partial',
+      updated_at: new Date().toISOString()
+    };
+
+    const hasLead =
+      existing.phone &&
+      existing.phone === merged.phone;
+
+    localStorage.setItem(
+      PARTIAL_LEAD_KEY,
+      JSON.stringify(merged)
+    );
+
+    const { first_name, last_name } = splitName(merged.name);
+
+    sendLead({
+      lead_id: existing.lead_id || '',
+      first_name,
+      last_name,
+      email: merged.email || '',
+      phone: merged.phone || '',
+      company_name: merged.business || '',
+      country_code: merged.countryCode || '',
+      country_iso: merged.countryIso || '',
+      note: buildNote(merged),
+      status: 'partial',
+      source: merged.source || 'website',
+      updated_at: merged.updated_at,
+      action: hasLead ? 'update' : 'create'
+    });
+
+  } catch(e){}
+}
 
   // ================= APPLY NOW TRIGGERS =================
   // Every "Apply Now" button across the page scrolls straight down to the
@@ -1476,24 +1494,48 @@ tailwind.config = {
   document.getElementById('f_country_code').addEventListener('change', checkStep1Reveal);
 
   // Partial lead capture: fires as each contact field is left, before Continue is ever pressed.
-  ['f_name','f_phone','f_email','f_business','f_country_code'].forEach(id => {
-    const el = document.getElementById(id);
-    const evt = id === 'f_country_code' ? 'change' : 'blur';
-    el.addEventListener(evt, () => {
-      const val = el.value.trim();
-      if(!val) return;
-      const cc = document.getElementById('f_country_code');
+ let partialLeadCreated = false;
+
+['f_name','f_phone','f_email','f_business','f_country_code'].forEach(id => {
+
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const evt = id === 'f_country_code' ? 'change' : 'blur';
+
+  el.addEventListener(evt, () => {
+
+    const firstName = document.getElementById('f_name')?.value.trim() || '';
+    const phone = getFullPhone();
+    const email = document.getElementById('f_email')?.value.trim() || '';
+    const business = document.getElementById('f_business')?.value.trim() || '';
+
+    const cc = document.getElementById('f_country_code');
+
+    if (
+      !partialLeadCreated &&
+      firstName &&
+      phone &&
+      phone.replace(/\D/g, '').length >= 8
+    ) {
+
+      partialLeadCreated = true;
+
       capturePartialLead({
-        name: document.getElementById('f_name').value.trim() || undefined,
-        phone: getFullPhone() || undefined,
+        name: firstName,
+        phone: phone,
+        email: email,
+        business: business,
+        countryCode: cc.value,
         countryIso: cc.options[cc.selectedIndex].dataset.iso,
-        email: document.getElementById('f_email').value.trim() || undefined,
-        business: document.getElementById('f_business').value.trim() || undefined,
         source: 'apply_form_step1'
       });
-    });
+
+    }
+
   });
 
+});
   backBtn.addEventListener('click', () => goToStep(currentStep - 1));
 
   continueBtn.addEventListener('click', () => {
