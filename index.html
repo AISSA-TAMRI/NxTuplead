@@ -1493,7 +1493,7 @@ function capturePartialLead(payload) {
   });
   document.getElementById('f_country_code').addEventListener('change', checkStep1Reveal);
 
-  // Partial lead capture: fires as each contact field is left, before Continue is ever pressed.
+
  let partialLeadCreated = false;
 
 ['f_name','f_phone','f_email','f_business','f_country_code'].forEach(id => {
@@ -1559,22 +1559,42 @@ function capturePartialLead(payload) {
     }
   });
 
-  // Auto-advance single-select steps
-  document.querySelectorAll('[data-group]').forEach(group => {
-    const key = group.dataset.group;
-    group.querySelectorAll('.opt-card').forEach(btn => {
-      btn.addEventListener('click', () => {
-        group.querySelectorAll('.opt-card').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        formData[key] = btn.querySelector('span:last-child').textContent;
-        saveState();
-        capturePartialLead(Object.assign({ source: 'booking_modal_progress' }, formData));
-        setTimeout(() => {
-          if(currentStep < TOTAL_STEPS) goToStep(currentStep + 1);
-        }, 380);
-      });
+
+ document.querySelectorAll('[data-group]').forEach(group => {
+  const key = group.dataset.group;
+
+  group.querySelectorAll('.opt-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+
+      group.querySelectorAll('.opt-card').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      formData[key] = btn.querySelector('span:last-child').textContent;
+      saveState();
+
+     
+      try {
+        const draft = JSON.parse(localStorage.getItem(PARTIAL_LEAD_KEY) || '{}');
+
+        localStorage.setItem(
+          PARTIAL_LEAD_KEY,
+          JSON.stringify({
+            ...draft,
+            ...formData,
+            source: 'booking_modal_progress'
+          })
+        );
+      } catch (e) {}
+
+      setTimeout(() => {
+        if (currentStep < TOTAL_STEPS) {
+          goToStep(currentStep + 1);
+        }
+      }, 380);
+
     });
   });
+});
 
   resetBtn.addEventListener('click', () => {
     try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
@@ -1587,7 +1607,7 @@ function capturePartialLead(payload) {
     goToStep(1);
   });
 
-  // ---------- Calendar (Step 10) : real month grid ----------
+  
   const today = new Date();
   today.setHours(0,0,0,0);
   let viewYear = today.getFullYear();
