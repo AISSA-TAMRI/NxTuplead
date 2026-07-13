@@ -7,14 +7,12 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<!-- Supabase Config — set your credentials in this file -->
+
 <script src="/dashboard/supabase-config.js"></script>
-<!-- Supabase CDN -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ═══════════════════════════════════════
-   SHARED DESIGN TOKENS
-═══════════════════════════════════════ */
+
 :root{
   --bg:#0f1117;--s1:#171b23;--s2:#1d222d;--s3:#252b38;
   --acc:#adc6ff;--acc-d:rgba(173,198,255,0.12);--acc-g:rgba(173,198,255,0.08);
@@ -31,9 +29,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .mat{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;font-size:18px;line-height:1;vertical-align:middle;user-select:none}
 .mat.sm{font-size:15px}.mat.lg{font-size:22px}
 
-/* ═══════════════════════════════════════
-   LOGIN PAGE
-═══════════════════════════════════════ */
+
 #login-page{
   min-height:100vh;
   display:flex;
@@ -44,7 +40,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   overflow:hidden;
 }
 
-/* Subtle animated grid background */
+
 #login-page::before{
   content:'';
   position:absolute;
@@ -76,7 +72,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   padding:0 20px;
 }
 
-/* Logo mark */
+
 .login-logo{
   display:flex;
   align-items:center;
@@ -96,7 +92,6 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .login-logo-name{font-size:20px;font-weight:700;color:var(--acc);letter-spacing:-0.03em}
 .login-logo-tag{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--tx3);margin-top:-2px}
 
-/* Card */
 .login-card{
   background:var(--s1);
   border:1px solid var(--bd2);
@@ -107,7 +102,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .login-card-title{font-size:18px;font-weight:700;color:var(--tx);margin-bottom:4px;letter-spacing:-0.02em}
 .login-card-sub{font-size:13px;color:var(--tx3);margin-bottom:22px}
 
-/* Form fields */
+
 .lf-group{margin-bottom:14px}
 .lf-label{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--tx3);display:block;margin-bottom:6px}
 .lf-input-wrap{position:relative;display:flex;align-items:center}
@@ -131,7 +126,6 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .lf-toggle{position:absolute;right:10px;color:var(--tx3);cursor:pointer;padding:4px;border-radius:4px;font-size:16px;transition:color .15s}
 .lf-toggle:hover{color:var(--tx2)}
 
-/* Options row */
 .lf-opts{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;margin-top:-4px}
 .lf-check{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
 .lf-check input[type=checkbox]{
@@ -143,7 +137,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .lf-forgot{font-size:12px;color:var(--acc);text-decoration:none;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;padding:0;transition:opacity .15s}
 .lf-forgot:hover{opacity:0.7;text-decoration:underline}
 
-/* Error message */
+
 .lf-error{
   display:none;
   background:var(--re-d);
@@ -158,7 +152,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 }
 .lf-error.visible{display:flex}
 
-/* Success message */
+
 .lf-success{
   display:none;
   background:var(--gr-d);
@@ -173,7 +167,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 }
 .lf-success.show{display:flex}
 
-/* Submit button */
+
 .lf-submit{
   width:100%;
   background:var(--acc);
@@ -198,11 +192,11 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .lf-submit:active{transform:translateY(0)}
 .lf-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none}
 
-/* Loading spinner */
+
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{animation:spin 0.8s linear infinite;display:inline-block}
 
-/* Divider + forgot form */
+
 .lf-divider{height:1px;background:var(--bd);margin:18px 0;position:relative}
 .lf-divider::after{
   content:'or';
@@ -212,19 +206,19 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   letter-spacing:0.05em;text-transform:uppercase;
 }
 
-/* Forgot password view */
+
 .fp-back{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx3);cursor:pointer;margin-bottom:16px;padding:4px 0;background:none;border:none;font-family:'Inter',sans-serif;transition:color .15s}
 .fp-back:hover{color:var(--tx)}
 .fp-back .mat{font-size:15px}
 
-/* Footer */
+
 .login-footer{text-align:center;margin-top:20px;font-size:11px;color:var(--tx3)}
 .login-footer a{color:var(--acc);text-decoration:none}
 
-/* Views */
+
 .auth-view{display:none}.auth-view.active{display:block}
 
-/* Session loading overlay */
+
 #authLoader{
   position:fixed;inset:0;z-index:9999;
   background:var(--bg);
@@ -243,9 +237,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════
-     SESSION LOADER — shown while checking auth state
-═══════════════════════════════════════ -->
+
 <div id="authLoader">
   <div class="loader-logo">
     <span class="mat lg">bolt</span>
@@ -255,13 +247,11 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   <div style="font-size:11px;color:var(--tx3);letter-spacing:0.05em">Checking session…</div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     LOGIN PAGE
-═══════════════════════════════════════ -->
+
 <div id="login-page" style="display:none">
   <div class="login-wrap">
 
-    <!-- Logo -->
+
     <div class="login-logo">
       <div class="login-logo-mark"><span class="mat lg">bolt</span></div>
       <div>
@@ -272,7 +262,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 
     <div class="login-card">
 
-      <!-- ── SIGN IN VIEW ── -->
+
       <div class="auth-view active" id="view-signin">
         <div class="login-card-title">Welcome back</div>
         <div class="login-card-sub">Sign in to your workspace</div>
@@ -315,7 +305,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
         </button>
       </div>
 
-      <!-- ── FORGOT PASSWORD VIEW ── -->
+
       <div class="auth-view" id="view-forgot">
         <button class="fp-back" onclick="showView('view-signin')">
           <span class="mat">arrow_back</span> Back to sign in
@@ -347,7 +337,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
         </button>
       </div>
 
-    </div><!-- end card -->
+    </div>
 
     <div class="login-footer">
       NXTUP Lead · Revenue Operating System · v2.0
@@ -358,12 +348,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 <script>
 'use strict';
 
-/* ═══════════════════════════════════════
-   SUPABASE CONFIG
-   Replace with your actual project credentials.
-   Set these before deploying.
-═══════════════════════════════════════ */
-// Credentials are loaded from supabase-config.js
+
 const SUPABASE_URL      = window.SUPABASE_URL      || '';
 const SUPABASE_ANON_KEY  = window.SUPABASE_ANON_KEY  || '';
 
@@ -379,21 +364,19 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
-/* ═══════════════════════════════════════
-   BOOT — check session, redirect if needed
-═══════════════════════════════════════ */
+
 async function boot() {
   try {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
-      // Already logged in → go to dashboard
+
       window.location.replace('dashboard/dashboard.html');
       return;
     }
   } catch (e) {
     console.error('Session check failed:', e);
   }
-  // Not logged in → show login page
+
   hideLoader();
 }
 
@@ -406,9 +389,7 @@ function hideLoader() {
   }, 320);
 }
 
-/* ═══════════════════════════════════════
-   VIEW SWITCHING
-═══════════════════════════════════════ */
+
 function showView(id) {
   document.querySelectorAll('.auth-view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -424,15 +405,13 @@ function clearErrors() {
 function showError(container, msg) {
   const el = document.getElementById(container);
   if (!el) return;
-  // Update the message span if present
+  
   const msgEl = document.getElementById(container + '-msg');
   if (msgEl && msg) msgEl.textContent = msg;
   el.classList.add('visible');
 }
 
-/* ═══════════════════════════════════════
-   PASSWORD TOGGLE
-═══════════════════════════════════════ */
+
 function togglePassword(inputId, iconId) {
   const input = document.getElementById(inputId);
   const icon  = document.getElementById(iconId);
@@ -445,9 +424,7 @@ function togglePassword(inputId, iconId) {
   }
 }
 
-/* ═══════════════════════════════════════
-   LOADING BUTTON STATE
-═══════════════════════════════════════ */
+
 function setLoading(btnId, loading, label, icon) {
   const btn = document.getElementById(btnId);
   btn.disabled = loading;
@@ -458,16 +435,14 @@ function setLoading(btnId, loading, label, icon) {
   }
 }
 
-/* ═══════════════════════════════════════
-   SIGN IN
-═══════════════════════════════════════ */
+
 async function handleSignIn() {
   clearErrors();
   const email    = document.getElementById('signin-email').value.trim();
   const password = document.getElementById('signin-password').value;
   const remember = document.getElementById('rememberMe').checked;
 
-  // Basic validation
+
   if (!email) {
     document.getElementById('signin-email').classList.add('err');
     showError('signin-error', 'Please enter your email address.');
@@ -481,11 +456,10 @@ async function handleSignIn() {
 
   setLoading('signin-btn', true);
 
-  // If "Remember me" is unchecked, use session-only storage (cleared on tab close)
-  // Supabase v2 always persists by default; we handle this by signing out on unload if not remembered
+
   if (!remember) {
     window.addEventListener('beforeunload', () => {
-      // Non-persistent session: clear on tab close
+
       sb.auth.signOut();
     }, { once: true });
   }
@@ -498,7 +472,7 @@ async function handleSignIn() {
 
     if (error) {
       setLoading('signin-btn', false, 'Sign in', 'login');
-      // Map Supabase error messages to user-friendly text
+
       const errMap = {
         'Invalid login credentials': 'Incorrect email or password. Please check and try again.',
         'Email not confirmed': 'Please confirm your email address before signing in.',
@@ -510,7 +484,6 @@ async function handleSignIn() {
       return;
     }
 
-    // Success → redirect to dashboard
     window.location.replace('dashboard.html');
 
   } catch (e) {
@@ -520,9 +493,7 @@ async function handleSignIn() {
   }
 }
 
-/* ═══════════════════════════════════════
-   FORGOT PASSWORD
-═══════════════════════════════════════ */
+
 async function handleForgotPassword() {
   clearErrors();
   const email = document.getElementById('forgot-email').value.trim();
@@ -561,9 +532,7 @@ async function handleForgotPassword() {
   }
 }
 
-/* ═══════════════════════════════════════
-   KEYBOARD — Enter key support
-═══════════════════════════════════════ */
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     const activeView = document.querySelector('.auth-view.active');
@@ -573,9 +542,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* ═══════════════════════════════════════
-   INIT
-═══════════════════════════════════════ */
+
 boot();
 </script>
 </body>
