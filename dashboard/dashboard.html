@@ -30,7 +30,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:10px}
 
-/* AUTH  */
+
 #authLoader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;transition:opacity .3s}
 #authLoader.fade{opacity:0;pointer-events:none}
 .loader-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
@@ -40,7 +40,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .loader-bar-fill{height:100%;background:var(--acc);border-radius:2px;animation:loaderPulse 1.2s ease-in-out infinite}
 @keyframes loaderPulse{0%,100%{width:20%}50%{width:80%}}
 
-/* LAYOUT */
 #app{display:none;height:100vh;width:100vw;overflow:hidden;flex-direction:row}
 #app.ready{display:flex}
 #sidebar{width:220px;min-width:220px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;z-index:50;transition:width 0.2s}
@@ -48,11 +47,9 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 #topbar{height:52px;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:40;flex-shrink:0}
 #workspace{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--bg)}
 
-/* AMBIENT GLOW */
 .ambient-tr{position:fixed;top:0;right:0;width:33%;height:50%;background:rgba(124,58,237,0.04);filter:blur(80px);pointer-events:none;z-index:0}
 .ambient-bl{position:fixed;bottom:0;left:220px;width:25%;height:33%;background:rgba(137,206,255,0.04);filter:blur(80px);pointer-events:none;z-index:0}
 
-/* NAV */
 .nav-logo{padding:16px 16px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd)}
 .nav-logo .bolt{color:var(--acc);font-size:22px}
 .nav-logo-text .name{font-weight:700;font-size:15px;color:var(--acc);letter-spacing:-0.02em;white-space:nowrap;display:block}
@@ -70,7 +67,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .av{width:28px;height:28px;border-radius:50%;background:var(--acc-d);border:1px solid var(--bd2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--acc)}
 .av.bl{background:var(--bl-d);color:var(--bl)}.av.pu{background:var(--pu-d);color:var(--pu)}.av.gr{background:var(--gr-d);color:var(--gr)}
 
-/* USER MENU */
 .user-menu-wrap{position:relative}
 .user-menu{position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:var(--s2);border:1px solid var(--bd2);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;display:none;z-index:100}
 .user-menu.open{display:block}
@@ -82,7 +78,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .user-menu-divider{height:1px;background:var(--bd);margin:4px 0}
 .user-menu-email{padding:9px 13px 6px;font-size:10px;color:var(--tx3);letter-spacing:0.03em}
 
-/* TOPBAR */
 .search-box{flex:1;max-width:400px;position:relative;display:flex;align-items:center}
 .search-box input{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:7px;padding:6px 12px 6px 34px;color:var(--tx);font-size:13px;outline:none;transition:border-color 0.15s;font-family:'Inter',sans-serif}
 .search-box input:focus{border-color:rgba(210,187,255,0.3)}
@@ -96,7 +91,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .qbtn{display:flex;align-items:center;gap:6px;background:var(--pri-c);color:#ede0ff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all 0.15s;border:none;font-family:'Inter',sans-serif}
 .qbtn:hover{background:#6d28d9;transform:translateY(-1px)}
 
-/* SHARED */
 .pc{padding:20px 24px}
 .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .stitle{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--tx3)}
@@ -138,7 +132,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .arow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
 .arow:last-child{border-bottom:none}
 
-/* COMMAND PALETTE */
 #cmdpal{position:fixed;inset:0;z-index:999;display:none;align-items:flex-start;justify-content:center;padding-top:100px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px)}
 #cmdpal.open{display:flex}
 .cmdbox{width:580px;background:var(--s2);border:1px solid rgba(210,187,255,0.2);border-radius:10px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.7)}
@@ -159,7 +152,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .chint{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx3)}
 .chint kbd{background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;font-size:10px}
 
-/* LEAD PANEL */
 #leadPanel{position:fixed;top:0;right:-480px;width:480px;height:100vh;background:var(--s1);border-left:1px solid var(--bd);overflow:hidden;transition:right .28s cubic-bezier(0.2,0,0,1);z-index:9999;display:flex;flex-direction:column}
 #leadPanel.lp-open{right:0}
 .lp-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:9998;display:none;backdrop-filter:blur(2px)}
@@ -220,13 +212,11 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .lp-footer{padding:12px 18px;border-top:1px solid var(--bd);flex-shrink:0;display:flex;gap:8px}
 .lp-footer .abtn.pri{flex:1;justify-content:center;padding:9px;font-size:13px}
 
-/* TOAST */
 .lp-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 18px;font-size:13px;font-weight:500;color:var(--tx);box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:99999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
 .lp-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .lp-toast.ok{border-color:rgba(74,222,128,0.3);color:var(--gr)}
 .lp-toast.err{border-color:rgba(248,113,113,0.3);color:var(--re)}
 
-/* MODAL */
 #modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px)}
 #modal.open{display:flex}
 .modal-box{background:var(--s1);border:1px solid var(--bd2);border-radius:10px;width:520px;max-width:95vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,0.7)}
@@ -248,7 +238,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .form-textarea::placeholder{color:var(--tx3)}
 .section-label{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3);padding:4px 0 8px;border-bottom:1px solid var(--bd);margin-bottom:4px;grid-column:1/-1}
 
-/* STAT CARDS */
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
 .stat-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:16px 18px;position:relative;overflow:hidden;transition:border-color .15s}
 .stat-card:hover{border-color:var(--bd2)}
@@ -262,7 +251,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .stat-trend.up{color:var(--gr)}.stat-trend.down{color:var(--re)}.stat-trend.neutral{color:var(--tx3)}
 .stat-trend .mat{font-size:13px}
 
-/* DASHBOARD HERO */
 .dash-hero{padding:20px 24px 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--bd);background:var(--s1)}
 .dash-hero-title{font-size:22px;font-weight:700;color:var(--tx);letter-spacing:-0.02em}
 .dash-hero-sub{font-size:13px;color:var(--tx3);margin-top:2px}
@@ -270,13 +258,11 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .period-btn{padding:5px 14px;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;color:var(--tx2);transition:all 0.15s;border:none;background:none;font-family:'Inter',sans-serif}
 .period-btn.active{background:var(--s2);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
 
-/* KPI ROW */
 .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
 .kpi-val-lg{font-size:22px;font-weight:700;letter-spacing:-0.02em;line-height:1.1;margin:5px 0 3px}
 .kpi-sub{font-size:11px;color:var(--tx3)}
 .kpi-warn{color:var(--am)}.kpi-good{color:var(--gr)}.kpi-muted{color:var(--tx3)}
 
-/* VELOCITY CHART */
 .velocity-chart{display:flex;align-items:flex-end;justify-content:space-between;gap:4px;height:80px;padding:0 4px}
 .vel-bar{flex:1;background:rgba(210,187,255,0.15);border-radius:3px 3px 0 0;cursor:pointer;transition:background .15s;min-width:14px}
 .vel-bar:hover{background:rgba(210,187,255,0.5)}
@@ -284,7 +270,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .vel-labels{display:flex;justify-content:space-between;padding:0 4px;margin-top:4px}
 .vel-label{font-size:9px;font-weight:600;letter-spacing:0.05em;color:var(--tx3);flex:1;text-align:center}
 
-/* SOURCE BARS */
 .src-bar-wrap{display:flex;flex-direction:column;gap:10px}
 .src-row{display:flex;flex-direction:column;gap:4px}
 .src-row-hd{display:flex;justify-content:space-between;align-items:center}
@@ -293,7 +278,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .src-bar-track{height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
 .src-bar-fill{height:100%;border-radius:3px}
 
-/* FOLLOW-UP ALERTS */
 .alert-pulse{animation:alertPulse 3s cubic-bezier(0.4,0,0.6,1) infinite}
 @keyframes alertPulse{0%,100%{opacity:1}50%{opacity:0.7}}
 .followup-alert{padding:12px;border-radius:8px;border:1px solid;margin-bottom:0}
@@ -303,11 +287,9 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .followup-alert-time{font-size:10px;font-weight:600}
 .followup-alert-body{font-size:11px;color:var(--tx3);margin-top:4px;line-height:1.5}
 
-/* HEALTH BAR */
 .health-bar-track{height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;margin:6px 0 4px}
 .health-bar-fill{height:100%;border-radius:2px;background:var(--bl);transition:width .5s ease}
 
-/* FLOATING COMMAND BAR */
 #floatBar{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);display:flex;align-items:center;gap:2px;padding:4px;background:rgba(23,31,51,0.9);backdrop-filter:blur(16px);border:1px solid var(--bd);border-radius:999px;box-shadow:0 8px 40px rgba(0,0,0,0.5);z-index:8000;opacity:0;transition:all .3s ease-out;pointer-events:none}
 #floatBar.visible{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all}
 .fbar-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:999px;color:var(--tx2);cursor:pointer;transition:all .15s;border:none;background:none}
@@ -317,12 +299,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .fbar-hint{padding:0 12px;font-size:11px;font-weight:500;color:var(--tx3)}
 .fbar-hint kbd{background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;border:1px solid var(--bd);font-size:10px}
 
-/* FAB */
 #fab{position:fixed;bottom:28px;right:28px;width:52px;height:52px;background:var(--pri-c);color:#ede0ff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(124,58,237,0.4);cursor:pointer;z-index:8000;border:none;font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;font-size:24px;transition:all .2s}
 #fab:hover{background:#6d28d9;transform:scale(1.08)}
 #fab:active{transform:scale(0.96)}
 
-/* EMPTY / LOADING */
 .empty-state{text-align:center;padding:48px 24px;color:var(--tx3)}
 .empty-state .mat{font-size:36px;display:block;margin-bottom:10px;opacity:0.4}
 .empty-state p{font-size:13px;margin-bottom:14px}
@@ -330,7 +310,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{animation:spin 1s linear infinite;display:inline-block}
 
-/* CALENDAR */
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--bd)}
 .cal-cell{background:var(--s2);min-height:90px;padding:6px;position:relative}
 .cal-cell.other-month{background:var(--bg);opacity:0.5}
@@ -344,13 +323,11 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .cal-event.st-Lost{background:var(--re-d);color:var(--re);border-left:2px solid var(--re)}
 .cal-hdr{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3);padding:8px;text-align:center;background:var(--s1)}
 
-/* ACTIVITY */
 .activity-icon{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--bd)}
 .activity-icon.ac{background:var(--acc-d);color:var(--acc)}.activity-icon.gr{background:var(--gr-d);color:var(--gr)}
 .activity-icon.re{background:var(--re-d);color:var(--re)}.activity-icon.am{background:var(--am-d);color:var(--am)}
 .activity-icon.bl{background:var(--bl-d);color:var(--bl)}.activity-icon.gy{background:rgba(255,255,255,0.04);color:var(--tx2)}
 
-/* CONFIRM */
 #confirmDialog{position:fixed;inset:0;z-index:11000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)}
 #confirmDialog.open{display:flex}
 .confirm-box{background:var(--s1);border:1px solid var(--bd2);border-radius:10px;padding:24px;width:360px;max-width:95vw;box-shadow:0 16px 48px rgba(0,0,0,0.7)}
@@ -358,11 +335,9 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .confirm-msg{font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:20px}
 .confirm-actions{display:flex;gap:8px;justify-content:flex-end}
 
-/* SESSION BANNER */
 #sessionBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:20000;background:var(--re-d);border-bottom:1px solid rgba(248,113,113,0.3);padding:10px 20px;align-items:center;justify-content:center;gap:10px;font-size:12px;color:var(--re);font-weight:500}
 #sessionBanner.show{display:flex}
 
-/* PIPELINE KANBAN */
 #pv-pipeline{display:none}
 #pv-pipeline.active{display:flex;flex-direction:column;height:100%}
 .pipeline-toolbar{height:52px;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
@@ -394,7 +369,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .kb-empty{text-align:center;padding:20px 8px;color:var(--tx3);font-size:11px;border:1px dashed rgba(255,255,255,0.08);border-radius:6px}
 .kb-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:0.92;box-shadow:0 12px 40px rgba(0,0,0,0.6);transform:rotate(2deg);width:240px}
 
-/* MEETINGS HUB */
 .mh-kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
 .mh-kpi{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:12px 14px;transition:border-color .15s}
 .mh-kpi:hover{border-color:rgba(210,187,255,0.35)}
@@ -407,14 +381,14 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .mh-tab.active{color:var(--acc);border-bottom-color:var(--acc);font-weight:600}
 .mh-tab .mat{font-size:16px}
 .mh-panel{display:none}.mh-panel.active{display:flex;flex-direction:column;gap:16px}
-/* Calendar tab layout */
+
 .mh-cal-layout{display:flex;gap:16px;min-height:500px}
 .mh-cal-main{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
 .mh-cal-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0}
 .mh-cal-views{display:flex;background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:2px}
 .mh-cal-view-btn{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:500;color:var(--tx2);cursor:pointer;transition:all .15s}
 .mh-cal-view-btn.active{background:var(--s2);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
-/* Meeting detail drawer */
+
 .mh-drawer{width:380px;background:var(--s2);border:1px solid var(--bd);border-radius:10px;display:flex;flex-direction:column;overflow:hidden}
 .mh-drawer-hd{padding:16px 18px;border-bottom:1px solid var(--bd);background:rgba(255,255,255,0.02);flex-shrink:0}
 .mh-drawer-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px}
@@ -425,7 +399,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .mh-meet-url{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--bd);border-radius:7px;cursor:pointer;transition:background .15s}
 .mh-meet-url:hover{background:var(--s1)}
 .mh-meet-url .mat{color:var(--bl)}
-/* Upcoming Meetings tab */
+
 .mh-meeting-card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:all .15s}
 .mh-meeting-card:hover{border-color:rgba(210,187,255,0.3);background:var(--s3)}
 .mh-meeting-card.today{border-left:3px solid var(--pri-c)}
@@ -435,23 +409,23 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 .mh-meeting-time .date{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3)}
 .mh-meeting-time .day{font-size:22px;font-weight:800;color:var(--tx);line-height:1;letter-spacing:-0.03em}
 .mh-meeting-time .month{font-size:10px;color:var(--tx3)}
-/* Recordings placeholder */
+
 .mh-empty-feature{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;gap:14px;text-align:center}
 .mh-empty-feature .mat{font-size:48px;color:var(--tx3);opacity:0.3}
 .mh-feature-chip{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:3px;background:rgba(210,187,255,0.1);color:var(--acc);border:1px solid rgba(210,187,255,0.2)}
 .mh-provider-badge{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;font-size:12px;font-weight:500;color:var(--tx2)}
 .mh-provider-badge .mat{font-size:20px;color:var(--acc)}
-/* Notes tab */
+
 .mh-note-card{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:14px 16px}
 .mh-note-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
-/* Analytics tab */
+
 .mh-analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-/* Schedule meeting modal */
+
 #mhScheduleModal{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px)}
 #mhScheduleModal.open{display:flex}
 .mh-modal-box{background:var(--s1);border:1px solid var(--bd2);border-radius:10px;padding:24px;width:460px;max-width:95vw;box-shadow:0 16px 48px rgba(0,0,0,0.7)}
 
-/* MOBILE */
+
 #mobileSidebarOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:45;backdrop-filter:blur(2px)}
 #mobileSidebarOverlay.show{display:block}
 @media(max-width:768px){
@@ -468,7 +442,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
   #fab{display:none}
 }
 
-/* ── CLIENTS WORKSPACE ───────────────────────────────────────── */
+
 #pv-clients.active{display:flex!important}
 .cdp-fc{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:10px 12px}
 .cdp-fl{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--tx3);margin-bottom:3px}
@@ -586,7 +560,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
   </div>
 </div>
 
-<!-- FLOATING COMMAND BAR -->
+
 <div id="floatBar">
   <button class="fbar-btn" onclick="openCreateLead()" title="New Lead"><span class="mat">add</span></button>
   <div class="fbar-div"></div>
@@ -597,10 +571,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
   <div class="fbar-hint">Press <kbd>⌘K</kbd> for menu</div>
 </div>
 
-<!-- FAB -->
+
 <button id="fab" onclick="openCreateLead()" title="New Lead">add</button>
 
-<!-- APP SHELL -->
+
 <div id="app">
   <aside id="sidebar">
     <div class="nav-logo">
@@ -672,7 +646,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 
     <div id="workspace">
 
-      <!-- DASHBOARD -->
+  
       <div class="pv" id="pv-dashboard">
         <div class="dash-hero">
           <div>
@@ -690,7 +664,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
           </div>
         </div>
         <div class="pc">
-          <!-- KPI Cards -->
+    
           <div class="stat-grid">
             <div class="stat-card c-acc">
               <div class="mlbl">Total Leads</div>
@@ -713,15 +687,15 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
               <div class="stat-trend down"><span class="mat">trending_down</span><span>closed lost</span></div>
             </div>
           </div>
-          <!-- KPI Row 2 -->
+      
           <div class="kpi-row">
             <div class="stat-card c-gr"><div class="mlbl">Win Rate</div><div class="kpi-val-lg" id="statWinRate">—</div><div class="kpi-sub">won ÷ (won + lost)</div></div>
             <div class="stat-card c-am"><div class="mlbl">Never Contacted</div><div class="kpi-val-lg" id="statNeverContacted">—</div><div class="kpi-sub" id="statNeverContactedSub">potential leads, no contact</div></div>
             <div class="stat-card c-acc"><div class="mlbl">Avg. Close Time</div><div class="kpi-val-lg" id="statVelocity">—</div><div class="kpi-sub">days to convert (won leads)</div></div>
           </div>
-          <!-- 3-column grid -->
+
           <div style="display:grid;grid-template-columns:260px 1fr 280px;gap:16px;align-items:start">
-            <!-- Col 1: Analytics -->
+     
             <div style="display:flex;flex-direction:column;gap:14px">
               <div class="glass-card" style="overflow:hidden">
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px 8px;border-bottom:1px solid var(--bd)">
@@ -750,7 +724,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
                 <div class="src-bar-wrap" id="dashSourceEfficiency"><div style="text-align:center;padding:12px;color:var(--tx3);font-size:11px"><span class="spin mat sm">sync</span></div></div>
               </div>
             </div>
-            <!-- Col 2: Latest Leads + Health -->
+         
             <div style="display:flex;flex-direction:column;gap:14px">
               <div class="glass-card" style="overflow:hidden">
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--bd)">
@@ -771,7 +745,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
                 <div style="font-size:11px;color:var(--tx3)" id="healthDesc">Calculating pipeline health…</div>
               </div>
             </div>
-            <!-- Col 3: Meetings + Alerts -->
+        
             <div style="display:flex;flex-direction:column;gap:14px">
               <div class="glass-card" style="overflow:hidden">
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--bd);background:rgba(255,255,255,0.02)">
@@ -790,7 +764,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         </div>
       </div>
 
-      <!-- LEADS -->
+
       <div class="pv" id="pv-opportunities">
         <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
           <div class="tgroup" id="leadsFilterGroup">
@@ -800,7 +774,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             <div class="topt" onclick="filterLeads('Lost',this)">Lost</div>
           </div>
           <div style="flex:1"></div>
-         <!-- <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button> -->
+     
         </div>
         <div class="pc">
           <div class="card" style="overflow:hidden">
@@ -816,10 +790,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         </div>
       </div>
 
-      <!-- CLIENTS WORKSPACE -->
+
       <div class="pv" id="pv-clients" style="flex-direction:column;height:100%">
 
-        <!-- Topbar -->
+
         <div style="border-bottom:1px solid var(--bd);padding:10px 20px;background:var(--s1);display:flex;align-items:center;gap:10px;flex-shrink:0">
           <div>
             <div style="font-size:15px;font-weight:700;color:var(--tx);letter-spacing:-0.01em">Clients</div>
@@ -881,15 +855,15 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
           <button class="abtn"><span class="mat sm">download</span>Export</button>
         </div>
 
-        <!-- Content: table + slide panel -->
+   
         <div style="flex:1;display:flex;overflow:hidden;position:relative">
 
-          <!-- Table area -->
+     
           <div style="flex:1;overflow-y:auto;padding:20px 24px;transition:margin-right .28s" id="clientsTableWrap">
 
 
 
-            <!-- Table card -->
+   
             <div class="card" style="overflow:hidden">
               <table class="dt">
                 <thead>
@@ -914,11 +888,11 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-          <!-- CLIENT DETAIL SLIDE-OVER PANEL -->
+     
           <div id="clientDetailPanel"
             style="position:absolute;top:0;right:-500px;width:480px;height:100%;background:var(--s1);border-left:1px solid var(--bd);display:flex;flex-direction:column;transition:right .28s cubic-bezier(0.2,0,0,1);z-index:200;box-shadow:-8px 0 40px rgba(0,0,0,0.4)">
 
-            <!-- Header -->
+       
             <div style="padding:18px 20px 14px;border-bottom:1px solid var(--bd);flex-shrink:0">
               <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px">
                 <div style="display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0">
@@ -939,7 +913,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
                 </div>
                 <button class="tbb" onclick="closeClientPanel()" style="flex-shrink:0"><span class="mat">close</span></button>
               </div>
-              <!-- Quick Actions -->
+
               <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
                 <button class="abtn" onclick="cdpEdit()"><span class="mat sm">edit</span>Edit Client</button>
                 <button class="abtn" id="cdp-email-btn"><span class="mat sm">mail</span>Email</button>
@@ -950,17 +924,15 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
               </div>
             </div>
 
-            <!-- Tabs -->
+  
             <div style="display:flex;border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--s1)">
               <button class="cdp-tab" id="cdpTab-overview" onclick="switchCdpTab('overview')" style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;border:none;background:none;cursor:pointer;color:var(--acc);border-bottom:2px solid var(--acc);margin-bottom:-1px;font-family:'Inter',sans-serif">Overview</button>
               <button class="cdp-tab" id="cdpTab-notes" onclick="switchCdpTab('notes')" style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;border:none;background:none;cursor:pointer;color:var(--tx3);border-bottom:2px solid transparent;margin-bottom:-1px;font-family:'Inter',sans-serif">Notes</button>
               <button class="cdp-tab" id="cdpTab-activity" onclick="switchCdpTab('activity')" style="padding:10px 16px;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;border:none;background:none;cursor:pointer;color:var(--tx3);border-bottom:2px solid transparent;margin-bottom:-1px;font-family:'Inter',sans-serif">Activity</button>
             </div>
 
-            <!-- Body -->
             <div style="flex:1;overflow-y:auto;overflow-x:hidden" id="cdpBody">
 
-              <!-- OVERVIEW -->
               <div id="cdpPanel-overview" style="padding:18px 20px;display:flex;flex-direction:column;gap:18px">
                 <section>
                   <div style="display:flex;align-items:center;gap:7px;margin-bottom:12px">
@@ -1004,7 +976,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
                 </section>
               </div>
 
-              <!-- NOTES -->
               <div id="cdpPanel-notes" style="padding:18px 20px;display:none;flex-direction:column;gap:14px">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
                   <span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3)">Client Notes</span>
@@ -1017,7 +988,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
                 </div>
               </div>
 
-              <!-- ACTIVITY -->
               <div id="cdpPanel-activity" style="padding:18px 20px;display:none;flex-direction:column;gap:6px">
                 <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3);margin-bottom:8px">Activity Timeline</div>
                 <div id="cdpTimeline" style="position:relative;padding-left:22px"></div>
@@ -1033,7 +1003,6 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         </div>
       </div>
 
-      <!-- ACTIVITY -->
       <div class="pv" id="pv-activity">
         <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
           <span style="font-size:13px;font-weight:600;color:var(--tx)">Activity Feed</span>
@@ -1054,9 +1023,8 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         </div>
       </div>
 
-      <!-- MEETINGS HUB (replaces old Calendar) -->
       <div class="pv" id="pv-meetings">
-        <!-- Top toolbar -->
+
         <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:12px;flex-shrink:0">
           <span style="font-size:14px;font-weight:700;color:var(--tx)">Meetings Hub</span>
           <div style="flex:1"></div>
@@ -1066,7 +1034,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 
         <div class="pc" style="display:flex;flex-direction:column;flex:1;min-height:0">
 
-          <!-- KPI Row -->
+ 
           <div class="mh-kpi-grid">
             <div class="mh-kpi">
               <div class="mh-kpi-lbl">Today</div>
@@ -1100,7 +1068,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-          <!-- Tab Navigation -->
+  
           <nav class="mh-tabs">
             <div class="mh-tab active" id="mhTab-calendar" onclick="switchMhTab('calendar')"><span class="mat">calendar_month</span> Calendar</div>
             <div class="mh-tab" id="mhTab-upcoming" onclick="switchMhTab('upcoming')"><span class="mat">upcoming</span> Upcoming Meetings</div>
@@ -1109,10 +1077,9 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             <div class="mh-tab" id="mhTab-analytics" onclick="switchMhTab('analytics')"><span class="mat">bar_chart</span> Analytics</div>
           </nav>
 
-          <!-- TAB: CALENDAR -->
           <div class="mh-panel active" id="mhPanel-calendar">
             <div class="mh-cal-layout">
-              <!-- Calendar grid -->
+
               <div class="mh-cal-main">
                 <div class="mh-cal-hdr">
                   <div style="display:flex;align-items:center;gap:8px">
@@ -1140,7 +1107,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
                 <div style="flex:1;overflow-y:auto"><div id="calGrid" class="cal-grid"><div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--tx3);font-size:12px"><span class="spin mat sm">sync</span> Loading…</div></div></div>
               </div>
 
-              <!-- Meeting detail drawer -->
+   
               <div class="mh-drawer" id="mhDrawer">
                 <div class="mh-drawer-hd">
                   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
@@ -1168,7 +1135,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-          <!-- TAB: UPCOMING MEETINGS -->
+
           <div class="mh-panel" id="mhPanel-upcoming">
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
               <div class="tgroup" id="mhUpcomingFilter">
@@ -1185,7 +1152,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-          <!-- TAB: RECORDINGS -->
+  
           <div class="mh-panel" id="mhPanel-recordings">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
               <div class="mh-provider-badge">
@@ -1225,7 +1192,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-          <!-- TAB: NOTES & FOLLOW-UPS -->
+      
           <div class="mh-panel" id="mhPanel-notes">
             <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start">
               <div style="display:flex;flex-direction:column;gap:10px">
@@ -1255,7 +1222,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-          <!-- TAB: ANALYTICS -->
+   
           <div class="mh-panel" id="mhPanel-analytics">
             <div class="mh-analytics-grid">
               <div class="glass-card" style="padding:14px">
@@ -1280,10 +1247,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-        </div><!-- end .pc -->
-      </div><!-- end pv-meetings -->
+        </div>
+      </div>
 
-      <!-- SCHEDULE MEETING MODAL -->
+
       <div id="mhScheduleModal" onclick="if(event.target===this)closeMhModal()">
         <div class="mh-modal-box">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
@@ -1320,7 +1287,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         </div>
       </div>
 
-      <!-- SETTINGS -->
+ 
       <div class="pv" id="pv-settings">
         <div class="pc">
           <div style="font-size:16px;font-weight:700;letter-spacing:-0.01em;margin-bottom:16px">Settings</div>
@@ -1352,7 +1319,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
         </div>
       </div>
 
-      <!-- PIPELINE -->
+  
       <div class="pv" id="pv-pipeline">
         <div class="pipeline-toolbar">
           <span style="font-size:13px;font-weight:600;color:var(--tx)">Pipeline</span>
@@ -1360,8 +1327,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
           <div style="flex:1"></div>
           <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--tx3)"><span class="mat sm">drag_indicator</span>Drag to update stage</div>
           <button class="abtn" onclick="loadLeads().then(renderPipeline)" style="margin-left:8px"><span class="mat sm">refresh</span>Refresh</button>
-      <!--
-    <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button> -->
+
         </div>
         <div class="pipeline-board" id="pipelineBoard">
           <div style="display:flex;align-items:center;justify-content:center;width:100%;padding:60px;color:var(--tx3)"><span class="spin mat sm" style="margin-right:8px">sync</span> Loading pipeline…</div>
@@ -1369,9 +1335,9 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
       </div>
 
 
-      <!-- ANALYTICS -->
+
       <div class="pv" id="pv-analytics">
-        <!-- Analytics Hero -->
+
         <div class="dash-hero" style="background:var(--s1)">
           <div>
             <div class="dash-hero-title" style="display:flex;align-items:center;gap:10px">
@@ -1391,7 +1357,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
 
         <div class="pc" style="display:flex;flex-direction:column;gap:16px">
 
-          <!-- KPI Row 1: 6 cards -->
+     
           <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px">
             <div class="stat-card c-acc" style="padding:14px 16px">
               <div class="mlbl">Total Leads</div>
@@ -1425,10 +1391,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-          <!-- Row 2: Monthly Chart + Conversion Funnel -->
+     
           <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
 
-            <!-- Monthly Lead Growth + Conversions Chart -->
+        
             <div class="glass-card" style="padding:0;overflow:hidden">
               <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bd)">
                 <div>
@@ -1446,7 +1412,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
               </div>
             </div>
 
-            <!-- Conversion Funnel -->
+        
             <div class="glass-card" style="padding:0;overflow:hidden">
               <div style="padding:14px 18px;border-bottom:1px solid var(--bd)">
                 <div style="font-size:14px;font-weight:700;color:var(--tx)">Conversion Funnel</div>
@@ -1466,10 +1432,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-          <!-- Row 3: Team Performance + Lead Source + Follow-up Risk -->
+       
           <div style="display:grid;grid-template-columns:1fr 280px 280px;gap:16px;align-items:start">
 
-            <!-- Team / Owner Performance -->
+ 
             <div class="glass-card" style="overflow:hidden">
               <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bd)">
                 <div>
@@ -1485,7 +1451,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
               </div>
             </div>
 
-            <!-- Lead Source Distribution -->
+       
             <div class="glass-card" style="padding:0;overflow:hidden">
               <div style="padding:14px 18px;border-bottom:1px solid var(--bd)">
                 <div style="font-size:14px;font-weight:700;color:var(--tx)">Lead Sources</div>
@@ -1494,7 +1460,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
               <div style="padding:16px 18px" id="an-sources"></div>
             </div>
 
-            <!-- Follow-Up Risk -->
+      
             <div class="glass-card" style="padding:0;overflow:hidden">
               <div style="padding:14px 18px;border-bottom:1px solid var(--bd)">
                 <div style="font-size:14px;font-weight:700;color:var(--tx)">Follow-Up Risk</div>
@@ -1504,7 +1470,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-          <!-- Row 4: Executive Summary -->
+    
           <div class="glass-card" style="padding:0;overflow:hidden">
             <div style="padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
               <span class="mat" style="color:var(--acc)">insights</span>
@@ -1543,10 +1509,10 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
             </div>
           </div>
 
-        </div><!-- end .pc -->
+        </div>
       </div>
 
-      <!-- REPORTS -->
+
       <div class="pv" id="pv-reports">
         <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center"><span style="font-size:13px;font-weight:600;color:var(--tx)">Reports</span></div>
         <div class="pc" style="display:flex;align-items:center;justify-content:center;height:300px;color:var(--tx3)"><div style="text-align:center"><span class="mat" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.3">summarize</span>Reports module coming soon</div></div>
@@ -1556,7 +1522,7 @@ html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:
   </div>
 </div>
 
-<!-- LEAD PANEL -->
+
 <div id="leadPanel">
   <div class="lp-hd">
     <div class="lp-hd-top">
@@ -1808,7 +1774,7 @@ function updateDashboard(){
   setEl('dashMeetingsToday',mt);setEl('dashMeetingsWeek',mw);
   const winPct=(won+lost)>0?((won/(won+lost))*100).toFixed(0):null;
   const twl=document.getElementById('trendWonLabel');if(twl)twl.textContent=winPct!==null?`${winPct}% win rate`:'converted';
-  // Breakdown
+
   const bkEl=document.getElementById('dashBreakdown');
   if(bkEl&&total>0){
     bkEl.innerHTML=`
@@ -1816,7 +1782,7 @@ function updateDashboard(){
       <div class="src-row"><div class="src-row-hd"><span class="src-row-name">Won</span><span class="src-row-pct">${won}</span></div><div class="src-bar-track"><div class="src-bar-fill" style="width:${(won/total*100).toFixed(0)}%;background:var(--gr)"></div></div></div>
       <div class="src-row"><div class="src-row-hd"><span class="src-row-name">Lost</span><span class="src-row-pct">${lost}</span></div><div class="src-bar-track"><div class="src-bar-fill" style="width:${(lost/total*100).toFixed(0)}%;background:var(--re)"></div></div></div>`;
   }else if(bkEl){bkEl.innerHTML=`<div style="text-align:center;padding:12px;color:var(--tx3);font-size:12px">No leads yet</div>`;}
-  // Latest leads
+
   const latest=[...allLeads].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,6);
   const latestEl=document.getElementById('dashLatestLeads');
   if(latestEl){
@@ -1831,7 +1797,7 @@ function updateDashboard(){
       </tr>`;
     }).join(''):`<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--tx3)">No leads yet</td></tr>`;
   }
-  // Upcoming meetings
+
   const upcoming=allLeads.filter(l=>l.preferred_date&&l.preferred_date.slice(0,10)>=todayStr).sort((a,b)=>a.preferred_date.localeCompare(b.preferred_date)).slice(0,4);
   const upEl=document.getElementById('dashUpcomingMeetings');
   if(upEl){
@@ -1845,7 +1811,7 @@ function updateDashboard(){
       </div>`;
     }).join(''):`<div style="text-align:center;padding:24px;color:var(--tx3);font-size:12px"><span class="mat" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.4">event_busy</span>No upcoming meetings</div>`;
   }
-  // KPI row
+
   const decided=won+lost,wr=decided>0?Math.round((won/decided)*100):null;
   const wrEl=document.getElementById('statWinRate');if(wrEl){wrEl.textContent=wr!==null?wr+'%':'—';wrEl.className='kpi-val-lg '+(wr===null?'kpi-muted':wr>=50?'kpi-good':'kpi-warn');}
   const neverCont=allLeads.filter(l=>!l.last_contacted_at&&l.status==='Potential').length;
@@ -1903,7 +1869,7 @@ async function preloadClientsCount(){
     }
   }catch(e){console.warn('Could not preload clients:',e);}
 }
-/* ═══ CLIENTS WORKSPACE ══════════════════════════════════════════ */
+
 let currentClient=null,clientsFilterMode='all',clientsSearchQuery='',clientsAdvFilters={manager:'',source:'',dateFrom:'',dateTo:''};
 
 function renderClientsKpis(clients){
@@ -1954,7 +1920,7 @@ function getFilteredClients(){
       return (c.company_name||'').toLowerCase().includes(q)||name.toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q);
     });
   }
-  // --- Advanced filters (modular: add a new key to clientsAdvFilters + a condition here to extend) ---
+  
   if(clientsAdvFilters.manager){
     list=list.filter(c=>clientManagerOf(c)===clientsAdvFilters.manager);
   }
@@ -2659,7 +2625,7 @@ function renderMeetings(){}
 function renderMeetingsHub(){
   renderCalendar();
   renderMhKpis();
-  // Render the active tab content
+
   const activeTab=document.querySelector('.mh-tab.active');
   const tabId=activeTab?activeTab.id.replace('mhTab-',''):'calendar';
   renderMhTabContent(tabId);
@@ -2696,7 +2662,7 @@ function renderMhTabContent(tab){
   else if(tab==='analytics'){renderMhAnalytics();}
 }
 
-// ─── UPCOMING MEETINGS TAB ───────────────────────────────────────
+
 let mhUpcomingMode='all';
 function filterUpcoming(mode,el){
   mhUpcomingMode=mode;
@@ -2752,7 +2718,7 @@ function renderMhUpcoming(mode){
   }).join('');
 }
 
-// ─── NOTES & FOLLOW-UPS TAB ──────────────────────────────────────
+
 function renderMhNotes(){
   const leads=allLeads.filter(l=>l.notes&&l.notes.trim()).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
   setEl('mhNotesCount',leads.length+' note'+(leads.length!==1?'s':''));
@@ -2801,17 +2767,17 @@ function renderMhFollowups(){
 }
 function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-// ─── ANALYTICS TAB ───────────────────────────────────────────────
+
 function renderMhAnalytics(){
   const now=new Date(),todayStr=now.toISOString().slice(0,10);
-  // Monthly chart (last 6 months)
+
   const monthData=[];
   for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');const lbl=d.toLocaleString('default',{month:'short'});const cnt=allLeads.filter(l=>l.preferred_date&&l.preferred_date.slice(0,7)===key).length;monthData.push({lbl,cnt});}
   const maxV=Math.max(...monthData.map(m=>m.cnt),1);
   const chartEl=document.getElementById('mhAnalyticsChart'),lblEl=document.getElementById('mhAnalyticsLabels');
   if(chartEl)chartEl.innerHTML=monthData.map((m,i)=>{const h=Math.max(4,Math.round((m.cnt/maxV)*84));const isNow=i===5;return `<div style="flex:1;background:${isNow?'var(--pri-c)':'rgba(124,58,237,0.35)'};border-radius:3px 3px 0 0;height:${h}px;transition:height .3s" title="${m.lbl}: ${m.cnt} meetings"></div>`;}).join('');
   if(lblEl)lblEl.innerHTML=monthData.map((m,i)=>`<div style="flex:1;text-align:center;font-size:9px;font-weight:${i===5?700:500};color:${i===5?'var(--acc)':'var(--tx3)'}">${m.lbl}</div>`).join('');
-  // Breakdown
+
   const bkEl=document.getElementById('mhAnalyticsBreakdown');
   if(bkEl){
     const total=allLeads.filter(l=>l.preferred_date).length||1;
@@ -2820,7 +2786,7 @@ function renderMhAnalytics(){
     const today=allLeads.filter(l=>l.preferred_date&&l.preferred_date.slice(0,10)===todayStr).length;
     bkEl.innerHTML=[{lbl:'Past Meetings',val:past,color:'var(--gr)'},{lbl:'Today',val:today,color:'var(--acc)'},{lbl:'Upcoming',val:future,color:'var(--bl)'}].map(r=>`<div class="src-row"><div class="src-row-hd"><span class="src-row-name">${r.lbl}</span><span style="font-weight:700;color:${r.color}">${r.val}</span></div><div class="src-bar-track"><div class="src-bar-fill" style="width:${Math.round((r.val/total)*100)}%;background:${r.color}"></div></div></div>`).join('');
   }
-  // Table
+
   const tbody=document.getElementById('mhAnalyticsTable');
   if(tbody){
     const rows=allLeads.filter(l=>l.preferred_date).sort((a,b)=>b.preferred_date.localeCompare(a.preferred_date)).slice(0,10);
@@ -2836,7 +2802,7 @@ function renderMhAnalytics(){
   }
 }
 
-// ─── DRAWER (calendar click → show lead detail) ──────────────────
+
 let mhDrawerLeadId=null;
 function mhShowDrawer(lead){
   mhDrawerLeadId=lead.id;
@@ -2916,7 +2882,7 @@ function mhOpenLead(){if(mhDrawerLeadId)openLead(mhDrawerLeadId);}
 function mhEditLead(){if(mhDrawerLeadId){const l=allLeads.find(x=>x.id===mhDrawerLeadId);if(l){currentLead=l;lpEdit();}}}
 function switchCalView(v,el){document.querySelectorAll('.mh-cal-view-btn').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');}
 
-// ─── SCHEDULE MEETING MODAL ──────────────────────────────────────
+
 function openScheduleMeetingModal(){
   const sel=document.getElementById('mhSchLead');
   if(sel){sel.innerHTML='<option value="">— choose a lead —</option>'+allLeads.filter(l=>l.status==='Potential').sort((a,b)=>(a.company_name||'').localeCompare(b.company_name||'')).map(l=>`<option value="${l.id}">${l.company_name||((l.first_name||'')+' '+(l.last_name||'')).trim()||'Lead #'+l.id}</option>`).join('');}
@@ -2956,7 +2922,7 @@ function renderAnalytics(){
   const now=new Date();
   const todayStr=now.toISOString().slice(0,10);
 
-  // KPI row
+
   const s=id=>document.getElementById(id);
   if(s('an-total'))s('an-total').textContent=total||'0';
   if(s('an-active')){s('an-active').textContent=active||'0';}
@@ -2967,7 +2933,7 @@ function renderAnalytics(){
   if(s('an-conv')){s('an-conv').textContent=convRate!==null?convRate+'%':'—';s('an-conv').style.color=convRate===null?'var(--tx3)':convRate>=50?'var(--gr)':convRate>=25?'var(--am)':'var(--re)';}
   if(s('an-meetings'))s('an-meetings').textContent=meetings||'0';
 
-  // Monthly Chart (last 8 months)
+
   const monthData=[];
   for(let i=7;i>=0;i--){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
@@ -2995,7 +2961,7 @@ function renderAnalytics(){
     labelsEl.innerHTML=monthData.map((m,i)=>`<div style="flex:1;text-align:center;font-size:9px;font-weight:${i===7?'700':'500'};color:${i===7?'var(--acc)':'var(--tx3)'};letter-spacing:0.04em">${m.label}</div>`).join('');
   }
 
-  // Conversion Funnel
+
   const funnelEl=s('an-funnel');
   if(funnelEl){
     const totalF=total||1;
@@ -3033,14 +2999,14 @@ function renderAnalytics(){
     }).join('');
   }
 
-  // Velocity + Efficiency
+
   const closedLeads=leads.filter(l=>l.status==='Won'&&l.converted_at&&l.created_at);
   const avgMs=closedLeads.length?closedLeads.reduce((sum,l)=>sum+Math.max(0,new Date(l.converted_at)-new Date(l.created_at)),0)/closedLeads.length:null;
   const velDays=avgMs?Math.round(avgMs/86400000):null;
   if(s('an-velocity'))s('an-velocity').textContent=velDays?velDays+' days':'—';
   if(s('an-efficiency'))s('an-efficiency').textContent=convRate!==null?'+'+convRate+'% win':'—';
 
-  // Owner Performance
+ 
   const ownerMap={};
   leads.forEach(l=>{
     const owner=l.owner_id||l.account_manager||'Unassigned';
@@ -3077,7 +3043,7 @@ function renderAnalytics(){
     }
   }
 
-  // Lead Source Distribution
+ 
   const srcEl=s('an-sources');
   if(srcEl){
     const srcMap={};
@@ -3098,7 +3064,7 @@ function renderAnalytics(){
     }
   }
 
-  // Follow-Up Risk
+
   const riskEl=s('an-risk');
   if(riskEl){
     const overdue=leads.filter(l=>l.next_followup_at&&new Date(l.next_followup_at)<now&&l.status==='Potential').length;
@@ -3121,7 +3087,7 @@ function renderAnalytics(){
     </div>`).join('');
   }
 
-  // Executive Summary
+
   const last30=leads.filter(l=>{if(!l.created_at)return false;return (now-new Date(l.created_at))/86400000<=30;}).length;
   if(s('an-growth'))s('an-growth').textContent=last30;
   if(s('an-winrate'))s('an-winrate').textContent=convRate!==null?convRate+'%':'—';
@@ -3129,7 +3095,6 @@ function renderAnalytics(){
   if(s('an-meeting-pct'))s('an-meeting-pct').textContent=meetingPct+'%';
   if(s('an-lead-velocity'))s('an-lead-velocity').textContent=velDays?velDays+'d':'—';
 
-  // Health narrative
   const healthEl=s('an-health-text');
   if(healthEl){
     const score=closed>0?Math.round((won/closed)*100):0;
