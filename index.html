@@ -1498,7 +1498,7 @@ function capturePartialLead(payload) {
       company_name: merged.business || '',
       country_code: merged.countryCode || '',
       country_iso: merged.countryIso || '',
-      note: buildNote(merged),
+      notes: buildNote(merged),
       status: 'partial',
       source: merged.source || 'website',
       updated_at: merged.updated_at,
