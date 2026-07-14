@@ -2113,11 +2113,19 @@ function openClientDetail(id){
   const stEl=document.getElementById('cdp-status-val');
   if(stEl){const sc={Won:'gr',Lost:'re',Potential:'bl',Active:'gr'}[status]||'gy';stEl.innerHTML=`<span class="badge ${sc}">${status}</span>`;}
   const relLead=c.lead_id?allLeads.find(l=>l.id==c.lead_id):null;
+  const leadNotes = relLead?.notes || '';
   st('cdp-lead-status')(relLead?relLead.status:(c.lead_status||'—'));
   st('cdp-pipeline')(relLead?relLead.pipeline_stage||'—':(c.pipeline_stage||'—'));
   st('cdp-created')(since);
-  const noteArea=document.getElementById('cdpNoteArea');if(noteArea)noteArea.value=c.notes||c.internal_notes||'';
-  st('cdp-activity-summary')(c.notes||c.internal_notes||'No notes yet. Add one above.');
+  const noteArea = document.getElementById('cdpNoteArea');
+
+if (noteArea) {
+    noteArea.value = leadNotes;
+}
+
+st('cdp-activity-summary')(
+    leadNotes || 'No notes yet. Add one above.'
+);
   buildCdpTimeline(c,relLead);
   document.getElementById('clientDetailPanel').style.right='0';
   document.getElementById('clientsTableWrap').style.marginRight='480px';
