@@ -1475,7 +1475,7 @@ tailwind.config = {
     return { first_name: parts.shift() || '', last_name: parts.join(' ') };
   }
 
-  // Fire-and-forget POST to the relay; never blocks the UI, never throws.
+  
   function sendLead(payload){
     try{
       fetch(LEAD_ENDPOINT, {
@@ -1488,6 +1488,14 @@ tailwind.config = {
 
   
   const PARTIAL_LEAD_KEY = 'uplead_partial_lead';
+
+  function normalizePhone(phone) {
+  if (!phone) return '';
+
+  return phone
+    .replace(/[^\d+]/g, '')
+    .replace(/^00/, '+');
+}
 
 function capturePartialLead(payload) {
   try {
@@ -1503,7 +1511,7 @@ function capturePartialLead(payload) {
 
     const hasLead =
       existing.phone &&
-      existing.phone === merged.phone;
+      normalizePhone(existing.phone) === normalizePhone(merged.phone);
 
     localStorage.setItem(
       PARTIAL_LEAD_KEY,
@@ -1517,7 +1525,7 @@ function capturePartialLead(payload) {
       first_name,
       last_name,
       email: merged.email || '',
-      phone: merged.phone || '',
+      phone: normalizePhone(merged.phone),
       company_name: merged.business || '',
       country_code: merged.countryCode || '',
       country_iso: merged.countryIso || '',
@@ -1528,12 +1536,12 @@ function capturePartialLead(payload) {
       action: hasLead ? 'update' : 'create'
     });
 
-  } catch(e){}
+  } catch (e) {
+    console.error(e);
+  }
 }
 
-  // ================= APPLY NOW TRIGGERS =================
-  // Every "Apply Now" button across the page scrolls straight down to the
-  // inline application form (right after the hero) instead of opening a popup.
+
   document.querySelectorAll('[data-scroll-to-booking]').forEach(btn => {
     btn.addEventListener('click', () => {
       const target = document.getElementById('booking');
@@ -1541,7 +1549,7 @@ function capturePartialLead(payload) {
     });
   });
 
-  // ================= BOOKING QUALIFICATION FLOW =================
+
   const TOTAL_STEPS = 10;
   const STORAGE_KEY = 'uplead_booking_v1';
   let currentStep = 1;
@@ -1566,7 +1574,7 @@ function capturePartialLead(payload) {
       const parsed = JSON.parse(raw);
       if(parsed && parsed.formData){
         formData = parsed.formData;
-        // restore text fields
+      
         if(formData.name) document.getElementById('f_name').value = formData.name;
         if(formData.phone) document.getElementById('f_phone').value = formData.phone;
         if(formData.email) document.getElementById('f_email').value = formData.email;
@@ -1578,7 +1586,7 @@ function capturePartialLead(payload) {
           if(typeof updateFlagDisplay === 'function') updateFlagDisplay();
           document.getElementById('f_phone').dataset.ccLocked = '1';
         }
-        // restore selected option cards
+   
         Object.keys(formData).forEach(key => {
           const group = document.querySelector('[data-group="'+key+'"]');
           if(group){
@@ -1647,8 +1655,7 @@ function capturePartialLead(payload) {
     showStep(currentStep);
   }
 
-  // Progressive reveal: Email + Business fields (and the Continue button) only
-  // appear once Name and Phone are both filled in with a plausible value.
+
   function getFullPhone(){
     const cc = document.getElementById('f_country_code');
     const dial = cc && cc.value ? cc.value : '';
@@ -1656,7 +1663,7 @@ function capturePartialLead(payload) {
     return local ? (dial + ' ' + local).trim() : '';
   }
 
-  // --- Country flag + auto-detect while typing ---
+
   const ccSelectEl = document.getElementById('f_country_code');
   const ccFlagEl = document.getElementById('ccFlag');
   const ccPrefixEl = document.getElementById('ccPrefix');
@@ -1674,15 +1681,14 @@ function capturePartialLead(payload) {
   }
   ccSelectEl.addEventListener('change', () => {
     updateFlagDisplay();
-    phoneInputEl.dataset.ccLocked = '1'; // user picked manually, stop auto-overriding
+    phoneInputEl.dataset.ccLocked = '1'; 
   });
   [phoneInputEl, ccSelectEl].forEach(el => {
     el.addEventListener('focus', () => phoneWrapEl.classList.add('wrap-focus'));
     el.addEventListener('blur', () => phoneWrapEl.classList.remove('wrap-focus'));
   });
 
-  // Build a lookup of { digits, iso } sorted longest-code-first so e.g. "213" (Algeria)
-  // is preferred over a shorter false match.
+
   const dialCodes = Array.from(ccSelectEl.options)
     .map(o => ({ digits: o.value.replace('+',''), iso: o.dataset.iso }))
     .sort((a,b) => b.digits.length - a.digits.length);
@@ -1692,7 +1698,7 @@ function capturePartialLead(payload) {
     const digits = raw.replace(/\D/g,'');
     if(digits.length === 0){ phoneInputEl.dataset.ccLocked = ''; return; }
     if(phoneInputEl.dataset.ccLocked === '1') return;
-    if(digits.length < 3) return; // wait for at least the first 3 digits
+    if(digits.length < 3) return; 
     const match = dialCodes.find(d => digits.startsWith(d.digits));
     if(match){
       const idx = Array.from(ccSelectEl.options).findIndex(o => o.dataset.iso === match.iso);
@@ -1700,7 +1706,7 @@ function capturePartialLead(payload) {
         ccSelectEl.selectedIndex = idx;
         updateFlagDisplay();
       }
-      // Strip the detected dial code from the field, leaving only the local number
+
       const remainder = digits.slice(match.digits.length);
       phoneInputEl.value = remainder;
       phoneInputEl.dataset.ccLocked = '1';
@@ -1955,26 +1961,29 @@ function capturePartialLead(payload) {
     progressFill.style.width = '100%';
     stepLabel.textContent = 'All done';
 
-    // Final lead: contact info + every question answer folded into "note" + booking slot.
-    // n8n receives this single payload and handles Google Calendar booking on its side.
-    const { first_name, last_name } = splitName(formData.name);
-    sendLead({
-      first_name: first_name,
-      last_name: last_name,
-      email: formData.email || '',
-      phone:
+
+   const phone = normalizePhone(
   (formData.countryCode || '') +
-  String(formData.phone || '').replace(/^\+/, ''),
-      company_name: formData.business || '',
-      country_code: formData.countryCode || '',
-      country_iso: formData.countryIso || '',
-      preferred_date: formData.selectedDate || '',
-      preferred_time: formData.selectedTime || '',
-      note: buildNote(formData),
-      status: 'booked',
-      source: 'booking_modal_complete',
-      updated_at: new Date().toISOString()
-    });
+  String(formData.phone || '').replace(/^\+/, '')
+);
+
+const { first_name, last_name } = splitName(formData.name);
+
+sendLead({
+  first_name,
+  last_name,
+  email: formData.email || '',
+  phone,
+  company_name: formData.business || '',
+  country_code: formData.countryCode || '',
+  country_iso: formData.countryIso || '',
+  preferred_date: formData.selectedDate || '',
+  preferred_time: formData.selectedTime || '',
+  note: buildNote(formData),
+  status: 'booked',
+  source: 'booking_modal_complete',
+  updated_at: new Date().toISOString()
+});
 
     try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
     try{ localStorage.removeItem(PARTIAL_LEAD_KEY); }catch(e){}
@@ -1985,10 +1994,7 @@ function capturePartialLead(payload) {
 })();
 </script>
 
-<!-- ============ REVENUE CALCULATOR SCRIPT (new, isolated) ============ -->
-<!-- Entirely self-contained: its own IIFE, its own ids (calc_*), no shared
-     state with the booking flow above. Safe to remove this block on its own
-     without affecting anything else on the page. -->
+
 <script>
 (function(){
   const currentEl = document.getElementById('calc_current');
