@@ -1962,7 +1962,9 @@ function capturePartialLead(payload) {
       first_name: first_name,
       last_name: last_name,
       email: formData.email || '',
-      phone: formData.phone || '',
+      phone:
+  (formData.countryCode || '') +
+  String(formData.phone || '').replace(/^\+/, ''),
       company_name: formData.business || '',
       country_code: formData.countryCode || '',
       country_iso: formData.countryIso || '',
