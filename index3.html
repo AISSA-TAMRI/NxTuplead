@@ -1,0 +1,2803 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<script>
+(function(){
+  var KEY = 'uplead_attribution';
+  var keys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid','msclkid'];
+  var stored = {};
+  try{ stored = JSON.parse(sessionStorage.getItem(KEY) || '{}'); }catch(e){}
+  var params = new URLSearchParams(window.location.search);
+  var merged = Object.assign({}, stored);
+  if(!merged.landing_page) merged.landing_page = window.location.href;
+  if(!merged.referrer) merged.referrer = document.referrer || '';
+  if(!merged.first_seen) merged.first_seen = new Date().toISOString();
+  keys.forEach(function(k){
+    if(!merged[k]){
+      var v = params.get(k);
+      if(v) merged[k] = v;
+    }
+  });
+  try{ sessionStorage.setItem(KEY, JSON.stringify(merged)); }catch(e){}
+  window.getUpleadAttribution = function(){ return merged; };
+})();
+</script>
+<title>Uplead Digital | Supercharge Your Car Wash Membership Growth</title>
+<meta name="description" content="We'll add 50-100+ new members per month to your car wash — completely done-for-you. No tech headaches, just membership scaling."/>
+<link rel="icon" type="image/png" href="images/logo-header-full.png"/>
+<!-- Open Graph / Facebook & Instagram ad previews -->
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Uplead Digital"/>
+<meta property="og:title" content="Uplead Digital | Supercharge Your Car Wash Membership Growth"/>
+<meta property="og:description" content="We'll add 50-100+ new members per month to your car wash — completely done-for-you. No tech headaches, just membership scaling."/>
+<meta property="og:image" content="images/founders-conor-ali.jpg"/>
+<!-- ملاحظة: استبدل og:image لاحقًا بصورة مقاس 1200×630 مخصصة لأفضل نتيجة على الإعلانات -->
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Uplead Digital | Supercharge Your Car Wash Membership Growth"/>
+<meta name="twitter:description" content="We'll add 50-100+ new members per month to your car wash — completely done-for-you. No tech headaches, just membership scaling."/>
+<meta name="twitter:image" content="images/founders-conor-ali.jpg"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@400..700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        void: "#06070a",
+        surface: "#0b0d12",
+        "surface-1": "#0f121a",
+        "surface-2": "#141822",
+        "surface-3": "#1a1f2b",
+        border: "rgba(255,255,255,0.08)",
+        "border-strong": "rgba(255,255,255,0.14)",
+        primary: "#3491ff",
+        "primary-dim": "#1f5fb8",
+        "primary-bright": "#6fb4ff",
+        accent: "#22e5b0",
+        ink: "#f3f5f9",
+        "ink-soft": "#a6adba",
+        "ink-faint": "#656d7c",
+        danger: "#ff6b6b",
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
+      },
+      maxWidth: { container: "1240px" },
+      borderRadius: { '2xl': '1.25rem', '3xl': '1.75rem' },
+      keyframes: {
+        float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-8px)' } },
+        drawline: { to: { strokeDashoffset: 0 } },
+        pulseDot: { '0%,100%': { opacity: 1 }, '50%': { opacity: .35 } },
+        fadeUp: { from: { opacity: 0, transform: 'translateY(24px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+        shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+      },
+      animation: {
+        float: 'float 7s ease-in-out infinite',
+        fadeUp: 'fadeUp .7s cubic-bezier(.16,1,.3,1) forwards',
+      },
+    },
+  },
+}
+</script>
+<style>
+  :root{ color-scheme: dark; }
+  * { -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body { background:#06070a; }
+  .material-symbols-outlined{ font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; display:inline-block; line-height:1; }
+
+ 
+  .bg-grid{
+    background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 40%, transparent 85%);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 40%, transparent 85%);
+  }
+
+  .glass{
+    background: rgba(15,18,26,0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .card:hover{ border-color: rgba(52,145,255,0.35); }
+
+  .glow-orb{ filter: blur(90px); pointer-events:none; }
+
+  .text-gradient{
+    background: linear-gradient(100deg, #eaf2ff 0%, #9fc4ff 45%, #3491ff 100%);
+    -webkit-background-clip: text; background-clip:text; color: transparent;
+  }
+
+  .btn-primary{
+    background: linear-gradient(180deg, #4a9dff, #2a7ee6);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 10px 30px -8px rgba(52,145,255,0.55);
+  }
+  .btn-primary:active{ transform: scale(.97); }
+
+  .draw-path{ stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: drawline 2.6s cubic-bezier(.16,1,.3,1) .3s forwards; }
+
+  .reveal{ opacity:0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); }
+  .reveal.in{ opacity:1; transform: translateY(0); }
+
+  .no-scrollbar::-webkit-scrollbar{ display:none; }
+  .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+
+  input[type=text]:focus, input[type=email]:focus, input:focus, textarea:focus{
+    outline: none; border-color: #3491ff; box-shadow: 0 0 0 4px rgba(52,145,255,0.15);
+  }
+  #f_phone:focus{ outline:none; box-shadow:none; border-color:transparent; }
+  #f_country_code:focus{ outline:none; box-shadow:none; }
+  #phoneWrap.wrap-focus{ border-color:#3491ff; box-shadow: 0 0 0 4px rgba(52,145,255,0.15); }
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+    outline: 2px solid #3491ff; outline-offset: 3px; border-radius: 6px;
+  }
+
+
+  #f_country_code{ background-color:#06070a; }
+  #f_country_code option{ background-color:#0f121a; color:#f3f5f9; }
+
+
+  .opt-card{ transition: border-color .25s ease, background .25s ease, transform .15s ease; }
+  .opt-card:active{ transform: scale(.98); }
+  .opt-card.selected{ border-color:#3491ff; background: rgba(52,145,255,0.10); }
+  .opt-card.selected .opt-dot{ background:#3491ff; border-color:#3491ff; }
+  .opt-card.selected .opt-dot::after{ opacity:1; }
+  .opt-dot{ width:18px; height:18px; border-radius:9999px; border:2px solid rgba(255,255,255,0.25); position:relative; flex-shrink:0; transition: all .2s ease; }
+  .opt-dot::after{ content:''; position:absolute; inset:4px; border-radius:9999px; background:#06070a; opacity:0; transition: opacity .2s ease; }
+
+  .step-panel{ display:none; }
+  .step-panel.active{ display:block; animation: fadeUp .5s cubic-bezier(.16,1,.3,1); }
+
+  .progress-fill{ transition: width .5s cubic-bezier(.16,1,.3,1); }
+
+  .accordion-content{ max-height:0; overflow:hidden; transition: max-height .4s cubic-bezier(.16,1,.3,1); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior:auto !important; }
+  }
+
+  /* ---------- Booking Modal ---------- */
+  html.modal-open, body.modal-open{ overflow: hidden; height: 100%; }
+
+  #bookingModalOverlay{
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  #bookingModalOverlay.is-open{ visibility: visible; pointer-events: auto; }
+
+  #bookingModalBackdrop{
+    position: absolute; inset: 0;
+    background: rgba(6,7,10,0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    opacity: 0;
+    transition: opacity .35s cubic-bezier(.16,1,.3,1);
+  }
+  #bookingModalOverlay.is-open #bookingModalBackdrop{ opacity: 1; }
+
+  #bookingModalPanel{
+    position: relative;
+    width: 100%;
+    max-width: 42rem;
+    max-height: 100dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    opacity: 0;
+    transform: translateY(18px) scale(.96);
+    transition: opacity .35s cubic-bezier(.16,1,.3,1), transform .35s cubic-bezier(.16,1,.3,1);
+  }
+  #bookingModalOverlay.is-open #bookingModalPanel{ opacity: 1; transform: translateY(0) scale(1); }
+
+  @media (min-width: 640px){
+    #bookingModalOverlay{ padding: 24px; }
+    #bookingModalPanel{ max-height: calc(100dvh - 48px); border-radius: 1.75rem; }
+  }
+
+  #bookingModalPanel::-webkit-scrollbar{ width: 8px; }
+  #bookingModalPanel::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius: 9999px; }
+  #bookingModalPanel::-webkit-scrollbar-track{ background: transparent; }
+
+  @media (prefers-reduced-motion: reduce){
+    #bookingModalBackdrop, #bookingModalPanel{ transition-duration: .001ms !important; }
+  }
+</style>
+</head>
+<body class="bg-void text-ink font-sans antialiased overflow-x-hidden selection:bg-primary/30 selection:text-white">
+
+
+<header class="fixed top-0 inset-x-0 z-50">
+  <div class="mx-auto max-w-container px-4 sm:px-6 pt-3">
+    <nav class="glass rounded-2xl h-16 px-4 sm:px-5 flex items-center justify-between shadow-[0_10px_40px_-15px_rgba(0,0,0,0.7)]">
+      <a href="#top" class="flex items-center gap-1.5 shrink-0 group">
+        <img src="images/logo-header-full.png" alt="Uplead Digital" class="h-8 w-auto shrink-0"/>
+      </a>
+
+      <div class="hidden lg:flex items-center gap-8 font-medium text-sm text-ink-soft">
+        <a href="#systems" class="hover:text-ink transition-colors">Systems</a>
+        <a href="#results" class="hover:text-ink transition-colors">Results</a>
+        <a href="#calculator" class="hover:text-ink transition-colors">Calculator</a>
+        <a href="#team" class="hover:text-ink transition-colors">Team</a>
+        <a href="#faq" class="hover:text-ink transition-colors">FAQ</a>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button type="button" data-scroll-to-booking class="hidden sm:inline-flex btn-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-transform hover:scale-[1.03] active:scale-95">
+          Apply Now
+        </button>
+        <button id="menuBtn" aria-label="Open menu" aria-expanded="false" class="lg:hidden h-10 w-10 rounded-full glass flex items-center justify-center">
+          <span class="material-symbols-outlined text-[22px]">menu</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+
+<div id="mobileMenu" class="fixed inset-0 z-[60] bg-void/98 backdrop-blur-xl translate-x-full transition-transform duration-400 ease-out lg:hidden">
+  <div class="flex items-center justify-between px-5 pt-5">
+    <img src="images/logo-header-full.png" alt="Uplead Digital" class="h-7 w-auto"/>
+    <button id="menuCloseBtn" aria-label="Close menu" class="h-10 w-10 rounded-full glass flex items-center justify-center">
+      <span class="material-symbols-outlined text-[22px]">close</span>
+    </button>
+  </div>
+  <div class="flex flex-col gap-1 px-6 pt-10 text-2xl font-semibold">
+    <a href="#systems" class="mobile-link py-4 border-b border-white/5">Systems</a>
+    <a href="#results" class="mobile-link py-4 border-b border-white/5">Results</a>
+    <a href="#calculator" class="mobile-link py-4 border-b border-white/5">Calculator</a>
+    <a href="#team" class="mobile-link py-4 border-b border-white/5">Team</a>
+    <a href="#faq" class="mobile-link py-4 border-b border-white/5">FAQ</a>
+  </div>
+  <div class="px-6 mt-10">
+    <button type="button" data-scroll-to-booking class="mobile-link btn-primary text-white w-full text-center block px-6 py-4 rounded-2xl text-lg font-bold">Apply Now</button>
+  </div>
+</div>
+
+
+<div id="stickyBar" class="fixed bottom-0 inset-x-0 z-40 lg:hidden translate-y-full transition-transform duration-300 ease-out">
+  <div class="glass border-t border-white/10 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] flex items-center gap-3">
+    <div class="flex-1 min-w-0">
+      <p class="text-sm font-semibold truncate">Grow your membership</p>
+      <p class="text-[11px] text-ink-faint truncate">Free custom growth plan</p>
+    </div>
+    <button type="button" data-scroll-to-booking class="btn-primary text-white px-5 py-3 rounded-xl font-bold text-sm shrink-0 flex items-center gap-1.5">
+      Apply Now <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+    </button>
+  </div>
+</div>
+
+<main id="top" class="pt-0">
+
+ 
+  <section class="relative min-h-[100svh] flex items-center pt-24 pb-10 sm:pt-32 sm:pb-20 overflow-hidden">
+    <div class="absolute inset-0 bg-grid opacity-70"></div>
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[640px] h-[640px] bg-primary/25 rounded-full glow-orb"></div>
+    <div class="absolute top-1/3 -right-40 w-[420px] h-[420px] bg-accent/10 rounded-full glow-orb"></div>
+
+    <div class="relative z-10 max-w-container mx-auto px-5 sm:px-6 w-full">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-6 sm:mb-8 animate-float">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-60"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+          </span>
+          <span class="font-mono text-[11px] tracking-wider uppercase text-ink-soft">Trusted by Hundreds of Car Washes Nationwide</span>
+        </div>
+
+        <h1 class="text-[2.5rem] leading-[1.08] sm:text-6xl sm:leading-[1.05] font-extrabold tracking-tight mb-6 text-balance">
+          <span class="text-gradient">ATTENTION CAR WASH&nbsp;OWNERS</span>
+        </h1>
+
+        <p class="text-base sm:text-xl text-ink-soft leading-relaxed mb-7 sm:mb-10 max-w-xl mx-auto">
+          Everything online that grows a car wash — new members, retention, your site, your reputation — run by one team, pointed at one number: a membership base that grows and stays. You run the wash. We run the rest.
+        </p>
+
+        <div class="flex justify-center mb-8 sm:mb-14">
+          <button type="button" data-scroll-to-booking class="btn-primary text-white px-10 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
+            APPLY NOW
+            <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+
+      
+      <div class="hidden sm:block max-w-3xl mx-auto">
+        <svg viewBox="0 0 900 220" class="w-full h-auto" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="lineGrad" x1="0" y1="0" x2="900" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#22e5b0" stop-opacity="0"/>
+              <stop offset="20%" stop-color="#22e5b0"/>
+              <stop offset="60%" stop-color="#3491ff"/>
+              <stop offset="100%" stop-color="#6fb4ff"/>
+            </linearGradient>
+          </defs>
+          <path d="M10 180 L 150 150 L 230 190 L 320 100 L 410 140 L 520 60 L 610 95 L 730 30 L 890 40"
+                stroke="url(#lineGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="draw-path"/>
+          <circle cx="890" cy="40" r="7" fill="#6fb4ff"/>
+          <circle cx="890" cy="40" r="14" fill="#6fb4ff" opacity="0.25"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10 border-y border-white/5 bg-surface/60">
+    <p class="text-center font-mono text-[11px] uppercase tracking-[0.2em] text-ink-faint mb-6">Scaling membership growth for</p>
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+        <div class="glass rounded-xl aspect-[3/2] flex items-center justify-center p-5 sm:p-6">
+          <img src="images/logo-patriot-car-wash.png" alt="Patriot Car Wash" class="max-w-full max-h-full w-auto h-auto object-contain">
+        </div>
+        <div class="glass rounded-xl aspect-[3/2] flex items-center justify-center p-5 sm:p-6">
+          <img src="images/logo-car-wash-city-express.png" alt="Car Wash City Express" class="max-w-full max-h-full w-auto h-auto object-contain">
+        </div>
+        <div class="glass rounded-xl aspect-[3/2] flex items-center justify-center p-5 sm:p-6">
+          <img src="images/logo-waters-car-wash.png" alt="Waters Car Wash" class="max-w-full max-h-full w-auto h-auto object-contain">
+        </div>
+        <div class="glass rounded-xl aspect-[3/2] flex items-center justify-center p-5 sm:p-6">
+          <img src="images/logo-asbury-circle.png" alt="Asbury Circle" class="max-w-full max-h-full w-auto h-auto object-contain">
+        </div>
+        <div class="glass rounded-xl aspect-[3/2] flex items-center justify-center p-5 sm:p-6">
+          <img src="images/logo-wash-and-roll.png" alt="Wash & Roll" class="max-w-full max-h-full w-auto h-auto object-contain">
+        </div>
+        <div class="glass rounded-xl aspect-[3/2] flex items-center justify-center p-5 sm:p-6">
+          <img src="images/logo-speeders-car-wash.png" alt="Speeders Car Wash" class="max-w-full max-h-full w-auto h-auto object-contain">
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Embedded Booking Form (static, always visible) -->
+  <section id="bookingEmbedSection" class="py-20 sm:py-24 bg-surface/30 border-y border-white/5 relative overflow-hidden">
+    <div class="absolute -left-40 top-1/4 w-[420px] h-[420px] bg-primary/10 rounded-full glow-orb"></div>
+    <div class="max-w-container mx-auto px-5 sm:px-6 relative z-10">
+      <div class="max-w-2xl mx-auto">
+    <div class="text-center mb-8">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-3">Apply Now</p>
+      <h2 id="bookingModalTitleEmb" class="text-2xl sm:text-3xl font-bold tracking-tight mb-3">Claim Your Growth Strategy Call</h2>
+      <p class="text-ink-soft">Start with your name and phone — we'll ask a few quick questions, then you can pick your call time.</p>
+    </div>
+
+    <div id="applyCardEmb" class="card rounded-3xl p-6 sm:p-10 shadow-[0_20px_60px_-20px_rgba(52,145,255,0.15)]">
+
+      <div id="progressWrapEmb" class="mb-8">
+        <div class="flex items-center justify-between mb-3">
+          <span id="stepLabelEmb" class="font-mono text-[11px] uppercase tracking-widest text-ink-faint">Step 1 of 10</span>
+          <button id="resetBtnEmb" type="button" class="font-mono text-[11px] uppercase tracking-widest text-ink-faint hover:text-primary transition-colors">Start Over</button>
+        </div>
+        <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+          <div id="progressFillEmb" class="progress-fill h-full bg-gradient-to-r from-accent to-primary rounded-full" style="width:10%"></div>
+        </div>
+      </div>
+
+      <form id="bookingFormEmb" novalidate>
+
+        <!-- Step 1: Name + Phone + (Email/Business) -->
+        <div class="step-panel active" data-step="1">
+          <h3 class="text-2xl font-bold mb-2">Let's get your info</h3>
+          <p class="text-ink-soft mb-6">Just your name and number to start.</p>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Full Name</label>
+              <input type="text" id="f_nameEmb" required class="w-full bg-void border border-white/10 rounded-xl px-4 py-3.5 text-ink placeholder:text-ink-faint transition-all" placeholder="John Doe"/>
+            </div>
+            <div>
+              <label class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Phone Number</label>
+              <div id="phoneWrapEmb" class="flex items-stretch w-full bg-void border border-white/10 rounded-xl transition-all overflow-hidden">
+                <div class="relative shrink-0 w-[52px] flex items-center justify-center gap-0.5 border-r border-white/10">
+                  <span id="ccFlagEmb" class="text-base leading-none pointer-events-none">🇺🇸</span>
+                  <span class="material-symbols-outlined text-[14px] text-ink-faint pointer-events-none">expand_more</span>
+                  <select id="f_country_codeEmb" aria-label="Country code" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    <option value="+1" data-iso="US" selected>🇺🇸 +1</option>
+                    <option value="+1" data-iso="CA">🇨🇦 +1</option>
+                    <option value="+44" data-iso="GB">🇬🇧 +44</option>
+                    <option value="+61" data-iso="AU">🇦🇺 +61</option>
+                    <option value="+353" data-iso="IE">🇮🇪 +353</option>
+                    <option value="+64" data-iso="NZ">🇳🇿 +64</option>
+                    <option value="+49" data-iso="DE">🇩🇪 +49</option>
+                    <option value="+33" data-iso="FR">🇫🇷 +33</option>
+                    <option value="+34" data-iso="ES">🇪🇸 +34</option>
+                    <option value="+39" data-iso="IT">🇮🇹 +39</option>
+                    <option value="+31" data-iso="NL">🇳🇱 +31</option>
+                    <option value="+32" data-iso="BE">🇧🇪 +32</option>
+                    <option value="+41" data-iso="CH">🇨🇭 +41</option>
+                    <option value="+46" data-iso="SE">🇸🇪 +46</option>
+                    <option value="+47" data-iso="NO">🇳🇴 +47</option>
+                    <option value="+45" data-iso="DK">🇩🇰 +45</option>
+                    <option value="+351" data-iso="PT">🇵🇹 +351</option>
+                    <option value="+48" data-iso="PL">🇵🇱 +48</option>
+                    <option value="+971" data-iso="AE">🇦🇪 +971</option>
+                    <option value="+966" data-iso="SA">🇸🇦 +966</option>
+                    <option value="+974" data-iso="QA">🇶🇦 +974</option>
+                    <option value="+965" data-iso="KW">🇰🇼 +965</option>
+                    <option value="+973" data-iso="BH">🇧🇭 +973</option>
+                    <option value="+968" data-iso="OM">🇴🇲 +968</option>
+                    <option value="+20" data-iso="EG">🇪🇬 +20</option>
+                    <option value="+213" data-iso="DZ">🇩🇿 +213</option>
+                    <option value="+212" data-iso="MA">🇲🇦 +212</option>
+                    <option value="+216" data-iso="TN">🇹🇳 +216</option>
+                    <option value="+962" data-iso="JO">🇯🇴 +962</option>
+                    <option value="+961" data-iso="LB">🇱🇧 +961</option>
+                    <option value="+91" data-iso="IN">🇮🇳 +91</option>
+                    <option value="+27" data-iso="ZA">🇿🇦 +27</option>
+                    <option value="+65" data-iso="SG">🇸🇬 +65</option>
+                    <option value="+60" data-iso="MY">🇲🇾 +60</option>
+                    <option value="+81" data-iso="JP">🇯🇵 +81</option>
+                    <option value="+82" data-iso="KR">🇰🇷 +82</option>
+                    <option value="+55" data-iso="BR">🇧🇷 +55</option>
+                    <option value="+52" data-iso="MX">🇲🇽 +52</option>
+                  </select>
+                </div>
+                <span id="ccPrefixEmb" class="shrink-0 flex items-center pl-2 text-ink-faint text-sm select-none pointer-events-none">+1</span>
+                <input type="tel" id="f_phoneEmb" required class="flex-1 min-w-0 bg-transparent border-0 px-2 py-3.5 text-ink placeholder:text-ink-faint transition-all focus:outline-none focus:ring-0" placeholder="555 000 0000"/>
+              </div>
+            </div>
+            <div id="step1MoreFieldsEmb" class="space-y-4 hidden">
+              <div>
+                <label class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Email Address</label>
+                <input type="email" id="f_emailEmb" class="w-full bg-void border border-white/10 rounded-xl px-4 py-3.5 text-ink placeholder:text-ink-faint transition-all" placeholder="john@example.com"/>
+              </div>
+              <div>
+                <label class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Business Name</label>
+                <input type="text" id="f_businessEmb" required class="w-full bg-void border border-white/10 rounded-xl px-4 py-3.5 text-ink placeholder:text-ink-faint transition-all" placeholder="Lowell Express Car Wash"/>
+              </div>
+            </div>
+          </div>
+          <p id="step1ErrorEmb" class="text-danger text-sm mt-3 hidden">Please fill in every field with a valid value.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-panel" data-step="2">
+          <h3 class="text-2xl font-bold mb-2">Current membership situation?</h3>
+          <p class="text-ink-soft mb-6">What best describes where you're at today.</p>
+          <div class="space-y-3" data-group="membership_status">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Active unlimited membership program</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Membership program but not growing</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>No membership yet, looking to start</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Detailing / valeting, no membership</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Other</span></button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-panel" data-step="3">
+          <h3 class="text-2xl font-bold mb-2">What type of car wash do you operate?</h3>
+          <p class="text-ink-soft mb-6">Pick the closest match.</p>
+          <div class="space-y-3" data-group="wash_type">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Express tunnel</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Full service tunnel</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>In-bay automatic / touchless</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Self serve</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Hand wash / detailing focused</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Multiple types</span></button>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-panel" data-step="4">
+          <h3 class="text-2xl font-bold mb-2">What POS system does your wash use?</h3>
+          <p class="text-ink-soft mb-6">Helps us understand your current tech stack.</p>
+          <div class="grid grid-cols-2 gap-3" data-group="pos_system">
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Sonny's</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">DRB</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">MicroLogic</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Touch4Wash</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">EverWash</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">FlexWash</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Dencar</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">NXT Wash</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">ICS</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Amp</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">I don't have one</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Other</span></button>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step-panel" data-step="5">
+          <h3 class="text-2xl font-bold mb-2">How many active members do you have?</h3>
+          <p class="text-ink-soft mb-6">A rough estimate is fine.</p>
+          <div class="space-y-3" data-group="member_count">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Under 300</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>300 – 1,000</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>1,000 – 3,000</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>3,000+</span></button>
+          </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="step-panel" data-step="6">
+          <h3 class="text-2xl font-bold mb-2">How many locations do you operate?</h3>
+          <div class="space-y-3" data-group="locations">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>1 location</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>2–3 locations</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>4–10 locations</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>10+ locations</span></button>
+          </div>
+        </div>
+
+        <!-- Step 7 -->
+        <div class="step-panel" data-step="7">
+          <h3 class="text-2xl font-bold mb-2">Have you tried paid digital marketing before?</h3>
+          <div class="space-y-3" data-group="paid_marketing">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Never tried it</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Tried it but didn't get results</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Currently running ads but want better results</span></button>
+          </div>
+        </div>
+
+        <!-- Step 8 -->
+        <div class="step-panel" data-step="8">
+          <h3 class="text-2xl font-bold mb-2">Who else is involved in marketing decisions?</h3>
+          <div class="space-y-3" data-group="decision_makers">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Just me</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Me and my business partner</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Me and someone else</span></button>
+          </div>
+        </div>
+
+        <!-- Step 9 -->
+        <div class="step-panel" data-step="9">
+          <h3 class="text-2xl font-bold mb-2">One last thing.</h3>
+          <p class="text-ink-soft mb-6">On every call, we build a custom membership growth plan specific to your wash. Only book if you're serious about growing your membership in the next 30 days.</p>
+          <div class="space-y-3" data-group="commitment">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>I'm serious — lock in my spot</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>I'm not ready yet</span></button>
+          </div>
+        </div>
+
+        <!-- Step 10: Calendar + Confirm -->
+        <div class="step-panel" data-step="10">
+          <div id="calendarStageEmb">
+            <h3 class="text-2xl font-bold mb-2">Pick a time for your strategy call</h3>
+            <p class="text-ink-soft mb-6">15 minutes. We'll show you exactly how to hit your membership goals.</p>
+            <div class="mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <button type="button" id="prevMonthBtnEmb" aria-label="Previous month" class="h-9 w-9 rounded-full glass flex items-center justify-center hover:border-white/25 transition-colors disabled:opacity-30 disabled:pointer-events-none">
+                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                </button>
+                <span id="monthLabelEmb" class="font-semibold text-lg"></span>
+                <button type="button" id="nextMonthBtnEmb" aria-label="Next month" class="h-9 w-9 rounded-full glass flex items-center justify-center hover:border-white/25 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+              </div>
+              <div class="grid grid-cols-7 gap-1 mb-2">
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Su</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Mo</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Tu</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">We</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Th</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Fr</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Sa</span>
+              </div>
+              <div id="dateGridEmb" class="grid grid-cols-7 gap-1.5"></div>
+            </div>
+            <div class="mb-2" id="timeSectionEmb" style="display:none;">
+              <p class="text-xs font-mono uppercase tracking-widest text-ink-faint mb-3">Select a time</p>
+              <div id="timeGridEmb" class="grid grid-cols-3 gap-2"></div>
+            </div>
+          </div>
+
+          <div id="confirmStageEmb" class="hidden text-center py-6">
+            <div class="h-16 w-16 rounded-full bg-accent/15 text-accent flex items-center justify-center mx-auto mb-6">
+              <span class="material-symbols-outlined text-[32px]">check_circle</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">You're booked!</h3>
+            <p class="text-ink-soft mb-1">Your strategy call is confirmed for</p>
+            <p id="confirmDetailsEmb" class="text-primary-bright font-semibold text-lg mb-6"></p>
+            <p class="text-ink-soft text-sm max-w-sm mx-auto">A confirmation with the call link is on its way to your inbox. Look out for a text message too.</p>
+          </div>
+        </div>
+
+      </form>
+
+      <div id="formNavEmb" class="flex items-center justify-between gap-4 mt-8">
+        <button type="button" id="backBtnEmb" class="text-ink-soft font-semibold px-5 py-3 rounded-xl hover:text-ink transition-colors invisible flex items-center gap-1">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span> Back
+        </button>
+        <button type="button" id="continueBtnEmb" class="btn-primary text-white font-bold px-8 py-3.5 rounded-xl flex items-center gap-2 transition-transform hover:scale-[1.02] active:scale-95" style="background:linear-gradient(180deg,#4a9dff,#2a7ee6);">
+          Continue <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+        </button>
+      </div>
+
+      <p class="text-center text-xs text-ink-faint mt-6">No pressure. No sales pitch. Just growth.</p>
+    </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="py-24 sm:py-28 relative overflow-hidden">
+    <div class="absolute -right-32 top-10 w-[420px] h-[420px] bg-primary/10 rounded-full glow-orb"></div>
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+
+      <div class="max-w-2xl mb-14 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">The Real Growth Gap</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4 leading-tight">Most Car Wash Marketing Stops Before Someone Becomes a Member</h2>
+        <p class="text-ink-soft text-lg leading-relaxed">Awareness is useful. Traffic is useful. But monthly membership growth happens when a nearby driver moves from interest to paid sign-up — without depending on hope, staff, or vibes.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div class="card rounded-2xl p-8 reveal">
+          <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary"><span class="material-symbols-outlined">wb_twilight</span></div>
+          <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">Problem 01 · Drive-By Hope</p>
+          <h3 class="font-semibold text-lg mb-3">Most washes grow on hope someone turns in.</h3>
+          <p class="text-ink-soft leading-relaxed">Hope they pull in. Hope they sign up. Hope your team converts them at the kiosk before the line backs up. Hope is not a system.</p>
+        </div>
+        <div class="card rounded-2xl p-8 reveal">
+          <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary"><span class="material-symbols-outlined">person</span></div>
+          <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">Problem 02 · Dependent on Shift</p>
+          <h3 class="font-semibold text-lg mb-3">Growth shouldn't depend on whoever's working Tuesday morning.</h3>
+          <p class="text-ink-soft leading-relaxed">Member growth tied to staff energy, line speed, and whether someone remembered the pitch is fragile. Predictable revenue needs a predictable system.</p>
+        </div>
+        <div class="card rounded-2xl p-8 reveal">
+          <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary"><span class="material-symbols-outlined">bar_chart</span></div>
+          <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">Problem 03 · Decisions on Vibes</p>
+          <h3 class="font-semibold text-lg mb-3">Impressions and clicks aren't members.</h3>
+          <p class="text-ink-soft leading-relaxed">Most reports tell you reach, engagement, and traffic. None of those are paying members. You're spending money guessing instead of measuring what actually grew the wash.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-16 items-center">
+        <div class="reveal">
+          <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">Two Things Every Operator Already Feels</p>
+          <div class="space-y-6">
+            <div>
+              <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">On the Lot</p>
+              <p class="text-ink-soft leading-relaxed">You can only sell to the people who already drive in. Fifty cars through the lot is fifty shots at a membership. A slow week, bad weather, or nobody free to ask, and that number drops. Your growth is capped by your own driveway.</p>
+            </div>
+            <div>
+              <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">Online</p>
+              <p class="text-ink-soft leading-relaxed">The website, the reputation, the follow-up — the thing that's supposed to bring members in while you're running the wash — is usually a patchwork. A bit here, a bit there, nobody owning it, and no way to see if any of it is working.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="card rounded-3xl p-8 border-l-2 border-l-primary">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-dim shrink-0 flex items-center justify-center text-white font-bold text-xl">
+                B
+              </div>
+              <div>
+                <h4 class="font-semibold text-lg">Bruce</h4>
+                <p class="text-sm text-primary-bright">Owner, Lowell Express Car Wash</p>
+              </div>
+            </div>
+            <p class="text-ink text-lg leading-relaxed mb-6">"Since we started working with Uplead Digital, we've seen explosive growth in our membership. We've grown 106% in just 5 months. Best support system in the space — completely transparent with everything they do."</p>
+            <div class="flex items-center gap-1 text-primary">
+              <span class="material-symbols-outlined text-[20px]">star</span>
+              <span class="material-symbols-outlined text-[20px]">star</span>
+              <span class="material-symbols-outlined text-[20px]">star</span>
+              <span class="material-symbols-outlined text-[20px]">star</span>
+              <span class="material-symbols-outlined text-[20px]">star</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="calculator" class="py-24 sm:py-28 relative overflow-hidden bg-surface/40 border-y border-white/5">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[560px] h-[300px] bg-primary/10 rounded-full glow-orb"></div>
+    <div class="max-w-container mx-auto px-5 sm:px-6 relative z-10">
+      <div class="max-w-2xl mb-14 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">Your Numbers</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight leading-tight mb-4">What the Members You Don't Have Yet Are Worth</h2>
+        <p class="text-ink-soft text-lg leading-relaxed">Your numbers, your goal. This is the recurring revenue sitting between where your membership base is today and where you want it — not a projection.</p>
+      </div>
+
+      <div class="card rounded-3xl overflow-hidden reveal grid grid-cols-1 lg:grid-cols-2">
+
+        <div class="p-8 sm:p-10 border-b lg:border-b-0 lg:border-r border-white/8">
+          <h3 class="font-semibold text-lg mb-6">Your wash</h3>
+          <div class="space-y-5">
+            <div>
+              <label for="calc_current" class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Current members</label>
+              <input type="number" min="0" step="1" id="calc_current" value="250" class="w-full bg-void border border-white/10 rounded-xl px-4 py-3.5 text-ink transition-all"/>
+            </div>
+            <div>
+              <label for="calc_price" class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Average monthly membership price</label>
+              <div class="flex items-center bg-void border border-white/10 rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/15 transition-all">
+                <span class="pl-4 text-ink-faint text-sm select-none">$</span>
+                <input type="number" min="0" step="1" id="calc_price" value="25" class="w-full bg-transparent border-0 px-2 py-3.5 text-ink focus:outline-none focus:ring-0"/>
+              </div>
+            </div>
+            <div>
+              <label for="calc_ltv" class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Average member lifetime value</label>
+              <div class="flex items-center bg-void border border-white/10 rounded-xl overflow-hidden focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/15 transition-all">
+                <span class="pl-4 text-ink-faint text-sm select-none">$</span>
+                <input type="number" min="0" step="1" id="calc_ltv" value="450" class="w-full bg-transparent border-0 px-2 py-3.5 text-ink focus:outline-none focus:ring-0"/>
+              </div>
+            </div>
+            <div>
+              <label for="calc_goal" class="block text-xs font-mono uppercase tracking-wider text-primary-bright mb-2">Your member goal</label>
+              <input type="number" min="0" step="1" id="calc_goal" value="500" class="w-full bg-void border border-primary/40 rounded-xl px-4 py-3.5 text-ink transition-all"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-8 sm:p-10 bg-surface-2/60 flex flex-col">
+          <p class="text-ink-soft text-sm mb-1">You're</p>
+          <p class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-8 leading-snug">
+            <span id="calc_gap" class="text-primary-bright">250</span> members short of your goal.
+          </p>
+
+          <div class="space-y-6">
+            <div>
+              <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-1">Recurring revenue on the table, monthly</p>
+              <p id="calc_monthly" class="text-4xl font-extrabold text-ink">$6,250</p>
+            </div>
+            <div class="pt-6 border-t border-white/8">
+              <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-1">And every year</p>
+              <p id="calc_annual" class="text-5xl font-extrabold text-gradient">$75,000</p>
+            </div>
+            <div class="pt-6 border-t border-white/8 flex items-center justify-between">
+              <span class="text-ink-soft text-sm">Lifetime value of those members</span>
+              <span id="calc_ltv_total" class="text-lg font-bold text-accent">$112,500</span>
+            </div>
+          </div>
+
+          <button type="button" data-scroll-to-booking class="btn-primary text-white w-full mt-8 px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.01] active:scale-95">
+            Book a Call
+          </button>
+          <p class="text-center text-xs text-ink-faint mt-4">Your figures and the goal you set — not a promise of results. On the call we'll talk about closing it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="team" class="py-24 sm:py-28 bg-surface/40 border-y border-white/5">
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">The People Behind It</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">Real Operators, Not a Ticket Queue</h2>
+        <p class="text-ink-soft text-lg">On the road at car wash shows across the country — building strategy alongside the owners we work with, not from behind a support ticket.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="card rounded-2xl overflow-hidden reveal group sm:col-span-2">
+          <div class="aspect-[4/3] overflow-hidden">
+            <img src="images/founders-conor-ali.jpg" alt="Conor Croke and Ali Sungoqiah, Uplead Digital co-founders" loading="lazy" decoding="async" class="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"/>
+          </div>
+          <div class="p-5">
+            <h3 class="font-semibold text-base">Conor Croke & Ali Sungoqiah</h3>
+            <p class="text-sm text-primary-bright">Co-Founders</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden reveal group sm:col-span-2">
+          <div class="aspect-[4/3] overflow-hidden">
+            <img src="images/team-asbury-circle.jpg" alt="The Uplead Digital team on-site at Asbury Circle Car Wash" loading="lazy" decoding="async" class="w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"/>
+          </div>
+          <div class="p-5">
+            <h3 class="font-semibold text-base">On-site at Asbury Circle Car Wash</h3>
+            <p class="text-sm text-ink-soft">Same team you'd see on your strategy call, standing in the lot with the owners we work with — not behind a support ticket.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-4">More Moments From the Road</p>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="rounded-xl overflow-hidden card group">
+            <div class="aspect-square overflow-hidden">
+              <img src="images/team-car-wash-show-nashville.jpg" alt="Uplead Digital team at the Car Wash Show, Nashville" loading="lazy" decoding="async" class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"/>
+            </div>
+          </div>
+          <div class="rounded-xl overflow-hidden card group">
+            <div class="aspect-square overflow-hidden">
+              <img src="images/team-car-wash-owner-1.jpg" alt="Uplead Digital team with a car wash owner at the Car Wash Show" loading="lazy" decoding="async" class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"/>
+            </div>
+          </div>
+          <div class="rounded-xl overflow-hidden card group">
+            <div class="aspect-square overflow-hidden">
+              <img src="images/team-ali-conor-nrcc.jpg" alt="Ali and Conor at the NRCC car wash show" loading="lazy" decoding="async" class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"/>
+            </div>
+          </div>
+          <div class="rounded-xl overflow-hidden card group">
+            <div class="aspect-square overflow-hidden">
+              <img src="images/team-car-wash-owner-2.jpg" alt="Uplead Digital team with a car wash owner at the Car Wash Show" loading="lazy" decoding="async" class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-24 sm:py-28 bg-surface/40 border-y border-white/5">
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+      <div class="max-w-2xl mb-16 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">The Solution</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">Turning Obstacles Into Opportunities</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="card rounded-2xl p-8 reveal">
+          <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary">
+            <span class="material-symbols-outlined">campaign</span>
+          </div>
+          <h3 class="font-semibold text-xl mb-3">Inconsistent Member Growth</h3>
+          <p class="text-ink-soft leading-relaxed">Our Omni Platform Marketing Approach targets the right audience across Facebook, Google, Instagram, TikTok, and LinkedIn to generate consistent members.</p>
+        </div>
+        <div class="card rounded-2xl p-8 reveal">
+          <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary">
+            <span class="material-symbols-outlined">palette</span>
+          </div>
+          <h3 class="font-semibold text-xl mb-3">Brand Identity</h3>
+          <p class="text-ink-soft leading-relaxed">We take care of your entire online presence — branding, website design, and social profiles — positioning you as the premium choice in your city.</p>
+        </div>
+        <div class="card rounded-2xl p-8 reveal">
+          <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary">
+            <span class="material-symbols-outlined">replay</span>
+          </div>
+          <h3 class="font-semibold text-xl mb-3">High Member Churn</h3>
+          <p class="text-ink-soft leading-relaxed">Our signature Retention Revival campaigns win back lapsed members and keep active ones on for as long as you want.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-24 sm:py-28">
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">Why This Is Different</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">Less "Marketing Activity." More Membership Infrastructure.</h2>
+        <p class="text-ink-soft text-lg">Most car wash marketing creates motion. We build conversion.</p>
+      </div>
+
+      <div class="max-w-4xl mx-auto card rounded-2xl overflow-hidden reveal">
+        <div class="grid grid-cols-2">
+          <div class="bg-white/[0.03] px-5 sm:px-8 py-5 border-b border-r border-white/8">
+            <span class="text-ink-faint font-semibold text-sm sm:text-base">What most car wash marketing does</span>
+          </div>
+          <div class="bg-primary px-5 sm:px-8 py-5 border-b border-white/8">
+            <span class="text-white font-semibold text-sm sm:text-base">What Uplead builds</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2">
+          <div class="px-5 sm:px-8 py-5 border-b border-r border-white/8 flex items-start gap-3">
+            <span class="material-symbols-outlined text-danger/70 text-[18px] mt-0.5 shrink-0">close</span>
+            <span class="text-ink-soft text-sm sm:text-base">Sells you leads — names and numbers for your team to chase</span>
+          </div>
+          <div class="px-5 sm:px-8 py-5 border-b border-white/8 bg-primary/10 flex items-start gap-3">
+            <span class="material-symbols-outlined text-accent text-[18px] mt-0.5 shrink-0">check</span>
+            <span class="text-ink text-sm sm:text-base">Sells you paying members — card on file before the first wash</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2">
+          <div class="px-5 sm:px-8 py-5 border-b border-r border-white/8 flex items-start gap-3">
+            <span class="material-symbols-outlined text-danger/70 text-[18px] mt-0.5 shrink-0">close</span>
+            <span class="text-ink-soft text-sm sm:text-base">Hides performance behind impressions, reach, and clicks</span>
+          </div>
+          <div class="px-5 sm:px-8 py-5 border-b border-white/8 bg-primary/10 flex items-start gap-3">
+            <span class="material-symbols-outlined text-accent text-[18px] mt-0.5 shrink-0">check</span>
+            <span class="text-ink text-sm sm:text-base">Tracks one number that matters: paying members added</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2">
+          <div class="px-5 sm:px-8 py-5 border-b border-r border-white/8 flex items-start gap-3">
+            <span class="material-symbols-outlined text-danger/70 text-[18px] mt-0.5 shrink-0">close</span>
+            <span class="text-ink-soft text-sm sm:text-base">Locks you into their platform, website, and domain</span>
+          </div>
+          <div class="px-5 sm:px-8 py-5 border-b border-white/8 bg-primary/10 flex items-start gap-3">
+            <span class="material-symbols-outlined text-accent text-[18px] mt-0.5 shrink-0">check</span>
+            <span class="text-ink text-sm sm:text-base">You own everything — website, member list, every asset</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2">
+          <div class="px-5 sm:px-8 py-5 border-b border-r border-white/8 flex items-start gap-3">
+            <span class="material-symbols-outlined text-danger/70 text-[18px] mt-0.5 shrink-0">close</span>
+            <span class="text-ink-soft text-sm sm:text-base">Inflates sign-ups with discounts and free washes</span>
+          </div>
+          <div class="px-5 sm:px-8 py-5 border-b border-white/8 bg-primary/10 flex items-start gap-3">
+            <span class="material-symbols-outlined text-accent text-[18px] mt-0.5 shrink-0">check</span>
+            <span class="text-ink text-sm sm:text-base">Builds full-price members designed to stay through LTV</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2">
+          <div class="px-5 sm:px-8 py-5 border-r border-white/8 flex items-start gap-3">
+            <span class="material-symbols-outlined text-danger/70 text-[18px] mt-0.5 shrink-0">close</span>
+            <span class="text-ink-soft text-sm sm:text-base">Generalist agency — dentists Monday, washes Tuesday</span>
+          </div>
+          <div class="px-5 sm:px-8 py-5 bg-primary/10 flex items-start gap-3">
+            <span class="material-symbols-outlined text-accent text-[18px] mt-0.5 shrink-0">check</span>
+            <span class="text-ink text-sm sm:text-base">Car wash specialist only. Every line of code, every ad, every page</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="systems" class="py-24 sm:py-28">
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+      <div class="max-w-2xl mb-16 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">The Process</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">How We Grow Your Membership Base</h2>
+      </div>
+
+      <div class="relative">
+        <div class="hidden lg:block absolute top-11 left-0 right-0 h-px bg-white/10"></div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div class="reveal">
+            <div class="flex lg:flex-col items-center lg:items-start gap-4 lg:gap-0 mb-5">
+              <div class="h-11 w-11 rounded-xl bg-primary/10 border border-white/10 flex items-center justify-center text-primary shrink-0 relative z-10 bg-void"><span class="material-symbols-outlined">call</span></div>
+              <p class="font-mono text-[11px] text-ink-faint lg:mt-4">STEP 01</p>
+            </div>
+            <div class="card rounded-2xl p-6">
+              <h3 class="font-semibold text-xl mb-2 text-primary-bright">Strategy Call</h3>
+              <p class="text-ink-soft leading-relaxed">We review your current membership numbers and retention, find what's holding sign-ups back, study your local market, and build a plan made for your wash.</p>
+            </div>
+          </div>
+
+          <div class="reveal">
+            <div class="flex lg:flex-col items-center lg:items-start gap-4 lg:gap-0 mb-5">
+              <div class="h-11 w-11 rounded-xl bg-primary/10 border border-white/10 flex items-center justify-center text-primary shrink-0 relative z-10 bg-void"><span class="material-symbols-outlined">tune</span></div>
+              <p class="font-mono text-[11px] text-ink-faint lg:mt-4">STEP 02</p>
+            </div>
+            <div class="card rounded-2xl p-6">
+              <h3 class="font-semibold text-xl mb-2 text-primary-bright">Testing & Optimization</h3>
+              <p class="text-ink-soft leading-relaxed">We put your wash in front of your whole local area and test what pulls members in — sharpening around your seasons, your market, and the offers that land.</p>
+            </div>
+          </div>
+
+          <div class="reveal">
+            <div class="flex lg:flex-col items-center lg:items-start gap-4 lg:gap-0 mb-5">
+              <div class="h-11 w-11 rounded-xl bg-primary/10 border border-white/10 flex items-center justify-center text-primary shrink-0 relative z-10 bg-void"><span class="material-symbols-outlined">trending_up</span></div>
+              <p class="font-mono text-[11px] text-ink-faint lg:mt-4">STEP 03</p>
+            </div>
+            <div class="card rounded-2xl p-6">
+              <h3 class="font-semibold text-xl mb-2 text-primary-bright">Scaling Phase</h3>
+              <p class="text-ink-soft leading-relaxed">Once we know what's working, we push harder on it — and switch on Retention Revival to keep the members we've brought in from slipping back out.</p>
+            </div>
+          </div>
+
+          <div class="reveal">
+            <div class="flex lg:flex-col items-center lg:items-start gap-4 lg:gap-0 mb-5">
+              <div class="h-11 w-11 rounded-xl bg-primary/10 border border-white/10 flex items-center justify-center text-primary shrink-0 relative z-10 bg-void"><span class="material-symbols-outlined">support_agent</span></div>
+              <p class="font-mono text-[11px] text-ink-faint lg:mt-4">STEP 04</p>
+            </div>
+            <div class="card rounded-2xl p-6">
+              <h3 class="font-semibold text-xl mb-2 text-primary-bright">Ongoing Support</h3>
+              <p class="text-ink-soft leading-relaxed">A live dashboard, real-time monitoring, and update calls as often as once a week — with a dedicated team on hand whenever you need them.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-24 sm:py-28 bg-surface/40 border-y border-white/5">
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">Our Process</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">Direct-to-Member Acquisition for Car Washes</h2>
+        <p class="text-ink-soft text-lg">Built for operators who want predictable monthly membership growth without depending on staff, seasons, or signage. We build and manage the path from local online demand to paid monthly membership.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="card rounded-2xl p-8 reveal">
+          <p class="font-mono text-[11px] text-ink-faint mb-4">01</p>
+          <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary"><span class="material-symbols-outlined">near_me</span></div>
+          <h3 class="font-semibold text-xl mb-3">Targeted local reach</h3>
+          <p class="text-ink-soft leading-relaxed">We deploy direct-response strategies targeting drivers within reach of your wash. Locally aimed at drivers who can actually get to your wash. Not awareness. Not impressions. Members.</p>
+        </div>
+        <div class="card rounded-2xl p-8 reveal">
+          <p class="font-mono text-[11px] text-ink-faint mb-4">02</p>
+          <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary"><span class="material-symbols-outlined">smartphone</span></div>
+          <h3 class="font-semibold text-xl mb-3">Sign-up in under 60 seconds</h3>
+          <p class="text-ink-soft leading-relaxed">They choose their plan, enter their card and license plate, and become a paying member — before they've ever visited the wash.</p>
+        </div>
+        <div class="card rounded-2xl p-8 reveal">
+          <p class="font-mono text-[11px] text-ink-faint mb-4">03</p>
+          <div class="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary"><span class="material-symbols-outlined">directions_car</span></div>
+          <h3 class="font-semibold text-xl mb-3">They show up, scan, drive through</h3>
+          <p class="text-ink-soft leading-relaxed">Recurring revenue every month. No staff selling. No follow-up calls. No friction.</p>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-6 mt-14 reveal">
+        <p class="text-center text-ink font-medium text-lg max-w-lg">From cold scroll to paying member — before they've ever visited the wash.</p>
+        <button type="button" data-scroll-to-booking class="btn-primary text-white px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
+          Get Your Membership Growth Plan
+          <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" class="py-24 sm:py-28">
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">Real Results</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Real Members, Real Data</h2>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+        <div class="card rounded-2xl p-6 reveal">
+          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">Asbury Circle</div>
+          <div class="text-4xl font-extrabold text-primary-bright mb-2">2x</div>
+          <div class="text-sm text-ink-soft">Membership base increase</div>
+          <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden"><div class="bg-primary h-full w-full"></div></div>
+        </div>
+        <div class="card rounded-2xl p-6 reveal">
+          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">Lowell Express</div>
+          <div class="text-4xl font-extrabold text-accent mb-2">+106%</div>
+          <div class="text-sm text-ink-soft">Growth in 5 months</div>
+          <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden"><div class="bg-accent h-full w-full"></div></div>
+        </div>
+        <div class="card rounded-2xl p-6 reveal">
+          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">KP's Car Wash</div>
+          <div class="text-4xl font-extrabold text-primary-bright mb-2">124+</div>
+          <div class="text-sm text-ink-soft">New members / month</div>
+          <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden"><div class="bg-primary h-full w-[80%]"></div></div>
+        </div>
+        <div class="card rounded-2xl p-6 reveal">
+          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">Star Car Wash</div>
+          <div class="text-4xl font-extrabold text-accent mb-2">+19.7%</div>
+          <div class="text-sm text-ink-soft">Growth in first month</div>
+          <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden"><div class="bg-accent h-full w-[70%]"></div></div>
+        </div>
+        <div class="card rounded-2xl p-6 reveal">
+          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">Dublin Details</div>
+          <div class="text-4xl font-extrabold text-primary-bright mb-2">350+</div>
+          <div class="text-sm text-ink-soft">Total new signups</div>
+          <div class="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden"><div class="bg-primary h-full w-[95%]"></div></div>
+        </div>
+      </div>
+
+      <div id="crdSelector" class="flex flex-wrap justify-center gap-3 sm:gap-4 mt-14 mb-10 reveal">
+        <button type="button" class="opt-card selected flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-white/10" data-client="asbury">
+          <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-white/5 flex items-center justify-center">
+            <img src="images/logo-asbury-circle.png" alt="" class="w-full h-full object-contain"/>
+          </span>
+          <span class="text-sm font-semibold whitespace-nowrap">Asbury Circle</span>
+        </button>
+        <button type="button" class="opt-card flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-white/10" data-client="lowell">
+          <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-white/5 flex items-center justify-center">
+            <img src="images/logo-lowell-express.png" alt="" class="w-full h-full object-contain"/>
+          </span>
+          <span class="text-sm font-semibold whitespace-nowrap">Lowell Express</span>
+        </button>
+        <button type="button" class="opt-card flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-white/10" data-client="kps">
+          <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-white/5 flex items-center justify-center">
+            <img src="images/logo-kps-car-wash.png" alt="" class="w-full h-full object-contain"/>
+          </span>
+          <span class="text-sm font-semibold whitespace-nowrap">KP's Car Wash</span>
+        </button>
+        <button type="button" class="opt-card flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-white/10" data-client="star">
+          <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-white/5 flex items-center justify-center">
+            <img src="images/logo-star-car-wash.png" alt="" class="w-full h-full object-contain"/>
+          </span>
+          <span class="text-sm font-semibold whitespace-nowrap">Star Car Wash</span>
+        </button>
+        <button type="button" class="opt-card flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-white/10" data-client="dublin">
+          <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-white/5 flex items-center justify-center">
+            <img src="images/logo-dublin-details.png" alt="" class="w-full h-full object-contain"/>
+          </span>
+          <span class="text-sm font-semibold whitespace-nowrap">Dublin Details</span>
+        </button>
+      </div>
+
+      <div class="card rounded-3xl overflow-hidden reveal">
+        <div class="grid grid-cols-1 lg:grid-cols-2">
+          <div class="p-8 sm:p-12">
+            <div class="flex items-center gap-3 mb-8">
+              <span id="crdAvatar" class="h-9 w-9 rounded-full overflow-hidden bg-white/5 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                <img src="images/logo-asbury-circle.png" alt="" class="w-full h-full object-contain"/>
+              </span>
+              <span id="crdName" class="font-semibold">Asbury Circle Car Wash</span>
+            </div>
+            <div id="crdStat" class="text-4xl sm:text-5xl font-extrabold text-primary-bright mb-2">2x</div>
+            <p id="crdStatLabel" class="text-ink-soft mb-8">Membership base increase</p>
+            <p id="crdQuote" class="text-xl sm:text-2xl font-semibold leading-snug mb-6">"This marketing strategy? It completely flipped our business around. We got a ton of new customers coming in, and the growth? Absolutely unreal."</p>
+            <p id="crdAuthor" class="text-ink-soft">— Dino, Owner of Asbury Circle Car Wash</p>
+          </div>
+          <div class="bg-surface-2 p-8 sm:p-12 flex flex-col justify-center gap-8 border-t lg:border-t-0 lg:border-l border-white/5">
+            <div>
+              <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">Daily Growth</p>
+              <svg id="crdChart" viewBox="0 0 400 140" class="w-full h-auto rounded-xl border border-white/10 bg-void" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <line x1="16" y1="36" x2="380" y2="36" stroke="#ffffff" stroke-opacity="0.05" stroke-dasharray="3 4"/>
+                <line x1="16" y1="79" x2="380" y2="79" stroke="#ffffff" stroke-opacity="0.05" stroke-dasharray="3 4"/>
+                <g id="crdBars"></g>
+                <line x1="16" y1="122" x2="380" y2="122" stroke="#ffffff" stroke-opacity="0.1"/>
+                <text id="crdStartLabel" font-family="JetBrains Mono, monospace" font-size="11" fill="#656d7c"></text>
+                <text id="crdEndLabel" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#22e5b0" text-anchor="end"></text>
+                <text id="crdStartAxis" x="20" y="135" font-family="JetBrains Mono, monospace" font-size="9" fill="#656d7c">Start</text>
+                <text id="crdEndAxis" x="352" y="135" font-family="JetBrains Mono, monospace" font-size="9" fill="#656d7c" text-anchor="middle">Now</text>
+              </svg>
+            </div>
+            <div>
+              <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">Membership Growth</p>
+              <svg id="crdLineChart" viewBox="0 0 400 140" class="w-full h-auto rounded-xl border border-white/10 bg-void" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="crdLineFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#3491ff" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#3491ff" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M20 108 L 90 100 L 160 92 L 230 68 L 300 42 L 376 24 L 376 130 L 20 130 Z" fill="url(#crdLineFill)"/>
+                <path d="M20 108 L 90 100 L 160 92 L 230 68 L 300 42 L 376 24" stroke="#3491ff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="20" cy="108" r="4" fill="#6fb4ff"/>
+                <circle cx="376" cy="24" r="5" fill="#22e5b0"/>
+                <text id="crdLineStartLabel" x="20" y="128" font-family="JetBrains Mono, monospace" font-size="10" fill="#656d7c"></text>
+                <text id="crdLineEndLabel" x="340" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#22e5b0"></text>
+              </svg>
+              <p id="crdMembershipCaption" class="text-xs text-ink-faint mt-2"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center mt-14 reveal">
+        <button type="button" data-scroll-to-booking class="btn-primary text-white px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
+          Apply Now — Get My Growth Plan
+          <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="py-24 sm:py-28">
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">FAQ</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Common Questions</h2>
+      </div>
+      <div class="max-w-2xl mx-auto space-y-3 reveal" id="faqList">
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">Will it work for my wash?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">Express, flex, or full-service — we've grown all three. On the call we'll show you an example shaped like yours.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">Aren't you just another agency?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">We only do car washes, and we're measured on members, not activity. That's not what a generalist agency does — every strategy, ad creative, and retention flow here is built specifically for the membership model.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">How fast will I see results?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">Most locations begin seeing new membership sign-ups within the first few weeks of launch, with campaigns fully optimized and scaling by month two.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">Do I have to change my POS?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">No. If you already run a membership system, we work on top of it — nothing to rip out, nothing to replace.<br class="hidden sm:block">And if you don't have one yet, we'll set you up on Upwash, our own membership platform, so you can sell memberships online from day one.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">Am I locked in?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">No long-term contract. Pause when you want. Everything we build, you own — full details are covered on your strategy call.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">I don't have time to manage another vendor.</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">You won't. It's done for you. You run the wash — we review your numbers, analyze local competition, and build the growth plan.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="py-24 sm:py-28 relative overflow-hidden">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-primary/15 rounded-full glow-orb"></div>
+    <div class="max-w-container mx-auto px-5 sm:px-6 text-center relative z-10 reveal">
+      <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-10 max-w-3xl mx-auto leading-tight">
+        Ready to grow your car wash memberships?
+      </h2>
+      <button type="button" data-scroll-to-booking class="btn-primary text-white inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-lg transition-transform hover:scale-105 active:scale-95">
+        Get Started Today
+        <span class="material-symbols-outlined">rocket_launch</span>
+      </button>
+    </div>
+  </section>
+
+
+
+</main>
+
+<footer class="bg-void border-t border-white/5 pt-20 pb-8">
+  <div class="max-w-container mx-auto px-5 sm:px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
+      <div class="lg:col-span-2">
+        <div class="flex items-center gap-2 mb-6">
+          <img src="images/logo-footer-full.png" alt="Uplead Digital" class="h-20 w-auto shrink-0"/>
+        </div>
+        <p class="text-ink-soft max-w-sm mb-8 leading-relaxed">Uplead Digital is a growth agency dedicated exclusively to car wash owners. We build the systems that build your membership base.</p>
+        <div class="flex gap-3">
+          <a href="#" aria-label="Website" class="h-10 w-10 rounded-full glass flex items-center justify-center hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">public</span></a>
+          <a href="#" aria-label="Videos" class="h-10 w-10 rounded-full glass flex items-center justify-center hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">video_library</span></a>
+          <a href="#" aria-label="Email" class="h-10 w-10 rounded-full glass flex items-center justify-center hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">alternate_email</span></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-6">Company</h4>
+        <ul class="space-y-4 text-ink-soft">
+          <li><a href="#systems" class="hover:text-primary transition-colors">Systems</a></li>
+          <li><a href="#results" class="hover:text-primary transition-colors">Results</a></li>
+          <li><a href="#calculator" class="hover:text-primary transition-colors">Calculator</a></li>
+          <li><a href="#team" class="hover:text-primary transition-colors">Team</a></li>
+          <li><a href="#faq" class="hover:text-primary transition-colors">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-xs text-ink-faint">© 2026 Uplead Digital. All rights reserved.</p>
+      <div class="flex items-center gap-2 text-xs text-ink-faint">
+        <span class="material-symbols-outlined text-[14px]">verified</span> Certified Performance Partner
+      </div>
+      <p class="text-xs text-ink-faint">Built in-house by the Uplead Digital team</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+
+  const menuBtn = document.getElementById('menuBtn');
+  const menuCloseBtn = document.getElementById('menuCloseBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  function openMenu(){ mobileMenu.classList.remove('translate-x-full'); menuBtn.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+  function closeMenu(){ mobileMenu.classList.add('translate-x-full'); menuBtn.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+  menuBtn.addEventListener('click', openMenu);
+  menuCloseBtn.addEventListener('click', closeMenu);
+  document.querySelectorAll('.mobile-link').forEach(a => a.addEventListener('click', closeMenu));
+
+
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e){
+      const targetId = this.getAttribute('href');
+      const target = document.querySelector(targetId);
+      if(target){
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const trigger = item.querySelector('.faq-trigger');
+    const content = item.querySelector('.accordion-content');
+    const icon = item.querySelector('.faq-icon');
+    trigger.addEventListener('click', () => {
+      const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+      document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = '0px');
+      document.querySelectorAll('.faq-icon').forEach(i => i.style.transform = 'rotate(0deg)');
+      if(!isOpen){
+        content.style.maxHeight = content.scrollHeight + 'px';
+        icon.style.transform = 'rotate(45deg)';
+      }
+    });
+  });
+
+  const stickyBar = document.getElementById('stickyBar');
+  const heroSection = document.querySelector('main > section');
+  if(stickyBar && heroSection){
+    const heroObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        stickyBar.classList.toggle('translate-y-full', entry.isIntersecting);
+      });
+    }, { threshold: 0, rootMargin: '-10% 0px 0px 0px' });
+    heroObserver.observe(heroSection);
+  }
+
+
+})();
+</script>
+
+
+<script>
+(function(){
+  const currentEl = document.getElementById('calc_current');
+  const priceEl   = document.getElementById('calc_price');
+  const ltvEl     = document.getElementById('calc_ltv');
+  const goalEl    = document.getElementById('calc_goal');
+  if(!currentEl || !priceEl || !ltvEl || !goalEl) return;
+
+  const gapOut     = document.getElementById('calc_gap');
+  const monthlyOut = document.getElementById('calc_monthly');
+  const annualOut  = document.getElementById('calc_annual');
+  const ltvOut     = document.getElementById('calc_ltv_total');
+
+  const fmtUSD = (n) => '$' + Math.max(0, Math.round(n)).toLocaleString('en-US');
+
+  function recalc(){
+    const current = Math.max(0, parseFloat(currentEl.value) || 0);
+    const price   = Math.max(0, parseFloat(priceEl.value) || 0);
+    const ltv     = Math.max(0, parseFloat(ltvEl.value) || 0);
+    const goal    = Math.max(0, parseFloat(goalEl.value) || 0);
+
+    const gap = Math.max(0, goal - current);
+    const monthlyRevenue = gap * price;
+    const annualRevenue = monthlyRevenue * 12;
+    const ltvTotal = gap * ltv;
+
+    gapOut.textContent = gap.toLocaleString('en-US');
+    monthlyOut.textContent = fmtUSD(monthlyRevenue);
+    annualOut.textContent = fmtUSD(annualRevenue);
+    ltvOut.textContent = fmtUSD(ltvTotal);
+  }
+
+  [currentEl, priceEl, ltvEl, goalEl].forEach(el => {
+    el.addEventListener('input', recalc);
+  });
+
+  recalc();
+})();
+</script>
+
+<script>
+(function(){
+  const selector = document.getElementById('crdSelector');
+  if(!selector) return;
+
+  const avatarEl    = document.getElementById('crdAvatar');
+  const nameEl      = document.getElementById('crdName');
+  const statEl      = document.getElementById('crdStat');
+  const statLabelEl = document.getElementById('crdStatLabel');
+  const quoteEl     = document.getElementById('crdQuote');
+  const authorEl    = document.getElementById('crdAuthor');
+  const barsG       = document.getElementById('crdBars');
+
+  const barX = [20, 60, 100, 140, 180, 220, 260, 300, 340];
+  const barFill = ['#3491ff','#3491ff','#3491ff','#3491ff','#3491ff','#3491ff','#3491ff','#3491ff','#22e5b0'];
+  const barOpacity = [0.35, 0.45, 0.4, 0.55, 0.65, 0.6, 0.8, 1, 1];
+  const baseline = 122;
+
+  const data = {
+    asbury: {
+      name: 'Asbury Circle Car Wash',
+      avatar: '<img src="images/logo-asbury-circle.png" alt="" class="w-full h-full object-contain"/>',
+      stat: '2x', statColorClass: 'text-primary-bright',
+      statLabel: 'more members each month',
+      quote: '"This marketing strategy? It completely flipped our business around. We got a ton of new customers coming in, and the growth? Absolutely unreal."',
+      author: '— Dino, Owner of Asbury Circle Car Wash',
+      bars: [24, 36, 32, 50, 62, 58, 78, 92, 102],
+      startLabel: '1,300', endLabel: '1,700',
+      lineStartLabel: '1,300', lineEndLabel: '1,700',
+      membershipCaption: 'Grew from 1,300 to 1,700 members in 5 months — $34 cost per member, 500% ROI'
+    },
+    lowell: {
+      name: 'Lowell Express Car Wash',
+      avatar: '<img src="images/logo-lowell-express.png" alt="" class="w-full h-full object-contain"/>',
+      stat: '106%', statColorClass: 'text-accent',
+      statLabel: 'Membership Growth in Under Five Months',
+      quote: '"Since we started working with Uplead Digital, we\'ve seen explosive growth in our membership. We\'ve grown 106% in just 5 months. Best support system in the space — completely transparent with everything they do."',
+      author: '— Bruce, Owner of Lowell Express Car Wash',
+      bars: [18, 26, 34, 48, 66, 80, 88, 96, 108],
+      startLabel: '0%', endLabel: '+106%',
+      lineStartLabel: 'Start', lineEndLabel: '+106%',
+      membershipCaption: 'Gained 51 new members in the first month, adding over $12,750 in LTV revenue'
+    },
+    kps: {
+      name: "KP's Car Wash",
+      avatar: '<img src="images/logo-kps-car-wash.png" alt="" class="w-full h-full object-contain"/>',
+      stat: '20%', statColorClass: 'text-primary-bright',
+      statLabel: 'increase in first month',
+      quote: '"Shot up 20% in the first month, bringing in over $6,600 in LTV revenue and setting us up for steady growth down the road."',
+      author: "— Jason, Owner of KP's Car Wash",
+      bars: [30, 38, 44, 50, 58, 64, 72, 80, 88],
+      startLabel: 'Launch', endLabel: '+20%',
+      lineStartLabel: 'Launch', lineEndLabel: '+20%',
+      membershipCaption: 'Grew 20% in the first month, adding over $6,600 in LTV revenue'
+    },
+    star: {
+      name: 'Star Car Wash',
+      avatar: '<img src="images/logo-star-car-wash.png" alt="" class="w-full h-full object-contain"/>',
+      stat: '19.7%', statColorClass: 'text-accent',
+      statLabel: 'growth in first month',
+      quote: '"Really took off in just a couple of months, growing strong right out the gate. Brought in a good chunk of revenue, and now we\'ve got a solid way to keep folks rolling in."',
+      author: '— Dallas, Owner of Star Car Wash',
+      bars: [20, 42, 58, 66, 70, 74, 78, 82, 86],
+      startLabel: '0%', endLabel: '+19.7%',
+      lineStartLabel: 'Start', lineEndLabel: '+19.7%',
+      membershipCaption: 'Grew nearly 30% in just under 2 months'
+    },
+    dublin: {
+      name: 'Dublin Details',
+      avatar: '<img src="images/logo-dublin-details.png" alt="" class="w-full h-full object-contain"/>',
+      stat: '300', statColorClass: 'text-primary-bright',
+      statLabel: 'new members in 6 months',
+      quote: '"Wasn\'t expecting results like this so quick. The place is thriving now, and we\'re only just getting started!"',
+      author: '— Matthew, Owner of Dublin Details',
+      bars: [16, 28, 42, 54, 66, 76, 86, 94, 100],
+      startLabel: '50', endLabel: '350+',
+      lineStartLabel: '50', lineEndLabel: '350+',
+      membershipCaption: 'Started with just 50 members, now grown to over 350'
+    }
+  };
+
+  const startLabelEl = document.getElementById('crdStartLabel');
+  const endLabelEl   = document.getElementById('crdEndLabel');
+  const lineStartEl  = document.getElementById('crdLineStartLabel');
+  const lineEndEl    = document.getElementById('crdLineEndLabel');
+  const membershipCaptionEl = document.getElementById('crdMembershipCaption');
+
+  function renderChart(c){
+    const bars = c.bars;
+    barsG.innerHTML = '';
+    bars.forEach((h, i) => {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', barX[i]);
+      rect.setAttribute('y', baseline - h);
+      rect.setAttribute('width', 24);
+      rect.setAttribute('height', h);
+      rect.setAttribute('rx', 4);
+      rect.setAttribute('fill', barFill[i]);
+      rect.setAttribute('opacity', barOpacity[i]);
+      barsG.appendChild(rect);
+    });
+
+    const firstH = bars[0];
+    const lastH  = bars[bars.length - 1];
+    startLabelEl.setAttribute('x', barX[0]);
+    startLabelEl.setAttribute('y', Math.max(12, baseline - firstH - 8));
+    startLabelEl.textContent = c.startLabel;
+
+    endLabelEl.setAttribute('x', barX[barX.length - 1] + 24);
+    endLabelEl.setAttribute('y', Math.max(12, baseline - lastH - 8));
+    endLabelEl.textContent = c.endLabel;
+  }
+
+  function setClient(key){
+    const c = data[key];
+    if(!c) return;
+
+    const isLogo = c.avatar.indexOf('<img') === 0;
+    avatarEl.innerHTML = c.avatar;
+    avatarEl.classList.toggle('bg-white/5', isLogo);
+    avatarEl.classList.toggle('bg-gradient-to-br', !isLogo);
+    avatarEl.classList.toggle('from-primary', !isLogo);
+    avatarEl.classList.toggle('to-primary-dim', !isLogo);
+
+    nameEl.textContent = c.name;
+    statLabelEl.textContent = c.statLabel;
+    quoteEl.textContent = c.quote;
+    authorEl.textContent = c.author;
+
+    statEl.textContent = c.stat;
+    statEl.classList.remove('text-primary-bright', 'text-accent');
+    statEl.classList.add(c.statColorClass);
+
+    renderChart(c);
+
+    lineStartEl.textContent = c.lineStartLabel;
+    lineEndEl.textContent = c.lineEndLabel;
+    membershipCaptionEl.textContent = c.membershipCaption;
+
+    selector.querySelectorAll('[data-client]').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.client === key);
+    });
+  }
+
+  selector.querySelectorAll('[data-client]').forEach(btn => {
+    btn.addEventListener('click', () => setClient(btn.dataset.client));
+  });
+
+  setClient('asbury');
+})();
+</script>
+
+
+<!-- ============================================================
+     BOOKING MODAL — wraps the Uplead booking/apply form
+     Form markup, IDs, and JS below are preserved exactly as
+     provided; only the outer wrapper was adapted for the modal.
+     ============================================================ -->
+<div id="bookingModalOverlay" aria-hidden="true">
+  <div id="bookingModalBackdrop"></div>
+
+  <div id="bookingModalPanel" role="dialog" aria-modal="true" aria-labelledby="bookingModalTitle" class="card bg-void text-ink font-sans shadow-[0_30px_90px_-20px_rgba(0,0,0,0.85)] border border-white/10 sm:rounded-3xl">
+
+    <div class="sticky top-0 z-10 flex justify-end px-4 pt-4 sm:px-6 sm:pt-6 bg-gradient-to-b from-void via-void/90 to-transparent pb-3 pointer-events-none">
+      <button type="button" id="bookingModalClose" aria-label="Close booking form" class="pointer-events-auto h-10 w-10 rounded-full glass flex items-center justify-center hover:border-white/25 hover:text-primary-bright transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <div class="px-5 sm:px-8 pb-8 sm:pb-10 -mt-8 relative z-0">
+
+
+    <div class="text-center mb-8">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-3">Apply Now</p>
+      <h2 id="bookingModalTitle" class="text-2xl sm:text-3xl font-bold tracking-tight mb-3">Claim Your Growth Strategy Call</h2>
+      <p class="text-ink-soft">Start with your name and phone — we'll ask a few quick questions, then you can pick your call time.</p>
+    </div>
+
+    <div id="applyCard" class="card rounded-3xl p-6 sm:p-10 shadow-[0_20px_60px_-20px_rgba(52,145,255,0.15)]">
+
+      <div id="progressWrap" class="mb-8">
+        <div class="flex items-center justify-between mb-3">
+          <span id="stepLabel" class="font-mono text-[11px] uppercase tracking-widest text-ink-faint">Step 1 of 10</span>
+          <button id="resetBtn" type="button" class="font-mono text-[11px] uppercase tracking-widest text-ink-faint hover:text-primary transition-colors">Start Over</button>
+        </div>
+        <div class="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+          <div id="progressFill" class="progress-fill h-full bg-gradient-to-r from-accent to-primary rounded-full" style="width:10%"></div>
+        </div>
+      </div>
+
+      <form id="bookingForm" novalidate>
+
+        <!-- Step 1: Name + Phone + (Email/Business) -->
+        <div class="step-panel active" data-step="1">
+          <h3 class="text-2xl font-bold mb-2">Let's get your info</h3>
+          <p class="text-ink-soft mb-6">Just your name and number to start.</p>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Full Name</label>
+              <input type="text" id="f_name" required class="w-full bg-void border border-white/10 rounded-xl px-4 py-3.5 text-ink placeholder:text-ink-faint transition-all" placeholder="John Doe"/>
+            </div>
+            <div>
+              <label class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Phone Number</label>
+              <div id="phoneWrap" class="flex items-stretch w-full bg-void border border-white/10 rounded-xl transition-all overflow-hidden">
+                <div class="relative shrink-0 w-[52px] flex items-center justify-center gap-0.5 border-r border-white/10">
+                  <span id="ccFlag" class="text-base leading-none pointer-events-none">🇺🇸</span>
+                  <span class="material-symbols-outlined text-[14px] text-ink-faint pointer-events-none">expand_more</span>
+                  <select id="f_country_code" aria-label="Country code" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                    <option value="+1" data-iso="US" selected>🇺🇸 +1</option>
+                    <option value="+1" data-iso="CA">🇨🇦 +1</option>
+                    <option value="+44" data-iso="GB">🇬🇧 +44</option>
+                    <option value="+61" data-iso="AU">🇦🇺 +61</option>
+                    <option value="+353" data-iso="IE">🇮🇪 +353</option>
+                    <option value="+64" data-iso="NZ">🇳🇿 +64</option>
+                    <option value="+49" data-iso="DE">🇩🇪 +49</option>
+                    <option value="+33" data-iso="FR">🇫🇷 +33</option>
+                    <option value="+34" data-iso="ES">🇪🇸 +34</option>
+                    <option value="+39" data-iso="IT">🇮🇹 +39</option>
+                    <option value="+31" data-iso="NL">🇳🇱 +31</option>
+                    <option value="+32" data-iso="BE">🇧🇪 +32</option>
+                    <option value="+41" data-iso="CH">🇨🇭 +41</option>
+                    <option value="+46" data-iso="SE">🇸🇪 +46</option>
+                    <option value="+47" data-iso="NO">🇳🇴 +47</option>
+                    <option value="+45" data-iso="DK">🇩🇰 +45</option>
+                    <option value="+351" data-iso="PT">🇵🇹 +351</option>
+                    <option value="+48" data-iso="PL">🇵🇱 +48</option>
+                    <option value="+971" data-iso="AE">🇦🇪 +971</option>
+                    <option value="+966" data-iso="SA">🇸🇦 +966</option>
+                    <option value="+974" data-iso="QA">🇶🇦 +974</option>
+                    <option value="+965" data-iso="KW">🇰🇼 +965</option>
+                    <option value="+973" data-iso="BH">🇧🇭 +973</option>
+                    <option value="+968" data-iso="OM">🇴🇲 +968</option>
+                    <option value="+20" data-iso="EG">🇪🇬 +20</option>
+                    <option value="+213" data-iso="DZ">🇩🇿 +213</option>
+                    <option value="+212" data-iso="MA">🇲🇦 +212</option>
+                    <option value="+216" data-iso="TN">🇹🇳 +216</option>
+                    <option value="+962" data-iso="JO">🇯🇴 +962</option>
+                    <option value="+961" data-iso="LB">🇱🇧 +961</option>
+                    <option value="+91" data-iso="IN">🇮🇳 +91</option>
+                    <option value="+27" data-iso="ZA">🇿🇦 +27</option>
+                    <option value="+65" data-iso="SG">🇸🇬 +65</option>
+                    <option value="+60" data-iso="MY">🇲🇾 +60</option>
+                    <option value="+81" data-iso="JP">🇯🇵 +81</option>
+                    <option value="+82" data-iso="KR">🇰🇷 +82</option>
+                    <option value="+55" data-iso="BR">🇧🇷 +55</option>
+                    <option value="+52" data-iso="MX">🇲🇽 +52</option>
+                  </select>
+                </div>
+                <span id="ccPrefix" class="shrink-0 flex items-center pl-2 text-ink-faint text-sm select-none pointer-events-none">+1</span>
+                <input type="tel" id="f_phone" required class="flex-1 min-w-0 bg-transparent border-0 px-2 py-3.5 text-ink placeholder:text-ink-faint transition-all focus:outline-none focus:ring-0" placeholder="555 000 0000"/>
+              </div>
+            </div>
+            <div id="step1MoreFields" class="space-y-4 hidden">
+              <div>
+                <label class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Email Address</label>
+                <input type="email" id="f_email" class="w-full bg-void border border-white/10 rounded-xl px-4 py-3.5 text-ink placeholder:text-ink-faint transition-all" placeholder="john@example.com"/>
+              </div>
+              <div>
+                <label class="block text-xs font-mono uppercase tracking-wider text-ink-faint mb-2">Business Name</label>
+                <input type="text" id="f_business" required class="w-full bg-void border border-white/10 rounded-xl px-4 py-3.5 text-ink placeholder:text-ink-faint transition-all" placeholder="Lowell Express Car Wash"/>
+              </div>
+            </div>
+          </div>
+          <p id="step1Error" class="text-danger text-sm mt-3 hidden">Please fill in every field with a valid value.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-panel" data-step="2">
+          <h3 class="text-2xl font-bold mb-2">Current membership situation?</h3>
+          <p class="text-ink-soft mb-6">What best describes where you're at today.</p>
+          <div class="space-y-3" data-group="membership_status">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Active unlimited membership program</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Membership program but not growing</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>No membership yet, looking to start</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Detailing / valeting, no membership</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Other</span></button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-panel" data-step="3">
+          <h3 class="text-2xl font-bold mb-2">What type of car wash do you operate?</h3>
+          <p class="text-ink-soft mb-6">Pick the closest match.</p>
+          <div class="space-y-3" data-group="wash_type">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Express tunnel</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Full service tunnel</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>In-bay automatic / touchless</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Self serve</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Hand wash / detailing focused</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Multiple types</span></button>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-panel" data-step="4">
+          <h3 class="text-2xl font-bold mb-2">What POS system does your wash use?</h3>
+          <p class="text-ink-soft mb-6">Helps us understand your current tech stack.</p>
+          <div class="grid grid-cols-2 gap-3" data-group="pos_system">
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Sonny's</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">DRB</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">MicroLogic</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Touch4Wash</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">EverWash</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">FlexWash</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Dencar</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">NXT Wash</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">ICS</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Amp</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">I don't have one</span></button>
+            <button type="button" class="opt-card flex items-center gap-3 border border-white/10 rounded-xl px-4 py-3.5 text-left"><span class="opt-dot"></span><span class="text-sm">Other</span></button>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step-panel" data-step="5">
+          <h3 class="text-2xl font-bold mb-2">How many active members do you have?</h3>
+          <p class="text-ink-soft mb-6">A rough estimate is fine.</p>
+          <div class="space-y-3" data-group="member_count">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Under 300</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>300 – 1,000</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>1,000 – 3,000</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>3,000+</span></button>
+          </div>
+        </div>
+
+        <!-- Step 6 -->
+        <div class="step-panel" data-step="6">
+          <h3 class="text-2xl font-bold mb-2">How many locations do you operate?</h3>
+          <div class="space-y-3" data-group="locations">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>1 location</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>2–3 locations</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>4–10 locations</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>10+ locations</span></button>
+          </div>
+        </div>
+
+        <!-- Step 7 -->
+        <div class="step-panel" data-step="7">
+          <h3 class="text-2xl font-bold mb-2">Have you tried paid digital marketing before?</h3>
+          <div class="space-y-3" data-group="paid_marketing">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Never tried it</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Tried it but didn't get results</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Currently running ads but want better results</span></button>
+          </div>
+        </div>
+
+        <!-- Step 8 -->
+        <div class="step-panel" data-step="8">
+          <h3 class="text-2xl font-bold mb-2">Who else is involved in marketing decisions?</h3>
+          <div class="space-y-3" data-group="decision_makers">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Just me</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Me and my business partner</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>Me and someone else</span></button>
+          </div>
+        </div>
+
+        <!-- Step 9 -->
+        <div class="step-panel" data-step="9">
+          <h3 class="text-2xl font-bold mb-2">One last thing.</h3>
+          <p class="text-ink-soft mb-6">On every call, we build a custom membership growth plan specific to your wash. Only book if you're serious about growing your membership in the next 30 days.</p>
+          <div class="space-y-3" data-group="commitment">
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>I'm serious — lock in my spot</span></button>
+            <button type="button" class="opt-card w-full flex items-center gap-4 border border-white/10 rounded-xl px-5 py-4 text-left"><span class="opt-dot"></span><span>I'm not ready yet</span></button>
+          </div>
+        </div>
+
+        <!-- Step 10: Calendar + Confirm -->
+        <div class="step-panel" data-step="10">
+          <div id="calendarStage">
+            <h3 class="text-2xl font-bold mb-2">Pick a time for your strategy call</h3>
+            <p class="text-ink-soft mb-6">15 minutes. We'll show you exactly how to hit your membership goals.</p>
+            <div class="mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <button type="button" id="prevMonthBtn" aria-label="Previous month" class="h-9 w-9 rounded-full glass flex items-center justify-center hover:border-white/25 transition-colors disabled:opacity-30 disabled:pointer-events-none">
+                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                </button>
+                <span id="monthLabel" class="font-semibold text-lg"></span>
+                <button type="button" id="nextMonthBtn" aria-label="Next month" class="h-9 w-9 rounded-full glass flex items-center justify-center hover:border-white/25 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+              </div>
+              <div class="grid grid-cols-7 gap-1 mb-2">
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Su</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Mo</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Tu</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">We</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Th</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Fr</span>
+                <span class="text-center text-[10px] uppercase tracking-wide text-ink-faint py-1">Sa</span>
+              </div>
+              <div id="dateGrid" class="grid grid-cols-7 gap-1.5"></div>
+            </div>
+            <div class="mb-2" id="timeSection" style="display:none;">
+              <p class="text-xs font-mono uppercase tracking-widest text-ink-faint mb-3">Select a time</p>
+              <div id="timeGrid" class="grid grid-cols-3 gap-2"></div>
+            </div>
+          </div>
+
+          <div id="confirmStage" class="hidden text-center py-6">
+            <div class="h-16 w-16 rounded-full bg-accent/15 text-accent flex items-center justify-center mx-auto mb-6">
+              <span class="material-symbols-outlined text-[32px]">check_circle</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-3">You're booked!</h3>
+            <p class="text-ink-soft mb-1">Your strategy call is confirmed for</p>
+            <p id="confirmDetails" class="text-primary-bright font-semibold text-lg mb-6"></p>
+            <p class="text-ink-soft text-sm max-w-sm mx-auto">A confirmation with the call link is on its way to your inbox. Look out for a text message too.</p>
+          </div>
+        </div>
+
+      </form>
+
+      <div id="formNav" class="flex items-center justify-between gap-4 mt-8">
+        <button type="button" id="backBtn" class="text-ink-soft font-semibold px-5 py-3 rounded-xl hover:text-ink transition-colors invisible flex items-center gap-1">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span> Back
+        </button>
+        <button type="button" id="continueBtn" class="btn-primary text-white font-bold px-8 py-3.5 rounded-xl flex items-center gap-2 transition-transform hover:scale-[1.02] active:scale-95" style="background:linear-gradient(180deg,#4a9dff,#2a7ee6);">
+          Continue <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+        </button>
+      </div>
+
+      <p class="text-center text-xs text-ink-faint mt-6">No pressure. No sales pitch. Just growth.</p>
+    </div>
+  </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4) JS الخاص بمنطق الفورم بالكامل (خطوات + تقويم + إرسال البيانات) -->
+<script>
+(function(){
+
+  // ============================================================
+  // نفس المسار الأصلي كما هو في booking.html — مسار نسبي على نفس الدومين
+  // ============================================================
+  const LEAD_ENDPOINT = '/api/lead';
+
+  const QUESTION_LABELS = {
+    membership_status: 'Membership status',
+    wash_type: 'Wash type',
+    pos_system: 'POS system',
+    member_count: 'Active members',
+    locations: 'Locations',
+    paid_marketing: 'Paid marketing experience',
+    decision_makers: 'Decision makers',
+    commitment: 'Commitment level',
+    selectedDate: 'Preferred date',
+    selectedTime: 'Preferred time'
+  };
+
+  function buildNote(data){
+    const lines = [];
+    Object.keys(QUESTION_LABELS).forEach(key => {
+      if(data[key]){ lines.push(QUESTION_LABELS[key] + ': ' + data[key]); }
+    });
+    return lines.join('\n');
+  }
+
+  function splitName(fullName){
+    const parts = (fullName || '').trim().split(/\s+/);
+    return { first_name: parts.shift() || '', last_name: parts.join(' ') };
+  }
+
+  function sendLead(payload){
+    try{
+      var attribution = (window.getUpleadAttribution ? window.getUpleadAttribution() : {});
+      var fullPayload = Object.assign({}, payload, attribution);
+      fetch(LEAD_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fullPayload)
+      }).catch(() => {});
+    }catch(e){}
+  }
+
+  const PARTIAL_LEAD_KEY = 'uplead_partial_lead';
+
+  function normalizePhone(phone) {
+    if (!phone) return '';
+    return phone.replace(/[^\d+]/g, '').replace(/^00/, '+');
+  }
+
+  function capturePartialLead(payload) {
+    try {
+      const existing = JSON.parse(localStorage.getItem(PARTIAL_LEAD_KEY) || '{}');
+      const merged = { ...existing, ...payload, status: 'partial', updated_at: new Date().toISOString() };
+      const hasLead = existing.phone && normalizePhone(existing.phone) === normalizePhone(merged.phone);
+      localStorage.setItem(PARTIAL_LEAD_KEY, JSON.stringify(merged));
+      const { first_name, last_name } = splitName(merged.name);
+      sendLead({
+        lead_id: existing.lead_id || '',
+        first_name, last_name,
+        email: merged.email || '',
+        phone: normalizePhone(merged.phone),
+        company_name: merged.business || '',
+        country_code: merged.countryCode || '',
+        country_iso: merged.countryIso || '',
+        notes: buildNote(merged),
+        status: 'partial',
+        source: merged.source || 'website',
+        updated_at: merged.updated_at,
+        action: hasLead ? 'update' : 'create'
+      });
+    } catch (e) { console.error(e); }
+  }
+
+  const TOTAL_STEPS = 10;
+  const STORAGE_KEY = 'uplead_booking_v1';
+  let currentStep = 1;
+  let formData = {};
+
+  const panels = document.getElementById('bookingModalPanel').querySelectorAll('.step-panel');
+  const stepLabel = document.getElementById('stepLabel');
+  const progressFill = document.getElementById('progressFill');
+  const backBtn = document.getElementById('backBtn');
+  const continueBtn = document.getElementById('continueBtn');
+  const formNav = document.getElementById('formNav');
+  const resetBtn = document.getElementById('resetBtn');
+  const progressWrap = document.getElementById('progressWrap');
+
+  function saveState(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentStep, formData })); }catch(e){}
+  }
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      const parsed = JSON.parse(raw);
+      if(parsed && parsed.formData){
+        formData = parsed.formData;
+        if(formData.name) document.getElementById('f_name').value = formData.name;
+        if(formData.phone) document.getElementById('f_phone').value = formData.phone;
+        if(formData.email) document.getElementById('f_email').value = formData.email;
+        if(formData.business) document.getElementById('f_business').value = formData.business;
+        if(formData.countryIso){
+          const ccSelect = document.getElementById('f_country_code');
+          const idx = Array.from(ccSelect.options).findIndex(o => o.dataset.iso === formData.countryIso);
+          if(idx > -1) ccSelect.selectedIndex = idx;
+          if(typeof updateFlagDisplay === 'function') updateFlagDisplay();
+          document.getElementById('f_phone').dataset.ccLocked = '1';
+        }
+        Object.keys(formData).forEach(key => {
+          const group = document.querySelector('[data-group="'+key+'"]');
+          if(group){
+            const btns = group.querySelectorAll('.opt-card');
+            btns.forEach(b => {
+              if(b.querySelector('span:last-child').textContent === formData[key]){
+                b.classList.add('selected');
+              }
+            });
+          }
+        });
+        if(parsed.currentStep && parsed.currentStep <= TOTAL_STEPS){
+          currentStep = Math.min(parsed.currentStep, TOTAL_STEPS);
+        }
+      }
+    }catch(e){}
+  }
+
+  function showStep(n, opts){
+    opts = opts || {};
+    panels.forEach(p => p.classList.toggle('active', parseInt(p.dataset.step) === n));
+    stepLabel.textContent = 'Step ' + n + ' of ' + TOTAL_STEPS;
+    progressFill.style.width = (n / TOTAL_STEPS * 100) + '%';
+    backBtn.classList.toggle('invisible', n === 1);
+
+    const isOptionStep = n >= 2 && n <= 9;
+    const isCalendarStep = n === 10;
+
+    if(n === 1){
+      checkStep1Reveal();
+    } else if(isOptionStep){
+      continueBtn.classList.add('hidden');
+    } else {
+      continueBtn.classList.remove('hidden');
+    }
+
+    if(isCalendarStep){
+      formNav.classList.add('hidden');
+      buildCalendar();
+    } else {
+      formNav.classList.remove('hidden');
+    }
+
+    continueBtn.textContent = '';
+    const label = document.createElement('span');
+    label.textContent = 'Continue';
+    const icon = document.createElement('span');
+    icon.className = 'material-symbols-outlined text-[20px]';
+    icon.textContent = 'arrow_forward';
+    continueBtn.appendChild(label);
+    continueBtn.appendChild(icon);
+
+    if(opts.scroll !== false){
+      const cardEl = document.getElementById('applyCard');
+      if(cardEl){
+        const headerOffset = 90;
+        const top = cardEl.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    }
+  }
+
+  function goToStep(n){
+    currentStep = Math.max(1, Math.min(TOTAL_STEPS, n));
+    saveState();
+    showStep(currentStep);
+  }
+
+  function getFullPhone(){
+    const cc = document.getElementById('f_country_code');
+    const dial = cc && cc.value ? cc.value : '';
+    const local = document.getElementById('f_phone').value.trim();
+    return local ? (dial + ' ' + local).trim() : '';
+  }
+
+  const ccSelectEl = document.getElementById('f_country_code');
+  const ccFlagEl = document.getElementById('ccFlag');
+  const ccPrefixEl = document.getElementById('ccPrefix');
+  const phoneWrapEl = document.getElementById('phoneWrap');
+  const phoneInputEl = document.getElementById('f_phone');
+
+  function isoToFlag(iso){
+    if(!iso || iso.length !== 2) return '🏳️';
+    return String.fromCodePoint(...iso.toUpperCase().split('').map(c => 127397 + c.charCodeAt(0)));
+  }
+  function updateFlagDisplay(){
+    const opt = ccSelectEl.options[ccSelectEl.selectedIndex];
+    ccFlagEl.textContent = isoToFlag(opt.dataset.iso);
+    ccPrefixEl.textContent = opt.value;
+  }
+  ccSelectEl.addEventListener('change', () => {
+    updateFlagDisplay();
+    phoneInputEl.dataset.ccLocked = '1';
+  });
+  [phoneInputEl, ccSelectEl].forEach(el => {
+    el.addEventListener('focus', () => phoneWrapEl.classList.add('wrap-focus'));
+    el.addEventListener('blur', () => phoneWrapEl.classList.remove('wrap-focus'));
+  });
+
+  const dialCodes = Array.from(ccSelectEl.options)
+    .map(o => ({ digits: o.value.replace('+',''), iso: o.dataset.iso }))
+    .sort((a,b) => b.digits.length - a.digits.length);
+
+  phoneInputEl.addEventListener('input', () => {
+    const raw = phoneInputEl.value;
+    const digits = raw.replace(/\D/g,'');
+    if(digits.length === 0){ phoneInputEl.dataset.ccLocked = ''; return; }
+    if(phoneInputEl.dataset.ccLocked === '1') return;
+    if(digits.length < 3) return;
+    const match = dialCodes.find(d => digits.startsWith(d.digits));
+    if(match){
+      const idx = Array.from(ccSelectEl.options).findIndex(o => o.dataset.iso === match.iso);
+      if(idx > -1 && ccSelectEl.selectedIndex !== idx){
+        ccSelectEl.selectedIndex = idx;
+        updateFlagDisplay();
+      }
+      const remainder = digits.slice(match.digits.length);
+      phoneInputEl.value = remainder;
+      phoneInputEl.dataset.ccLocked = '1';
+    }
+  });
+  updateFlagDisplay();
+
+  function checkStep1Reveal(){
+    const name = document.getElementById('f_name').value.trim();
+    const phone = document.getElementById('f_phone').value.trim();
+    const phoneOk = phone.replace(/\D/g,'').length >= 7;
+    const moreFields = document.getElementById('step1MoreFields');
+    const shouldShow = !!name && phoneOk;
+    if(shouldShow){
+      if(moreFields.classList.contains('hidden')){
+        moreFields.classList.remove('hidden');
+        moreFields.classList.add('animate-fadeUp');
+      }
+      continueBtn.classList.remove('hidden');
+    } else {
+      moreFields.classList.add('hidden');
+      moreFields.classList.remove('animate-fadeUp');
+      continueBtn.classList.add('hidden');
+    }
+  }
+  ['f_name','f_phone'].forEach(id => {
+    document.getElementById(id).addEventListener('input', checkStep1Reveal);
+  });
+  document.getElementById('f_country_code').addEventListener('change', checkStep1Reveal);
+
+  let partialLeadCreated = false;
+
+  ['f_name','f_phone','f_email','f_business','f_country_code'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const evt = id === 'f_country_code' ? 'change' : 'blur';
+    el.addEventListener(evt, () => {
+      const firstName = document.getElementById('f_name')?.value.trim() || '';
+      const phone = getFullPhone();
+      const email = document.getElementById('f_email')?.value.trim() || '';
+      const business = document.getElementById('f_business')?.value.trim() || '';
+      const cc = document.getElementById('f_country_code');
+      if (!partialLeadCreated && firstName && phone && phone.replace(/\D/g, '').length >= 8) {
+        partialLeadCreated = true;
+        capturePartialLead({
+          name: firstName, phone: phone, email: email, business: business,
+          countryCode: cc.value, countryIso: cc.options[cc.selectedIndex].dataset.iso,
+          source: 'apply_form_step1'
+        });
+      }
+    });
+  });
+
+  backBtn.addEventListener('click', () => goToStep(currentStep - 1));
+
+  continueBtn.addEventListener('click', () => {
+    if(currentStep === 1){
+      const name = document.getElementById('f_name').value.trim();
+      const phone = document.getElementById('f_phone').value.trim();
+      const email = document.getElementById('f_email').value.trim();
+      const business = document.getElementById('f_business').value.trim();
+      const emailOk = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      const phoneOk = phone.replace(/\D/g,'').length >= 7;
+      const err = document.getElementById('step1Error');
+      if(!name || !phoneOk || !emailOk || !business){
+        err.classList.remove('hidden');
+        return;
+      }
+      err.classList.add('hidden');
+      const cc = document.getElementById('f_country_code');
+      formData.name = name; formData.phone = phone; formData.countryCode = cc.value; formData.countryIso = cc.options[cc.selectedIndex].dataset.iso; formData.email = email; formData.business = business;
+      saveState();
+      goToStep(2);
+    }
+  });
+
+  document.getElementById('bookingModalPanel').querySelectorAll('[data-group]').forEach(group => {
+    const key = group.dataset.group;
+    group.querySelectorAll('.opt-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('.opt-card').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        formData[key] = btn.querySelector('span:last-child').textContent;
+        saveState();
+        try {
+          const draft = JSON.parse(localStorage.getItem(PARTIAL_LEAD_KEY) || '{}');
+          localStorage.setItem(PARTIAL_LEAD_KEY, JSON.stringify({ ...draft, ...formData, source: 'booking_modal_progress' }));
+        } catch (e) {}
+        setTimeout(() => {
+          if (currentStep < TOTAL_STEPS) { goToStep(currentStep + 1); }
+        }, 380);
+      });
+    });
+  });
+
+  resetBtn.addEventListener('click', () => {
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    formData = {};
+    document.getElementById('bookingForm').reset();
+    document.getElementById('bookingModalPanel').querySelectorAll('.opt-card').forEach(b => b.classList.remove('selected'));
+    document.getElementById('confirmStage').classList.add('hidden');
+    document.getElementById('calendarStage').classList.remove('hidden');
+    progressWrap.classList.remove('hidden');
+    goToStep(1);
+  });
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let viewYear = today.getFullYear();
+  let viewMonth = today.getMonth();
+
+  function buildCalendar(){
+    const dateGrid = document.getElementById('dateGrid');
+    const timeGrid = document.getElementById('timeGrid');
+    const timeSection = document.getElementById('timeSection');
+    const prevBtn = document.getElementById('prevMonthBtn');
+    const nextBtn = document.getElementById('nextMonthBtn');
+
+    if(!dateGrid.dataset.wired){
+      dateGrid.dataset.wired = '1';
+      prevBtn.addEventListener('click', () => {
+        viewMonth--;
+        if(viewMonth < 0){ viewMonth = 11; viewYear--; }
+        renderMonth();
+      });
+      nextBtn.addEventListener('click', () => {
+        viewMonth++;
+        if(viewMonth > 11){ viewMonth = 0; viewYear++; }
+        renderMonth();
+      });
+    }
+    renderMonth();
+
+    function renderMonth(){
+      const monthLabel = document.getElementById('monthLabel');
+      const monthFmt = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
+      const firstOfView = new Date(viewYear, viewMonth, 1);
+      monthLabel.textContent = monthFmt.format(firstOfView);
+
+      const isCurrentMonth = (viewYear === today.getFullYear() && viewMonth === today.getMonth());
+      prevBtn.disabled = isCurrentMonth;
+
+      dateGrid.innerHTML = '';
+      const firstWeekday = firstOfView.getDay();
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+      for(let i = 0; i < firstWeekday; i++){
+        const empty = document.createElement('div');
+        dateGrid.appendChild(empty);
+      }
+
+      for(let day = 1; day <= daysInMonth; day++){
+        const date = new Date(viewYear, viewMonth, day);
+        const dow = date.getDay();
+        const isPast = date < today;
+        const isWeekend = (dow === 0 || dow === 6);
+        const isToday = date.getTime() === today.getTime();
+        const disabled = isPast || isWeekend;
+
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.textContent = String(day);
+        cell.className = 'aspect-square flex items-center justify-center rounded-lg text-sm transition-colors ' +
+          (disabled ? 'text-ink-faint/40 cursor-not-allowed' : 'opt-card border border-white/10 hover:border-primary/50 font-medium cursor-pointer');
+        if(isToday && !disabled){ cell.classList.add('ring-1','ring-accent/50'); }
+        if(disabled){ cell.disabled = true; }
+
+        if(formData.selectedDate === date.toDateString()){
+          cell.classList.add('selected');
+        }
+
+        if(!disabled){
+          cell.addEventListener('click', () => {
+            dateGrid.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+            cell.classList.add('selected');
+            formData.selectedDate = date.toDateString();
+            saveState();
+            timeSection.style.display = 'block';
+            buildTimeSlots();
+            timeSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          });
+        }
+        dateGrid.appendChild(cell);
+      }
+    }
+
+    function buildTimeSlots(){
+      timeGrid.innerHTML = '';
+      ['9:00 AM','10:30 AM','12:00 PM','1:30 PM','3:00 PM','4:30 PM'].forEach(slot => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt-card flex items-center justify-center border border-white/10 rounded-xl py-3 text-sm';
+        btn.textContent = slot;
+        if(formData.selectedTime === slot){ btn.classList.add('selected'); }
+        btn.addEventListener('click', () => {
+          timeGrid.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          formData.selectedTime = slot;
+          saveState();
+          setTimeout(completeBooking, 300);
+        });
+        timeGrid.appendChild(btn);
+      });
+    }
+  }
+
+  function completeBooking(){
+    document.getElementById('calendarStage').classList.add('hidden');
+    document.getElementById('confirmStage').classList.remove('hidden');
+    document.getElementById('confirmDetails').textContent = (formData.selectedDate || '') + ' at ' + (formData.selectedTime || '');
+    progressFill.style.width = '100%';
+    stepLabel.textContent = 'All done';
+
+    const phone = normalizePhone((formData.countryCode || '') + String(formData.phone || '').replace(/^\+/, ''));
+    const { first_name, last_name } = splitName(formData.name);
+
+    sendLead({
+      first_name, last_name,
+      email: formData.email || '',
+      phone,
+      company_name: formData.business || '',
+      country_code: formData.countryCode || '',
+      country_iso: formData.countryIso || '',
+      preferred_date: formData.selectedDate || '',
+      preferred_time: formData.selectedTime || '',
+      note: buildNote(formData),
+      status: 'booked',
+      source: 'booking_modal_complete',
+      updated_at: new Date().toISOString()
+    });
+
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    try{ localStorage.removeItem(PARTIAL_LEAD_KEY); }catch(e){}
+  }
+
+  loadState();
+  showStep(currentStep, { scroll: false });
+})();
+</script>
+<script>
+(function(){
+  const overlay = document.getElementById('bookingModalOverlay');
+  const panel = document.getElementById('bookingModalPanel');
+  const backdrop = document.getElementById('bookingModalBackdrop');
+  const closeBtn = document.getElementById('bookingModalClose');
+  if(!overlay || !panel) return;
+
+  let lastFocused = null;
+
+  function openBookingModal(){
+    lastFocused = document.activeElement;
+    overlay.classList.add('is-open');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.documentElement.classList.add('modal-open');
+    document.body.classList.add('modal-open');
+    if(window.innerWidth < 1024){
+      const mobileMenu = document.getElementById('mobileMenu');
+      if(mobileMenu && !mobileMenu.classList.contains('translate-x-full')){
+        mobileMenu.classList.add('translate-x-full');
+        document.body.classList.remove('overflow-hidden');
+      }
+    }
+    requestAnimationFrame(() => { closeBtn && closeBtn.focus(); });
+  }
+
+  function closeBookingModal(){
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.documentElement.classList.remove('modal-open');
+    document.body.classList.remove('modal-open');
+    if(lastFocused && typeof lastFocused.focus === 'function'){ lastFocused.focus(); }
+  }
+
+  document.querySelectorAll('[data-scroll-to-booking]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openBookingModal();
+    });
+  });
+
+  closeBtn && closeBtn.addEventListener('click', closeBookingModal);
+
+  backdrop && backdrop.addEventListener('click', closeBookingModal);
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && overlay.classList.contains('is-open')){
+      closeBookingModal();
+    }
+  });
+
+  panel.addEventListener('click', (e) => e.stopPropagation());
+})();
+</script>
+<script>
+(function(){
+
+  // ============================================================
+  // نفس المسار الأصلي كما هو في booking.html — مسار نسبي على نفس الدومين
+  // ============================================================
+  const LEAD_ENDPOINT = '/api/lead';
+
+  const QUESTION_LABELS = {
+    membership_status: 'Membership status',
+    wash_type: 'Wash type',
+    pos_system: 'POS system',
+    member_count: 'Active members',
+    locations: 'Locations',
+    paid_marketing: 'Paid marketing experience',
+    decision_makers: 'Decision makers',
+    commitment: 'Commitment level',
+    selectedDate: 'Preferred date',
+    selectedTime: 'Preferred time'
+  };
+
+  function buildNote(data){
+    const lines = [];
+    Object.keys(QUESTION_LABELS).forEach(key => {
+      if(data[key]){ lines.push(QUESTION_LABELS[key] + ': ' + data[key]); }
+    });
+    return lines.join('\n');
+  }
+
+  function splitName(fullName){
+    const parts = (fullName || '').trim().split(/\s+/);
+    return { first_name: parts.shift() || '', last_name: parts.join(' ') };
+  }
+
+  function sendLead(payload){
+    try{
+      var attribution = (window.getUpleadAttribution ? window.getUpleadAttribution() : {});
+      var fullPayload = Object.assign({}, payload, attribution);
+      fetch(LEAD_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fullPayload)
+      }).catch(() => {});
+    }catch(e){}
+  }
+
+  const PARTIAL_LEAD_KEY = 'uplead_partial_lead';
+
+  function normalizePhone(phone) {
+    if (!phone) return '';
+    return phone.replace(/[^\d+]/g, '').replace(/^00/, '+');
+  }
+
+  function capturePartialLead(payload) {
+    try {
+      const existing = JSON.parse(localStorage.getItem(PARTIAL_LEAD_KEY) || '{}');
+      const merged = { ...existing, ...payload, status: 'partial', updated_at: new Date().toISOString() };
+      const hasLead = existing.phone && normalizePhone(existing.phone) === normalizePhone(merged.phone);
+      localStorage.setItem(PARTIAL_LEAD_KEY, JSON.stringify(merged));
+      const { first_name, last_name } = splitName(merged.name);
+      sendLead({
+        lead_id: existing.lead_id || '',
+        first_name, last_name,
+        email: merged.email || '',
+        phone: normalizePhone(merged.phone),
+        company_name: merged.business || '',
+        country_code: merged.countryCode || '',
+        country_iso: merged.countryIso || '',
+        notes: buildNote(merged),
+        status: 'partial',
+        source: merged.source || 'website',
+        updated_at: merged.updated_at,
+        action: hasLead ? 'update' : 'create'
+      });
+    } catch (e) { console.error(e); }
+  }
+
+  const TOTAL_STEPS = 10;
+  const STORAGE_KEY = 'uplead_booking_v1_emb';
+  let currentStep = 1;
+  let formData = {};
+
+  const panels = document.getElementById('bookingEmbedSection').querySelectorAll('.step-panel');
+  const stepLabel = document.getElementById('stepLabelEmb');
+  const progressFill = document.getElementById('progressFillEmb');
+  const backBtn = document.getElementById('backBtnEmb');
+  const continueBtn = document.getElementById('continueBtnEmb');
+  const formNav = document.getElementById('formNavEmb');
+  const resetBtn = document.getElementById('resetBtnEmb');
+  const progressWrap = document.getElementById('progressWrapEmb');
+
+  function saveState(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentStep, formData })); }catch(e){}
+  }
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      const parsed = JSON.parse(raw);
+      if(parsed && parsed.formData){
+        formData = parsed.formData;
+        if(formData.name) document.getElementById('f_nameEmb').value = formData.name;
+        if(formData.phone) document.getElementById('f_phoneEmb').value = formData.phone;
+        if(formData.email) document.getElementById('f_emailEmb').value = formData.email;
+        if(formData.business) document.getElementById('f_businessEmb').value = formData.business;
+        if(formData.countryIso){
+          const ccSelect = document.getElementById('f_country_codeEmb');
+          const idx = Array.from(ccSelect.options).findIndex(o => o.dataset.iso === formData.countryIso);
+          if(idx > -1) ccSelect.selectedIndex = idx;
+          if(typeof updateFlagDisplay === 'function') updateFlagDisplay();
+          document.getElementById('f_phoneEmb').dataset.ccLocked = '1';
+        }
+        Object.keys(formData).forEach(key => {
+          const group = document.querySelector('[data-group="'+key+'"]');
+          if(group){
+            const btns = group.querySelectorAll('.opt-card');
+            btns.forEach(b => {
+              if(b.querySelector('span:last-child').textContent === formData[key]){
+                b.classList.add('selected');
+              }
+            });
+          }
+        });
+        if(parsed.currentStep && parsed.currentStep <= TOTAL_STEPS){
+          currentStep = Math.min(parsed.currentStep, TOTAL_STEPS);
+        }
+      }
+    }catch(e){}
+  }
+
+  function showStep(n, opts){
+    opts = opts || {};
+    panels.forEach(p => p.classList.toggle('active', parseInt(p.dataset.step) === n));
+    stepLabel.textContent = 'Step ' + n + ' of ' + TOTAL_STEPS;
+    progressFill.style.width = (n / TOTAL_STEPS * 100) + '%';
+    backBtn.classList.toggle('invisible', n === 1);
+
+    const isOptionStep = n >= 2 && n <= 9;
+    const isCalendarStep = n === 10;
+
+    if(n === 1){
+      checkStep1Reveal();
+    } else if(isOptionStep){
+      continueBtn.classList.add('hidden');
+    } else {
+      continueBtn.classList.remove('hidden');
+    }
+
+    if(isCalendarStep){
+      formNav.classList.add('hidden');
+      buildCalendar();
+    } else {
+      formNav.classList.remove('hidden');
+    }
+
+    continueBtn.textContent = '';
+    const label = document.createElement('span');
+    label.textContent = 'Continue';
+    const icon = document.createElement('span');
+    icon.className = 'material-symbols-outlined text-[20px]';
+    icon.textContent = 'arrow_forward';
+    continueBtn.appendChild(label);
+    continueBtn.appendChild(icon);
+
+    if(opts.scroll !== false){
+      const cardEl = document.getElementById('applyCardEmb');
+      if(cardEl){
+        const headerOffset = 90;
+        const top = cardEl.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    }
+  }
+
+  function goToStep(n){
+    currentStep = Math.max(1, Math.min(TOTAL_STEPS, n));
+    saveState();
+    showStep(currentStep);
+  }
+
+  function getFullPhone(){
+    const cc = document.getElementById('f_country_codeEmb');
+    const dial = cc && cc.value ? cc.value : '';
+    const local = document.getElementById('f_phoneEmb').value.trim();
+    return local ? (dial + ' ' + local).trim() : '';
+  }
+
+  const ccSelectEl = document.getElementById('f_country_codeEmb');
+  const ccFlagEl = document.getElementById('ccFlagEmb');
+  const ccPrefixEl = document.getElementById('ccPrefixEmb');
+  const phoneWrapEl = document.getElementById('phoneWrapEmb');
+  const phoneInputEl = document.getElementById('f_phoneEmb');
+
+  function isoToFlag(iso){
+    if(!iso || iso.length !== 2) return '🏳️';
+    return String.fromCodePoint(...iso.toUpperCase().split('').map(c => 127397 + c.charCodeAt(0)));
+  }
+  function updateFlagDisplay(){
+    const opt = ccSelectEl.options[ccSelectEl.selectedIndex];
+    ccFlagEl.textContent = isoToFlag(opt.dataset.iso);
+    ccPrefixEl.textContent = opt.value;
+  }
+  ccSelectEl.addEventListener('change', () => {
+    updateFlagDisplay();
+    phoneInputEl.dataset.ccLocked = '1';
+  });
+  [phoneInputEl, ccSelectEl].forEach(el => {
+    el.addEventListener('focus', () => phoneWrapEl.classList.add('wrap-focus'));
+    el.addEventListener('blur', () => phoneWrapEl.classList.remove('wrap-focus'));
+  });
+
+  const dialCodes = Array.from(ccSelectEl.options)
+    .map(o => ({ digits: o.value.replace('+',''), iso: o.dataset.iso }))
+    .sort((a,b) => b.digits.length - a.digits.length);
+
+  phoneInputEl.addEventListener('input', () => {
+    const raw = phoneInputEl.value;
+    const digits = raw.replace(/\D/g,'');
+    if(digits.length === 0){ phoneInputEl.dataset.ccLocked = ''; return; }
+    if(phoneInputEl.dataset.ccLocked === '1') return;
+    if(digits.length < 3) return;
+    const match = dialCodes.find(d => digits.startsWith(d.digits));
+    if(match){
+      const idx = Array.from(ccSelectEl.options).findIndex(o => o.dataset.iso === match.iso);
+      if(idx > -1 && ccSelectEl.selectedIndex !== idx){
+        ccSelectEl.selectedIndex = idx;
+        updateFlagDisplay();
+      }
+      const remainder = digits.slice(match.digits.length);
+      phoneInputEl.value = remainder;
+      phoneInputEl.dataset.ccLocked = '1';
+    }
+  });
+  updateFlagDisplay();
+
+  function checkStep1Reveal(){
+    const name = document.getElementById('f_nameEmb').value.trim();
+    const phone = document.getElementById('f_phoneEmb').value.trim();
+    const phoneOk = phone.replace(/\D/g,'').length >= 7;
+    const moreFields = document.getElementById('step1MoreFieldsEmb');
+    const shouldShow = !!name && phoneOk;
+    if(shouldShow){
+      if(moreFields.classList.contains('hidden')){
+        moreFields.classList.remove('hidden');
+        moreFields.classList.add('animate-fadeUp');
+      }
+      continueBtn.classList.remove('hidden');
+    } else {
+      moreFields.classList.add('hidden');
+      moreFields.classList.remove('animate-fadeUp');
+      continueBtn.classList.add('hidden');
+    }
+  }
+  ['f_nameEmb','f_phoneEmb'].forEach(id => {
+    document.getElementById(id).addEventListener('input', checkStep1Reveal);
+  });
+  document.getElementById('f_country_codeEmb').addEventListener('change', checkStep1Reveal);
+
+  let partialLeadCreated = false;
+
+  ['f_nameEmb','f_phoneEmb','f_emailEmb','f_businessEmb','f_country_codeEmb'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const evt = id === 'f_country_codeEmb' ? 'change' : 'blur';
+    el.addEventListener(evt, () => {
+      const firstName = document.getElementById('f_nameEmb')?.value.trim() || '';
+      const phone = getFullPhone();
+      const email = document.getElementById('f_emailEmb')?.value.trim() || '';
+      const business = document.getElementById('f_businessEmb')?.value.trim() || '';
+      const cc = document.getElementById('f_country_codeEmb');
+      if (!partialLeadCreated && firstName && phone && phone.replace(/\D/g, '').length >= 8) {
+        partialLeadCreated = true;
+        capturePartialLead({
+          name: firstName, phone: phone, email: email, business: business,
+          countryCode: cc.value, countryIso: cc.options[cc.selectedIndex].dataset.iso,
+          source: 'apply_form_step1'
+        });
+      }
+    });
+  });
+
+  backBtn.addEventListener('click', () => goToStep(currentStep - 1));
+
+  continueBtn.addEventListener('click', () => {
+    if(currentStep === 1){
+      const name = document.getElementById('f_nameEmb').value.trim();
+      const phone = document.getElementById('f_phoneEmb').value.trim();
+      const email = document.getElementById('f_emailEmb').value.trim();
+      const business = document.getElementById('f_businessEmb').value.trim();
+      const emailOk = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      const phoneOk = phone.replace(/\D/g,'').length >= 7;
+      const err = document.getElementById('step1ErrorEmb');
+      if(!name || !phoneOk || !emailOk || !business){
+        err.classList.remove('hidden');
+        return;
+      }
+      err.classList.add('hidden');
+      const cc = document.getElementById('f_country_codeEmb');
+      formData.name = name; formData.phone = phone; formData.countryCode = cc.value; formData.countryIso = cc.options[cc.selectedIndex].dataset.iso; formData.email = email; formData.business = business;
+      saveState();
+      goToStep(2);
+    }
+  });
+
+  document.getElementById('bookingEmbedSection').querySelectorAll('[data-group]').forEach(group => {
+    const key = group.dataset.group;
+    group.querySelectorAll('.opt-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('.opt-card').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        formData[key] = btn.querySelector('span:last-child').textContent;
+        saveState();
+        try {
+          const draft = JSON.parse(localStorage.getItem(PARTIAL_LEAD_KEY) || '{}');
+          localStorage.setItem(PARTIAL_LEAD_KEY, JSON.stringify({ ...draft, ...formData, source: 'booking_modal_progress' }));
+        } catch (e) {}
+        setTimeout(() => {
+          if (currentStep < TOTAL_STEPS) { goToStep(currentStep + 1); }
+        }, 380);
+      });
+    });
+  });
+
+  resetBtn.addEventListener('click', () => {
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    formData = {};
+    document.getElementById('bookingFormEmb').reset();
+    document.getElementById('bookingEmbedSection').querySelectorAll('.opt-card').forEach(b => b.classList.remove('selected'));
+    document.getElementById('confirmStageEmb').classList.add('hidden');
+    document.getElementById('calendarStageEmb').classList.remove('hidden');
+    progressWrap.classList.remove('hidden');
+    goToStep(1);
+  });
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let viewYear = today.getFullYear();
+  let viewMonth = today.getMonth();
+
+  function buildCalendar(){
+    const dateGrid = document.getElementById('dateGridEmb');
+    const timeGrid = document.getElementById('timeGridEmb');
+    const timeSection = document.getElementById('timeSectionEmb');
+    const prevBtn = document.getElementById('prevMonthBtnEmb');
+    const nextBtn = document.getElementById('nextMonthBtnEmb');
+
+    if(!dateGrid.dataset.wired){
+      dateGrid.dataset.wired = '1';
+      prevBtn.addEventListener('click', () => {
+        viewMonth--;
+        if(viewMonth < 0){ viewMonth = 11; viewYear--; }
+        renderMonth();
+      });
+      nextBtn.addEventListener('click', () => {
+        viewMonth++;
+        if(viewMonth > 11){ viewMonth = 0; viewYear++; }
+        renderMonth();
+      });
+    }
+    renderMonth();
+
+    function renderMonth(){
+      const monthLabel = document.getElementById('monthLabelEmb');
+      const monthFmt = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
+      const firstOfView = new Date(viewYear, viewMonth, 1);
+      monthLabel.textContent = monthFmt.format(firstOfView);
+
+      const isCurrentMonth = (viewYear === today.getFullYear() && viewMonth === today.getMonth());
+      prevBtn.disabled = isCurrentMonth;
+
+      dateGrid.innerHTML = '';
+      const firstWeekday = firstOfView.getDay();
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+      for(let i = 0; i < firstWeekday; i++){
+        const empty = document.createElement('div');
+        dateGrid.appendChild(empty);
+      }
+
+      for(let day = 1; day <= daysInMonth; day++){
+        const date = new Date(viewYear, viewMonth, day);
+        const dow = date.getDay();
+        const isPast = date < today;
+        const isWeekend = (dow === 0 || dow === 6);
+        const isToday = date.getTime() === today.getTime();
+        const disabled = isPast || isWeekend;
+
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.textContent = String(day);
+        cell.className = 'aspect-square flex items-center justify-center rounded-lg text-sm transition-colors ' +
+          (disabled ? 'text-ink-faint/40 cursor-not-allowed' : 'opt-card border border-white/10 hover:border-primary/50 font-medium cursor-pointer');
+        if(isToday && !disabled){ cell.classList.add('ring-1','ring-accent/50'); }
+        if(disabled){ cell.disabled = true; }
+
+        if(formData.selectedDate === date.toDateString()){
+          cell.classList.add('selected');
+        }
+
+        if(!disabled){
+          cell.addEventListener('click', () => {
+            dateGrid.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+            cell.classList.add('selected');
+            formData.selectedDate = date.toDateString();
+            saveState();
+            timeSection.style.display = 'block';
+            buildTimeSlots();
+            timeSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          });
+        }
+        dateGrid.appendChild(cell);
+      }
+    }
+
+    function buildTimeSlots(){
+      timeGrid.innerHTML = '';
+      ['9:00 AM','10:30 AM','12:00 PM','1:30 PM','3:00 PM','4:30 PM'].forEach(slot => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt-card flex items-center justify-center border border-white/10 rounded-xl py-3 text-sm';
+        btn.textContent = slot;
+        if(formData.selectedTime === slot){ btn.classList.add('selected'); }
+        btn.addEventListener('click', () => {
+          timeGrid.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          formData.selectedTime = slot;
+          saveState();
+          setTimeout(completeBooking, 300);
+        });
+        timeGrid.appendChild(btn);
+      });
+    }
+  }
+
+  function completeBooking(){
+    document.getElementById('calendarStageEmb').classList.add('hidden');
+    document.getElementById('confirmStageEmb').classList.remove('hidden');
+    document.getElementById('confirmDetailsEmb').textContent = (formData.selectedDate || '') + ' at ' + (formData.selectedTime || '');
+    progressFill.style.width = '100%';
+    stepLabel.textContent = 'All done';
+
+    const phone = normalizePhone((formData.countryCode || '') + String(formData.phone || '').replace(/^\+/, ''));
+    const { first_name, last_name } = splitName(formData.name);
+
+    sendLead({
+      first_name, last_name,
+      email: formData.email || '',
+      phone,
+      company_name: formData.business || '',
+      country_code: formData.countryCode || '',
+      country_iso: formData.countryIso || '',
+      preferred_date: formData.selectedDate || '',
+      preferred_time: formData.selectedTime || '',
+      note: buildNote(formData),
+      status: 'booked',
+      source: 'booking_modal_complete',
+      updated_at: new Date().toISOString()
+    });
+
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    try{ localStorage.removeItem(PARTIAL_LEAD_KEY); }catch(e){}
+  }
+
+  loadState();
+  showStep(currentStep, { scroll: false });
+})();
+</script>
+
+</body>
+</html>
