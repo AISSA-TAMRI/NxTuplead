@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>NXTUP Lead | Sign In</title>
+<title>UpClose | Sign In</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -14,20 +14,24 @@
 <style>
 
 :root{
-  --bg:#0f1117;--s1:#171b23;--s2:#1d222d;--s3:#252b38;
-  --acc:#adc6ff;--acc-d:rgba(173,198,255,0.12);--acc-g:rgba(173,198,255,0.08);
-  --tx:#e2e2eb;--tx2:#b8c0d4;--tx3:#8e909a;
-  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.11);
-  --gr:#4ade80;--gr-d:rgba(74,222,128,0.1);
-  --re:#f87171;--re-d:rgba(248,113,113,0.1);
-  --am:#fbbf24;--am-d:rgba(251,191,36,0.1);
-  --bl:#60a5fa;--bl-d:rgba(96,165,250,0.1);
-  --pu:#a78bfa;--pu-d:rgba(167,139,250,0.1)
+  --bg:#f5f6fa;--s1:#ffffff;--s2:#ffffff;--s3:#f0f1f6;
+  --acc:#3465eb;--acc-d:rgba(52,101,235,0.09);--acc-g:rgba(52,101,235,0.05);
+  --tx:#13151c;--tx2:#5c6170;--tx3:#9398a2;
+  --bd:#e7e8ef;--bd2:#d6d8e2;
+  --gr:#16a34a;--gr-d:rgba(22,163,74,0.1);
+  --re:#dc2626;--re-d:rgba(220,38,38,0.09);
+  --am:#c8790a;--am-d:rgba(200,121,10,0.12);
+  --bl:#3465eb;--bl-d:rgba(52,101,235,0.09);
+  --pu:#7c5cf4;--pu-d:rgba(124,92,244,0.1);
+  --shadow-md:0 10px 28px rgba(20,24,40,0.09);
+  --shadow-lg:0 24px 56px rgba(20,24,40,0.14);
+  --ease:cubic-bezier(.16,.84,.32,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:14px}
-.mat{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 20;font-size:18px;line-height:1;vertical-align:middle;user-select:none}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;-webkit-font-smoothing:antialiased}
+.mat{font-family:'Material Symbols Outlined';font-variation-settings:'FILL' 0,'wght' 350,'GRAD' 0,'opsz' 20;font-size:18px;line-height:1;vertical-align:middle;user-select:none}
 .mat.sm{font-size:15px}.mat.lg{font-size:22px}
+::selection{background:rgba(52,101,235,0.18);color:var(--tx)}
 
 
 #login-page{
@@ -46,29 +50,25 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   position:absolute;
   inset:0;
   background-image:
-    linear-gradient(rgba(173,198,255,0.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(173,198,255,0.03) 1px,transparent 1px);
+    linear-gradient(rgba(20,24,40,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(20,24,40,0.03) 1px,transparent 1px);
   background-size:60px 60px;
-  animation:gridDrift 20s linear infinite;
+  mask-image:radial-gradient(ellipse 60% 50% at 50% 20%,#000 40%,transparent 100%);
 }
 #login-page::after{
   content:'';
   position:absolute;
-  top:-200px;left:50%;transform:translateX(-50%);
-  width:600px;height:600px;
-  background:radial-gradient(ellipse at center,rgba(173,198,255,0.06) 0%,transparent 70%);
+  top:-220px;left:50%;transform:translateX(-50%);
+  width:640px;height:640px;
+  background:radial-gradient(ellipse at center,rgba(52,101,235,0.08) 0%,transparent 70%);
   pointer-events:none;
-}
-@keyframes gridDrift{
-  0%{background-position:0 0}
-  100%{background-position:60px 60px}
 }
 
 .login-wrap{
   position:relative;
   z-index:10;
   width:100%;
-  max-width:420px;
+  max-width:400px;
   padding:0 20px;
 }
 
@@ -78,28 +78,27 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   align-items:center;
   justify-content:center;
   gap:10px;
-  margin-bottom:32px;
+  margin-bottom:30px;
 }
 .login-logo-mark{
   width:40px;height:40px;
-  border-radius:10px;
-  background:linear-gradient(135deg,rgba(173,198,255,0.2),rgba(173,198,255,0.06));
-  border:1px solid rgba(173,198,255,0.25);
+  border-radius:11px;
+  background:var(--tx);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 20px rgba(173,198,255,0.1);
+  box-shadow:var(--shadow-md);
 }
-.login-logo-mark .mat{color:var(--acc);font-size:22px}
-.login-logo-name{font-size:20px;font-weight:700;color:var(--acc);letter-spacing:-0.03em}
-.login-logo-tag{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--tx3);margin-top:-2px}
+.login-logo-mark .mat{color:#fff;font-size:22px}
+.login-logo-name{font-size:19px;font-weight:800;color:var(--tx);letter-spacing:-0.03em}
+.login-logo-tag{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--tx3);margin-top:-1px}
 
 .login-card{
   background:var(--s1);
-  border:1px solid var(--bd2);
-  border-radius:12px;
-  padding:28px 28px 24px;
-  box-shadow:0 32px 64px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.04) inset;
+  border:1px solid var(--bd);
+  border-radius:18px;
+  padding:30px 28px 26px;
+  box-shadow:var(--shadow-lg);
 }
-.login-card-title{font-size:18px;font-weight:700;color:var(--tx);margin-bottom:4px;letter-spacing:-0.02em}
+.login-card-title{font-size:19px;font-weight:700;color:var(--tx);margin-bottom:4px;letter-spacing:-0.02em}
 .login-card-sub{font-size:13px;color:var(--tx3);margin-bottom:22px}
 
 
@@ -108,20 +107,20 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .lf-input-wrap{position:relative;display:flex;align-items:center}
 .lf-input{
   width:100%;
-  background:var(--bg);
-  border:1px solid var(--bd2);
-  border-radius:7px;
+  background:var(--s3);
+  border:1px solid var(--bd);
+  border-radius:9px;
   padding:10px 40px 10px 38px;
   color:var(--tx);
   font-size:13px;
   font-family:'Inter',sans-serif;
   outline:none;
-  transition:border-color .2s,box-shadow .2s;
+  transition:border-color .2s,box-shadow .2s,background .2s;
   line-height:1;
 }
-.lf-input:focus{border-color:rgba(173,198,255,0.4);box-shadow:0 0 0 3px rgba(173,198,255,0.08)}
+.lf-input:focus{border-color:rgba(52,101,235,0.45);box-shadow:0 0 0 3px var(--acc-g);background:#fff}
 .lf-input::placeholder{color:var(--tx3)}
-.lf-input.err{border-color:rgba(248,113,113,0.45);box-shadow:0 0 0 3px rgba(248,113,113,0.07)}
+.lf-input.err{border-color:rgba(220,38,38,0.4);box-shadow:0 0 0 3px var(--re-d)}
 .lf-icon{position:absolute;left:11px;color:var(--tx3);pointer-events:none;font-size:16px}
 .lf-toggle{position:absolute;right:10px;color:var(--tx3);cursor:pointer;padding:4px;border-radius:4px;font-size:16px;transition:color .15s}
 .lf-toggle:hover{color:var(--tx2)}
@@ -134,15 +133,15 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   cursor:pointer;
 }
 .lf-check-label{font-size:12px;color:var(--tx2)}
-.lf-forgot{font-size:12px;color:var(--acc);text-decoration:none;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;padding:0;transition:opacity .15s}
+.lf-forgot{font-size:12px;color:var(--acc);text-decoration:none;cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;padding:0;font-weight:500;transition:opacity .15s}
 .lf-forgot:hover{opacity:0.7;text-decoration:underline}
 
 
 .lf-error{
   display:none;
   background:var(--re-d);
-  border:1px solid rgba(248,113,113,0.25);
-  border-radius:7px;
+  border:1px solid rgba(220,38,38,0.2);
+  border-radius:9px;
   padding:10px 13px;
   margin-bottom:14px;
   font-size:12px;
@@ -156,8 +155,8 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .lf-success{
   display:none;
   background:var(--gr-d);
-  border:1px solid rgba(74,222,128,0.25);
-  border-radius:7px;
+  border:1px solid rgba(22,163,74,0.2);
+  border-radius:9px;
   padding:10px 13px;
   margin-bottom:14px;
   font-size:12px;
@@ -170,27 +169,28 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 
 .lf-submit{
   width:100%;
-  background:var(--acc);
-  color:#0a0d14;
+  background:var(--tx);
+  color:#fff;
   font-size:13px;
   font-weight:700;
   padding:11px;
-  border-radius:7px;
+  border-radius:9px;
   border:none;
   cursor:pointer;
   font-family:'Inter',sans-serif;
   letter-spacing:0.01em;
-  transition:all .2s;
+  transition:all .2s var(--ease);
   display:flex;
   align-items:center;
   justify-content:center;
   gap:7px;
   position:relative;
   overflow:hidden;
+  box-shadow:0 4px 12px rgba(19,21,28,0.18);
 }
-.lf-submit:hover:not(:disabled){background:#c5d8ff;transform:translateY(-1px);box-shadow:0 6px 20px rgba(173,198,255,0.2)}
+.lf-submit:hover:not(:disabled){background:#2a2c35;transform:translateY(-1px);box-shadow:0 8px 20px rgba(19,21,28,0.24)}
 .lf-submit:active{transform:translateY(0)}
-.lf-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.lf-submit:disabled{opacity:0.55;cursor:not-allowed;transform:none;box-shadow:none}
 
 
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -212,7 +212,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 .fp-back .mat{font-size:15px}
 
 
-.login-footer{text-align:center;margin-top:20px;font-size:11px;color:var(--tx3)}
+.login-footer{text-align:center;margin-top:22px;font-size:11px;color:var(--tx3)}
 .login-footer a{color:var(--acc);text-decoration:none}
 
 
@@ -228,8 +228,8 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 }
 #authLoader.fade{opacity:0;pointer-events:none}
 .loader-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.loader-logo .mat{color:var(--acc);font-size:26px}
-.loader-logo span{font-size:18px;font-weight:700;color:var(--acc);letter-spacing:-0.03em}
+.loader-logo .mat{color:var(--tx);font-size:26px}
+.loader-logo span{font-size:18px;font-weight:700;color:var(--tx);letter-spacing:-0.03em}
 .loader-bar{width:120px;height:2px;background:var(--bd);border-radius:2px;overflow:hidden}
 .loader-bar-fill{height:100%;background:var(--acc);border-radius:2px;animation:loaderPulse 1.2s ease-in-out infinite}
 @keyframes loaderPulse{0%,100%{width:20%}50%{width:80%}}
@@ -241,7 +241,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 <div id="authLoader">
   <div class="loader-logo">
     <span class="mat lg">bolt</span>
-    <span>NXTUP Lead</span>
+    <span>UpClose</span>
   </div>
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
   <div style="font-size:11px;color:var(--tx3);letter-spacing:0.05em">Checking session…</div>
@@ -255,7 +255,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
     <div class="login-logo">
       <div class="login-logo-mark"><span class="mat lg">bolt</span></div>
       <div>
-        <div class="login-logo-name">NXTUP Lead</div>
+        <div class="login-logo-name">UpClose</div>
         <div class="login-logo-tag">Revenue Operating System</div>
       </div>
     </div>
@@ -340,7 +340,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
     </div>
 
     <div class="login-footer">
-      NXTUP Lead · Revenue Operating System · v2.0
+      UpClose · Revenue Operating System · v2.0
     </div>
   </div>
 </div>
@@ -353,7 +353,7 @@ const SUPABASE_URL      = window.SUPABASE_URL      || '';
 const SUPABASE_ANON_KEY  = window.SUPABASE_ANON_KEY  || '';
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('[NXTUP Auth] Missing Supabase credentials. Edit supabase-config.js first.');
+  console.error('[UpClose Auth] Missing Supabase credentials. Edit supabase-config.js first.');
 }
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
