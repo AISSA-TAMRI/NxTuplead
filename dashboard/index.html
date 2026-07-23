@@ -370,7 +370,7 @@ async function boot() {
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
 
-      window.location.replace('dashboard/dashboard.html');
+      window.location.replace('dashboard.html');
       return;
     }
   } catch (e) {
