@@ -3501,7 +3501,7 @@ function renderMhRecordings(){
         <div class="mh-rec-tags">
           <span class="mh-rec-tag tr"><span class="mat sm" style="font-size:10px">subtitles</span>Transcript</span>
           <span class="mh-rec-tag ai"><span class="mat sm" style="font-size:10px">auto_awesome</span>AI Summary</span>
-          <span class="mh-rec-tag ac"><span class="mat sm" style="font-size:10px">task_alt</span>${r.actionItems.length}</span>
+          <span class="mh-rec-tag ac"><span class="mat sm" style="font-size:10px">task_alt</span>${(r.actionItems||[]).length}</span>
         </div>
       </div>
     </div>`).join('')}</div>`;
@@ -3509,7 +3509,7 @@ function renderMhRecordings(){
 
 function openRecording(id){
   const source=recPreviewMode?SAMPLE_RECORDINGS:allRecordings;
-  const r=source.find(x=>x.id===id);if(!r)return;
+  const r=source.find(x=>String(x.id)===String(id));if(!r)return;
   document.getElementById('recTitle').textContent=r.title;
   document.getElementById('recSub').textContent=r.contact+' · '+r.date;
   document.getElementById('recTagRow').innerHTML=`<span class="badge" style="background:var(--acc-d);color:var(--acc)">${providerLabel(r.provider)}</span>${recPreviewMode?'<span class="badge" style="background:var(--am-d);color:var(--am)">SAMPLE</span>':''}`;
