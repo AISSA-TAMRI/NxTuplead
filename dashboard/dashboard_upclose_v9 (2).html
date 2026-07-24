@@ -508,6 +508,14 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 
 #recPanel{position:fixed;top:0;right:-520px;width:520px;height:100vh;background:var(--s1);border-left:1px solid var(--bd);overflow:hidden;transition:right .3s var(--ease);z-index:9999;display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
 #recPanel.lp-open{right:0}
+
+#recPanel > .lp-body{
+  min-height:0;
+}
+#recPanel .lp-card{
+  flex:0 0 auto;
+}
+
 .rec-video-area{background:#0f1220;height:220px;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
 .rec-video-area .mat{font-size:44px;color:rgba(255,255,255,0.4)}
 .rec-tl-line{display:flex;gap:10px;padding:9px 13px}
