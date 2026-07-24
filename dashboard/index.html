@@ -6,8 +6,6 @@
 <title>UpClose | Sign In</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=block" rel="stylesheet"/>
-
 <script src="/dashboard/supabase-config.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -26,29 +24,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;-webkit-font-smoothing:antialiased}
 
-/* --- Material Symbols: Google's required reset block.
-   Without white-space/word-wrap/direction/font-feature-settings set
-   explicitly, an icon ligature ("mail", "lock"...) can render as literal
-   wrapping text instead of a glyph and visually collide with whatever
-   sits next to it — that's what caused the overlap in the screenshot.
-   Every icon below also sits in a fixed-width, overflow-hidden box as a
-   second safety net, so even a slow font load can never bleed into text. */
-.mat{
-  font-family:'Material Symbols Outlined';
-  font-weight:normal;
-  font-style:normal;
-  font-size:20px;
-  display:inline-block;
-  line-height:1;
-  white-space:nowrap;
-  word-wrap:normal;
-  direction:ltr;
-  -webkit-font-feature-settings:'liga';
-  -webkit-font-smoothing:antialiased;
-  font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20;
-  user-select:none;
-}
-.mat.sm{font-size:16px}.mat.lg{font-size:24px}
+/* Icons are inline SVG (currentColor) — no external font to load, so this
+   whole class of "fallback glyph text overlapping the placeholder" bug
+   the previous version had is now structurally impossible. */
+.icon{display:inline-block;flex-shrink:0;line-height:0}
+.icon svg{display:block;width:18px;height:18px}
+.icon.sm svg{width:16px;height:16px}
+.icon.lg svg{width:22px;height:22px}
 ::selection{background:rgba(59,91,253,0.18);color:var(--tx)}
 
 
@@ -87,7 +69,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   flex-shrink:0;
   box-shadow:0 6px 16px rgba(11,12,18,0.28);
 }
-.login-logo-mark .mat{color:#fff;font-size:20px}
+.login-logo-mark .icon{color:#fff}
 .login-logo-name{font-size:18px;font-weight:800;color:var(--tx);letter-spacing:-0.03em;line-height:1.15}
 .login-logo-tag{font-size:9.5px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--tx3)}
 
@@ -166,7 +148,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   gap:8px;
 }
 .lf-error.visible{display:flex}
-.lf-error .mat{flex-shrink:0;width:16px;overflow:hidden}
+.lf-error .icon{flex-shrink:0;margin-top:1px}
 
 
 .lf-success{
@@ -182,7 +164,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   gap:8px;
 }
 .lf-success.show{display:flex}
-.lf-success .mat{flex-shrink:0;width:16px;overflow:hidden}
+.lf-success .icon{flex-shrink:0;margin-top:1px}
 
 
 .lf-submit{
@@ -204,7 +186,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   gap:8px;
   box-shadow:0 4px 12px rgba(20,22,31,0.18);
 }
-.lf-submit .mat{width:17px;overflow:hidden;flex-shrink:0}
+.lf-submit .icon{flex-shrink:0}
 .lf-submit:hover:not(:disabled){background:var(--acc);transform:translateY(-1px);box-shadow:0 10px 22px rgba(59,91,253,0.28)}
 .lf-submit:active{transform:translateY(0)}
 .lf-submit:disabled{opacity:0.55;cursor:not-allowed;transform:none;box-shadow:none}
@@ -216,7 +198,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 
 .fp-back{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx3);cursor:pointer;margin:22px 0 16px;padding:4px 0;background:none;border:none;font-family:'Inter',sans-serif;transition:color .15s}
 .fp-back:hover{color:var(--tx)}
-.fp-back .mat{font-size:16px;width:16px;overflow:hidden}
+.fp-back .icon{flex-shrink:0}
 
 
 .login-footer{text-align:center;margin-top:22px;font-size:11px;color:var(--tx3)}
@@ -235,7 +217,8 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 }
 #authLoader.fade{opacity:0;pointer-events:none}
 .loader-logo{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.loader-logo .mat{color:var(--tx);font-size:26px;width:26px;overflow:hidden}
+.loader-logo .icon svg{width:26px;height:26px}
+.loader-logo .icon{color:var(--tx)}
 .loader-logo span{font-size:18px;font-weight:700;color:var(--tx);letter-spacing:-0.03em}
 .loader-bar{width:120px;height:2px;background:var(--bd);border-radius:2px;overflow:hidden}
 .loader-bar-fill{height:100%;background:var(--acc);border-radius:2px;animation:loaderPulse 1.2s ease-in-out infinite}
@@ -247,7 +230,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 
 <div id="authLoader">
   <div class="loader-logo">
-    <span class="mat lg">bolt</span>
+    <span class="icon lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
     <span>UpClose</span>
   </div>
   <div class="loader-bar"><div class="loader-bar-fill"></div></div>
@@ -260,7 +243,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 
 
     <div class="login-logo">
-      <div class="login-logo-mark"><span class="mat lg">bolt</span></div>
+      <div class="login-logo-mark"><span class="icon lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span></div>
       <div>
         <div class="login-logo-name">UpClose</div>
         <div class="login-logo-tag">Revenue Operating System</div>
@@ -275,14 +258,14 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
         <div class="login-card-sub">Sign in to your workspace</div>
 
         <div class="lf-error hidden" id="signin-error">
-          <span class="mat sm">error</span>
+          <span class="icon sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
           <span id="signin-error-msg">Invalid credentials. Please try again.</span>
         </div>
 
         <div class="lf-group">
           <label class="lf-label" for="signin-email">Email address</label>
           <div class="lf-input-wrap">
-            <span class="mat sm lf-icon">mail</span>
+            <span class="icon sm lf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></span>
             <input class="lf-input" id="signin-email" type="email" placeholder="you@company.com"
               autocomplete="email" autocapitalize="off" spellcheck="false"/>
           </div>
@@ -291,10 +274,13 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
         <div class="lf-group">
           <label class="lf-label" for="signin-password">Password</label>
           <div class="lf-input-wrap">
-            <span class="mat sm lf-icon">lock</span>
+            <span class="icon sm lf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
             <input class="lf-input" id="signin-password" type="password" placeholder="Your password"
               autocomplete="current-password"/>
-            <span class="mat sm lf-toggle" id="togglePwd" onclick="togglePassword('signin-password','togglePwd')">visibility</span>
+            <span class="icon sm lf-toggle" id="togglePwd" onclick="togglePassword('signin-password','togglePwd')">
+              <svg data-eye="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg data-eye="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+            </span>
           </div>
         </div>
 
@@ -307,7 +293,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
         </div>
 
         <button class="lf-submit" id="signin-btn" onclick="handleSignIn()">
-          <span class="mat sm">login</span>
+          <span class="icon sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span>
           Sign in
         </button>
       </div>
@@ -315,31 +301,31 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 
       <div class="auth-view" id="view-forgot">
         <button class="fp-back" onclick="showView('view-signin')">
-          <span class="mat">arrow_back</span> Back to sign in
+          <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></span> Back to sign in
         </button>
         <div class="login-card-title">Reset password</div>
         <div class="login-card-sub">Enter your email and we'll send a reset link</div>
 
         <div class="lf-error hidden" id="forgot-error">
-          <span class="mat sm">error</span>
+          <span class="icon sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
           <span id="forgot-error-msg">Something went wrong.</span>
         </div>
         <div class="lf-success" id="forgot-success">
-          <span class="mat sm">check_circle</span>
+          <span class="icon sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="16 9 10.5 15 8 12.5"/></svg></span>
           <span>Reset link sent! Check your inbox.</span>
         </div>
 
         <div class="lf-group">
           <label class="lf-label" for="forgot-email">Email address</label>
           <div class="lf-input-wrap">
-            <span class="mat sm lf-icon">mail</span>
+            <span class="icon sm lf-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></span>
             <input class="lf-input" id="forgot-email" type="email" placeholder="you@company.com"
               autocomplete="email" autocapitalize="off"/>
           </div>
         </div>
 
         <button class="lf-submit" id="forgot-btn" onclick="handleForgotPassword()">
-          <span class="mat sm">send</span>
+          <span class="icon sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></span>
           Send reset link
         </button>
       </div>
@@ -422,23 +408,33 @@ function showError(container, msg) {
 function togglePassword(inputId, iconId) {
   const input = document.getElementById(inputId);
   const icon  = document.getElementById(iconId);
+  const eyeOn  = icon.querySelector('[data-eye="on"]');
+  const eyeOff = icon.querySelector('[data-eye="off"]');
   if (input.type === 'password') {
     input.type = 'text';
-    icon.textContent = 'visibility_off';
+    eyeOn.style.display = 'none';
+    eyeOff.style.display = 'block';
   } else {
     input.type = 'password';
-    icon.textContent = 'visibility';
+    eyeOn.style.display = 'block';
+    eyeOff.style.display = 'none';
   }
 }
 
+
+const SVG_ICONS = {
+  login: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>',
+  send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+  sync: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>',
+};
 
 function setLoading(btnId, loading, label, icon) {
   const btn = document.getElementById(btnId);
   btn.disabled = loading;
   if (loading) {
-    btn.innerHTML = `<span class="mat sm spin">sync</span> Signing in…`;
+    btn.innerHTML = `<span class="icon sm spin">${SVG_ICONS.sync}</span> Signing in…`;
   } else {
-    btn.innerHTML = `<span class="mat sm">${icon}</span> ${label}`;
+    btn.innerHTML = `<span class="icon sm">${SVG_ICONS[icon] || ''}</span> ${label}`;
   }
 }
 
@@ -513,7 +509,7 @@ async function handleForgotPassword() {
 
   const btn = document.getElementById('forgot-btn');
   btn.disabled = true;
-  btn.innerHTML = `<span class="mat sm spin">sync</span> Sending…`;
+  btn.innerHTML = `<span class="icon sm spin">${SVG_ICONS.sync}</span> Sending…`;
 
   try {
     const { error } = await sb.auth.resetPasswordForEmail(email, {
@@ -521,7 +517,7 @@ async function handleForgotPassword() {
     });
 
     btn.disabled = false;
-    btn.innerHTML = `<span class="mat sm">send</span> Send reset link`;
+    btn.innerHTML = `<span class="icon sm">${SVG_ICONS.send}</span> Send reset link`;
 
     if (error) {
       showError('forgot-error', error.message || 'Failed to send reset link.');
@@ -533,7 +529,7 @@ async function handleForgotPassword() {
 
   } catch (e) {
     btn.disabled = false;
-    btn.innerHTML = `<span class="mat sm">send</span> Send reset link`;
+    btn.innerHTML = `<span class="icon sm">${SVG_ICONS.send}</span> Send reset link`;
     showError('forgot-error', 'Connection error. Please try again.');
     console.error('ForgotPassword error:', e);
   }
