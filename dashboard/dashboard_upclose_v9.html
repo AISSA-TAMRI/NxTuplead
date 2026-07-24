@@ -2164,35 +2164,15 @@ const SUPABASE_URL=window.SUPABASE_URL||'';
 const SUPABASE_ANON_KEY=window.SUPABASE_ANON_KEY||'';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const API={getLeads:'https://n8n.upleaddigital.com/webhook/get-leads',getClients:'https://n8n.upleaddigital.com/webhook/get-clients',leadManagement:'https://n8n.upleaddigital.com/webhook/lead-management',getRecordings:'https://n8n.upleaddigital.com/webhook/get-recordings',
-  /* Communication Hub — Close.io-backed endpoints. Point these at n8n workflows
-     that call the Close.io API server-side (never expose a Close API key in
-     the browser). Until wired, calls fail gracefully and the UI shows
-     "Not connected" instead of fake data. */
-  /* Communication Hub — only Call + SMS actually go through Close.io.
-     Everything else stays 100% inside UpClose:
-     - Email sends via the company Gmail account (n8n Gmail node), same
-       pattern already used by the meeting-reminder workflow.
-     - Notes are just another row in crm.activities, added through the
-       existing lead-management webhook (action:'add_note') — never Close.
-     - Activities are read straight from crm.activities, which Close's
-       inbound activity webhook already keeps populated for calls/SMS. */
+
   getActivities:'https://n8n.upleaddigital.com/webhook/get-lead-activities',
   sendEmail:'https://n8n.upleaddigital.com/webhook/upclose-send-email',
   sendSms:'https://n8n.upleaddigital.com/webhook/upclose-send-sms',
   logCall:'https://n8n.upleaddigital.com/webhook/upclose-start-call',
-  /* Funnel Metrics — ad spend is not lead-specific, so it needs its own small
-     table in Postgres (e.g. columns: period_start, period_end, amount, note)
-     plus two n8n workflows: GET returns the list, POST upserts an entry.
-     Until this webhook exists, the Funnel Metrics page transparently falls
-     back to the browser's localStorage so you can still use the page today. */
+
   adSpend:'https://n8n.upleaddigital.com/webhook/ad-spend'
 };
-/* Shared secret sent with every Communication Hub request so each n8n workflow
-   can reject calls that don't include it (an "IF" node checking this header
-   before it's allowed to touch Close.io). Supabase is login-only — this key
-   is separate and has nothing to do with Supabase auth.
-   Replace this placeholder, then set the exact same value inside each of the
-   5 n8n workflows above as the expected header value. */
+ 
 const N8N_API_KEY='REPLACE_WITH_YOUR_N8N_SHARED_SECRET';
 const PAGE_TITLES={dashboard:'Dashboard',opportunities:'Leads',pipeline:'Pipeline',clients:'Clients',communication:'Communication Hub',activity:'Activity',meetings:'Meetings Hub',analytics:'Analytics',funnel:'Funnel Metrics',reports:'Reports',settings:'Settings'};
 const VALID_PAGES=Object.keys(PAGE_TITLES);
@@ -4146,7 +4126,7 @@ function rptExportCSV(){
   toast('✓ CSV exported','ok');
 }
 
-/* --- entry point, wired from navigate() and loadLeads() --- */
+
 async function renderReports(){
   const body=document.getElementById('rptPreviewBody');
   if(!allLeads.length){
