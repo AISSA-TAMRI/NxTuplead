@@ -516,6 +516,50 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 .rec-tl-txt b{color:var(--tx);font-weight:600}
 @media(max-width:600px){#recPanel{width:100vw;right:-100vw}}
 
+#recPanel > .lp-hd,
+#recPanel > .lp-acts{
+  flex-shrink:0;
+}
+
+#recPanel > .lp-body{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+#recPanel .lp-section{
+  flex:none;
+  min-height:max-content;
+}
+
+
+#recPanel .rec-video-area{
+  height:220px;
+  min-height:220px;
+  flex-shrink:0;
+}
+
+
+#recPanel .rec-tl-line{
+  display:flex;
+  align-items:flex-start;
+  min-width:0;
+}
+
+#recPanel .rec-tl-time{
+  width:38px;
+  min-width:38px;
+  flex-shrink:0;
+}
+
+#recPanel .rec-tl-txt{
+  flex:1;
+  min-width:0;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
 .mh-note-card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r-sm);padding:14px 16px}
 .mh-note-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
 
