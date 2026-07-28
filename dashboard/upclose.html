@@ -9,13 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="/dashboard/supabase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Twilio Voice JavaScript SDK (@twilio/voice-sdk). As of v2.x Twilio no
-     longer publishes an official CDN build, so this loads the npm package's
-     browser bundle via the jsDelivr npm mirror. Exposes the `Twilio` global
-     used by TwilioVoiceAdapter below (Twilio.Device). If jsDelivr is not
-     acceptable in this environment, download dist/twilio.min.js from the
-     twilio/twilio-voice.js GitHub release and self-host it under this same
-     <script> tag instead — nothing else needs to change. -->
+
 <script src="https://cdn.jsdelivr.net/npm/@twilio/voice-sdk@2.18.3/dist/twilio.min.js"></script>
 <style>
 :root{
@@ -670,11 +664,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 .cdp-mod-cnt{font-size:11px;color:var(--tx3);background:var(--bd);padding:1px 7px;border-radius:10px}
 .cdp-row-sel td{background:var(--acc-d)!important}
 
-/* ============================================================
-   COMMUNICATION HUB — page-specific layer. Shared components
-   (badge, abtn, card, lp-card, lp-row, lp-bento, form-input,
-   tgroup/topt, empty-state, av, tbb) reuse the definitions above.
-   ============================================================ */
+/* COMMUNICATION HUB  */
 .ch-hero{padding:18px 24px 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0}
 .ch-hero-title{font-size:20px;font-weight:700;color:var(--tx);letter-spacing:-0.02em}
 .ch-hero-sub{font-size:12px;color:var(--tx3);margin-top:2px}
@@ -713,7 +703,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 @keyframes chPulse{0%,100%{opacity:1}50%{opacity:0.65}}
 .ch-callbar-title{font-size:13px;font-weight:700;color:var(--tx)}
 .ch-callbar-sub{font-size:11px;color:var(--re);font-weight:600;letter-spacing:0.02em}
-/* Call-state modifiers — driven by VoiceService, not hardcoded */
+
 .ch-callbar.st-connecting,.ch-callbar.st-ringing{background:var(--am-d);border-bottom-color:rgba(251,191,36,0.3)}
 .ch-callbar.st-connecting .ch-callbar-icon,.ch-callbar.st-ringing .ch-callbar-icon{background:var(--am)}
 .ch-callbar.st-connecting .ch-callbar-sub,.ch-callbar.st-ringing .ch-callbar-sub{color:var(--am)}
@@ -723,10 +713,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 .ch-callbar.st-failed{background:var(--re-d);border-bottom-color:rgba(220,38,38,0.3)}
 .ch-callbar.st-failed .ch-callbar-icon{background:var(--re);animation:none}
 .ch-callbar-toggle.active{background:var(--acc);color:#fff;border-color:var(--acc)}
-/* Incoming call banner — UI shell only. Nothing calls chShowIncomingCall()
-   yet because no inbound provider integration exists; this exists so the
-   Communication Hub is ready to wire up an inbound webhook/event later
-   without further UI redesign. */
+
 .ch-incoming-banner{padding:10px 20px;display:none;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bl-d);border-bottom:1px solid rgba(109,151,247,0.3)}
 .ch-incoming-banner.show{display:flex}
 .ch-incoming-left{display:flex;align-items:center;gap:12px}
@@ -773,12 +760,7 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 @media(max-width:1200px){.ch-profile{display:none}}
 @media(max-width:900px){.ch-rail{width:240px;min-width:240px}}
 
-/* ============================================================
-   DARK THEME — toggled via [data-theme="dark"] on <html>.
-   Every component above reads these same custom properties, so
-   redefining them here re-skins the whole app with no other CSS
-   changes needed.
-   ============================================================ */
+
 html[data-theme="dark"]{
   --bg:#0a0d16;--s1:#10141f;--s2:#141928;--s3:#1c2235;--s4:#232a3d;--grad2:#1c2235;
   --acc:#6d97f7;--acc-d:rgba(109,151,247,0.16);--acc-g:rgba(109,151,247,0.09);
@@ -800,7 +782,6 @@ html[data-theme="dark"] .form-input,html[data-theme="dark"] .form-select,html[da
 html[data-theme="dark"] #clientsFiltersPopover input[type="date"].form-input::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.6)}
 html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
 
-/* Theme toggle switch injected into the topbar */
 .theme-toggle{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:var(--r-sm);color:var(--tx2);cursor:pointer;transition:all 0.15s var(--ease);border:none;background:none;flex-shrink:0}
 .theme-toggle:hover{background:var(--s3);color:var(--tx)}
 .theme-toggle .mat{font-size:19px}
@@ -992,7 +973,7 @@ html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
         <button class="tbb" title="Notifications"><span class="mat">notifications</span></button>
         <button class="tbb" title="Help"><span class="mat">help_outline</span></button>
         <div class="tdiv" style="margin:0 4px"></div>
-        <!-- Quick Dial: start an outbound call from anywhere in the app -->
+    
         <div class="ch-dial-wrap">
           <button class="qbtn" id="quickDialToggle" style="background:var(--s3);color:var(--tx2);border:1px solid var(--bd)"><span class="mat sm" style="font-size:14px">dialpad</span>Quick Dial</button>
           <div class="ch-dialpad" id="quickDialPanel">
@@ -2374,10 +2355,8 @@ const API={getLeads:'https://n8n.upleaddigital.com/webhook/get-leads',getClients
   adSpend:'https://n8n.upleaddigital.com/webhook/ad-spend',
   createTeamMember:'https://n8n.upleaddigital.com/webhook/create-team-member',
 
-  // Twilio Voice Access Token endpoint (Twilio Function, not n8n). Returns
-  // {identity, token} — a short-lived Access Token only. No Account SID,
-  // API Key Secret, or Auth Token ever touches the browser.
-  getVoiceToken:'https://upclose-voice-5073.twil.io/voice-token'
+ 
+  getVoiceToken:'https://upclose-voice-3210.twil.io/voice-token'
 };
  
 const N8N_API_KEY='REPLACE_WITH_YOUR_N8N_SHARED_SECRET';
