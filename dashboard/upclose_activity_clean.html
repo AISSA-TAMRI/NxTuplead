@@ -2258,7 +2258,7 @@ html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
             <div class="ch-timeline" id="genTimelineFeed" style="max-height:calc(100vh - 260px)">
               <div class="ch-timeline-empty">
                 <span class="mat" style="font-size:33px;opacity:.35">history</span>
-                <p style="font-size:13.5px">All Activity is ready. Backend activity feed is not connected yet.</p>
+                <p style="font-size:13.5px">No activity yet.</p>
               </div>
             </div>
           </div>
@@ -5499,6 +5499,35 @@ let chActiveLeadId=null,chActiveChannel='email',chActiveTab='timeline',chActivit
    UI only for now. crm.activities is the source of truth.
    A backend bulk-activity endpoint will populate this array later. */
 let genTimelineItems=[];
+async function genLoadTimeline(){
+  const feed=document.getElementById('genTimelineFeed');
+  if(feed)feed.innerHTML='<div class="ch-timeline-empty"><span class="mat" style="font-size:33px;opacity:.35">sync</span><p style="font-size:13.5px">Loading activity...</p></div>';
+  try{
+    const res=await fetch('https://n8n.upleaddigital.com/webhook/upclose-activities',{headers:chAuthHeaders()});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const rows=await res.json();
+    const source=Array.isArray(rows)?rows:(Array.isArray(rows?.data)?rows.data:[]);
+    const items=source.map(a=>({
+      id:a.id,
+      type:String(a.activity_type||'').toLowerCase(),
+      leadId:a.lead_id??null,
+      userId:a.user_id??null,
+      created_at:a.created_at,
+      number:a.activity_data?.to||'',
+      to:a.activity_data?.to||'',
+      from:a.activity_data?.from||'',
+      status:a.activity_data?.status||'',
+      duration:a.activity_data?.duration??null,
+      direction:a.activity_data?.direction||'',
+      body:a.notes||''
+    }));
+    genSetTimelineData(items);
+  }catch(err){
+    console.error('Failed to load All Activity:',err);
+    genTimelineItems=[];
+    if(feed)feed.innerHTML='<div class="ch-timeline-empty"><span class="mat" style="font-size:33px;opacity:.35">error_outline</span><p style="font-size:13.5px">Unable to load activity.</p></div>';
+  }
+}
 function genSetTimelineData(items){
   genTimelineItems=Array.isArray(items)?items:[];
   genRenderTimeline();
@@ -5994,7 +6023,7 @@ function chSwitchSubPage(sub,persist=true){
   });
   if(sub==='overview')chRenderOverview();
   else if(sub==='calls')chRenderCallsPage();
-  else if(sub==='activity')genRenderTimeline();
+  else if(sub==='activity')genLoadTimeline();
   else if(sub==='tasks')chRenderTasksPage();
   else if(sub==='snippets')chRenderSnippets();
 }
