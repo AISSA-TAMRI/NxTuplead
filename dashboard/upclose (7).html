@@ -1973,6 +1973,7 @@ html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
           <div class="ch-subnav-item active" data-sub="overview"><span class="mat sm">space_dashboard</span>Overview</div>
           <div class="ch-subnav-item" data-sub="conversations"><span class="mat sm">forum</span>Conversations</div>
           <div class="ch-subnav-item" data-sub="calls"><span class="mat sm">call</span>Calls</div>
+          <div class="ch-subnav-item" data-sub="activity"><span class="mat sm">history</span>All Activity</div>
           <div class="ch-subnav-item" data-sub="tasks"><span class="mat sm">alarm</span>Tasks &amp; Follow-ups</div>
           <div class="ch-subnav-item" data-sub="snippets"><span class="mat sm">bolt</span>Snippets</div>
         </div>
@@ -2236,6 +2237,37 @@ html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
           </div>
           <div class="ch-ov-empty" style="margin-top:14px;padding:14px;background:var(--s3);border-radius:var(--r-md)">
             A full call log (direction, status, duration per call) isn't available here yet — it needs a bulk call-activity endpoint on the backend, since <code>get-lead-activities</code> currently only returns activity for one lead at a time. Until then, per-lead call history is available in <b>Conversations → Calls tab</b> after selecting a lead.
+          </div>
+        </div>
+
+        <!-- ============================================================
+             ALL ACTIVITY — a general, cross-lead timeline of calls and
+             messages. There is still no bulk call/activity backend
+             endpoint (see the note on the Calls subpage above), so this
+             does NOT call the server. Instead it logs, in real time, the
+             actual calls placed via Quick Dial / VoiceService and the
+             actual messages sent via the composer on THIS device only —
+             same honest, clearly-labeled local cache pattern already used
+             for Snippets and composer drafts. Nothing here is fabricated;
+             an unmatched-lead Quick Dial call now shows up here, which is
+             exactly the gap that previously had no timeline at all.
+             ============================================================ -->
+        <div class="ch-subpage" id="chSub-activity" style="display:none">
+          <div class="ch-calls-toolbar">
+            <div style="font-size:12px;color:var(--tx3);line-height:1.6">Logged automatically on this device as you place calls (including Quick Dial numbers not tied to a lead) and send messages. Not synced across team members yet — that needs a real bulk activity endpoint on the backend.</div>
+            <button class="abtn" onclick="genRenderTimeline()"><span class="mat sm">refresh</span>Refresh</button>
+          </div>
+          <div class="glass-card" style="overflow:hidden">
+            <div style="padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
+              <span class="stitle">All calls &amp; messages</span>
+              <button class="abtn" style="font-size:11.5px;padding:4px 9px" onclick="genClearTimeline()"><span class="mat sm">delete_sweep</span>Clear log</button>
+            </div>
+            <div class="ch-timeline" id="genTimelineFeed" style="max-height:calc(100vh - 260px)">
+              <div class="ch-timeline-empty">
+                <span class="mat" style="font-size:33px;opacity:.35">history</span>
+                <p style="font-size:13.5px">No activity logged yet on this device.</p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -5470,6 +5502,87 @@ VoiceService.adapter.on('error',(err)=>{
    ============================================================ */
 let chActiveLeadId=null,chActiveChannel='email',chActiveTab='timeline',chActivities=[];
 
+/* ---- General (cross-lead) Activity Log — device-local only ----
+   Real backend doesn't have a bulk call/activity endpoint (see notes
+   on the Calls subpage), so this is NOT pretending to be synced,
+   team-wide data. It's an honest, clearly-labeled localStorage log
+   of calls/messages actually made through this browser, following
+   the exact same pattern already used for Snippets and composer
+   drafts elsewhere in this file. It exists specifically to cover
+   Quick Dial calls to numbers that don't match any lead, which
+   previously had nowhere to show up at all. */
+const GEN_TIMELINE_KEY='upclose_general_timeline_v1';
+function genTimelineLoad(){
+  try{const raw=JSON.parse(localStorage.getItem(GEN_TIMELINE_KEY));return Array.isArray(raw)?raw:[];}
+  catch(e){return [];}
+}
+function genTimelineSave(list){
+  try{localStorage.setItem(GEN_TIMELINE_KEY,JSON.stringify(list.slice(0,300)));}catch(e){}
+}
+function genTimelineAdd(entry){
+  const list=genTimelineLoad();
+  const id='gt_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+  list.unshift(Object.assign({id,created_at:new Date().toISOString()},entry));
+  genTimelineSave(list);
+  if(chSubPage==='activity')genRenderTimeline();
+  return id;
+}
+function genTimelineUpdate(id,patch){
+  const list=genTimelineLoad();
+  const idx=list.findIndex(x=>x.id===id);
+  if(idx===-1)return;
+  list[idx]=Object.assign({},list[idx],patch);
+  genTimelineSave(list);
+  if(chSubPage==='activity')genRenderTimeline();
+}
+function genClearTimeline(){
+  showConfirm('Clear activity log?','This removes the locally-logged calls and messages from this device. It does not affect any backend data.','Clear','danger',()=>{
+    genTimelineSave([]);
+    genRenderTimeline();
+    toast('Activity log cleared');
+  });
+}
+function genActivityMeta(type){
+  if(type==='call')return{icon:'call',color:'bl'};
+  if(type==='sms')return{icon:'sms',color:'gr'};
+  if(type==='email')return{icon:'mail',color:'pu'};
+  if(type==='note')return{icon:'edit_note',color:'gy'};
+  return{icon:'circle',color:'gy'};
+}
+function genRenderTimeline(){
+  const feed=document.getElementById('genTimelineFeed');
+  if(!feed)return;
+  const items=genTimelineLoad();
+  if(!items.length){
+    feed.innerHTML='<div class="ch-timeline-empty"><span class="mat" style="font-size:33px;opacity:.35">history</span><p style="font-size:13.5px">No activity logged yet on this device.</p></div>';
+    return;
+  }
+  feed.innerHTML='<div class="lp-tl-wrap">'+items.map(a=>{
+    const meta=genActivityMeta(a.type);
+    const who=a.leadId?`<a style="color:var(--acc);cursor:pointer" onclick="chOpenInConversations(${a.leadId})">${escapeHtml(a.leadName||'Lead #'+a.leadId)}</a>`:escapeHtml(a.number||a.to||'Unknown');
+    let label;
+    if(a.type==='call'){
+      const statusBadge=a.status?`<span class="badge ${a.status==='completed'?'gr':a.status==='failed'?'re':'am'}" style="margin-left:6px">${escapeHtml(a.status)}</span>`:'';
+      label=`Outgoing call · ${who}${statusBadge}${a.duration?' · '+chFormatDuration(a.duration):''}`;
+      if(!a.leadId)label+=' <span class="badge gy" style="margin-left:6px">unregistered number</span>';
+    }else if(a.type==='sms'){
+      label=`SMS to ${who}`;
+    }else if(a.type==='email'){
+      label=`Email to ${who}`;
+    }else{
+      label=`Note on ${who}`;
+    }
+    return `<div class="lp-tl-item">
+      <div class="lp-tl-dot ${meta.color}"><span class="mat">${meta.icon}</span></div>
+      <div class="lp-tl-content">
+        <div class="lp-tl-txt">${label}</div>
+        ${a.body?`<div style="font-size:13px;color:var(--tx2);margin-top:3px;line-height:1.5">${escapeHtml(a.body)}</div>`:''}
+        <div class="lp-tl-meta" style="margin-top:4px">${fmtDate(a.created_at)}</div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
 function chDraftKey(leadId,channel){return'chDraft_'+leadId+'_'+channel;}
 
 function chLoadDraft(){
@@ -5716,6 +5829,7 @@ async function chSendMessage(){
     }
     if(!res.ok)throw new Error('not configured');
     toast(chActiveChannel==='note'?'Note saved':'Message sent');
+    genTimelineAdd({type:chActiveChannel,leadId:chActiveLeadId,leadName:lead?chLeadName(lead):null,to:chActiveChannel==='email'?(lead&&lead.email):(lead&&lead.phone),body:body.value.trim()});
     localStorage.removeItem(chDraftKey(chActiveLeadId,chActiveChannel));
     body.value='';
     chLoadActivities(chActiveLeadId);
@@ -5736,9 +5850,11 @@ async function chSendMessage(){
    available for any legacy/admin flow that still needs it.
    ------------------------------------------------------------ */
 let chCallTimerHandle=null;
+let genActiveCallLogId=null; // id of the general-timeline entry for the call in progress
 
 function chStartCall(lead,number){
   if(!number){toast('No phone number to call','err');return;}
+  genActiveCallLogId=genTimelineAdd({type:'call',leadId:lead?lead.id:null,leadName:lead?chLeadName(lead):null,number,status:'started'});
   VoiceService.placeCall(lead,number);
 }
 
@@ -5796,6 +5912,19 @@ function chUpdateCallBarUI(evt){
   }
 }
 VoiceService.on('statechange',chUpdateCallBarUI);
+VoiceService.on('statechange',evt=>{
+  if(!genActiveCallLogId)return;
+  if(evt.state===CallState.ACTIVE){
+    genTimelineUpdate(genActiveCallLogId,{status:'in-progress'});
+  }else if(evt.state===CallState.ENDED){
+    const duration=VoiceService.startedAt?Math.round((Date.now()-VoiceService.startedAt)/1000):0;
+    genTimelineUpdate(genActiveCallLogId,{status:duration>0?'completed':'no-answer',duration});
+    genActiveCallLogId=null;
+  }else if(evt.state===CallState.FAILED){
+    genTimelineUpdate(genActiveCallLogId,{status:'failed',body:evt.reason||undefined});
+    genActiveCallLogId=null;
+  }
+});
 
 document.getElementById('chMuteBtn').addEventListener('click',e=>{
   const btn=e.currentTarget,on=!btn.classList.contains('active');
@@ -5911,16 +6040,17 @@ let chTaskView='overdue';
 let chCallsFilter='scheduled';
 
 function chSwitchSubPage(sub,persist=true){
-  if(!['overview','conversations','calls','tasks','snippets'].includes(sub))sub='overview';
+  if(!['overview','conversations','calls','activity','tasks','snippets'].includes(sub))sub='overview';
   chSubPage=sub;
   if(persist)localStorage.setItem(CH_SUBPAGE_KEY,sub);
   document.querySelectorAll('#chSubNav .ch-subnav-item').forEach(i=>i.classList.toggle('active',i.dataset.sub===sub));
-  ['overview','conversations','calls','tasks','snippets'].forEach(s=>{
+  ['overview','conversations','calls','activity','tasks','snippets'].forEach(s=>{
     const el=document.getElementById('chSub-'+s);
     if(el)el.style.display=(s===sub)?(s==='conversations'?'flex':'block'):'none';
   });
   if(sub==='overview')chRenderOverview();
   else if(sub==='calls')chRenderCallsPage();
+  else if(sub==='activity')genRenderTimeline();
   else if(sub==='tasks')chRenderTasksPage();
   else if(sub==='snippets')chRenderSnippets();
 }
