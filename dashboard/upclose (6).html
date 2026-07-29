@@ -5358,10 +5358,10 @@ class TwilioVoiceAdapter{
     try{
       call=await device.connect({
         params:{
-          To:phone.replace(/[\s().-]/g,''),
-          leadId:context&&context.leadId!=null?String(context.leadId):'',
-          userId:context&&context.userId!=null?String(context.userId):''
-        }
+  To:phone.replace(/[\s().-]/g,''),
+  leadId:context&&context.leadId!=null?String(context.leadId):'',
+  userEmail:context&&context.userEmail?String(context.userEmail):''
+}
       });
     }catch(connectErr){
       const err=new Error(connectErr&&connectErr.message||'Twilio call failed to start.');
@@ -5438,17 +5438,11 @@ const VoiceService={
     this.startedAt=null;
     this._setState(CallState.CONNECTING);
     try{
-      await this.adapter.connect({
-        phone:number,
-        leadId:lead?lead.id:null,
-        // currentProfile.id is the authenticated UPCLOSE user's id (the
-        // profiles row keyed 1:1 to the Supabase auth user — see
-        // loadUserProfile()); currentUser.id is the same value used as a
-        // fallback if the profile hasn't loaded yet. Present for both Lead
-        // calls and Quick Dial calls (Quick Dial has no lead, but always
-        // has an authenticated user).
-        userId:(currentProfile&&currentProfile.id)||(currentUser&&currentUser.id)||null
-      });
+    await this.adapter.connect({
+  phone:number,
+  leadId:lead?lead.id:null,
+  userEmail:(currentProfile&&currentProfile.email)||(currentUser&&currentUser.email)||''
+});
       // A fully wired adapter will move state to RINGING then ACTIVE itself
       // via its own provider events. Nothing here assumes success.
     }catch(err){
