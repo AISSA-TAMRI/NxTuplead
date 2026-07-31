@@ -1,0 +1,49 @@
+<div class="dash-hero" style="background:var(--s1)">
+          <div>
+            <div class="dash-hero-title" style="display:flex;align-items:center;gap:10px">
+              <span class="mat" style="color:var(--acc);font-size:25px">insights</span>
+              Full-Funnel Metrics
+            </div>
+            <div class="dash-hero-sub">Cost efficiency and conversion at every stage — booked call → show → offer → close</div>
+          </div>
+          <button class="abtn" onclick="renderFunnelDashboard()" style="font-size:13px"><span class="mat sm">refresh</span>Refresh</button>
+        </div>
+
+        <div class="pc" style="display:flex;flex-direction:column;gap:16px">
+
+          <div class="card" style="padding:14px 18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span class="mat" style="color:var(--tx3)">payments</span>
+                <span style="font-size:13.5px;font-weight:600;color:var(--tx2)">Ad Spend for this period</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="tgroup" id="fnPeriodGroup">
+                  <div class="topt active" data-period="7" onclick="fnSetPeriod(7)">7d</div>
+                  <div class="topt" data-period="30" onclick="fnSetPeriod(30)">30d</div>
+                  <div class="topt" data-period="90" onclick="fnSetPeriod(90)">90d</div>
+                  <div class="topt" data-period="0" onclick="fnSetPeriod(0)">All</div>
+                </div>
+                <input type="number" class="form-input" id="fnAdSpendInput" placeholder="0.00" style="width:130px" min="0" step="0.01"/>
+                <button class="abtn pri" onclick="fnSaveAdSpend()"><span class="mat sm">save</span>Save</button>
+              </div>
+            </div>
+            <div style="font-size:11.5px;color:var(--tx3);margin-top:8px" id="fnAdSpendNote">Saved locally in this browser until the <code>ad-spend</code> n8n webhook is connected.</div>
+          </div>
+
+          <div>
+            <div class="stitle" style="margin-bottom:8px">Funnel Stages</div>
+            <div style="display:flex;align-items:stretch;gap:8px" id="fnFunnelStages"></div>
+          </div>
+
+          <div>
+            <div class="stitle" style="margin-bottom:8px">Cost &amp; Conversion Metrics</div>
+            <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)" id="fnMetricsGrid"></div>
+          </div>
+
+          <div class="card" style="padding:16px 18px">
+            <div style="font-size:14px;font-weight:700;color:var(--tx);margin-bottom:10px;display:flex;align-items:center;gap:8px"><span class="mat sm" style="color:var(--acc)">account_balance_wallet</span>Lifetime Value (LTV)</div>
+            <div class="kpi-row" style="margin-bottom:0" id="fnLtvRow"></div>
+          </div>
+
+        </div>
