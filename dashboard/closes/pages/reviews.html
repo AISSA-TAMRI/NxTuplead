@@ -1,0 +1,37 @@
+<div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
+          <div>
+            <div style="font-size:16px;font-weight:700;color:var(--tx);letter-spacing:-0.01em">Reviews &amp; Reputation</div>
+            <div style="font-size:12px;color:var(--tx3);margin-top:1px">Manage Google Review requests and each client's review destination.</div>
+          </div>
+          <div style="flex:1"></div>
+          <button class="abtn" onclick="renderReviewsPage()"><span class="mat sm">refresh</span>Refresh</button>
+        </div>
+        <div class="pc">
+          <div class="kpi-row" id="revKpiRow" style="margin-bottom:18px"></div>
+
+          <div class="card" style="margin-bottom:18px;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+              <span class="mat" style="color:var(--acc)">verified_user</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--tx)">Client Review Configuration</div>
+                <div style="font-size:12px;color:var(--tx3);margin-top:1px">Each review link belongs to the client/business — never to an individual lead. Customers of a client always receive that client's link, resolved server-side by client_id.</div>
+              </div>
+            </div>
+            <table class="dt">
+              <thead><tr><th>Client</th><th>Review URL</th><th>Google Review URL</th><th>Status</th><th></th></tr></thead>
+              <tbody id="revClientConfigTable"></tbody>
+            </table>
+          </div>
+
+          <div class="card" style="overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+              <span class="mat" style="color:var(--acc)">reviews</span>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:700;color:var(--tx)">Recent Review Requests</div>
+                <div style="font-size:12px;color:var(--tx3);margin-top:1px">Populated only from real Activity Timeline events — nothing here is simulated.</div>
+              </div>
+              <span class="badge gy" id="revFeedStatusBadge">Not connected</span>
+            </div>
+            <div id="revRequestsFeed" style="padding:6px 4px"></div>
+          </div>
+        </div>
