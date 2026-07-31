@@ -1,0 +1,227 @@
+<div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:12px;flex-shrink:0">
+          <span style="font-size:15px;font-weight:700;color:var(--tx)">Meetings Hub</span>
+          <div style="flex:1"></div>
+          <button class="abtn" onclick="openScheduleMeetingModal()"><span class="mat sm">schedule</span>Schedule Meeting</button>
+          <button class="abtn pri" onclick="openCreateLead()"><span class="mat sm">add</span>New Lead</button>
+        </div>
+
+        <div class="pc" style="display:flex;flex-direction:column;flex:1;min-height:0">
+
+ 
+          <div class="mh-kpi-grid">
+            <div class="mh-kpi">
+              <div class="mh-kpi-lbl">Today</div>
+              <div class="mh-kpi-val"><span id="mhKpiToday">—</span></div>
+              <div class="mh-kpi-trend" style="color:var(--bl)"><span class="mat sm">schedule</span><span>scheduled</span></div>
+            </div>
+            <div class="mh-kpi">
+              <div class="mh-kpi-lbl">This Week</div>
+              <div class="mh-kpi-val"><span id="mhKpiWeek">—</span></div>
+              <div class="mh-kpi-trend" style="color:var(--tx3)"><span class="mat sm">date_range</span><span>this week</span></div>
+            </div>
+            <div class="mh-kpi">
+              <div class="mh-kpi-lbl">Upcoming</div>
+              <div class="mh-kpi-val"><span id="mhKpiUpcoming">—</span></div>
+              <div class="mh-kpi-trend" style="color:var(--acc)"><span class="mat sm">upcoming</span><span>future</span></div>
+            </div>
+            <div class="mh-kpi">
+              <div class="mh-kpi-lbl">Completed</div>
+              <div class="mh-kpi-val"><span id="mhKpiCompleted">—</span></div>
+              <div class="mh-kpi-trend" style="color:var(--gr)"><span class="mat sm">check_circle</span><span>past dates</span></div>
+            </div>
+            <div class="mh-kpi">
+              <div class="mh-kpi-lbl">Overdue</div>
+              <div class="mh-kpi-val" style="color:var(--re)"><span id="mhKpiOverdue">—</span></div>
+              <div class="mh-kpi-trend" style="color:var(--re)"><span class="mat sm">warning</span><span>need follow-up</span></div>
+            </div>
+            <div class="mh-kpi">
+              <div class="mh-kpi-lbl">Show Rate</div>
+              <div class="mh-kpi-val"><span id="mhKpiRate">—</span></div>
+              <div class="mh-kpi-trend" style="color:var(--am)"><span class="mat sm">trending_up</span><span>attendance</span></div>
+            </div>
+          </div>
+
+  
+          <nav class="mh-tabs">
+            <div class="mh-tab active" id="mhTab-calendar" onclick="switchMhTab('calendar')"><span class="mat">calendar_month</span> Calendar</div>
+            <div class="mh-tab" id="mhTab-upcoming" onclick="switchMhTab('upcoming')"><span class="mat">upcoming</span> Upcoming Meetings</div>
+            <div class="mh-tab" id="mhTab-recordings" onclick="switchMhTab('recordings')"><span class="mat">videocam</span> Recordings</div>
+            <div class="mh-tab" id="mhTab-notes" onclick="switchMhTab('notes')"><span class="mat">task</span> Notes &amp; Follow-Ups</div>
+            <div class="mh-tab" id="mhTab-analytics" onclick="switchMhTab('analytics')"><span class="mat">bar_chart</span> Analytics</div>
+          </nav>
+
+          <div class="mh-panel active" id="mhPanel-calendar">
+            <div class="mh-cal-layout">
+
+              <div class="mh-cal-main">
+                <div class="mh-cal-hdr">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <button class="tbb" onclick="calPrev()"><span class="mat sm">chevron_left</span></button>
+                    <span style="font-size:16px;font-weight:700;color:var(--tx);min-width:150px;text-align:center" id="calMonthTitle">—</span>
+                    <button class="tbb" onclick="calNext()"><span class="mat sm">chevron_right</span></button>
+                    <button class="abtn" onclick="calGoToday()" style="padding:4px 10px;font-size:12px">Today</button>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <div style="display:flex;gap:10px;font-size:12px;color:var(--tx3)">
+                      <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;border-radius:50%;background:var(--bl);display:inline-block"></span>Potential</span>
+                      <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;border-radius:50%;background:var(--gr);display:inline-block"></span>Won</span>
+                      <span style="display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;border-radius:50%;background:var(--re);display:inline-block"></span>Lost</span>
+                    </div>
+                    <div class="mh-cal-views">
+                      <div class="mh-cal-view-btn" onclick="switchCalView('day',this)">Day</div>
+                      <div class="mh-cal-view-btn active" onclick="switchCalView('month',this)">Month</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:1px;flex-shrink:0">
+                  <div class="cal-hdr">Mon</div><div class="cal-hdr">Tue</div><div class="cal-hdr">Wed</div>
+                  <div class="cal-hdr">Thu</div><div class="cal-hdr">Fri</div><div class="cal-hdr">Sat</div><div class="cal-hdr">Sun</div>
+                </div>
+                <div style="flex:1;overflow-y:auto"><div id="calGrid" class="cal-grid"><div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--tx3);font-size:13px"><span class="spin mat sm">sync</span> Loading…</div></div></div>
+              </div>
+
+   
+              <div class="mh-drawer" id="mhDrawer">
+                <div class="mh-drawer-hd">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                    <span style="font-size:12px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--tx3)">Meeting Details</span>
+                    <button class="tbb" style="width:26px;height:26px" onclick="clearMhDrawer()"><span class="mat sm">close</span></button>
+                  </div>
+                  <div id="mhDrawerContent">
+                    <div style="text-align:center;padding:28px 16px;color:var(--tx3)">
+                      <span class="mat" style="font-size:33px;display:block;margin-bottom:10px;opacity:0.3">touch_app</span>
+                      <p style="font-size:13px">Click a meeting on the calendar to see details</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="mh-drawer-body" id="mhDrawerBody" style="display:none"></div>
+                <div class="mh-drawer-footer" id="mhDrawerFooter" style="display:none">
+                  <button class="mh-join-btn" id="mhJoinBtn" disabled onclick="mhJoinMeeting()">
+                    <span class="mat">play_circle</span> Join Meeting
+                  </button>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                    <button class="abtn" onclick="mhOpenLead()"><span class="mat sm">open_in_new</span>Open Lead</button>
+                    <button class="abtn" onclick="mhEditLead()"><span class="mat sm">edit</span>Edit</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="mh-panel" id="mhPanel-upcoming">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+              <div class="tgroup" id="mhUpcomingFilter">
+                <div class="topt active" onclick="filterUpcoming('all',this)">All</div>
+                <div class="topt" onclick="filterUpcoming('today',this)">Today</div>
+                <div class="topt" onclick="filterUpcoming('week',this)">This Week</div>
+                <div class="topt" onclick="filterUpcoming('future',this)">Future</div>
+              </div>
+              <div style="flex:1"></div>
+              <span style="font-size:12px;color:var(--tx3)" id="mhUpcomingCount">—</span>
+            </div>
+            <div id="mhUpcomingList" style="display:flex;flex-direction:column;gap:8px">
+              <div style="text-align:center;padding:40px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div>
+            </div>
+          </div>
+
+  
+          <div class="mh-panel" id="mhPanel-recordings">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+              <div class="mh-provider-card" id="mhProviderCard-fathom">
+                <div class="mh-provider-ico"><span class="mat">smart_toy</span></div>
+                <div style="flex:1;min-width:0">
+                  <div class="mh-provider-name">Fathom AI</div>
+                  <div class="mh-provider-sub" id="mhProviderSub-fathom">AI meeting recorder — not connected</div>
+                </div>
+                <span class="mh-provider-status off" id="mhProviderStatus-fathom">Not Connected</span>
+                <button class="abtn pri" style="padding:6px 12px;font-size:12px" id="mhProviderBtn-fathom" onclick="connectRecordingProvider('fathom')">Connect</button>
+              </div>
+              <div class="mh-provider-card" id="mhProviderCard-googleMeet">
+                <div class="mh-provider-ico"><span class="mat">videocam</span></div>
+                <div style="flex:1;min-width:0">
+                  <div class="mh-provider-name">Google Meet Recordings</div>
+                  <div class="mh-provider-sub" id="mhProviderSub-googleMeet">Auto-capture from Google Meet — not connected</div>
+                </div>
+                <span class="mh-provider-status off" id="mhProviderStatus-googleMeet">Not Connected</span>
+                <button class="abtn pri" style="padding:6px 12px;font-size:12px" id="mhProviderBtn-googleMeet" onclick="connectRecordingProvider('googleMeet')">Connect</button>
+              </div>
+            </div>
+
+            <div class="card" style="overflow:hidden">
+              <div style="padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+                <span class="stitle" style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">video_library</span>Recording Archive<span style="font-weight:400;color:var(--tx3)" id="mhRecCount"></span></span>
+                <button class="abtn" style="font-size:12px" id="mhRecPreviewBtn" onclick="toggleRecordingsPreview()"><span class="mat sm">visibility</span>Preview sample layout</button>
+              </div>
+              <div class="mh-rec-toolbar" id="mhRecToolbar" style="display:none">
+                <div style="position:relative;flex:1;min-width:160px">
+                  <span class="mat sm" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--tx3);pointer-events:none;font-size:16px">search</span>
+                  <input id="mhRecSearch" type="text" placeholder="Search recordings, contacts…" oninput="renderMhRecordings()"
+                    style="width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:6px 12px 6px 32px;color:var(--tx);font-size:13px;outline:none;font-family:'Inter',sans-serif"/>
+                </div>
+                <div class="tgroup" id="mhRecProviderFilter">
+                  <div class="topt active" data-p="all" onclick="setRecProviderFilter('all')">All</div>
+                  <div class="topt" data-p="fathom" onclick="setRecProviderFilter('fathom')">Fathom</div>
+                  <div class="topt" data-p="googleMeet" onclick="setRecProviderFilter('googleMeet')">Google Meet</div>
+                </div>
+              </div>
+              <div id="mhRecArchive"></div>
+            </div>
+          </div>
+
+      
+          <div class="mh-panel" id="mhPanel-notes">
+            <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span class="stitle" style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">sticky_note_2</span>Meeting Notes</span>
+                  <div style="flex:1"></div>
+                  <span style="font-size:12px;color:var(--tx3)" id="mhNotesCount">—</span>
+                </div>
+                <div id="mhNotesList" style="display:flex;flex-direction:column;gap:8px">
+                  <div style="text-align:center;padding:40px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="glass-card" style="padding:14px">
+                  <div class="stitle" style="margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--re)">warning</span>Overdue Follow-Ups</div>
+                  <div id="mhOverdueList" style="display:flex;flex-direction:column;gap:6px">
+                    <div style="text-align:center;padding:16px;color:var(--tx3);font-size:13px"><span class="spin mat sm">sync</span></div>
+                  </div>
+                </div>
+                <div class="glass-card" style="padding:14px">
+                  <div class="stitle" style="margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--am)">alarm</span>Upcoming Follow-Ups</div>
+                  <div id="mhFollowupList" style="display:flex;flex-direction:column;gap:6px">
+                    <div style="text-align:center;padding:16px;color:var(--tx3);font-size:13px"><span class="spin mat sm">sync</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+   
+          <div class="mh-panel" id="mhPanel-analytics">
+            <div class="mh-analytics-grid">
+              <div class="glass-card" style="padding:14px">
+                <div class="stitle" style="margin-bottom:14px;display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">show_chart</span>Meetings Over Time</div>
+                <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:6px;height:90px;padding:0 4px" id="mhAnalyticsChart"></div>
+                <div style="display:flex;justify-content:space-between;padding:5px 4px 0;gap:6px" id="mhAnalyticsLabels"></div>
+              </div>
+              <div class="glass-card" style="padding:14px">
+                <div class="stitle" style="margin-bottom:14px;display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--bl)">donut_large</span>Meeting Status Breakdown</div>
+                <div id="mhAnalyticsBreakdown" style="display:flex;flex-direction:column;gap:8px"></div>
+              </div>
+            </div>
+            <div class="glass-card" style="overflow:hidden">
+              <div style="padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px">
+                <span class="mat sm" style="color:var(--acc)">military_tech</span>
+                <span class="stitle">Top Leads with Meetings Scheduled</span>
+              </div>
+              <table class="dt">
+                <thead><tr><th>Company</th><th>Contact</th><th>Status</th><th>Meeting Date</th><th>Time</th><th></th></tr></thead>
+                <tbody id="mhAnalyticsTable"><tr class="loading-row"><td colspan="6"><span class="spin mat sm">sync</span></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
