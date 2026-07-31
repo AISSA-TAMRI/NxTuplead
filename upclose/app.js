@@ -3005,7 +3005,14 @@ async function chSendMessage(){
       res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add_note',id:chActiveLeadId,note:body.value.trim()})});
     }else{
       const endpoint=chActiveChannel==='email'?API.sendEmail:API.sendSms;
-      const payload={lead_id:chActiveLeadId,channel:chActiveChannel,body:body.value.trim(),to:lead?(lead.email||lead.phone):null};
+      const payload = {
+  lead_id: chActiveLeadId,
+  channel: chActiveChannel,
+  body: body.value.trim(),
+  to: chActiveChannel === 'sms'
+      ? lead.phone
+      : lead.email
+};
       res=await fetch(endpoint,{method:'POST',headers:chAuthHeaders(),body:JSON.stringify(payload)});
     }
     if(!res.ok)throw new Error('not configured');
