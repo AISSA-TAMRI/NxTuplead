@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UpClose | Revenue Operating System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@twilio/voice-sdk@2.18.3/dist/twilio.min.js"></script>
+<link rel="stylesheet" href="styles.css"/>
+
+</head>
+<body>
+<div class="ambient-tr"></div>
+<div class="ambient-bl"></div>
+
+<div id="authLoader">
+  <div class="loader-logo"><span class="mat lg">bolt</span><span>UpClose</span></div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  <div style="font-size:12px;color:var(--tx3);letter-spacing:0.05em">Authenticating…</div>
+</div>
+
+<div id="sessionBanner">
+  <span class="mat sm">warning</span> Your session has expired.
+  <button class="abtn danger" style="padding:3px 10px;font-size:12px" onclick="window.location.replace('index.html')">Sign in again</button>
+</div>
+
+<div class="lp-overlay" id="lpOverlay" onclick="closeLeadPanel()"></div>
+<div class="lp-toast" id="lpToast"></div>
+
+<div id="confirmDialog">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+    <div class="confirm-msg" id="confirmMsg">This action cannot be undone.</div>
+    <div class="confirm-actions">
+      <button class="abtn" onclick="confirmCancel()">Cancel</button>
+      <button class="abtn danger" id="confirmOkBtn" onclick="confirmOk()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <span class="modal-hd-title" id="modalTitle">New Lead</span>
+      <button class="tbb" onclick="closeModal()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="modalLeadId"/>
+      <div class="form-row">
+        <div class="form-group"><div class="section-label">Contact Information</div></div>
+        <div class="form-group"></div>
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="mFirstName" placeholder="John"/></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="mLastName" placeholder="Smith"/></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="mEmail" type="email" placeholder="john@company.com"/></div>
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="mPhone" type="tel" placeholder="+1 555 000 0000"/></div>
+        <div class="form-group full"><label class="form-label">Company Name</label><input class="form-input" id="mCompany" placeholder="Acme Corp"/></div>
+        <div class="form-group"><div class="section-label" style="margin-top:4px">Status & Assignment</div></div><div class="form-group"></div>
+        <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="mStatus"><option value="Potential">Potential</option><option value="Won">Won</option><option value="Lost">Lost</option></select></div>
+        <div class="form-group">
+    <label class="form-label">ASSIGNED CLOSER</label>
+
+    <select class="form-input" id="mOwner">
+        <option value="">Select a closer...</option>
+    </select>
+</div>
+        <div class="form-group"><div class="section-label" style="margin-top:4px">Scheduling</div></div><div class="form-group"></div>
+        <div class="form-group"><label class="form-label">Preferred Date</label><input class="form-input" id="mPrefDate" type="date"/></div>
+        <div class="form-group"><label class="form-label">Preferred Time</label><input class="form-input" id="mPrefTime" type="time"/></div>
+        <div class="form-group"><div class="section-label" style="margin-top:4px">UTM / Source</div></div><div class="form-group"></div>
+        <div class="form-group"><label class="form-label">Source</label><input class="form-input" id="mUtmSource" placeholder="google, facebook…"/></div>
+        <div class="form-group"><label class="form-label">Campaign</label><input class="form-input" id="mUtmCampaign" placeholder="Campaign name"/></div>
+        <div class="form-group"><label class="form-label">Medium</label><input class="form-input" id="mUtmMedium" placeholder="cpc, organic…"/></div>
+        <div class="form-group"><label class="form-label">Content</label><input class="form-input" id="mUtmContent" placeholder="Ad variant"/></div>
+        <div class="form-group full" style="margin-top:4px"><label class="form-label">Notes</label><textarea class="form-textarea" id="mNotes" placeholder="Internal notes…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="closeModal()">Cancel</button>
+      <button class="abtn pri" id="modalSaveBtn" onclick="saveLeadModal()"><span class="mat sm">save</span>Save Lead</button>
+    </div>
+  </div>
+</div>
+
+<!-- Automation: Trigger / Step picker modal -->
+<div id="autoPickerModal" onclick="if(event.target===this)autoClosePickerModal()">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-hd">
+      <span class="modal-hd-title" id="autoPickerModalTitle">Choose a Trigger</span>
+      <button class="tbb" onclick="autoClosePickerModal()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="autoPickerModalBody"></div>
+  </div>
+</div>
+
+<!-- Automation: step configuration modal (condition / action / wait) -->
+<div id="autoConfigModal" onclick="if(event.target===this)autoCloseConfigModal()">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-hd">
+      <span class="modal-hd-title" id="autoConfigModalTitle">Configure Step</span>
+      <button class="tbb" onclick="autoCloseConfigModal()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="autoConfigModalBody"></div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="autoCloseConfigModal()">Cancel</button>
+      <button class="abtn pri" onclick="autoConfigSave()"><span class="mat sm">check</span>Save Step</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reviews: client review configuration editor -->
+<div id="revConfigModal" onclick="if(event.target===this)closeReviewConfigModal()">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-hd">
+      <span class="modal-hd-title" id="revConfigModalTitle">Review Settings</span>
+      <button class="tbb" onclick="closeReviewConfigModal()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="revConfigModalBody"></div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="closeReviewConfigModal()">Cancel</button>
+      <button class="abtn pri" onclick="saveReviewConfig()"><span class="mat sm">save</span>Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reviews: Request Review composer -->
+<div id="reviewRequestModal" onclick="if(event.target===this)closeReviewRequestModal()">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-hd">
+      <span class="modal-hd-title">Request Google Review</span>
+      <button class="tbb" onclick="closeReviewRequestModal()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="reviewRequestModalBody"></div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="closeReviewRequestModal()">Cancel</button>
+      <button class="abtn pri" id="reviewRequestSendBtn" onclick="sendReviewRequestFromModal()"><span class="mat sm">send</span>Send Review Request</button>
+    </div>
+  </div>
+</div>
+
+<div id="cmdpal" onclick="if(event.target===this)closeCmdPal()">
+  <div class="cmdbox">
+    <div class="cmdin">
+      <span class="mat">search</span>
+      <input id="cmdinput" type="text" placeholder="Search leads, companies, actions…" autocomplete="off"/>
+      <span class="cesc" onclick="closeCmdPal()">esc</span>
+    </div>
+    <div class="csec">
+      <div class="cslbl">Quick Actions</div>
+      <div class="ci" onclick="openCreateLead();closeCmdPal()"><span class="mat">add_circle</span><span class="clbl">Create Lead</span><span class="csc">L</span></div>
+      <div class="ci" onclick="handleSignOut();closeCmdPal()"><span class="mat">logout</span><span class="clbl">Sign Out</span></div>
+    </div>
+    <div class="csec">
+      <div class="cslbl">Navigate</div>
+      <div class="ci" onclick="navigate('dashboard');closeCmdPal()"><span class="mat">dashboard</span><span class="clbl">Dashboard</span></div>
+      <div class="ci" onclick="navigate('opportunities');closeCmdPal()"><span class="mat">people</span><span class="clbl">Leads</span></div>
+      <div class="ci" onclick="navigate('clients');closeCmdPal()"><span class="mat">verified_user</span><span class="clbl">Clients</span></div>
+      <div class="ci" onclick="navigate('communication');closeCmdPal()"><span class="mat">forum</span><span class="clbl">Communication Hub</span></div>
+      <div class="ci" onclick="navigate('activity');closeCmdPal()"><span class="mat">activity_zone</span><span class="clbl">Activity</span></div>
+      <div class="ci" onclick="navigate('pipeline');closeCmdPal()"><span class="mat">view_kanban</span><span class="clbl">Pipeline</span></div>
+      <div class="ci" onclick="navigate('meetings');closeCmdPal()"><span class="mat">calendar_today</span><span class="clbl">Meetings Hub</span></div>
+      <div class="ci" onclick="navigate('analytics');closeCmdPal()"><span class="mat">bar_chart</span><span class="clbl">Analytics</span></div>
+      <div class="ci" onclick="navigate('automations');closeCmdPal()"><span class="mat">bolt</span><span class="clbl">Automations</span></div>
+    </div>
+    <div class="cfoot">
+      <span class="chint"><kbd>↑↓</kbd> Navigate</span>
+      <span class="chint"><kbd>↵</kbd> Select</span>
+      <span class="chint"><kbd>Esc</kbd> Close</span>
+    </div>
+  </div>
+</div>
+
+
+<div id="floatBar">
+  <button class="fbar-btn" onclick="openCreateLead()" title="New Lead"><span class="mat">add</span></button>
+  <div class="fbar-div"></div>
+  <button class="fbar-btn" onclick="navigate('meetings')" title="Meetings Hub"><span class="mat">calendar_today</span></button>
+  <button class="fbar-btn" onclick="navigate('pipeline')" title="Pipeline"><span class="mat">view_kanban</span></button>
+  <button class="fbar-btn" onclick="navigate('activity')" title="Activity"><span class="mat">activity_zone</span></button>
+  <div class="fbar-div"></div>
+  <div class="fbar-hint">Press <kbd>⌘K</kbd> for menu</div>
+</div>
+
+
+<button id="fab" onclick="openCreateLead()" title="New Lead">add</button>
+
+
+<div id="app">
+  <aside id="sidebar">
+    <div class="nav-logo">
+      <span class="mat lg bolt fill" style="color:var(--acc)">bolt</span>
+      <div class="nav-logo-text">
+        <span class="name">UpClose</span>
+        <span class="sub">Revenue OS</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-item" data-page="dashboard" onclick="navigate('dashboard')"><span class="mat">dashboard</span><span class="lbl">Dashboard</span></div>
+      <div class="nav-item" data-page="opportunities" onclick="navigate('opportunities')"><span class="mat">people</span><span class="lbl">Leads</span><span class="nbadge" id="navCountLeads">—</span></div>
+      <div class="nav-item" data-page="pipeline" onclick="navigate('pipeline')"><span class="mat">view_kanban</span><span class="lbl">Pipeline</span></div>
+      <div class="nav-item" data-page="clients" onclick="navigate('clients')"><span class="mat">verified_user</span><span class="lbl">Clients</span><span class="nbadge" id="navCountClients" style="background:var(--gr-d);color:var(--gr)">—</span></div>
+      <div class="nav-item" data-page="communication" onclick="navigate('communication')"><span class="mat">forum</span><span class="lbl">Communication Hub</span><span class="nbadge red" id="navCountAttention" style="display:none">—</span></div>
+      <div class="nav-item" data-page="reviews" onclick="navigate('reviews')"><span class="mat">reviews</span><span class="lbl">Reviews</span></div>
+      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
+      <div class="nav-item" data-page="activity" onclick="navigate('activity')"><span class="mat">activity_zone</span><span class="lbl">Activity</span></div>
+      <div class="nav-item" data-page="meetings" onclick="navigate('meetings')"><span class="mat">calendar_today</span><span class="lbl">Meetings Hub</span><span class="nbadge" id="navCountMeetings" style="display:none">—</span></div>
+      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
+      <div class="nav-item" data-page="analytics" onclick="navigate('analytics')"><span class="mat">bar_chart</span><span class="lbl">Analytics</span></div>
+      <div class="nav-item" data-page="funnel" onclick="navigate('funnel')"><span class="mat">insights</span><span class="lbl">Funnel Metrics</span></div>
+      <div class="nav-item" data-page="reports" onclick="navigate('reports')"><span class="mat">summarize</span><span class="lbl">Reports</span></div>
+      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
+      <div class="nav-item" data-page="automations" onclick="navigate('automations')"><span class="mat">bolt</span><span class="lbl">Automations</span></div>
+      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
+      <div class="nav-item" data-page="settings" onclick="navigate('settings')"><span class="mat">settings</span><span class="lbl">Settings</span></div>
+    </div>
+    <div class="nav-bottom">
+      <div id="sidebarAlert" style="display:none;background:var(--re-d);border:1px solid rgba(248,113,113,0.2);border-radius:6px;padding:10px 12px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><span class="mat sm" style="color:var(--re);font-size:14px">warning</span><span style="font-size:12px;font-weight:600;color:var(--re)" id="sidebarAlertTitle">Follow-ups needed</span></div>
+        <div style="font-size:12px;color:var(--tx2)" id="sidebarAlertBody">—</div>
+      </div>
+      <div class="user-menu-wrap">
+        <div id="userMenu" class="user-menu">
+          <div class="user-menu-email" id="userMenuEmail">—</div>
+          <div class="user-menu-divider"></div>
+          <div class="user-menu-item" onclick="navigate('settings');closeUserMenu()"><span class="mat">settings</span> Settings</div>
+          <div class="user-menu-divider"></div>
+          <div class="user-menu-item danger" onclick="handleSignOut()"><span class="mat">logout</span> Sign out</div>
+        </div>
+        <div id="userTrigger" style="display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:6px;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background=''" onclick="toggleUserMenu()">
+          <div class="av" id="userAvatar">?</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="userDisplayName">Loading…</div>
+            <div style="font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:0.07em" id="userRoleLabel">Agent</div>
+          </div>
+          <span class="mat sm" style="color:var(--tx3);font-size:14px">expand_less</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div id="mobileSidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+  <div id="main">
+    <header id="topbar">
+      <button class="tbb" id="sidebarToggle"><span class="mat">menu</span></button>
+      <div class="tdiv"></div>
+      <span class="ptitle" id="ptitle">Dashboard</span>
+      <div style="flex:1"></div>
+      <div class="search-box">
+        <span class="mat si sm">search</span>
+        <input type="text" placeholder="Search anything… ⌘K" onclick="openCmdPal()" readonly/>
+        <span class="kbd">⌘K</span>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <button class="tbb theme-toggle" id="themeToggleBtn" title="Toggle dark mode" onclick="toggleAppTheme()"><span class="mat" id="themeToggleIcon">dark_mode</span></button>
+        <button class="tbb" title="Notifications"><span class="mat">notifications</span></button>
+        <button class="tbb" title="Help"><span class="mat">help_outline</span></button>
+        <div class="tdiv" style="margin:0 4px"></div>
+    
+        <div class="ch-dial-wrap">
+          <button class="qbtn" id="quickDialToggle" style="background:var(--s3);color:var(--tx2);border:1px solid var(--bd)"><span class="mat sm" style="font-size:15px">dialpad</span>Quick Dial</button>
+          <div class="ch-dialpad" id="quickDialPanel">
+            <input class="form-input" id="dialpadNumber" placeholder="Enter number" style="text-align:center;letter-spacing:0.05em"/>
+            <div class="ch-dialkeys">
+              <div class="ch-dialkey" data-d="1">1</div><div class="ch-dialkey" data-d="2">2</div><div class="ch-dialkey" data-d="3">3</div>
+              <div class="ch-dialkey" data-d="4">4</div><div class="ch-dialkey" data-d="5">5</div><div class="ch-dialkey" data-d="6">6</div>
+              <div class="ch-dialkey" data-d="7">7</div><div class="ch-dialkey" data-d="8">8</div><div class="ch-dialkey" data-d="9">9</div>
+              <div class="ch-dialkey" data-d="*">*</div><div class="ch-dialkey" data-d="0">0</div><div class="ch-dialkey" data-d="#">#</div>
+            </div>
+            <button class="abtn pri" style="width:100%;justify-content:center" id="dialpadCallBtn"><span class="mat sm">call</span>Call</button>
+          </div>
+        </div>
+        <button class="qbtn" onclick="openCreateLead()"><span class="mat sm" style="font-size:15px">add</span>New Lead</button>
+      </div>
+    </header>
+
+    <div id="workspace">
+      <div class="pv" id="pv-dashboard" data-src="pages/dashboard.html"></div>
+      <div class="pv" id="pv-opportunities" data-src="pages/opportunities.html"></div>
+      <div class="pv" id="pv-clients" style="flex-direction:column;height:100%" data-src="pages/clients.html"></div>
+      <div class="pv" id="pv-reviews" data-src="pages/reviews.html"></div>
+      <div class="pv" id="pv-activity" data-src="pages/activity.html"></div>
+      <div class="pv" id="pv-meetings" data-src="pages/meetings.html"></div>
+      <div class="pv" id="pv-settings" data-src="pages/settings.html"></div>
+      <div class="pv" id="pv-communication" data-src="pages/communication.html"></div>
+      <div class="pv" id="pv-pipeline" data-src="pages/pipeline.html"></div>
+      <div class="pv" id="pv-analytics" data-src="pages/analytics.html"></div>
+      <div class="pv" id="pv-funnel" data-src="pages/funnel.html"></div>
+      <div class="pv" id="pv-reports" data-src="pages/reports.html"></div>
+      <div class="pv" id="pv-automations" data-src="pages/automations.html"></div>
+
+<div id="mhScheduleModal" onclick="if(event.target===this)closeMhModal()">
+        <div class="mh-modal-box">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+            <div>
+              <div style="font-size:16px;font-weight:700;color:var(--tx)">Schedule a Meeting</div>
+              <div style="font-size:12px;color:var(--tx3);margin-top:2px">Prepare Google Meet and meeting details</div>
+            </div>
+            <button class="tbb" onclick="closeMhModal()"><span class="mat">close</span></button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="form-group full">
+              <label class="form-label">Select Lead</label>
+              <select class="form-select" id="mhSchLead" style="width:100%">
+                <option value="">— choose a lead —</option>
+              </select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="mhSchDate" type="date"/></div>
+              <div class="form-group"><label class="form-label">Time</label><input class="form-input" id="mhSchTime" type="time"/></div>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Google Meet URL <span style="color:var(--tx3);font-weight:400">(optional)</span></label>
+              <input class="form-input" id="mhSchMeetUrl" placeholder="https://meet.google.com/…" style="width:100%"/>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Pre-Meeting Notes</label>
+              <textarea class="form-textarea" id="mhSchNotes" placeholder="Context, goals, what to prepare…" style="width:100%"></textarea>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">
+            <button class="abtn" onclick="closeMhModal()">Cancel</button>
+            <button class="abtn pri" onclick="saveMhSchedule()"><span class="mat sm">save</span>Save Meeting</button>
+          </div>
+        </div>
+      </div>
+
+<div id="addTeamMemberModal" onclick="if(event.target===this)closeAddTeamMemberModal()">
+        <div class="mh-modal-box">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+            <div>
+              <div style="font-size:16px;font-weight:700;color:var(--tx)">Add Team Member</div>
+              <div style="font-size:12px;color:var(--tx3);margin-top:2px">They'll get an email to set their own password</div>
+            </div>
+            <button class="tbb" onclick="closeAddTeamMemberModal()"><span class="mat">close</span></button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="form-group full">
+              <label class="form-label">Full Name</label>
+              <input class="form-input" id="tmFullName" placeholder="Jane Doe" style="width:100%"/>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Email</label>
+              <input class="form-input" id="tmEmail" type="email" placeholder="jane@upleaddigital.com" style="width:100%"/>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Temporary Password</label>
+              <input class="form-input" id="tmPassword" type="text" placeholder="At least 8 characters" style="width:100%"/>
+              <div style="font-size:11.5px;color:var(--tx3);margin-top:4px">They'll be emailed a link to set their own password, so this is just a placeholder — anything they'll never need to type works.</div>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Role</label>
+              <select class="form-select" id="tmRole" style="width:100%">
+                <option value="Agent">Agent</option>
+                <option value="Manager">Manager</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">
+            <button class="abtn" onclick="closeAddTeamMemberModal()">Cancel</button>
+            <button class="abtn pri" id="tmSubmitBtn" onclick="submitAddTeamMember()"><span class="mat sm">save</span>Create Account</button>
+          </div>
+        </div>
+      </div>
+
+<!-- ===================== AUTOMATIONS ===================== -->
+    </div>
+  </div>
+</div>
+
+
+<div class="lp-overlay" id="recOverlay" onclick="closeRecPanel()"></div>
+<div id="recPanel">
+  <div class="lp-hd">
+    <div class="lp-hd-top">
+      <div style="display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0">
+        <div class="lp-company-icon"><span class="mat fill">videocam</span></div>
+        <div style="min-width:0;flex:1">
+          <div style="font-size:16px;font-weight:700;color:var(--tx)" id="recTitle">—</div>
+          <div style="font-size:12px;color:var(--tx3);margin-top:2px" id="recSub">—</div>
+        </div>
+      </div>
+      <button class="tbb" onclick="closeRecPanel()"><span class="mat">close</span></button>
+    </div>
+    <div style="display:flex;gap:6px;margin:10px 0 2px" id="recTagRow"></div>
+  </div>
+  <div class="lp-body" style="flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:12px">
+    <div class="rec-video-area" style="border-radius:9px" id="recVideoArea">
+      <span class="mat" id="recVideoPlaceholderIcon">play_circle</span>
+      <video id="recVideoPlayer" controls playsinline style="display:none;width:100%;height:100%;border-radius:9px;background:#000;object-fit:contain"></video>
+    </div>
+    <div class="lp-card">
+      <div class="lp-card-hd"><span class="mat">info</span><span class="lp-card-title">Meeting Info</span></div>
+      <div class="lp-rows">
+        <div class="lp-row"><div class="lp-ri"><span class="mat">event</span></div><div><div class="lp-rl">Date</div><div class="lp-rv" id="recDate">—</div></div></div>
+        <div class="lp-row"><div class="lp-ri"><span class="mat">timer</span></div><div><div class="lp-rl">Duration</div><div class="lp-rv" id="recDuration">—</div></div></div>
+        <div class="lp-row"><div class="lp-ri"><span class="mat">groups</span></div><div><div class="lp-rl">Participants</div><div class="lp-rv" id="recParticipants">—</div></div></div>
+        <div class="lp-row"><div class="lp-ri"><span class="mat">source</span></div><div><div class="lp-rl">Source</div><div class="lp-rv" id="recProvider">—</div></div></div>
+      </div>
+    </div>
+    <div class="lp-card">
+      <div class="lp-card-hd"><span class="mat fill">auto_awesome</span><span class="lp-card-title">AI Summary</span></div>
+      <div style="padding:12px 13px;font-size:13.5px;color:var(--tx2);line-height:1.7" id="recSummary">—</div>
+    </div>
+    <div class="lp-card">
+      <div class="lp-card-hd"><span class="mat">task_alt</span><span class="lp-card-title">Action Items</span></div>
+      <div class="lp-rows" id="recActionItems"></div>
+    </div>
+    <div class="lp-card">
+      <div class="lp-card-hd"><span class="mat">subtitles</span><span class="lp-card-title">Transcript</span></div>
+      <div id="recTranscript" style="max-height:260px;overflow-y:auto"></div>
+    </div>
+  </div>
+  <div class="lp-footer">
+    <button class="abtn" style="flex:1;justify-content:center"><span class="mat sm">download</span>Download</button>
+    <button class="abtn pri" style="flex:1;justify-content:center"><span class="mat sm">ios_share</span>Share</button>
+  </div>
+</div>
+
+<div id="leadPanel">
+  <div class="lp-hd">
+    <div class="lp-hd-top">
+      <div style="display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0">
+        <div class="lp-company-icon"><span class="mat fill">business</span></div>
+        <div style="min-width:0;flex:1">
+          <div class="lp-company" id="lp-company">—</div>
+          <div class="lp-tier" id="lp-tier">Lead</div>
+          <div class="lp-sub" id="lp-sub">—</div>
+          <div class="lp-badges-row" id="lp-badges"></div>
+        </div>
+      </div>
+      <button class="tbb" onclick="closeLeadPanel()"><span class="mat">close</span></button>
+    </div>
+  </div>
+  <div class="lp-quick-grid" id="lp-quick-grid"></div>
+  <div class="lp-acts">
+    <button class="abtn" onclick="lpEdit()"><span class="mat sm">edit</span>Edit</button>
+    <button class="abtn" id="btnWon" style="color:var(--gr);border-color:rgba(74,222,128,0.25)" onclick="lpStatus('Won')"><span class="mat sm">check_circle</span>Won</button>
+    <button class="abtn" id="btnLost" style="color:var(--re);border-color:rgba(248,113,113,0.25)" onclick="lpStatus('Lost')"><span class="mat sm">cancel</span>Lost</button>
+    <button class="abtn" id="btnPotential" style="color:var(--bl);border-color:rgba(137,206,255,0.25)" onclick="lpStatus('Potential')"><span class="mat sm">radio_button_unchecked</span>Active</button>
+    <button class="abtn" onclick="if(currentLead)openReviewRequestModal(currentLead.id)"><span class="mat sm">reviews</span>Request Review</button>
+    <button class="abtn danger" onclick="lpDelete()"><span class="mat sm">delete</span></button>
+  </div>
+  <div class="lp-body" id="leadContent"></div>
+  <div class="lp-footer">
+    <button class="abtn pri" onclick="lpConvert()"><span class="mat sm">rocket_launch</span>Convert to Client</button>
+    <button class="abtn" style="padding:9px 12px" onclick="lpEdit()"><span class="mat sm">more_vert</span></button>
+  </div>
+</div>
+<script src="app.js"></script>
+<script src="loader.js"></script>
+<script src="theme.js"></script>
+</body>
+</html>
