@@ -1,0 +1,51 @@
+<!-- LIST VIEW -->
+        <div id="autoListView">
+          <div class="dash-hero" style="background:var(--s1)">
+            <div>
+              <div class="dash-hero-title" style="display:flex;align-items:center;gap:10px">
+                <span class="mat" style="color:var(--acc);font-size:25px">bolt</span>
+                Automations
+              </div>
+              <div class="dash-hero-sub">Automate lead follow-up, assignment, and communication — configured entirely inside UpClose</div>
+            </div>
+            <button class="abtn pri" onclick="autoOpenBuilder(null)"><span class="mat sm">add</span>Create Automation</button>
+          </div>
+          <div style="padding:12px 26px;border-bottom:1px solid var(--bd);background:var(--s1);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <div class="tgroup" id="autoStatusFilterGroup">
+              <div class="topt active" data-val="all" onclick="autoSetStatusFilter('all',this)">All</div>
+              <div class="topt" data-val="active" onclick="autoSetStatusFilter('active',this)">Active</div>
+              <div class="topt" data-val="draft" onclick="autoSetStatusFilter('draft',this)">Draft</div>
+              <div class="topt" data-val="paused" onclick="autoSetStatusFilter('paused',this)">Paused</div>
+            </div>
+            <div style="flex:1"></div>
+            <div class="auto-search">
+              <span class="mat sm">search</span>
+              <input type="text" id="autoSearchInput" placeholder="Search automations…" oninput="autoRenderList()"/>
+            </div>
+          </div>
+          <div class="pc">
+            <div class="card" style="overflow:visible">
+              <table class="dt">
+                <thead><tr>
+                  <th>Name</th><th>Trigger</th><th>Status</th><th>Last Updated</th><th>Runs</th><th style="width:40px"></th>
+                </tr></thead>
+                <tbody id="autoListTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- BUILDER VIEW -->
+        <div id="autoBuilderView" style="display:none;flex-direction:column;height:100%">
+          <div class="auto-builder-topbar">
+            <button class="tbb" onclick="autoBackToList()" title="Back"><span class="mat">arrow_back</span></button>
+            <input type="text" class="auto-builder-name-input" id="autoBuilderNameInput" value="New Automation" oninput="autoOnNameInput()"/>
+            <span class="badge st-draft" id="autoBuilderStatusBadge">Draft</span>
+            <div style="flex:1"></div>
+            <button class="abtn" onclick="autoSaveDraft()"><span class="mat sm">save</span>Save Draft</button>
+            <button class="abtn pri" onclick="autoActivate()"><span class="mat sm">play_arrow</span><span id="autoActivateBtnLbl">Activate Automation</span></button>
+          </div>
+          <div class="auto-builder-canvas-wrap">
+            <div class="auto-flow" id="autoFlowCanvas"></div>
+          </div>
+        </div>

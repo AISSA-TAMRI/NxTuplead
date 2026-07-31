@@ -1,0 +1,17 @@
+<div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
+          <span style="font-size:14px;font-weight:600;color:var(--tx)">Activity Feed</span>
+          <div style="flex:1"></div>
+          <button class="abtn" onclick="loadActivity()"><span class="mat sm">refresh</span>Refresh</button>
+        </div>
+        <div class="pc">
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+            <div class="card" style="padding:16px">
+              <div class="stitle" style="margin-bottom:14px">Recent Activity</div>
+              <div id="activityFeed"><div style="text-align:center;padding:32px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div></div>
+            </div>
+            <div class="card" style="padding:14px">
+              <div class="stitle" style="margin-bottom:12px">Lead Status Summary</div>
+              <div id="activitySummary" style="display:flex;flex-direction:column;gap:8px"><div style="text-align:center;padding:16px;color:var(--tx3);font-size:13px"><span class="spin mat sm">sync</span></div></div>
+            </div>
+          </div>
+        </div>
