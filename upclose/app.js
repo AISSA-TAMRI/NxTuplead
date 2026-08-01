@@ -18,25 +18,8 @@ const API={getLeads:'https://n8n.upleaddigital.com/webhook/get-leads',getClients
   // trust a review_url supplied by the frontend. See ReviewRequestService.
   sendReviewRequest:'https://n8n.upleaddigital.com/webhook/send-review-request',
 
-  getVoiceToken:'https://upclose-voice-3210.twil.io/voice-token',
-
-  // ---- Not built yet — placeholders for the Communication Hub roadmap ----
-  // Paste the real n8n webhook URL here once it exists; every place that
-  // reads these checks for the 'REPLACE_WITH_N8N_WEBHOOK_URL' placeholder
-  // and shows an honest "Not connected" state instead of guessing, so
-  // nothing else in the frontend needs to change when it's wired up.
-  // Expected shape: SELECT a.*, l.first_name, l.last_name, l.company_name
-  //   FROM crm.activities a JOIN crm.leads l ON l.id = a.lead_id
-  //   ORDER BY a.created_at DESC LIMIT 200  (see roadmap for filters)
-  getBulkActivities:'REPLACE_WITH_N8N_WEBHOOK_URL',
-  // Same bulk query, pre-filtered/derived on the frontend for calls whose
-  // activity_data.status is not 'completed' (no-answer/busy/failed) — see
-  // roadmap for the open question on whether inbound calls are logged yet.
-  getMissedCalls:'REPLACE_WITH_N8N_WEBHOOK_URL',
-  // Needs a read_at/is_read column on crm.activities — not built yet.
-  markActivityRead:'REPLACE_WITH_N8N_WEBHOOK_URL'
+  getVoiceToken:'https://upclose-voice-3210.twil.io/voice-token'
 };
-const CH_ENDPOINT_PLACEHOLDER='REPLACE_WITH_N8N_WEBHOOK_URL';
  
 const N8N_API_KEY='REPLACE_WITH_YOUR_N8N_SHARED_SECRET';
 const PAGE_TITLES={dashboard:'Dashboard',opportunities:'Leads',pipeline:'Pipeline',clients:'Clients',communication:'Communication Hub',reviews:'Reviews',activity:'Activity',meetings:'Meetings Hub',analytics:'Analytics',funnel:'Funnel Metrics',reports:'Reports',automations:'Automations',settings:'Settings'};
@@ -74,6 +57,7 @@ function renderUserUI(){
   const initls=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   setEl('userDisplayName',name);setEl('userRoleLabel',role);setEl('userAvatar',initls);setEl('userMenuEmail',currentProfile.email||'—');
   setEl('settingsName',name);setEl('settingsEmail',currentProfile.email||'—');setEl('settingsRole',role);setEl('settingsAvatar',initls);
+  setEl('chGtopAvatar',initls);
 }
 function setEl(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
 function showApp(){const loader=document.getElementById('authLoader');loader.classList.add('fade');setTimeout(()=>{loader.style.display='none';document.getElementById('app').classList.add('ready');},320);}
@@ -2704,7 +2688,6 @@ VoiceService.adapter.on('error',(err)=>{
    This section never talks to a telephony provider directly.
    ============================================================ */
 let chActiveLeadId=null,chActiveChannel='email',chActiveTab='timeline',chActivities=[];
-let chSelectedIds=new Set();
 
 /* ---- General (cross-lead) Activity Timeline ----
    UI only for now. crm.activities is the source of truth.
@@ -2720,32 +2703,6 @@ function genActivityMeta(type){
   if(type==='email')return{icon:'mail',color:'pu'};
   if(type==='note')return{icon:'edit_note',color:'gy'};
   return{icon:'circle',color:'gy'};
-}
-/* All Activity — reads API.getBulkActivities. Same placeholder-aware
-   pattern as chLoadMissedCalls(): does nothing until a real n8n webhook
-   URL replaces CH_ENDPOINT_PLACEHOLDER, so the shipped empty state is
-   never overwritten with fake data. */
-function genLoadActivities(){
-  const feed=document.getElementById('genTimelineFeed');
-  if(!feed)return;
-  if(API.getBulkActivities===CH_ENDPOINT_PLACEHOLDER){genRenderTimeline();return;}
-  feed.innerHTML='<div class="ch-timeline-empty"><span class="mat spin" style="font-size:33px;opacity:.5">sync</span><p style="font-size:13.5px">Loading activity…</p></div>';
-  fetch(API.getBulkActivities,{headers:chAuthHeaders()})
-    .then(r=>{if(!r.ok)throw new Error('not configured');return r.json();})
-    .then(data=>{
-      const rows=Array.isArray(data)?data:[];
-      genSetTimelineData(rows.map(a=>({
-        type:(a.activity_type||'').toLowerCase(),
-        leadId:a.lead_id,
-        leadName:(()=>{const l=allLeads.find(x=>x.id===a.lead_id);return l?chLeadName(l):null;})(),
-        number:a.activity_data&&(a.activity_data.to||a.activity_data.from),
-        status:a.activity_data&&a.activity_data.status,
-        duration:a.activity_data&&a.activity_data.duration,
-        body:a.notes,
-        created_at:a.created_at
-      })));
-    })
-    .catch(()=>genRenderTimeline());
 }
 function genRenderTimeline(){
   const feed=document.getElementById('genTimelineFeed');
@@ -2813,12 +2770,6 @@ function escapeHtml(s){
 }
 
 function chLeadName(l){return((l.first_name||'')+' '+(l.last_name||'')).trim()||'—';}
-
-/* Deterministic avatar color per lead — 8-hue palette, GHL-style. */
-function chAvatarColor(id){
-  const n=typeof id==='number'?id:String(id||'').split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-  return'c'+((n%8)+1);
-}
 
 function chNeedsAttention(l){
   if(l.status!=='Potential')return false;
@@ -2892,17 +2843,27 @@ function chUpdateCounts(){
   setEl('chStatAttention',attn);
   setEl('chStatCallsToday',chFilteredLeads('calls').length);
   setEl('chStatUnanswered',chFilteredLeads('unanswered').length);
+  setEl('chRailTotal',allLeads.length);
+  const bellDot=document.getElementById('chGtopBellDot');
+  if(bellDot)bellDot.hidden=attn===0;
   const navBadge=document.getElementById('navCountAttention');
   if(navBadge){navBadge.style.display=attn>0?'':'none';navBadge.textContent=attn;}
 }
 
 function chCurrentView(){const el=document.querySelector('#chSmartViews .ch-sv.active');return el?el.dataset.view:'attention';}
 
+/* Purely cosmetic avatar color variety (GHL-style colorful initials).
+   Independent of the status badge color, which still reflects real
+   lead status via scClass(). */
+function chAvatarColor(id){
+  const cols=['c0','c1','c2','c3','c4'];
+  return cols[Math.abs(Number(id)||0)%cols.length];
+}
+
 function chRenderContactList(list){
   const wrap=document.getElementById('chContactList');if(!wrap)return;
   list=chSortLeads(list);
-  setEl('chRailCount',allLeads.length);
-  if(!list.length){wrap.innerHTML='<div class="empty-state"><span class="mat">person_search</span><p>No leads in this view.</p></div>';chUpdateBulkBar();return;}
+  if(!list.length){wrap.innerHTML='<div class="empty-state"><span class="mat">person_search</span><p>No leads in this view.</p></div>';return;}
   wrap.innerHTML=list.map(l=>{
     const name=chLeadName(l);
     const st=l.status||'Potential';
@@ -2910,16 +2871,10 @@ function chRenderContactList(list){
     const last=l.last_contacted_at?fmtDate(l.last_contacted_at):'No contact yet';
     const starred=chIsStarred(l.id);
     const needsAttn=chNeedsAttention(l);
-    // l.unread has no backend source yet (see roadmap) — this stays undefined
-    // today, so the dot/bold styling below simply never fires until a real
-    // read/unread flag is wired in from crm.activities.
-    const unread=!!l.unread;
-    const checked=chSelectedIds.has(l.id);
-    return`<div class="ch-contact${l.id===chActiveLeadId?' active':''}${unread?' unread':''}" data-id="${l.id}">
-      <input type="checkbox" class="ch-contact-check" data-select="${l.id}" ${checked?'checked':''} onclick="event.stopPropagation()">
+    return`<div class="ch-contact${l.id===chActiveLeadId?' active':''}" data-id="${l.id}">
       <div class="av ${chAvatarColor(l.id)}">${initials(l.company_name||name)}</div>
       <div class="ch-contact-body">
-        <div class="ch-contact-top"><span class="ch-contact-name">${unread?'<span class="ch-unread-dot"></span> ':''}${name}</span><span class="ch-contact-time">${last}</span></div>
+        <div class="ch-contact-top"><span class="ch-contact-name">${name}</span><span class="ch-contact-time">${last}</span></div>
         <div class="ch-contact-sub">${l.company_name||'—'}</div>
         <div class="ch-contact-meta"><span class="badge ${stCls}">${st}</span>${needsAttn?'<span class="ch-contact-badge" title="Needs attention">!</span>':''}
           <button class="ch-star-btn${starred?' starred':''}" title="${starred?'Starred (this device)':'Star (this device)'}" data-star="${l.id}" style="margin-left:auto"><span class="mat">${starred?'star':'star_outline'}</span></button>
@@ -2927,34 +2882,8 @@ function chRenderContactList(list){
       </div>
     </div>`;
   }).join('');
-  wrap.querySelectorAll('.ch-contact').forEach(row=>row.addEventListener('click',(e)=>{if(e.target.closest('[data-star]')||e.target.closest('[data-select]'))return;chSelectLead(parseInt(row.dataset.id));}));
+  wrap.querySelectorAll('.ch-contact').forEach(row=>row.addEventListener('click',(e)=>{if(e.target.closest('[data-star]'))return;chSelectLead(parseInt(row.dataset.id));}));
   wrap.querySelectorAll('[data-star]').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();chToggleStar(parseInt(btn.dataset.star));}));
-  wrap.querySelectorAll('[data-select]').forEach(cb=>cb.addEventListener('change',e=>{
-    const id=parseInt(cb.dataset.select);
-    if(cb.checked)chSelectedIds.add(id);else chSelectedIds.delete(id);
-    chUpdateBulkBar();
-  }));
-  chUpdateBulkBar();
-}
-
-/* Select-all / bulk bar — selection itself is fully functional; the two
-   bulk actions (mark read, tag) stay disabled until their backend columns
-   exist (see roadmap). Keeping selection working now means the buttons
-   just need `disabled` removed once that lands. */
-function chUpdateBulkBar(){
-  const row=document.getElementById('chSelectRow');if(!row)return;
-  const count=chSelectedIds.size;
-  row.classList.toggle('has-selection',count>0);
-  setEl('chBulkCount',count+' selected');
-  const all=document.getElementById('chSelectAllCheckbox');
-  const rowsVisible=document.querySelectorAll('#chContactList [data-select]');
-  if(all)all.checked=rowsVisible.length>0&&[...rowsVisible].every(cb=>chSelectedIds.has(parseInt(cb.dataset.select)));
-}
-function chToggleSelectAll(){
-  const all=document.getElementById('chSelectAllCheckbox');
-  const rows=document.querySelectorAll('#chContactList [data-select]');
-  rows.forEach(cb=>{const id=parseInt(cb.dataset.select);if(all.checked)chSelectedIds.add(id);else chSelectedIds.delete(id);});
-  chRenderContactList(chFilteredLeads(chCurrentView()));
 }
 
 function chSelectLead(id){
@@ -2997,9 +2926,9 @@ function chSelectLead(id){
   document.getElementById('chProfileEmail').innerHTML=l.email?`<a href="mailto:${l.email}" style="color:var(--acc);text-decoration:none">${l.email}</a>`:'<span style="color:var(--tx3)">—</span>';
   document.getElementById('chProfilePhone').innerHTML=l.phone?`<a href="tel:${l.phone}" style="color:var(--acc);text-decoration:none">${l.phone}</a>`:'<span style="color:var(--tx3)">—</span>';
   setEl('chProfileLastContact',l.last_contacted_at?fmtDate(l.last_contacted_at):'Never');
-  setEl('chProfileRecordMeta','Lead #'+l.id+(l.created_at?' · Created '+fmtDate(l.created_at):''));
   document.querySelectorAll('#chProfileTabs .cd-tab').forEach(t=>t.classList.toggle('active',t.dataset.cdtab==='fields'));
   document.getElementById('chProfileFieldsTab').style.display='block';
+  document.getElementById('chProfileDndTab').style.display='none';
   document.getElementById('chProfileActionsTab').style.display='none';
 
   chLoadActivities(id);
@@ -3229,7 +3158,7 @@ function chSwitchSubPage(sub,persist=true){
   });
   if(sub==='overview')chRenderOverview();
   else if(sub==='calls')chRenderCallsPage();
-  else if(sub==='activity')genLoadActivities();
+  else if(sub==='activity')genRenderTimeline();
   else if(sub==='tasks')chRenderTasksPage();
   else if(sub==='snippets')chRenderSnippets();
 }
@@ -3299,34 +3228,6 @@ function chRenderOverview(){
   const recent=allLeads.filter(l=>l.last_contacted_at).sort((a,b)=>new Date(b.last_contacted_at)-new Date(a.last_contacted_at));
   chOvFill('chOvRecent',recent,l=>fmtDate(l.last_contacted_at),'No contact activity recorded yet.');
   setEl('chOvCountRecent',recent.length);
-
-  chLoadMissedCalls();
-}
-
-/* Missed Calls — reads API.getMissedCalls. Stays on the honest "Not
-   connected" empty state until that placeholder is replaced with a real
-   n8n webhook URL (see roadmap); no fake rows are ever shown. */
-function chLoadMissedCalls(){
-  const list=document.getElementById('chOvMissed'),badge=document.getElementById('chOvMissedBadge');
-  if(!list||!badge)return;
-  if(API.getMissedCalls===CH_ENDPOINT_PLACEHOLDER)return; // leave the shipped empty state as-is
-  fetch(API.getMissedCalls,{headers:chAuthHeaders()})
-    .then(r=>{if(!r.ok)throw new Error('not configured');return r.json();})
-    .then(data=>{
-      const rows=(Array.isArray(data)?data:[]).filter(a=>a.activity_data&&a.activity_data.status&&a.activity_data.status!=='completed');
-      badge.textContent='Connected';badge.className='badge gr';
-      if(!rows.length){list.innerHTML='<div class="ch-ov-empty">No missed calls right now.</div>';return;}
-      list.innerHTML=rows.slice(0,25).map(a=>{
-        const lead=allLeads.find(l=>l.id===a.lead_id);
-        const name=lead?chLeadName(lead):(a.activity_data.from||'Unknown');
-        return`<div class="ch-ov-row" onclick="${lead?`chOpenInConversations(${lead.id})`:''}">
-          <div class="av sm re">${initials(name)}</div>
-          <div style="flex:1;min-width:0"><div class="ch-ov-row-name">${escapeHtml(name)}</div><div class="ch-ov-row-sub">${escapeHtml(a.activity_data.status)}</div></div>
-          <div class="ch-ov-row-meta">${fmtDate(a.created_at)}</div>
-        </div>`;
-      }).join('');
-    })
-    .catch(()=>{badge.textContent='Not connected';badge.className='badge gy';});
 }
 
 /* ---- CALLS ---- */
@@ -4482,9 +4383,10 @@ function chWireStaticListeners(){
     t.addEventListener('click',()=>{
       document.querySelectorAll('#chProfileTabs .cd-tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      const isFields=t.dataset.cdtab==='fields';
-      document.getElementById('chProfileFieldsTab').style.display=isFields?'block':'none';
-      document.getElementById('chProfileActionsTab').style.display=isFields?'none':'block';
+      const tab=t.dataset.cdtab;
+      document.getElementById('chProfileFieldsTab').style.display=tab==='fields'?'block':'none';
+      document.getElementById('chProfileDndTab').style.display=tab==='dnd'?'block':'none';
+      document.getElementById('chProfileActionsTab').style.display=tab==='actions'?'block':'none';
     });
   });
   document.querySelectorAll('#chSmartViews .ch-sv').forEach(sv=>{
@@ -4537,8 +4439,7 @@ function chWireStaticListeners(){
     chRenderContactList(chFilteredLeads(chCurrentView()));
   });
   document.getElementById('chPqLead').addEventListener('click',()=>{if(chActiveLeadId)openLead(chActiveLeadId);});
-  const chSelectAll=document.getElementById('chSelectAllCheckbox');
-  if(chSelectAll)chSelectAll.addEventListener('change',chToggleSelectAll);
+  document.getElementById('chFilterToggle').addEventListener('click',()=>document.getElementById('chRailFilterInput').focus());
   document.getElementById('chRailFilterInput').addEventListener('input',e=>{
     const q=e.target.value.toLowerCase();
     const base=chFilteredLeads(chCurrentView());
@@ -4566,6 +4467,50 @@ function chWireStaticListeners(){
     });
   });
 
+  /* ---- Top icon cluster (call / Ask AI / message / bell / help / avatar) ---- */
+  document.getElementById('chGtopCall').addEventListener('click',()=>document.getElementById('quickDialToggle').click());
+  document.getElementById('chGtopAi').addEventListener('click',()=>toast('AI assistant isn\'t connected yet'));
+  document.getElementById('chGtopMsg').addEventListener('click',()=>chSwitchSubPage('conversations'));
+  document.getElementById('chGtopBell').addEventListener('click',()=>{
+    chSwitchSubPage('conversations');
+    const sv=document.querySelector('#chSmartViews .ch-sv[data-view="attention"]');
+    if(sv)sv.click();
+  });
+  document.getElementById('chGtopHelp').addEventListener('click',()=>toast('Pick a lead on the left, then use the icons above the thread to call, text, email or star them'));
+  document.getElementById('chGtopAvatar').addEventListener('click',()=>{if(typeof toggleUserMenu==='function')toggleUserMenu();});
+
+  /* ---- Secondary module rail — real shortcuts into existing views, not decorative ---- */
+  document.getElementById('chModConversations').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);chSwitchSubPage('conversations');});
+  document.getElementById('chModSearch').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);document.getElementById('chRailFilterInput').focus();});
+  document.getElementById('chModContact').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);if(chActiveLeadId)openLead(chActiveLeadId);else toast('Select a lead first','err');});
+  document.getElementById('chModAll').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);const sv=document.querySelector('#chSmartViews .ch-sv[data-view="all"]');if(sv)sv.click();});
+  document.getElementById('chModSnippets').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);chSwitchSubPage('snippets');});
+  document.getElementById('chModDial').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);document.getElementById('quickDialToggle').click();});
+
+  /* ---- Select-all row: real client-side row highlighting, no fake bulk actions ---- */
+  document.getElementById('chSelectAllBox').addEventListener('change',e=>{
+    const on=e.target.checked;
+    const rows=document.querySelectorAll('#chContactList .ch-contact');
+    rows.forEach(r=>r.classList.toggle('selected',on));
+    const cnt=document.getElementById('chSelectAllCount');
+    cnt.hidden=!on;
+    cnt.textContent=on?rows.length+' selected':'';
+  });
+
+  /* ---- Contact-details "Search fields and folders" — filters the visible rows for real ---- */
+  document.getElementById('chProfileFieldSearch').addEventListener('input',e=>{
+    const q=e.target.value.trim().toLowerCase();
+    document.querySelectorAll('#chProfileFieldsTab .lp-row').forEach(row=>{
+      const label=(row.querySelector('.lp-rl')?.textContent||'').toLowerCase();
+      const value=(row.querySelector('.lp-rv')?.textContent||'').toLowerCase();
+      row.style.display=(!q||label.includes(q)||value.includes(q))?'':'none';
+    });
+  });
+}
+
+function chModSetActive(btn){
+  document.querySelectorAll('#chModRail .ch-modrail-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
 }
 
 window.__initApp = function(){
