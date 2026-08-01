@@ -655,11 +655,12 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 .cdp-row-sel td{background:var(--acc-d)!important}
 
 /* COMMUNICATION HUB  */
-.ch-hero{padding:26px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0}
-.ch-hero-title{font-size:23px;font-weight:700;color:var(--tx);letter-spacing:-0.02em}
-.ch-hero-sub{font-size:13.5px;color:var(--tx3);margin-top:4px}
-.ch-hero-actions{display:flex;align-items:center;gap:8px}
-.ch-hero-actions .abtn{padding:8px 14px;font-size:13.5px}
+.ch-hero{padding:18px 24px 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0}
+.ch-hero-title{font-size:21px;font-weight:700;color:var(--tx);letter-spacing:-0.02em}
+.ch-hero-sub{font-size:13px;color:var(--tx3);margin-top:2px}
+.ch-hero-stats{display:flex;align-items:center;gap:16px}
+.ch-hero-stat{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--tx2)}
+.ch-hero-stat strong{font-size:14px}
 .ch-layout{flex:1;display:flex;min-height:0;overflow:hidden}
 .ch-rail{width:296px;min-width:296px;border-right:1px solid var(--bd);display:flex;flex-direction:column;background:var(--s1);min-height:0}
 .ch-smartviews{padding:10px 8px;border-bottom:1px solid var(--bd);flex-shrink:0}
@@ -757,8 +758,8 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 @media(max-width:900px){.ch-rail{width:240px;min-width:240px}}
 
 /* ---- Communication Hub sub-navigation + new subpages ---- */
-.ch-subnav{display:flex;align-items:center;gap:4px;padding:0 24px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0;overflow-x:auto}
-.ch-subnav-item{display:flex;align-items:center;gap:6px;padding:13px 14px;font-size:13.5px;font-weight:600;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s var(--ease)}
+.ch-subnav{display:flex;align-items:center;gap:2px;padding:0 20px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0;overflow-x:auto}
+.ch-subnav-item{display:flex;align-items:center;gap:6px;padding:11px 14px;font-size:13.5px;font-weight:600;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s var(--ease)}
 .ch-subnav-item:hover{color:var(--tx)}
 .ch-subnav-item.active{color:var(--acc);border-bottom-color:var(--acc)}
 .ch-subnav-item .mat{font-size:17px}
