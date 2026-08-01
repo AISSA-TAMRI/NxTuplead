@@ -1,3 +1,4 @@
+
 'use strict';
 const SUPABASE_URL=window.SUPABASE_URL||'';
 const SUPABASE_ANON_KEY=window.SUPABASE_ANON_KEY||'';
@@ -57,7 +58,6 @@ function renderUserUI(){
   const initls=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   setEl('userDisplayName',name);setEl('userRoleLabel',role);setEl('userAvatar',initls);setEl('userMenuEmail',currentProfile.email||'—');
   setEl('settingsName',name);setEl('settingsEmail',currentProfile.email||'—');setEl('settingsRole',role);setEl('settingsAvatar',initls);
-  setEl('chGtopAvatar',initls);
 }
 function setEl(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
 function showApp(){const loader=document.getElementById('authLoader');loader.classList.add('fade');setTimeout(()=>{loader.style.display='none';document.getElementById('app').classList.add('ready');},320);}
@@ -2801,7 +2801,7 @@ function chIsStarred(id){return chStarredSet.has(id);}
 function chToggleStar(id){
   if(chStarredSet.has(id))chStarredSet.delete(id);else chStarredSet.add(id);
   localStorage.setItem(CH_STARRED_KEY,JSON.stringify([...chStarredSet]));
-  chRenderContactList(chActiveList());
+  chRenderContactList(chFilteredLeads(chCurrentView()));
   if(id===chActiveLeadId)chUpdateStarIcon();
   chUpdateCounts();
 }
@@ -2813,13 +2813,6 @@ function chUpdateStarIcon(){
 }
 
 let chSortMode='default';
-let chCustomActiveView=null; // {id,name,status} when a user-created view (not a built-in smart view) is selected
-function chActiveList(){
-  if(chCustomActiveView){
-    return chCustomActiveView.status==='All'?allLeads.slice():allLeads.filter(l=>(l.status||'Potential')===chCustomActiveView.status);
-  }
-  return chFilteredLeads(chCurrentView());
-}
 function chSortLeads(list){
   const arr=list.slice();
   if(chSortMode==='name')arr.sort((a,b)=>chLeadName(a).localeCompare(chLeadName(b)));
@@ -2850,22 +2843,11 @@ function chUpdateCounts(){
   setEl('chStatAttention',attn);
   setEl('chStatCallsToday',chFilteredLeads('calls').length);
   setEl('chStatUnanswered',chFilteredLeads('unanswered').length);
-  setEl('chRailTotal',allLeads.length);
-  const bellDot=document.getElementById('chGtopBellDot');
-  if(bellDot)bellDot.hidden=attn===0;
   const navBadge=document.getElementById('navCountAttention');
   if(navBadge){navBadge.style.display=attn>0?'':'none';navBadge.textContent=attn;}
 }
 
 function chCurrentView(){const el=document.querySelector('#chSmartViews .ch-sv.active');return el?el.dataset.view:'attention';}
-
-/* Purely cosmetic avatar color variety (GHL-style colorful initials).
-   Independent of the status badge color, which still reflects real
-   lead status via scClass(). */
-function chAvatarColor(id){
-  const cols=['c0','c1','c2','c3','c4'];
-  return cols[Math.abs(Number(id)||0)%cols.length];
-}
 
 function chRenderContactList(list){
   const wrap=document.getElementById('chContactList');if(!wrap)return;
@@ -2879,7 +2861,7 @@ function chRenderContactList(list){
     const starred=chIsStarred(l.id);
     const needsAttn=chNeedsAttention(l);
     return`<div class="ch-contact${l.id===chActiveLeadId?' active':''}" data-id="${l.id}">
-      <div class="av ${chAvatarColor(l.id)}">${initials(l.company_name||name)}</div>
+      <div class="av ${stCls}">${initials(l.company_name||name)}</div>
       <div class="ch-contact-body">
         <div class="ch-contact-top"><span class="ch-contact-name">${name}</span><span class="ch-contact-time">${last}</span></div>
         <div class="ch-contact-sub">${l.company_name||'—'}</div>
@@ -2896,7 +2878,7 @@ function chRenderContactList(list){
 function chSelectLead(id){
   chActiveLeadId=id;
   const l=allLeads.find(x=>x.id===id);
-  chRenderContactList(chActiveList());
+  chRenderContactList(chFilteredLeads(chCurrentView()));
   if(!l)return;
   const name=chLeadName(l);
   setEl('chHeaderName',name);setEl('chHeaderSub',l.company_name||'—');
@@ -2923,8 +2905,6 @@ function chSelectLead(id){
   document.getElementById('chProfileAvatar').textContent=initials(l.company_name||name);
   setEl('chProfileName',name);setEl('chProfileTitle',l.company_name||'—');
   document.getElementById('chProfileStatus').textContent=l.status||'—';
-  chRenderTags(id);
-  document.getElementById('chTagInput').hidden=true;
   setEl('chProfileStage',l.pipeline_stage||defaultStage(l));
   setEl('chProfileSourceVal',l.utm_source||'—');
   setEl('chProfileCampaign',l.utm_campaign||'—');
@@ -2937,7 +2917,6 @@ function chSelectLead(id){
   setEl('chProfileLastContact',l.last_contacted_at?fmtDate(l.last_contacted_at):'Never');
   document.querySelectorAll('#chProfileTabs .cd-tab').forEach(t=>t.classList.toggle('active',t.dataset.cdtab==='fields'));
   document.getElementById('chProfileFieldsTab').style.display='block';
-  document.getElementById('chProfileDndTab').style.display='none';
   document.getElementById('chProfileActionsTab').style.display='none';
 
   chLoadActivities(id);
@@ -3132,7 +3111,7 @@ function chDismissIncomingCall(){
 
 function renderCommunicationHub(){
   chUpdateCounts();
-  chRenderContactList(chActiveList());
+  chRenderContactList(chFilteredLeads(chCurrentView()));
   chSwitchSubPage(chSubPage,false);
 }
 
@@ -4392,19 +4371,15 @@ function chWireStaticListeners(){
     t.addEventListener('click',()=>{
       document.querySelectorAll('#chProfileTabs .cd-tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      const tab=t.dataset.cdtab;
-      document.getElementById('chProfileFieldsTab').style.display=tab==='fields'?'block':'none';
-      document.getElementById('chProfileDndTab').style.display=tab==='dnd'?'block':'none';
-      document.getElementById('chProfileActionsTab').style.display=tab==='actions'?'block':'none';
+      const isFields=t.dataset.cdtab==='fields';
+      document.getElementById('chProfileFieldsTab').style.display=isFields?'block':'none';
+      document.getElementById('chProfileActionsTab').style.display=isFields?'none':'block';
     });
   });
   document.querySelectorAll('#chSmartViews .ch-sv').forEach(sv=>{
     sv.addEventListener('click',()=>{
       document.querySelectorAll('#chSmartViews .ch-sv').forEach(s=>s.classList.remove('active'));
       sv.classList.add('active');
-      chCustomActiveView=null;
-      document.querySelectorAll('#chCustomViews .ch-sv').forEach(s=>s.classList.remove('active'));
-      chSyncQuickTabs(sv.dataset.view);
       chRenderContactList(chFilteredLeads(sv.dataset.view));
     });
   });
@@ -4416,7 +4391,6 @@ function chWireStaticListeners(){
       chRenderTimeline(chFilterByTab(chActivities,chActiveTab));
     });
   });
-  const chChannelIcons={email:'mail',sms:'sms',note:'edit_note'};
   document.querySelectorAll('#chComposerChannels .topt').forEach(opt=>{
     opt.addEventListener('click',()=>{
       document.querySelectorAll('#chComposerChannels .topt').forEach(o=>o.classList.remove('active'));
@@ -4429,14 +4403,7 @@ function chWireStaticListeners(){
       else{meta.style.display='none';body.placeholder='Internal note — not visible to the lead…';}
       chUpdateComposerTo();
       chLoadDraft();
-      const btn=document.getElementById('chComposerChannelBtn');
-      if(btn)btn.querySelector('.mat').textContent=chChannelIcons[chActiveChannel]||'mail';
     });
-  });
-  document.getElementById('chComposerChannelBtn').addEventListener('click',()=>{
-    const order=['email','sms','note'];
-    const next=order[(order.indexOf(chActiveChannel)+1)%order.length];
-    document.querySelector(`#chComposerChannels .topt[data-ch="${next}"]`).click();
   });
   document.getElementById('chComposerSendBtn').addEventListener('click',chSendMessage);
   document.getElementById('chComposerDraftBtn').addEventListener('click',chSaveDraft);
@@ -4452,128 +4419,16 @@ function chWireStaticListeners(){
   });
   document.getElementById('chQaOpenLead').addEventListener('click',()=>{if(chActiveLeadId)openLead(chActiveLeadId);});
   document.getElementById('chQaStar').addEventListener('click',()=>{if(chActiveLeadId)chToggleStar(chActiveLeadId);});
-  /* ---- Top icon cluster (call / Ask AI / message / bell / help / avatar) ---- */
-  document.getElementById('chGtopCall').addEventListener('click',()=>document.getElementById('quickDialToggle').click());
-  document.getElementById('chGtopAi').addEventListener('click',()=>toast('AI assistant isn\'t connected yet'));
-  document.getElementById('chGtopMsg').addEventListener('click',()=>chSwitchSubPage('conversations'));
-  document.getElementById('chGtopBell').addEventListener('click',()=>{
-    chSwitchSubPage('conversations');
-    const sv=document.querySelector('#chSmartViews .ch-sv[data-view="attention"]');
-    if(sv)sv.click();
-  });
-  document.getElementById('chGtopHelp').addEventListener('click',()=>toast('Pick a lead on the left, then use the icons above the thread to call, text, email or star them'));
-  document.getElementById('chGtopAvatar').addEventListener('click',()=>{if(typeof toggleUserMenu==='function')toggleUserMenu();});
-
-  /* ---- Left navigator column: New conversation / search / inbox scopes / Views ---- */
-  document.getElementById('chNavNewConv').addEventListener('click',()=>{
-    if(chActiveLeadId){document.getElementById('chComposerBody').focus();}
-    else toast('Pick a lead from Team inbox below, then start typing');
-  });
-  document.getElementById('chNavSearchInput').addEventListener('input',e=>{
-    const q=e.target.value;
-    const sv=document.querySelector('#chSmartViews .ch-sv[data-view="all"]');
-    if(sv&&!sv.classList.contains('active'))sv.click();
-    const railInput=document.getElementById('chRailFilterInput');
-    railInput.value=q;
-    railInput.dispatchEvent(new Event('input'));
-  });
-  document.querySelectorAll('#chNav .ch-nav-scope-item').forEach(item=>{
-    item.addEventListener('click',()=>{
-      if(item.classList.contains('disabled')){toast(item.getAttribute('title'));return;}
-      document.querySelectorAll('#chNav .ch-nav-scope-item').forEach(x=>x.classList.remove('active'));
-      item.classList.add('active');
-      const scope=item.dataset.scope;
-      const target=scope==='mine'?'mine':'all';
-      const sv=document.querySelector(`#chSmartViews .ch-sv[data-view="${target}"]`);
-      if(sv)sv.click();
-    });
-  });
-
-  /* ---- Custom Views: real, minimal, saved per-device (name + status filter) ---- */
-  const CH_CUSTOMVIEWS_KEY='upclose_custom_views_v1';
-  function chLoadCustomViews(){try{return JSON.parse(localStorage.getItem(CH_CUSTOMVIEWS_KEY)||'[]');}catch(e){return[];}}
-  function chSaveCustomViews(list){localStorage.setItem(CH_CUSTOMVIEWS_KEY,JSON.stringify(list));}
-  function chRenderCustomViews(){
-    const wrap=document.getElementById('chCustomViews');
-    const views=chLoadCustomViews();
-    wrap.innerHTML=views.map(v=>`<div class="ch-sv${chCustomActiveView&&chCustomActiveView.id===v.id?' active':''}" data-cvid="${v.id}"><span class="mat sm">bookmark</span>${v.name}<button class="ch-sv-del" data-delid="${v.id}" title="Delete view"><span class="mat sm">close</span></button></div>`).join('');
-    wrap.querySelectorAll('.ch-sv').forEach(el=>{
-      el.addEventListener('click',(e)=>{
-        if(e.target.closest('.ch-sv-del'))return;
-        const v=views.find(x=>x.id===el.dataset.cvid);
-        if(!v)return;
-        document.querySelectorAll('#chSmartViews .ch-sv, #chCustomViews .ch-sv').forEach(s=>s.classList.remove('active'));
-        el.classList.add('active');
-        chCustomActiveView=v;
-        chSyncQuickTabs(null);
-        chRenderContactList(chActiveList());
-      });
-    });
-    wrap.querySelectorAll('.ch-sv-del').forEach(btn=>{
-      btn.addEventListener('click',(e)=>{
-        e.stopPropagation();
-        const id=btn.dataset.delid;
-        const remaining=chLoadCustomViews().filter(v=>v.id!==id);
-        chSaveCustomViews(remaining);
-        if(chCustomActiveView&&chCustomActiveView.id===id){
-          chCustomActiveView=null;
-          const sv=document.querySelector('#chSmartViews .ch-sv[data-view="attention"]');
-          if(sv)sv.click();
-        }
-        chRenderCustomViews();
-      });
-    });
-  }
-  chRenderCustomViews();
-  document.getElementById('chNavCreateView').addEventListener('click',()=>{
-    document.getElementById('chCreateViewForm').hidden=false;
-    document.getElementById('chCvName').focus();
-  });
-  document.getElementById('chCvCancel').addEventListener('click',()=>{
-    document.getElementById('chCreateViewForm').hidden=true;
-    document.getElementById('chCvName').value='';
-  });
-  document.getElementById('chCvSave').addEventListener('click',()=>{
-    const name=document.getElementById('chCvName').value.trim();
-    if(!name){toast('Give the view a name','err');return;}
-    const status=document.getElementById('chCvStatus').value;
-    const views=chLoadCustomViews();
-    views.push({id:'cv_'+Date.now(),name,status});
-    chSaveCustomViews(views);
-    document.getElementById('chCreateViewForm').hidden=true;
-    document.getElementById('chCvName').value='';
-    chRenderCustomViews();
-    toast('View saved on this device');
-  });
-
-  /* ---- Team inbox quick tabs (All / Recent / Starred) — honest subset, no fake "Unread" ---- */
-  document.querySelectorAll('#chQuickTabs .ch-qt').forEach(qt=>{
-    qt.addEventListener('click',()=>{
-      document.querySelectorAll('#chQuickTabs .ch-qt').forEach(t=>t.classList.remove('active'));
-      qt.classList.add('active');
-      chCustomActiveView=null;
-      document.querySelectorAll('#chCustomViews .ch-sv').forEach(s=>s.classList.remove('active'));
-      const mode=qt.dataset.qt;
-      chSortMode=mode==='recent'?'recent':'default';
-      const target=mode==='starred'?'starred':'all';
-      const sv=document.querySelector(`#chSmartViews .ch-sv[data-view="${target}"]`);
-      document.querySelectorAll('#chSmartViews .ch-sv').forEach(s=>s.classList.remove('active'));
-      if(sv)sv.classList.add('active');
-      chRenderContactList(chFilteredLeads(target));
-    });
-  });
-
   document.getElementById('chSortToggle').addEventListener('click',()=>{
     chSortMode=chSortMode==='default'?'name':chSortMode==='name'?'recent':'default';
     const btn=document.getElementById('chSortToggle');
     btn.title=chSortMode==='name'?'Sorted by name — click for recent contact':chSortMode==='recent'?'Sorted by recent contact — click for default order':'Sort by name';
-    chRenderContactList(chActiveList());
+    chRenderContactList(chFilteredLeads(chCurrentView()));
   });
   document.getElementById('chPqLead').addEventListener('click',()=>{if(chActiveLeadId)openLead(chActiveLeadId);});
-  document.getElementById('chFilterToggle').addEventListener('click',()=>document.getElementById('chRailFilterInput').focus());
   document.getElementById('chRailFilterInput').addEventListener('input',e=>{
     const q=e.target.value.toLowerCase();
-    const base=chActiveList();
+    const base=chFilteredLeads(chCurrentView());
     chRenderContactList(base.filter(l=>chLeadName(l).toLowerCase().includes(q)||(l.company_name||'').toLowerCase().includes(q)));
   });
 
@@ -4598,90 +4453,6 @@ function chWireStaticListeners(){
     });
   });
 
-  /* ---- Secondary icon rail, right of Contact Details — real per-lead shortcuts ---- */
-  document.getElementById('chModTimeline').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);document.querySelector('#chCommTabs .ch-tab[data-tab="timeline"]')?.click();});
-  document.getElementById('chModNotes').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);document.querySelector('#chCommTabs .ch-tab[data-tab="notes"]')?.click();});
-  document.getElementById('chModMeeting').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);document.getElementById('chQaMeeting').click();});
-  document.getElementById('chModTasks').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);chSwitchSubPage('tasks');});
-  document.getElementById('chModDial').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);document.getElementById('quickDialToggle').click();});
-  document.getElementById('chModOpenLead').addEventListener('click',(e)=>{chModSetActive(e.currentTarget);if(chActiveLeadId)openLead(chActiveLeadId);else toast('Select a lead first','err');});
-
-  /* ---- Select-all row: real client-side row highlighting, no fake bulk actions ---- */
-  document.getElementById('chSelectAllBox').addEventListener('change',e=>{
-    const on=e.target.checked;
-    const rows=document.querySelectorAll('#chContactList .ch-contact');
-    rows.forEach(r=>r.classList.toggle('selected',on));
-    const cnt=document.getElementById('chSelectAllCount');
-    cnt.hidden=!on;
-    cnt.textContent=on?rows.length+' selected':'';
-  });
-
-  /* ---- Contact-details "Search fields and folders" — filters the visible rows for real ---- */
-  document.getElementById('chProfileFieldSearch').addEventListener('input',e=>{
-    const q=e.target.value.trim().toLowerCase();
-    document.querySelectorAll('#chProfileFieldsTab .lp-row').forEach(row=>{
-      const label=(row.querySelector('.lp-rl')?.textContent||'').toLowerCase();
-      const value=(row.querySelector('.lp-rv')?.textContent||'').toLowerCase();
-      row.style.display=(!q||label.includes(q)||value.includes(q))?'':'none';
-    });
-  });
-
-  /* ---- Tags — local-only per lead, same honesty pattern as Starred/Snippets ---- */
-  document.getElementById('chTagAddBtn').addEventListener('click',()=>{
-    const input=document.getElementById('chTagInput');
-    input.hidden=!input.hidden;
-    if(!input.hidden)input.focus();
-  });
-  document.getElementById('chTagInput').addEventListener('keydown',e=>{
-    if(e.key==='Enter'){
-      const v=e.target.value.trim();
-      if(v&&chActiveLeadId)chAddTag(chActiveLeadId,v);
-      e.target.value='';
-      e.target.hidden=true;
-    }else if(e.key==='Escape'){
-      e.target.value='';
-      e.target.hidden=true;
-    }
-  });
-}
-
-function chModSetActive(btn){
-  document.querySelectorAll('#chModRail .ch-modrail-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-function chSyncQuickTabs(view){
-  const map={all:'all',starred:'starred'};
-  document.querySelectorAll('#chQuickTabs .ch-qt').forEach(t=>t.classList.toggle('active',map[view]===t.dataset.qt));
-}
-
-/* ---- Tags — stored per lead id in localStorage; never presented as backend-synced ---- */
-const CH_TAGS_KEY='upclose_lead_tags_v1';
-function chLoadAllTags(){try{return JSON.parse(localStorage.getItem(CH_TAGS_KEY)||'{}');}catch(e){return{};}}
-function chSaveAllTags(map){localStorage.setItem(CH_TAGS_KEY,JSON.stringify(map));}
-function chGetTags(leadId){const all=chLoadAllTags();return all[leadId]||[];}
-function chAddTag(leadId,tag){
-  const all=chLoadAllTags();
-  const list=all[leadId]||[];
-  if(!list.includes(tag))list.push(tag);
-  all[leadId]=list;
-  chSaveAllTags(all);
-  chRenderTags(leadId);
-}
-function chRemoveTag(leadId,tag){
-  const all=chLoadAllTags();
-  all[leadId]=(all[leadId]||[]).filter(t=>t!==tag);
-  chSaveAllTags(all);
-  chRenderTags(leadId);
-}
-function chRenderTags(leadId){
-  const wrap=document.getElementById('chTagsChips');
-  if(!wrap)return;
-  const tags=chGetTags(leadId);
-  wrap.innerHTML=tags.map(t=>`<span class="ch-tag-chip">${t}<button class="ch-tag-x" data-tag="${t}" title="Remove tag"><span class="mat sm">close</span></button></span>`).join('');
-  wrap.querySelectorAll('.ch-tag-x').forEach(btn=>{
-    btn.addEventListener('click',()=>chRemoveTag(leadId,btn.dataset.tag));
-  });
 }
 
 window.__initApp = function(){
