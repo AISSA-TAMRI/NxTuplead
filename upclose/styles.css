@@ -938,3 +938,77 @@ html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
 .auto-picker-item span.plbl{font-size:13px;font-weight:500;color:var(--tx)}
 .auto-cond-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
 .auto-cond-row .form-group{flex:1;min-width:120px}
+
+/* ============================================================
+   COMMUNICATION HUB — GHL-style reskin
+   Layout/behaviour unchanged (same element IDs), visual language
+   updated to match the GoHighLevel Team Inbox reference: colored
+   avatar chips, a horizontal pill filter row, a select-all/bulk
+   bar, an unread dot state (lights up once a real unread flag
+   exists on the backend), and richer Contact Details sections.
+   ============================================================ */
+
+/* -- Colored avatar chips (assigned per-lead by chAvatarColor()) -- */
+.av.c1{background:#ede9fe;color:#7c3aed}
+.av.c2{background:#fef3c7;color:#b45309}
+.av.c3{background:#dbeafe;color:#1d4ed8}
+.av.c4{background:#fce7f3;color:#be185d}
+.av.c5{background:#d1fae5;color:#047857}
+.av.c6{background:#cffafe;color:#0e7490}
+.av.c7{background:#ffe4e6;color:#be123c}
+.av.c8{background:#e0e7ff;color:#4338ca}
+html[data-theme="dark"] .av.c1{background:rgba(124,58,237,.22);color:#c4b5fd}
+html[data-theme="dark"] .av.c2{background:rgba(180,83,9,.22);color:#fcd34d}
+html[data-theme="dark"] .av.c3{background:rgba(29,78,216,.22);color:#93c5fd}
+html[data-theme="dark"] .av.c4{background:rgba(190,24,93,.22);color:#f9a8d4}
+html[data-theme="dark"] .av.c5{background:rgba(4,120,87,.22);color:#6ee7b7}
+html[data-theme="dark"] .av.c6{background:rgba(14,116,144,.22);color:#67e8f9}
+html[data-theme="dark"] .av.c7{background:rgba(190,18,60,.22);color:#fda4af}
+html[data-theme="dark"] .av.c8{background:rgba(67,56,202,.22);color:#a5b4fc}
+
+/* -- Rail header row: title + count, like GHL's "Team inbox · 5.4K" -- */
+.ch-rail-count{font-size:12px;font-weight:600;color:var(--tx3);background:var(--s3);padding:2px 8px;border-radius:20px;margin-left:6px}
+
+/* -- Filter row: horizontal pills instead of a vertical list -- */
+.ch-smartviews{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.ch-sv{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:20px;cursor:pointer;color:var(--tx2);font-size:12.5px;font-weight:600;background:var(--s3);border:1px solid transparent;transition:all .15s var(--ease);white-space:nowrap}
+.ch-sv:hover{background:var(--bd)}
+.ch-sv.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.ch-sv .mat{font-size:15px}
+.ch-sv .cnt{font-size:10.5px;font-weight:700;color:inherit;background:rgba(0,0,0,0.08);padding:1px 6px;border-radius:10px}
+.ch-sv.active .cnt{background:rgba(255,255,255,0.25)}
+html[data-theme="dark"] .ch-sv .cnt{background:rgba(255,255,255,0.08)}
+
+/* -- Select-all / bulk action row, like GHL's inbox header checkbox -- */
+.ch-select-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);flex-shrink:0;font-size:12px;color:var(--tx3);font-weight:600}
+.ch-select-row input[type="checkbox"]{width:15px;height:15px;accent-color:var(--acc);cursor:pointer}
+.ch-bulk-bar{display:none;align-items:center;gap:8px;margin-left:auto}
+.ch-select-row.has-selection .ch-bulk-label{display:none}
+.ch-select-row.has-selection .ch-bulk-bar{display:flex}
+.ch-bulk-btn{display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--tx2);background:var(--s3);border:1px solid var(--bd);border-radius:8px;padding:4px 8px;cursor:pointer;transition:all .12s}
+.ch-bulk-btn:hover{background:var(--s4);color:var(--tx)}
+.ch-bulk-btn[disabled]{opacity:.5;cursor:not-allowed}
+
+/* -- Contact row: checkbox + unread state -- */
+.ch-contact{align-items:flex-start}
+.ch-contact-check{width:15px;height:15px;margin-top:2px;accent-color:var(--acc);cursor:pointer;flex-shrink:0}
+.ch-contact.unread .ch-contact-name{font-weight:700;color:var(--tx)}
+.ch-contact.unread .ch-contact-sub{color:var(--tx2);font-weight:500}
+.ch-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--acc);flex-shrink:0;display:inline-block}
+.ch-contact-channel{display:flex;align-items:center;gap:3px;font-size:10.5px;color:var(--tx3);font-weight:600}
+.ch-contact-channel .mat{font-size:13px}
+
+/* -- Contact Details: GHL-style stacked sections with a header row per block -- */
+.cd-block{border-bottom:1px solid var(--bd)}
+.cd-block-hd{display:flex;align-items:center;gap:6px;padding:12px 14px 6px}
+.cd-block-hd .cd-block-title{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3);flex:1}
+.cd-block-hd .mat{font-size:15px;color:var(--tx3)}
+.cd-block-action{font-size:11px;font-weight:600;color:var(--acc);cursor:pointer}
+.cd-block-body{padding:0 14px 12px}
+.cd-empty-mini{font-size:11.5px;color:var(--tx3);line-height:1.5;background:var(--s3);border-radius:8px;padding:8px 10px}
+.cd-chip-row{display:flex;flex-wrap:wrap;gap:6px}
+.cd-chip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--s3);color:var(--tx2);border:1px solid var(--bd)}
+.cd-dnd-row{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--tx2)}
+.cd-switch{position:relative;width:34px;height:19px;border-radius:20px;background:var(--bd2);flex-shrink:0;cursor:not-allowed;opacity:.6}
+.cd-switch::after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:var(--shadow-xs)}
+.cd-record-meta{font-size:11px;color:var(--tx3);padding:10px 14px;line-height:1.6}
