@@ -86,14 +86,45 @@
 
         <div class="ch-subpage" id="chSub-conversations" style="display:none;padding:0">
         <div class="ch-layout">
-          <nav class="ch-modrail" id="chModRail">
-            <button class="ch-modrail-btn active" id="chModConversations" title="Conversations"><span class="mat">forum</span></button>
-            <button class="ch-modrail-btn" id="chModSearch" title="Search"><span class="mat">search</span></button>
-            <button class="ch-modrail-btn" id="chModContact" title="Open full lead record"><span class="mat">person</span></button>
-            <button class="ch-modrail-btn" id="chModAll" title="All Leads"><span class="mat">group</span></button>
-            <div class="ch-modrail-sep"></div>
-            <button class="ch-modrail-btn" id="chModSnippets" title="Snippets"><span class="mat">bolt</span></button>
-            <button class="ch-modrail-btn" id="chModDial" title="Quick Dial"><span class="mat">dialpad</span></button>
+          <nav class="ch-nav" id="chNav">
+            <button class="ch-nav-newconv" id="chNavNewConv"><span class="mat sm">edit_square</span>New conversation</button>
+            <div class="ch-nav-search">
+              <span class="mat si sm">search</span>
+              <input type="text" id="chNavSearchInput" placeholder="Search…"/>
+            </div>
+            <div class="ch-nav-scopes">
+              <div class="ch-nav-section-lbl">My Inbox</div>
+              <div class="ch-nav-scope-item" data-scope="all"><span class="mat sm">inbox</span>All</div>
+              <div class="ch-nav-scope-item" data-scope="mine"><span class="mat sm">person</span>Assigned to me</div>
+              <div class="ch-nav-scope-item disabled" title="Followers aren't enabled yet — see Contact Details"><span class="mat sm">visibility</span>Followed by me</div>
+              <div class="ch-nav-scope-item" data-scope="team" id="chNavTeamInbox"><span class="mat sm">groups</span>Team inbox</div>
+              <div class="ch-nav-scope-item disabled" title="Internal team chat isn't connected yet"><span class="mat sm">forum</span>Internal chat</div>
+            </div>
+            <div class="ch-nav-views">
+              <div class="ch-nav-section-lbl">Views<button class="ch-nav-createview" id="chNavCreateView" title="Create view"><span class="mat sm">add</span></button></div>
+              <div class="ch-smartviews" id="chSmartViews">
+                <div class="ch-sv active" data-view="attention"><span class="mat sm">priority_high</span>Needs Attention<span class="cnt" id="chSvCountAttention">—</span></div>
+                <div class="ch-sv" data-view="mine"><span class="mat sm">person</span>My Open Leads<span class="cnt" id="chSvCountMine">—</span></div>
+                <div class="ch-sv" data-view="calls"><span class="mat sm">call</span>Scheduled Today<span class="cnt" id="chSvCountCalls">—</span></div>
+                <div class="ch-sv" data-view="unanswered"><span class="mat sm">mark_email_unread</span>No Recent Contact<span class="cnt" id="chSvCountEmails">—</span></div>
+                <div class="ch-sv" data-view="starred"><span class="mat sm">star</span>Starred<span class="cnt" id="chSvCountStarred">—</span></div>
+                <div class="ch-sv" data-view="all"><span class="mat sm">people</span>All Leads<span class="cnt" id="chSvCountAll">—</span></div>
+              </div>
+              <div class="ch-nav-customviews" id="chCustomViews"></div>
+              <div class="ch-nav-createview-form" id="chCreateViewForm" hidden>
+                <input type="text" id="chCvName" placeholder="View name"/>
+                <select id="chCvStatus">
+                  <option value="All">Any status</option>
+                  <option value="Potential">Potential</option>
+                  <option value="Won">Won</option>
+                  <option value="Lost">Lost</option>
+                </select>
+                <div style="display:flex;gap:6px">
+                  <button class="abtn pri" id="chCvSave" style="flex:1;justify-content:center">Save view</button>
+                  <button class="abtn" id="chCvCancel">Cancel</button>
+                </div>
+              </div>
+            </div>
           </nav>
           <aside class="ch-rail">
             <div class="ch-rail-hd">
@@ -104,13 +135,10 @@
                 <button class="tbb" id="chSortToggle" title="Sort by name"><span class="mat sm">swap_vert</span></button>
               </div>
             </div>
-            <div class="ch-smartviews" id="chSmartViews">
-              <div class="ch-sv active" data-view="attention"><span class="mat sm">priority_high</span>Needs Attention<span class="cnt" id="chSvCountAttention">—</span></div>
-              <div class="ch-sv" data-view="mine"><span class="mat sm">person</span>My Open Leads<span class="cnt" id="chSvCountMine">—</span></div>
-              <div class="ch-sv" data-view="calls"><span class="mat sm">call</span>Scheduled Today<span class="cnt" id="chSvCountCalls">—</span></div>
-              <div class="ch-sv" data-view="unanswered"><span class="mat sm">mark_email_unread</span>No Recent Contact<span class="cnt" id="chSvCountEmails">—</span></div>
-              <div class="ch-sv" data-view="starred"><span class="mat sm">star</span>Starred<span class="cnt" id="chSvCountStarred">—</span></div>
-              <div class="ch-sv" data-view="all"><span class="mat sm">people</span>All Leads<span class="cnt" id="chSvCountAll">—</span></div>
+            <div class="ch-quicktabs" id="chQuickTabs">
+              <div class="ch-qt active" data-qt="all">All</div>
+              <div class="ch-qt" data-qt="recent">Recent</div>
+              <div class="ch-qt" data-qt="starred">Starred</div>
             </div>
             <div class="ch-rail-search">
               <div class="search-box" style="max-width:none">
@@ -209,7 +237,7 @@
                 </div>
               </div>
               <div class="ch-composer-pill">
-                <span class="mat sm ch-composer-emoji">sms</span>
+                <button class="ch-composer-emoji" id="chComposerChannelBtn" title="Switch channel (Email → SMS → Note)"><span class="mat sm">mail</span></button>
                 <textarea class="ch-msg-input" id="chComposerBody" rows="1" placeholder="Type a message…" disabled></textarea>
                 <button class="tbb" title="Attach file" style="flex-shrink:0"><span class="mat sm">attach_file</span></button>
                 <button class="tbb" id="chComposerDraftBtn" title="Save draft" disabled style="flex-shrink:0"><span class="mat sm">drafts</span></button>
@@ -236,6 +264,11 @@
                 </div>
                 <div class="cd-tags-row">
                   <span class="badge gy" id="chProfileStatus">—</span>
+                </div>
+                <div class="ch-tags-row" id="chTagsRow">
+                  <div class="ch-tags-chips" id="chTagsChips"></div>
+                  <button class="ch-tag-add-btn" id="chTagAddBtn" title="Add a tag (saved on this device)"><span class="mat sm">add</span></button>
+                  <input type="text" id="chTagInput" class="ch-tag-input" placeholder="Tag name, Enter to add" hidden/>
                 </div>
                 <div class="cd-owner-row">
                   <div class="cd-owner-col">
@@ -318,6 +351,15 @@
               </div>
             </div>
           </aside>
+          <nav class="ch-modrail" id="chModRail">
+            <button class="ch-modrail-btn" id="chModTimeline" title="Timeline"><span class="mat">history</span></button>
+            <button class="ch-modrail-btn" id="chModNotes" title="Notes"><span class="mat">edit_note</span></button>
+            <button class="ch-modrail-btn" id="chModMeeting" title="Schedule meeting"><span class="mat">event</span></button>
+            <button class="ch-modrail-btn" id="chModTasks" title="Tasks &amp; Follow-ups"><span class="mat">task_alt</span></button>
+            <div class="ch-modrail-sep"></div>
+            <button class="ch-modrail-btn" id="chModDial" title="Quick Dial"><span class="mat">dialpad</span></button>
+            <button class="ch-modrail-btn" id="chModOpenLead" title="Open full lead record"><span class="mat">open_in_new</span></button>
+          </nav>
         </div>
         </div>
 
