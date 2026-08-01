@@ -1,7 +1,17 @@
 <div class="ch-hero">
-          <div>
-            <div class="ch-hero-title">Communication Hub</div>
-            <div class="ch-hero-sub">Every call, email and text in one place — start your day here.</div>
+          <div class="ch-hero-row">
+            <div>
+              <div class="ch-hero-title">Communication Hub</div>
+              <div class="ch-hero-sub">Every call, email and text in one place — start your day here.</div>
+            </div>
+            <div class="ch-gtop-icons" id="chGtopIcons">
+              <button class="ch-gtop-btn call" id="chGtopCall" title="Quick Dial"><span class="mat fill sm">call</span></button>
+              <button class="ch-gtop-aipill" id="chGtopAi" title="AI assistant — not connected yet"><span class="mat sm">auto_awesome</span>Ask AI</button>
+              <button class="ch-gtop-btn" id="chGtopMsg" title="Conversations"><span class="mat sm">forum</span></button>
+              <button class="ch-gtop-btn" id="chGtopBell" title="Needs attention"><span class="mat sm">notifications</span><span class="ch-gtop-dot" id="chGtopBellDot" hidden></span></button>
+              <button class="ch-gtop-btn" id="chGtopHelp" title="Help"><span class="mat sm">help</span></button>
+              <button class="ch-gtop-avatar" id="chGtopAvatar" title="Account">--</button>
+            </div>
           </div>
           <div class="ch-hero-stats">
             <div class="ch-hero-stat"><span class="mat sm" style="color:var(--re)">priority_high</span><strong id="chStatAttention">—</strong> need attention</div>
@@ -53,8 +63,8 @@
                 <div class="ch-ov-list" id="chOvScheduled"></div>
               </div>
               <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--tx3)">phone_missed</span><span class="stitle">Missed Calls</span><span class="badge gy" id="chOvMissedBadge">Not connected</span></div>
-                <div class="ch-ov-list" id="chOvMissed"><div class="ch-ov-empty">No call-log backend is wired up yet, so missed calls can't be listed here honestly. Paste the webhook URL into API.getMissedCalls and this section populates automatically — see the Calls tab.</div></div>
+                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--tx3)">phone_missed</span><span class="stitle">Missed Calls</span><span class="badge gy">Not connected</span></div>
+                <div class="ch-ov-list"><div class="ch-ov-empty">No call-log backend is wired up yet, so missed calls can't be listed here honestly. Once a bulk call-activity endpoint exists, this section will populate automatically — see the Calls tab.</div></div>
               </div>
             </div>
             <div class="ch-ov-col">
@@ -76,10 +86,21 @@
 
         <div class="ch-subpage" id="chSub-conversations" style="display:none;padding:0">
         <div class="ch-layout">
+          <nav class="ch-modrail" id="chModRail">
+            <button class="ch-modrail-btn active" id="chModConversations" title="Conversations"><span class="mat">forum</span></button>
+            <button class="ch-modrail-btn" id="chModSearch" title="Search"><span class="mat">search</span></button>
+            <button class="ch-modrail-btn" id="chModContact" title="Open full lead record"><span class="mat">person</span></button>
+            <button class="ch-modrail-btn" id="chModAll" title="All Leads"><span class="mat">group</span></button>
+            <div class="ch-modrail-sep"></div>
+            <button class="ch-modrail-btn" id="chModSnippets" title="Snippets"><span class="mat">bolt</span></button>
+            <button class="ch-modrail-btn" id="chModDial" title="Quick Dial"><span class="mat">dialpad</span></button>
+          </nav>
           <aside class="ch-rail">
             <div class="ch-rail-hd">
-              <span class="ch-rail-title">Team Inbox<span class="ch-rail-count" id="chRailCount">—</span></span>
-              <div style="display:flex;gap:2px">
+              <span class="ch-rail-title">Team inbox</span>
+              <span class="ch-rail-total" id="chRailTotal">—</span>
+              <div style="display:flex;gap:2px;margin-left:auto">
+                <button class="tbb" id="chFilterToggle" title="Filter"><span class="mat sm">filter_list</span></button>
                 <button class="tbb" id="chSortToggle" title="Sort by name"><span class="mat sm">swap_vert</span></button>
               </div>
             </div>
@@ -97,18 +118,10 @@
                 <input type="text" id="chRailFilterInput" placeholder="Filter this view…"/>
               </div>
             </div>
-            <!-- Select-all / bulk row, GHL-style. Mark-read and tag actions stay
-                 disabled — there's no read/unread flag or tags column on leads
-                 yet (see roadmap); the row is wired for selection today so it
-                 lights up the moment that backend support exists. -->
-            <div class="ch-select-row" id="chSelectRow">
-              <input type="checkbox" id="chSelectAllCheckbox" title="Select all">
-              <span class="ch-bulk-label" id="chBulkLabel">Select all</span>
-              <div class="ch-bulk-bar">
-                <span class="ch-bulk-label" id="chBulkCount">0 selected</span>
-                <button class="ch-bulk-btn" disabled title="Needs a read/unread flag on activities — not connected yet"><span class="mat sm" style="font-size:13px">mark_email_read</span>Mark read</button>
-                <button class="ch-bulk-btn" disabled title="Needs a tags column on leads — not connected yet"><span class="mat sm" style="font-size:13px">label</span>Tag</button>
-              </div>
+            <div class="ch-selectall-row" id="chSelectAllRow">
+              <label class="ch-checkbox"><input type="checkbox" id="chSelectAllBox"/><span></span></label>
+              <span>Select all</span>
+              <span class="ch-selectall-count" id="chSelectAllCount" hidden></span>
             </div>
             <div class="ch-list" id="chContactList">
               <!-- Rendered by chRenderContactList() from allLeads — no sample rows shipped -->
@@ -123,8 +136,8 @@
                 <div class="ch-contact-header-sub" id="chHeaderSub">Choose someone from the list to open their timeline</div>
               </div>
               <div class="ch-quickactions ch-icon-row">
-                <button class="tbb ch-icon-btn" title="Star (saved on this device)" id="chQaStar"><span class="mat">star_outline</span></button>
                 <button class="tbb ch-icon-btn" title="Call" id="chQaCall"><span class="mat">call</span></button>
+                <button class="tbb ch-icon-btn" title="Star (saved on this device)" id="chQaStar"><span class="mat">star_outline</span></button>
                 <button class="tbb ch-icon-btn" title="SMS" id="chQaSms"><span class="mat">sms</span></button>
                 <button class="tbb ch-icon-btn" title="Email" id="chQaEmail"><span class="mat">mail</span></button>
                 <button class="tbb ch-icon-btn" title="Schedule meeting" id="chQaMeeting"><span class="mat">event</span></button>
@@ -196,8 +209,9 @@
                 </div>
               </div>
               <div class="ch-composer-pill">
+                <span class="mat sm ch-composer-emoji">sms</span>
+                <textarea class="ch-msg-input" id="chComposerBody" rows="1" placeholder="Type a message…" disabled></textarea>
                 <button class="tbb" title="Attach file" style="flex-shrink:0"><span class="mat sm">attach_file</span></button>
-                <textarea class="ch-msg-input" id="chComposerBody" rows="1" placeholder="Type your reply…" disabled></textarea>
                 <button class="tbb" id="chComposerDraftBtn" title="Save draft" disabled style="flex-shrink:0"><span class="mat sm">drafts</span></button>
                 <button class="ch-send-btn" id="chComposerSendBtn" disabled title="Send"><span class="mat sm">send</span></button>
               </div>
@@ -225,10 +239,16 @@
                 </div>
                 <div class="cd-owner-row">
                   <div class="cd-owner-col">
-                    <div class="cd-owner-lbl">Assigned Closer</div>
+                    <div class="cd-owner-lbl">Owner</div>
                     <div class="cd-owner-val"><span class="mat">person</span><span id="chProfileOwner">Unassigned</span></div>
                   </div>
                   <div class="cd-owner-col">
+                    <div class="cd-owner-lbl">Followers</div>
+                    <div class="cd-owner-val"><span class="mat">group_add</span><span>Not enabled</span></div>
+                  </div>
+                </div>
+                <div class="cd-owner-row">
+                  <div class="cd-owner-col" style="flex:1">
                     <div class="cd-owner-lbl">Pipeline Stage</div>
                     <div class="cd-owner-val"><span class="mat">view_kanban</span><span id="chProfileStage">—</span></div>
                   </div>
@@ -237,6 +257,7 @@
 
               <div class="cd-tabs" id="chProfileTabs">
                 <div class="cd-tab active" data-cdtab="fields"><span class="mat sm" style="font-size:15px;vertical-align:-3px">list_alt</span> All Fields</div>
+                <div class="cd-tab" data-cdtab="dnd"><span class="mat sm" style="font-size:15px;vertical-align:-3px">do_not_disturb_on</span> DND</div>
                 <div class="cd-tab" data-cdtab="actions"><span class="mat sm" style="font-size:15px;vertical-align:-3px">bolt</span> Actions</div>
               </div>
 
@@ -247,19 +268,9 @@
                   <div class="ch-quick-btn" onclick="document.getElementById('chQaEmail').click()"><span class="mat">mail</span><span class="qlabel">Email</span></div>
                 </div>
 
-                <div class="cd-block">
-                  <div class="cd-block-hd"><span class="mat">sell</span><span class="cd-block-title">Tags</span></div>
-                  <div class="cd-block-body"><div class="cd-empty-mini">No <code>tags</code> column on leads yet — add one to start tagging contacts here.</div></div>
-                </div>
-                <div class="cd-block">
-                  <div class="cd-block-hd"><span class="mat">group</span><span class="cd-block-title">Followers</span></div>
-                  <div class="cd-block-body"><div class="cd-empty-mini">Follower assignments aren't tracked yet — needs a <code>lead_followers</code> table.</div></div>
-                </div>
-                <div class="cd-block">
-                  <div class="cd-block-hd"><span class="mat">block</span><span class="cd-block-title">Do Not Disturb</span></div>
-                  <div class="cd-block-body">
-                    <div class="cd-dnd-row"><span>Pause all outbound messages</span><div class="cd-switch" title="No dnd column on leads yet — not connected"></div></div>
-                  </div>
+                <div class="ch-field-search">
+                  <span class="mat si sm">search</span>
+                  <input type="text" id="chProfileFieldSearch" placeholder="Search fields and folders"/>
                 </div>
 
                 <div class="ch-profile-body">
@@ -289,7 +300,10 @@
                     </div>
                   </div>
                 </div>
-                <div class="cd-record-meta" id="chProfileRecordMeta">—</div>
+              </div>
+
+              <div id="chProfileDndTab" style="display:none;padding:14px">
+                <div class="ch-ov-empty">Do-Not-Disturb channel toggles need a per-lead DND flag that doesn't exist on the lead record yet — this isn't wired up, so nothing here is faked.</div>
               </div>
 
               <div id="chProfileActionsTab" style="display:none;padding:14px">
@@ -348,7 +362,7 @@
         <div class="ch-subpage" id="chSub-activity" style="display:none">
           <div class="ch-calls-toolbar">
             <div style="font-size:12px;color:var(--tx3);line-height:1.6">Central activity timeline for calls and messages. Backend activity feed is not connected yet.</div>
-            <button class="abtn" onclick="genLoadActivities()"><span class="mat sm">refresh</span>Refresh</button>
+            <button class="abtn" onclick="genRenderTimeline()"><span class="mat sm">refresh</span>Refresh</button>
           </div>
           <div class="glass-card" style="overflow:hidden">
             <div style="padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
