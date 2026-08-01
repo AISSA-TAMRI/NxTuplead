@@ -655,14 +655,20 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 .cdp-row-sel td{background:var(--acc-d)!important}
 
 /* COMMUNICATION HUB  */
-.ch-hero{padding:18px 24px 14px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0}
-.ch-hero-title{font-size:21px;font-weight:700;color:var(--tx);letter-spacing:-0.02em}
-.ch-hero-sub{font-size:13px;color:var(--tx3);margin-top:2px}
-.ch-hero-stats{display:flex;align-items:center;gap:16px}
-.ch-hero-stat{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--tx2)}
-.ch-hero-stat strong{font-size:14px}
+.ch-hero{padding:26px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0}
+.ch-hero-title{font-size:23px;font-weight:700;color:var(--tx);letter-spacing:-0.02em}
+.ch-hero-sub{font-size:13.5px;color:var(--tx3);margin-top:4px}
+.ch-hero-actions{display:flex;align-items:center;gap:8px}
+.ch-hero-actions .abtn{padding:8px 14px;font-size:13.5px}
 .ch-layout{flex:1;display:flex;min-height:0;overflow:hidden}
 .ch-rail{width:296px;min-width:296px;border-right:1px solid var(--bd);display:flex;flex-direction:column;background:var(--s1);min-height:0}
+.ch-smartviews{padding:10px 8px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.ch-sv{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--r-xs);cursor:pointer;color:var(--tx2);font-size:13.5px;font-weight:500;transition:all .15s var(--ease)}
+.ch-sv:hover{background:var(--s3);color:var(--tx)}
+.ch-sv.active{background:var(--acc-d);color:var(--acc)}
+.ch-sv .mat{font-size:17px}
+.ch-sv .cnt{margin-left:auto;font-size:11px;font-weight:600;color:var(--tx3);background:var(--bd);padding:1px 6px;border-radius:10px}
+.ch-sv.active .cnt{background:rgba(52,101,235,0.16);color:var(--acc)}
 .ch-rail-search{padding:10px 12px;border-bottom:1px solid var(--bd);flex-shrink:0}
 .ch-list{flex:1;overflow-y:auto;min-height:0}
 .ch-contact{display:flex;gap:10px;padding:11px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .12s;border-bottom:1px solid var(--bd)}
@@ -751,8 +757,8 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 @media(max-width:900px){.ch-rail{width:240px;min-width:240px}}
 
 /* ---- Communication Hub sub-navigation + new subpages ---- */
-.ch-subnav{display:flex;align-items:center;gap:2px;padding:0 20px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0;overflow-x:auto}
-.ch-subnav-item{display:flex;align-items:center;gap:6px;padding:11px 14px;font-size:13.5px;font-weight:600;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s var(--ease)}
+.ch-subnav{display:flex;align-items:center;gap:4px;padding:0 24px;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0;overflow-x:auto}
+.ch-subnav-item{display:flex;align-items:center;gap:6px;padding:13px 14px;font-size:13.5px;font-weight:600;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s var(--ease)}
 .ch-subnav-item:hover{color:var(--tx)}
 .ch-subnav-item.active{color:var(--acc);border-bottom-color:var(--acc)}
 .ch-subnav-item .mat{font-size:17px}
@@ -796,6 +802,14 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 .ch-snippet-actions{display:flex;gap:6px;margin-top:2px}
 
 /* ---- Communication Hub v2: GHL/Close.io-style redesign ---- */
+.ch-smartviews{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.ch-sv{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:20px;background:var(--s3);border:1px solid var(--bd);cursor:pointer;color:var(--tx2);font-size:12px;font-weight:600;transition:all .15s var(--ease);white-space:nowrap}
+.ch-sv:hover{background:var(--s4);color:var(--tx)}
+.ch-sv.active{background:var(--acc-d);border-color:transparent;color:var(--acc)}
+.ch-sv .mat{font-size:15px}
+.ch-sv .cnt{font-size:10.5px;font-weight:700;color:var(--tx3);background:var(--bd);padding:1px 6px;border-radius:10px}
+.ch-sv.active .cnt{background:rgba(52,101,235,0.18);color:var(--acc)}
+
 .ch-contact-badge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;border-radius:9px;background:var(--re);color:#fff;font-size:10px;font-weight:800}
 
 .ch-icon-row{display:flex;align-items:center;gap:6px;margin-left:auto}
@@ -815,13 +829,10 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 .ch-bubble-kicker .mat{font-size:13px}
 .ch-bubble-time{font-size:10.5px;color:var(--tx3);margin-top:6px;text-align:right}
 
-/* pill composer — GHL-style rounded message bar */
-.ch-composer-pill{display:flex;align-items:flex-end;gap:6px;background:var(--s2);border:1px solid var(--bd);border-radius:24px;padding:6px 8px 6px 14px;transition:border-color .15s}
+/* pill composer */
+.ch-composer-pill{display:flex;align-items:flex-end;gap:4px;background:var(--s2);border:1px solid var(--bd);border-radius:22px;padding:6px 6px 6px 14px;transition:border-color .15s}
 .ch-composer-pill:focus-within{border-color:rgba(52,101,235,.4)}
-.ch-composer-pill .ch-msg-input{flex:1;background:transparent;border:none;outline:none;resize:none;color:var(--tx);font-family:'Inter',sans-serif;font-size:13.5px;min-height:20px;max-height:90px;padding:8px 2px;box-shadow:none}
-.ch-composer-emoji{color:var(--tx3);padding-bottom:8px}
-.ch-composer-pill .tbb{border:none;background:transparent;border-radius:50%;width:32px;height:32px;flex-shrink:0}
-.ch-composer-pill .tbb:hover{background:var(--s3)}
+.ch-composer-pill .ch-msg-input{flex:1;background:transparent;border:none;outline:none;resize:none;color:var(--tx);font-family:'Inter',sans-serif;font-size:13.5px;min-height:20px;max-height:90px;padding:8px 0;box-shadow:none}
 .ch-send-btn{width:34px;height:34px;border-radius:50%;background:var(--pri-c);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0;transition:background .15s;box-shadow:0 3px 10px rgba(52,101,235,0.25)}
 .ch-send-btn:hover{background:var(--pri-h)}
 .ch-send-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
@@ -832,18 +843,16 @@ button,input,select,textarea{font-family:'Inter',sans-serif}
 .cd-hd-name{font-size:15.5px;font-weight:700;color:var(--tx);flex:1;display:flex;align-items:center;gap:6px;min-width:0}
 .cd-hd-name .mat{font-size:15px;color:var(--tx3);cursor:pointer;flex-shrink:0}
 .cd-hd-name .mat:hover{color:var(--acc)}
-/* GHL-style Owner/Followers strip: full-width bordered row, not floating pills */
-.cd-owner-row{display:flex;gap:0;border-bottom:1px solid var(--bd);margin-top:12px}
-.cd-owner-col{flex:1;min-width:0;padding:11px 16px;border-right:1px solid var(--bd)}
-.cd-owner-col:last-child{border-right:none}
-.cd-owner-lbl{font-size:11px;font-weight:600;color:var(--tx3);margin-bottom:3px;letter-spacing:0}
-.cd-owner-val{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--tx);background:none;border:none;border-radius:0;padding:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cd-owner-val .mat{font-size:16px;color:var(--tx3);flex-shrink:0}
+.cd-owner-row{display:flex;gap:10px;margin-top:14px}
+.cd-owner-col{flex:1;min-width:0}
+.cd-owner-lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3);margin-bottom:5px}
+.cd-owner-val{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--tx);background:var(--s3);border:1px solid var(--bd);border-radius:8px;padding:6px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd-owner-val .mat{font-size:14px;color:var(--tx3);flex-shrink:0}
 .cd-tags-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .cd-tab{display:flex;align-items:center;gap:4px}
 .cd-tabs{display:flex;border-bottom:1px solid var(--bd)}
-.cd-tabs .cd-tab{flex:1;justify-content:center;padding:10px 6px;font-size:12px;font-weight:600;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s var(--ease)}
-.cd-tabs .cd-tab:hover{color:var(--tx2)}
+.cd-tabs .cd-tab{flex:1;justify-content:center;padding:11px 8px;font-size:12px;font-weight:600;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s var(--ease)}
+.cd-tabs .cd-tab:hover{color:var(--tx)}
 .cd-tabs .cd-tab.active{color:var(--acc);border-bottom-color:var(--acc)}
 .cd-section-lbl{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3);padding:14px 14px 6px}
 
@@ -928,130 +937,3 @@ html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
 .auto-picker-item span.plbl{font-size:13px;font-weight:500;color:var(--tx)}
 .auto-cond-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
 .auto-cond-row .form-group{flex:1;min-width:120px}
-
-/* ============================================================
-   COMMUNICATION HUB — GHL-style redesign of the Conversations
-   section (top icon cluster, module rail, Team Inbox rail,
-   thread workspace, contact-details panel). Layout/spacing/
-   component shapes mirror app.gohighlevel.com's conversations
-   screen; every color below stays on the site's own CSS
-   variables (--bg/--s*/--acc/--tx*/--bd*) — no new palette.
-   ============================================================ */
-
-/* --- Top icon cluster (call / Ask AI / message / bell / help / avatar) --- */
-.ch-hero{flex-direction:column;align-items:stretch;gap:10px;padding:16px 24px 12px}
-.ch-hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
-.ch-gtop-icons{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.ch-gtop-btn{position:relative;width:34px;height:34px;border-radius:50%;border:1px solid var(--bd);background:var(--s2);color:var(--tx2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s var(--ease)}
-.ch-gtop-btn:hover{background:var(--s3);color:var(--tx);border-color:var(--bd2)}
-.ch-gtop-btn.call{background:var(--gr);border-color:var(--gr);color:#fff}
-.ch-gtop-btn.call:hover{background:var(--gr);filter:brightness(1.08)}
-.ch-gtop-dot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--re);border:1.5px solid var(--s2)}
-.ch-gtop-aipill{display:flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:20px;background:var(--pill-bg);color:var(--pill-tx);border:none;font-size:12.5px;font-weight:700;cursor:pointer;transition:filter .15s}
-.ch-gtop-aipill:hover{filter:brightness(1.15)}
-.ch-gtop-aipill .mat{font-size:16px;color:var(--pu)}
-.ch-gtop-avatar{width:34px;height:34px;border-radius:50%;background:var(--pu-d);color:var(--pu);border:1px solid var(--bd);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
-
-/* --- Secondary module icon rail (between main sidebar and Team Inbox) --- */
-.ch-modrail{width:52px;min-width:52px;background:var(--s1);border-left:1px solid var(--bd);display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 0;flex-shrink:0}
-.ch-modrail-btn{width:36px;height:36px;border-radius:var(--r-sm);border:none;background:transparent;color:var(--tx3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s var(--ease)}
-.ch-modrail-btn .mat{font-size:20px}
-.ch-modrail-btn:hover{background:var(--s3);color:var(--tx)}
-.ch-modrail-btn.active{background:var(--acc);color:#fff}
-.ch-modrail-sep{width:22px;height:1px;background:var(--bd);margin:6px 0}
-
-/* --- Team Inbox rail header --- */
-.ch-rail-hd{gap:8px}
-.ch-rail-total{font-size:11.5px;font-weight:700;color:var(--tx3);background:var(--s3);padding:2px 7px;border-radius:10px}
-
-/* --- Select-all row --- */
-.ch-selectall-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bd);font-size:12.5px;font-weight:600;color:var(--tx2);flex-shrink:0}
-.ch-checkbox{position:relative;width:16px;height:16px;flex-shrink:0;display:inline-flex}
-.ch-checkbox input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0}
-.ch-checkbox span{position:absolute;inset:0;border:1.5px solid var(--bd2);border-radius:4px;background:var(--s2);transition:all .12s}
-.ch-checkbox input:checked+span{background:var(--acc);border-color:var(--acc)}
-.ch-checkbox input:checked+span::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
-.ch-selectall-count{margin-left:auto;color:var(--acc);font-weight:700}
-
-/* --- Contact list rows: avatar color variety, tighter GHL-style spacing --- */
-.ch-list .av{border:none;color:#fff;font-weight:700}
-.ch-list .av.c0{background:var(--bl)}
-.ch-list .av.c1{background:var(--pu)}
-.ch-list .av.c2{background:var(--gr)}
-.ch-list .av.c3{background:var(--am)}
-.ch-list .av.c4{background:var(--re)}
-.ch-contact{padding:10px 14px;gap:10px}
-.ch-contact-name{font-size:13.5px}
-.ch-contact.selected{background:var(--acc-d)}
-
-/* --- Contact-details panel: search fields + Owner/Followers row --- */
-.ch-field-search{display:flex;align-items:center;gap:8px;margin:0 14px 12px;padding:7px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--tx3)}
-.ch-field-search input{flex:1;border:none;background:transparent;outline:none;font-size:12.5px;color:var(--tx)}
-.ch-field-search input::placeholder{color:var(--tx3)}
-@media(max-width:1000px){.ch-modrail{display:none}}
-
-/* ============================================================
-   Round 2 — left navigator column (New conversation / search /
-   inbox scopes / Views), Team-inbox quick tabs, per-lead Tags.
-   Same rule as everything else in this section: site's own
-   CSS variables only, no new palette.
-   ============================================================ */
-
-/* --- Left navigator column --- */
-.ch-nav{width:220px;min-width:220px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
-.ch-nav-newconv{display:flex;align-items:center;justify-content:center;gap:7px;margin:12px 12px 10px;height:36px;border-radius:var(--r-sm);background:var(--pri-c);color:#fff;border:none;font-size:12.5px;font-weight:700;cursor:pointer;transition:background .15s}
-.ch-nav-newconv:hover{background:var(--pri-h)}
-.ch-nav-search{display:flex;align-items:center;gap:7px;margin:0 12px 14px;padding:7px 10px;background:var(--s3);border:1px solid var(--bd);border-radius:var(--r-sm);color:var(--tx3)}
-.ch-nav-search input{flex:1;border:none;background:transparent;outline:none;font-size:12.5px;color:var(--tx)}
-.ch-nav-search input::placeholder{color:var(--tx3)}
-.ch-nav-scopes{padding:0 6px 12px;border-bottom:1px solid var(--bd)}
-.ch-nav-section-lbl{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3)}
-.ch-nav-scope-item{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:var(--r-sm);font-size:12.5px;font-weight:600;color:var(--tx2);cursor:pointer;transition:all .13s var(--ease)}
-.ch-nav-scope-item .mat{font-size:17px;color:var(--tx3)}
-.ch-nav-scope-item:hover{background:var(--s3);color:var(--tx)}
-.ch-nav-scope-item.active{background:var(--acc-d);color:var(--acc)}
-.ch-nav-scope-item.active .mat{color:var(--acc)}
-.ch-nav-scope-item.disabled{opacity:.45;cursor:not-allowed}
-.ch-nav-scope-item.disabled:hover{background:none;color:var(--tx2)}
-.ch-nav-views{padding:10px 6px 14px}
-.ch-nav-createview{width:20px;height:20px;border-radius:5px;border:none;background:transparent;color:var(--tx3);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.ch-nav-createview:hover{background:var(--s3);color:var(--tx)}
-.ch-nav-createview-form{display:flex;flex-direction:column;gap:6px;margin:6px 8px 0;padding:10px;background:var(--s3);border:1px solid var(--bd);border-radius:var(--r-sm)}
-.ch-nav-createview-form input,.ch-nav-createview-form select{height:30px;padding:0 8px;border-radius:6px;border:1px solid var(--bd);background:var(--s2);color:var(--tx);font-size:12px;outline:none}
-
-/* Views list — vertical treatment (this container is exclusive to
-   #chSmartViews/#chCustomViews now, so restyling .ch-sv globally is safe) */
-.ch-smartviews{display:flex;flex-direction:column;gap:1px}
-.ch-sv{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--r-sm);font-size:12.5px;font-weight:600;color:var(--tx2);cursor:pointer;white-space:nowrap;transition:all .13s var(--ease)}
-.ch-sv .mat{font-size:17px;color:var(--tx3);flex-shrink:0}
-.ch-sv:hover{background:var(--s3);color:var(--tx)}
-.ch-sv.active{background:var(--acc-d);color:var(--acc)}
-.ch-sv.active .mat{color:var(--acc)}
-.ch-sv .cnt{margin-left:auto;font-size:11px;font-weight:700;color:var(--tx3);background:var(--s3);padding:1px 6px;border-radius:9px;flex-shrink:0}
-.ch-sv.active .cnt{color:var(--acc);background:var(--s2)}
-.ch-sv-del{opacity:0;width:18px;height:18px;border:none;background:transparent;color:var(--tx3);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px}
-.ch-sv:hover .ch-sv-del{opacity:1}
-.ch-sv-del:hover{background:var(--re-d);color:var(--re)}
-.ch-nav-customviews{display:flex;flex-direction:column;gap:1px;margin-top:2px}
-
-@media(max-width:1200px){.ch-nav{display:none}}
-
-/* --- Team-inbox quick tabs (All / Recent / Starred) --- */
-.ch-quicktabs{display:flex;gap:14px;padding:0 14px;border-bottom:1px solid var(--bd);flex-shrink:0}
-.ch-qt{padding:9px 2px;font-size:12.5px;font-weight:600;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s var(--ease)}
-.ch-qt:hover{color:var(--tx2)}
-.ch-qt.active{color:var(--tx);font-weight:700;border-bottom-color:var(--acc)}
-
-/* --- Tags row in Contact Details (per-lead, device-local) --- */
-.ch-tags-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}
-.ch-tag-chip{display:flex;align-items:center;gap:4px;height:22px;padding:0 4px 0 9px;border-radius:11px;background:var(--s3);border:1px solid var(--bd);font-size:11.5px;font-weight:600;color:var(--tx2)}
-.ch-tag-x{width:16px;height:16px;border:none;background:transparent;color:var(--tx3);border-radius:50%;display:flex;align-items:center;justify-content:center}
-.ch-tag-x:hover{background:var(--re-d);color:var(--re)}
-.ch-tag-x .mat{font-size:12px}
-.ch-tag-add-btn{width:22px;height:22px;border-radius:50%;border:1px dashed var(--bd2);background:transparent;color:var(--tx3);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.ch-tag-add-btn:hover{border-color:var(--acc);color:var(--acc)}
-.ch-tag-input{height:24px;padding:0 8px;border-radius:12px;border:1px solid var(--bd);background:var(--s3);color:var(--tx);font-size:11.5px;outline:none;width:140px}
-
-/* --- Composer channel button (was a static icon, now a real cycling control) --- */
-.ch-composer-emoji{border:none;background:transparent;color:var(--tx3);padding-bottom:8px;cursor:pointer;display:flex;align-items:flex-end}
-.ch-composer-emoji:hover{color:var(--tx2)}
