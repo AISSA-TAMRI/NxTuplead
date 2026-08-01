@@ -53,8 +53,8 @@
                 <div class="ch-ov-list" id="chOvScheduled"></div>
               </div>
               <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--tx3)">phone_missed</span><span class="stitle">Missed Calls</span><span class="badge gy">Not connected</span></div>
-                <div class="ch-ov-list"><div class="ch-ov-empty">No call-log backend is wired up yet, so missed calls can't be listed here honestly. Once a bulk call-activity endpoint exists, this section will populate automatically — see the Calls tab.</div></div>
+                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--tx3)">phone_missed</span><span class="stitle">Missed Calls</span><span class="badge gy" id="chOvMissedBadge">Not connected</span></div>
+                <div class="ch-ov-list" id="chOvMissed"><div class="ch-ov-empty">No call-log backend is wired up yet, so missed calls can't be listed here honestly. Paste the webhook URL into API.getMissedCalls and this section populates automatically — see the Calls tab.</div></div>
               </div>
             </div>
             <div class="ch-ov-col">
@@ -78,7 +78,7 @@
         <div class="ch-layout">
           <aside class="ch-rail">
             <div class="ch-rail-hd">
-              <span class="ch-rail-title">Inbox</span>
+              <span class="ch-rail-title">Team Inbox<span class="ch-rail-count" id="chRailCount">—</span></span>
               <div style="display:flex;gap:2px">
                 <button class="tbb" id="chSortToggle" title="Sort by name"><span class="mat sm">swap_vert</span></button>
               </div>
@@ -95,6 +95,19 @@
               <div class="search-box" style="max-width:none">
                 <span class="mat si sm">filter_list</span>
                 <input type="text" id="chRailFilterInput" placeholder="Filter this view…"/>
+              </div>
+            </div>
+            <!-- Select-all / bulk row, GHL-style. Mark-read and tag actions stay
+                 disabled — there's no read/unread flag or tags column on leads
+                 yet (see roadmap); the row is wired for selection today so it
+                 lights up the moment that backend support exists. -->
+            <div class="ch-select-row" id="chSelectRow">
+              <input type="checkbox" id="chSelectAllCheckbox" title="Select all">
+              <span class="ch-bulk-label" id="chBulkLabel">Select all</span>
+              <div class="ch-bulk-bar">
+                <span class="ch-bulk-label" id="chBulkCount">0 selected</span>
+                <button class="ch-bulk-btn" disabled title="Needs a read/unread flag on activities — not connected yet"><span class="mat sm" style="font-size:13px">mark_email_read</span>Mark read</button>
+                <button class="ch-bulk-btn" disabled title="Needs a tags column on leads — not connected yet"><span class="mat sm" style="font-size:13px">label</span>Tag</button>
               </div>
             </div>
             <div class="ch-list" id="chContactList">
@@ -234,6 +247,21 @@
                   <div class="ch-quick-btn" onclick="document.getElementById('chQaEmail').click()"><span class="mat">mail</span><span class="qlabel">Email</span></div>
                 </div>
 
+                <div class="cd-block">
+                  <div class="cd-block-hd"><span class="mat">sell</span><span class="cd-block-title">Tags</span></div>
+                  <div class="cd-block-body"><div class="cd-empty-mini">No <code>tags</code> column on leads yet — add one to start tagging contacts here.</div></div>
+                </div>
+                <div class="cd-block">
+                  <div class="cd-block-hd"><span class="mat">group</span><span class="cd-block-title">Followers</span></div>
+                  <div class="cd-block-body"><div class="cd-empty-mini">Follower assignments aren't tracked yet — needs a <code>lead_followers</code> table.</div></div>
+                </div>
+                <div class="cd-block">
+                  <div class="cd-block-hd"><span class="mat">block</span><span class="cd-block-title">Do Not Disturb</span></div>
+                  <div class="cd-block-body">
+                    <div class="cd-dnd-row"><span>Pause all outbound messages</span><div class="cd-switch" title="No dnd column on leads yet — not connected"></div></div>
+                  </div>
+                </div>
+
                 <div class="ch-profile-body">
                   <div class="cd-section-lbl">Contact</div>
                   <div class="lp-card">
@@ -261,6 +289,7 @@
                     </div>
                   </div>
                 </div>
+                <div class="cd-record-meta" id="chProfileRecordMeta">—</div>
               </div>
 
               <div id="chProfileActionsTab" style="display:none;padding:14px">
@@ -319,7 +348,7 @@
         <div class="ch-subpage" id="chSub-activity" style="display:none">
           <div class="ch-calls-toolbar">
             <div style="font-size:12px;color:var(--tx3);line-height:1.6">Central activity timeline for calls and messages. Backend activity feed is not connected yet.</div>
-            <button class="abtn" onclick="genRenderTimeline()"><span class="mat sm">refresh</span>Refresh</button>
+            <button class="abtn" onclick="genLoadActivities()"><span class="mat sm">refresh</span>Refresh</button>
           </div>
           <div class="glass-card" style="overflow:hidden">
             <div style="padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
