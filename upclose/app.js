@@ -1,4 +1,3 @@
-
 'use strict';
 const SUPABASE_URL=window.SUPABASE_URL||'';
 const SUPABASE_ANON_KEY=window.SUPABASE_ANON_KEY||'';
@@ -2828,6 +2827,13 @@ function chFilteredLeads(view){
     case'calls':return allLeads.filter(l=>l.preferred_date&&l.preferred_date.slice(0,10)===todayStr);
     case'unanswered':return allLeads.filter(l=>!l.last_contacted_at&&l.status==='Potential');
     case'starred':return allLeads.filter(l=>chIsStarred(l.id));
+    /* "Recent" = contacted in the last 14 days, most-recent first — a real
+       filter over last_contacted_at, not a fabricated inbox concept. */
+    case'recent':{
+      const cutoff=Date.now()-14*86400000;
+      return allLeads.filter(l=>l.last_contacted_at&&new Date(l.last_contacted_at).getTime()>=cutoff)
+        .sort((a,b)=>new Date(b.last_contacted_at)-new Date(a.last_contacted_at));
+    }
     default:return allLeads;
   }
 }
@@ -2835,14 +2841,9 @@ function chFilteredLeads(view){
 function chUpdateCounts(){
   const attn=chFilteredLeads('attention').length;
   setEl('chSvCountAttention',attn);
-  setEl('chSvCountMine',chFilteredLeads('mine').length);
-  setEl('chSvCountCalls',chFilteredLeads('calls').length);
-  setEl('chSvCountEmails',chFilteredLeads('unanswered').length);
-  setEl('chSvCountStarred',chFilteredLeads('starred').length);
   setEl('chSvCountAll',allLeads.length);
-  setEl('chStatAttention',attn);
-  setEl('chStatCallsToday',chFilteredLeads('calls').length);
-  setEl('chStatUnanswered',chFilteredLeads('unanswered').length);
+  setEl('chSvCountRecent',chFilteredLeads('recent').length);
+  setEl('chSvCountStarred',chFilteredLeads('starred').length);
   const navBadge=document.getElementById('navCountAttention');
   if(navBadge){navBadge.style.display=attn>0?'':'none';navBadge.textContent=attn;}
 }
@@ -3131,24 +3132,24 @@ function renderCommunicationHub(){
    (navigate()/pageFromHash()/VALID_PAGES).
    ================================================================ */
 const CH_SUBPAGE_KEY='upclose_ch_subpage_v1';
-let chSubPage=localStorage.getItem(CH_SUBPAGE_KEY)||'overview';
+const CH_SUBPAGES=['conversations','manual','snippets','trigger'];
+let chSubPage=CH_SUBPAGES.includes(localStorage.getItem(CH_SUBPAGE_KEY))?localStorage.getItem(CH_SUBPAGE_KEY):'conversations';
 let chTaskView='overdue';
 let chCallsFilter='scheduled';
+let chManualView='overdue';
 
 function chSwitchSubPage(sub,persist=true){
-  if(!['overview','conversations','calls','activity','tasks','snippets'].includes(sub))sub='overview';
+  if(!CH_SUBPAGES.includes(sub))sub='conversations';
   chSubPage=sub;
   if(persist)localStorage.setItem(CH_SUBPAGE_KEY,sub);
   document.querySelectorAll('#chSubNav .ch-subnav-item').forEach(i=>i.classList.toggle('active',i.dataset.sub===sub));
-  ['overview','conversations','calls','activity','tasks','snippets'].forEach(s=>{
+  CH_SUBPAGES.forEach(s=>{
     const el=document.getElementById('chSub-'+s);
     if(el)el.style.display=(s===sub)?(s==='conversations'?'flex':'block'):'none';
   });
-  if(sub==='overview')chRenderOverview();
-  else if(sub==='calls')chRenderCallsPage();
-  else if(sub==='activity')genRenderTimeline();
-  else if(sub==='tasks')chRenderTasksPage();
+  if(sub==='manual')chRenderManualActions();
   else if(sub==='snippets')chRenderSnippets();
+  else if(sub==='trigger')chRenderTriggerLinks();
 }
 
 /* Jump into Conversations with a specific lead pre-selected — used by
@@ -3282,6 +3283,48 @@ function chCallLeadById(id){
   chStartCall(l,l.phone);
 }
 
+/* ---- MANUAL ACTIONS ----
+   Replaces the old Overview/Calls/Tasks subpages with one table view.
+   Every row is a real Potential lead pulled from allLeads — nothing here
+   is a separate "action queue" table. */
+function chManualRows(view){
+  const now=new Date(),todayStr=now.toISOString().slice(0,10);
+  const potential=(allLeads||[]).filter(l=>l.status==='Potential');
+  if(view==='overdue')return potential.filter(l=>l.next_followup_at&&new Date(l.next_followup_at)<now).sort((a,b)=>new Date(a.next_followup_at)-new Date(b.next_followup_at));
+  if(view==='today')return potential.filter(l=>l.next_followup_at&&l.next_followup_at.slice(0,10)===todayStr).sort((a,b)=>(a.next_followup_at||'').localeCompare(b.next_followup_at||''));
+  if(view==='calls')return potential.filter(l=>l.preferred_date&&l.preferred_date.slice(0,10)===todayStr).sort((a,b)=>(a.preferred_time||'').localeCompare(b.preferred_time||''));
+  if(view==='unanswered')return potential.filter(l=>!l.last_contacted_at).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  return[];
+}
+function chManualDateLabel(l,view){
+  if(view==='calls')return l.preferred_time?fmtTime(l.preferred_time):fmtDate(l.preferred_date);
+  if(view==='unanswered')return l.created_at?fmtDate(l.created_at):'—';
+  return l.next_followup_at?fmtDate(l.next_followup_at):'—';
+}
+function chManualStatusBadge(view){
+  const m={overdue:'<span class="badge re">Overdue</span>',today:'<span class="badge am">Due Today</span>',calls:'<span class="badge bl">Scheduled</span>',unanswered:'<span class="badge gy">No Contact</span>'};
+  return m[view]||'<span class="badge gy">—</span>';
+}
+function chRenderManualActions(){
+  const body=document.getElementById('chManualTableBody');if(!body)return;
+  const rows=chManualRows(chManualView);
+  if(!rows.length){body.innerHTML='<tr><td colspan="6" style="padding:26px;text-align:center;color:var(--tx3);font-size:13px">Nothing in this view. Nice.</td></tr>';return;}
+  body.innerHTML=rows.map(l=>{
+    const name=chLeadName(l);
+    return`<tr>
+      <td><div style="display:flex;align-items:center;gap:9px"><div class="av ${scClass(l.status||'Potential')}">${initials(l.company_name||name)}</div><span style="font-weight:600">${name}</span></div></td>
+      <td>${l.company_name||'—'}</td>
+      <td>${l.phone?'Call':'—'}</td>
+      <td>${chManualStatusBadge(chManualView)}</td>
+      <td>${chManualDateLabel(l,chManualView)}</td>
+      <td>
+        <button class="tbb" title="Call" ${l.phone?'':'disabled style="opacity:.35;cursor:not-allowed"'} onclick="chCallLeadById(${l.id})"><span class="mat">call</span></button>
+        <button class="tbb" title="Open Conversation" onclick="chOpenInConversations(${l.id})"><span class="mat">forum</span></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
 /* ---- SNIPPETS ----
    Local-only storage (see comment on the HTML block above). Shape:
    { id, name, content, channel: 'sms'|'email'|'any', created_at } */
@@ -3289,18 +3332,23 @@ const CH_SNIPPETS_KEY='upclose_snippets_v1';
 function chLoadSnippets(){try{return JSON.parse(localStorage.getItem(CH_SNIPPETS_KEY)||'[]');}catch(e){return[];}}
 function chSaveSnippets(list){localStorage.setItem(CH_SNIPPETS_KEY,JSON.stringify(list));}
 function chRenderSnippets(){
-  const grid=document.getElementById('chSnippetsGrid');if(!grid)return;
-  const list=chLoadSnippets();
-  if(!list.length){grid.innerHTML='<div class="ch-ov-empty">No snippets yet. Create one to reuse it from the Conversations composer.</div>';return;}
-  grid.innerHTML=list.map(s=>`<div class="ch-snippet-card">
-    <div class="ch-snippet-card-hd"><span class="ch-snippet-name">${escapeHtml(s.name)}</span><span class="badge gy">${s.channel==='sms'?'SMS':s.channel==='email'?'Email':'Any channel'}</span></div>
-    <div class="ch-snippet-body">${escapeHtml(s.content)}</div>
-    <div class="ch-snippet-actions">
-      <button class="abtn" onclick="chInsertSnippet('${s.id}')"><span class="mat sm">forum</span>Use in Conversations</button>
-      <button class="abtn" onclick="chOpenSnippetEditor('${s.id}')"><span class="mat sm">edit</span></button>
-      <button class="abtn danger" onclick="chDeleteSnippet('${s.id}')"><span class="mat sm">delete</span></button>
-    </div>
-  </div>`).join('');
+  const body=document.getElementById('chSnippetsTableBody');if(!body)return;
+  const searchEl=document.getElementById('chSnippetsSearch');
+  const q=(searchEl?searchEl.value:'').toLowerCase();
+  let list=chLoadSnippets();
+  if(q)list=list.filter(s=>s.name.toLowerCase().includes(q)||s.content.toLowerCase().includes(q));
+  if(!list.length){body.innerHTML='<tr><td colspan="5" style="padding:26px;text-align:center;color:var(--tx3);font-size:13px">No snippets yet. Create one to reuse it from the Conversations composer.</td></tr>';return;}
+  body.innerHTML=list.map(s=>`<tr>
+    <td style="font-weight:600">${escapeHtml(s.name)}</td>
+    <td style="max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2)">${escapeHtml(s.content)}</td>
+    <td>${s.channel==='sms'?'SMS':s.channel==='email'?'Email':'Text'}</td>
+    <td>${fmtDate(s.created_at)}</td>
+    <td>
+      <button class="tbb" title="Use in Conversations" onclick="chInsertSnippet('${s.id}')"><span class="mat">forum</span></button>
+      <button class="tbb" title="Edit" onclick="chOpenSnippetEditor('${s.id}')"><span class="mat">edit</span></button>
+      <button class="tbb" title="Delete" onclick="chDeleteSnippet('${s.id}')"><span class="mat">delete</span></button>
+    </td>
+  </tr>`).join('');
 }
 function chOpenSnippetEditor(id){
   const list=chLoadSnippets();
@@ -3327,6 +3375,52 @@ function chInsertSnippet(id){
   if(!chActiveLeadId){toast('Select a lead in Conversations, then insert the snippet','err');return;}
   body.value=(body.value?body.value+'\n':'')+s.content;
   body.focus();
+}
+
+/* ---- TRIGGER LINKS ----
+   Local-only storage, same pattern as Snippets above: there is no
+   click-tracking backend yet, so links + keys are generated and kept
+   in this browser only. The "Analyze" tab is an honest empty state,
+   not fabricated click counts. */
+const CH_TRIGGER_KEY='upclose_trigger_links_v1';
+function chLoadTriggerLinks(){try{return JSON.parse(localStorage.getItem(CH_TRIGGER_KEY)||'[]');}catch(e){return[];}}
+function chSaveTriggerLinksList(list){localStorage.setItem(CH_TRIGGER_KEY,JSON.stringify(list));}
+function chGenTriggerKey(){return'trigger_link.'+Math.random().toString(36).slice(2,14);}
+function chRenderTriggerLinks(){
+  const body=document.getElementById('chTriggerTableBody');if(!body)return;
+  const searchEl=document.getElementById('chTriggerSearch');
+  const q=(searchEl?searchEl.value:'').toLowerCase();
+  let list=chLoadTriggerLinks();
+  if(q)list=list.filter(t=>t.name.toLowerCase().includes(q)||t.url.toLowerCase().includes(q));
+  if(!list.length){body.innerHTML='<tr><td colspan="5" style="padding:26px;text-align:center;color:var(--tx3);font-size:13px">No trigger links yet. Add one to track clicks inside your messages.</td></tr>';return;}
+  body.innerHTML=list.map(t=>`<tr>
+    <td style="font-weight:600">${escapeHtml(t.name)}</td>
+    <td><a href="${escapeHtml(t.url)}" target="_blank" rel="noopener" style="color:var(--acc);text-decoration:none">${escapeHtml(t.url)}</a></td>
+    <td style="font-family:monospace;font-size:12px;color:var(--tx2);white-space:nowrap">{{${t.key}}} <button class="tbb" title="Copy" style="width:22px;height:22px;display:inline-flex;vertical-align:middle" onclick="chCopyTriggerKey('${t.key}')"><span class="mat sm">content_copy</span></button></td>
+    <td>${fmtDate(t.created_at)}</td>
+    <td><button class="tbb" title="Delete" onclick="chDeleteTriggerLink('${t.id}')"><span class="mat">delete</span></button></td>
+  </tr>`).join('');
+}
+function chOpenTriggerLinkEditor(){
+  const name=prompt('Link name');
+  if(name===null)return;
+  const url=prompt('Destination URL (https://…)');
+  if(url===null)return;
+  if(!name.trim()||!url.trim()){toast('Name and URL are both required','err');return;}
+  const list=chLoadTriggerLinks();
+  list.push({id:'tl_'+Date.now(),name:name.trim(),url:url.trim(),key:chGenTriggerKey(),created_at:new Date().toISOString()});
+  chSaveTriggerLinksList(list);
+  chRenderTriggerLinks();
+  toast('Trigger link added');
+}
+function chDeleteTriggerLink(id){
+  chSaveTriggerLinksList(chLoadTriggerLinks().filter(t=>t.id!==id));
+  chRenderTriggerLinks();
+}
+function chCopyTriggerKey(key){
+  const text='{{'+key+'}}';
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>toast('Copied')).catch(()=>toast('Copy failed','err'));}
+  else toast('Copy not supported in this browser','err');
 }
 
 /* Global Quick Dial popover — lives in the topbar, usable from any page */
@@ -4344,28 +4438,30 @@ async function revLoadRequestsFeed(){
    on "Authenticating…" forever. Wiring is deferred here and run
    from window.__initApp, once the page fragments actually exist.
    ------------------------------------------------------------ */
+function chOn(id,ev,fn){const el=document.getElementById(id);if(el)el.addEventListener(ev,fn);}
+
 function chWireStaticListeners(){
-  document.getElementById('chMuteBtn').addEventListener('click',e=>{
+  chOn('chMuteBtn','click',e=>{
     const btn=e.currentTarget,on=!btn.classList.contains('active');
     btn.classList.toggle('active',on);
     btn.querySelector('.mat').textContent=on?'mic':'mic_off';
     VoiceService.toggleMute(on);
   });
-  document.getElementById('chHoldBtn').addEventListener('click',()=>{
+  chOn('chHoldBtn','click',()=>{
     // Disabled — see the code comment on this button and on
     // TwilioVoiceAdapter.hold() above. Not wired to VoiceService.toggleHold()
     // on purpose so we never show a fake "on hold" state.
     toast('Hold isn\'t available yet — coming soon');
   });
-  document.getElementById('chKeypadBtn').addEventListener('click',()=>{
+  chOn('chKeypadBtn','click',()=>{
     document.getElementById('quickDialPanel').classList.toggle('open');
   });
-  document.getElementById('chEndCallBtn').addEventListener('click',()=>{
+  chOn('chEndCallBtn','click',()=>{
     VoiceService.hangUp();
   });
 
-  document.getElementById('chDeclineCallBtn').addEventListener('click',chDismissIncomingCall);
-  document.getElementById('chAnswerCallBtn').addEventListener('click',chDismissIncomingCall);
+  chOn('chDeclineCallBtn','click',chDismissIncomingCall);
+  chOn('chAnswerCallBtn','click',chDismissIncomingCall);
 
   document.querySelectorAll('#chProfileTabs .cd-tab').forEach(t=>{
     t.addEventListener('click',()=>{
@@ -4405,28 +4501,28 @@ function chWireStaticListeners(){
       chLoadDraft();
     });
   });
-  document.getElementById('chComposerSendBtn').addEventListener('click',chSendMessage);
-  document.getElementById('chComposerDraftBtn').addEventListener('click',chSaveDraft);
-  document.getElementById('chQaEmail').addEventListener('click',()=>document.querySelector('#chComposerChannels .topt[data-ch="email"]').click());
-  document.getElementById('chQaSms').addEventListener('click',()=>document.querySelector('#chComposerChannels .topt[data-ch="sms"]').click());
-  document.getElementById('chPqSms').addEventListener('click',()=>document.querySelector('#chComposerChannels .topt[data-ch="sms"]').click());
-  document.getElementById('chQaCall').addEventListener('click',()=>{const l=allLeads.find(x=>x.id===chActiveLeadId);if(!l||!l.phone){toast('No phone number on file for this lead','err');return;}chStartCall(l,l.phone);});
-  document.getElementById('chPqCall').addEventListener('click',()=>{const l=allLeads.find(x=>x.id===chActiveLeadId);if(!l||!l.phone){toast('No phone number on file for this lead','err');return;}chStartCall(l,l.phone);});
-  document.getElementById('chQaMeeting').addEventListener('click',()=>{
+  chOn('chComposerSendBtn','click',chSendMessage);
+  chOn('chComposerDraftBtn','click',chSaveDraft);
+  chOn('chQaEmail','click',()=>document.querySelector('#chComposerChannels .topt[data-ch="email"]').click());
+  chOn('chQaSms','click',()=>document.querySelector('#chComposerChannels .topt[data-ch="sms"]').click());
+  chOn('chPqSms','click',()=>document.querySelector('#chComposerChannels .topt[data-ch="sms"]').click());
+  chOn('chQaCall','click',()=>{const l=allLeads.find(x=>x.id===chActiveLeadId);if(!l||!l.phone){toast('No phone number on file for this lead','err');return;}chStartCall(l,l.phone);});
+  chOn('chPqCall','click',()=>{const l=allLeads.find(x=>x.id===chActiveLeadId);if(!l||!l.phone){toast('No phone number on file for this lead','err');return;}chStartCall(l,l.phone);});
+  chOn('chQaMeeting','click',()=>{
     openScheduleMeetingModal();
     const sel=document.getElementById('mhSchLead');
     if(sel&&chActiveLeadId)sel.value=chActiveLeadId;
   });
-  document.getElementById('chQaOpenLead').addEventListener('click',()=>{if(chActiveLeadId)openLead(chActiveLeadId);});
-  document.getElementById('chQaStar').addEventListener('click',()=>{if(chActiveLeadId)chToggleStar(chActiveLeadId);});
-  document.getElementById('chSortToggle').addEventListener('click',()=>{
+  chOn('chQaOpenLead','click',()=>{if(chActiveLeadId)openLead(chActiveLeadId);});
+  chOn('chQaStar','click',()=>{if(chActiveLeadId)chToggleStar(chActiveLeadId);});
+  chOn('chSortToggle','click',()=>{
     chSortMode=chSortMode==='default'?'name':chSortMode==='name'?'recent':'default';
     const btn=document.getElementById('chSortToggle');
     btn.title=chSortMode==='name'?'Sorted by name — click for recent contact':chSortMode==='recent'?'Sorted by recent contact — click for default order':'Sort by name';
     chRenderContactList(chFilteredLeads(chCurrentView()));
   });
-  document.getElementById('chPqLead').addEventListener('click',()=>{if(chActiveLeadId)openLead(chActiveLeadId);});
-  document.getElementById('chRailFilterInput').addEventListener('input',e=>{
+  chOn('chPqLead','click',()=>{if(chActiveLeadId)openLead(chActiveLeadId);});
+  chOn('chRailFilterInput','input',e=>{
     const q=e.target.value.toLowerCase();
     const base=chFilteredLeads(chCurrentView());
     chRenderContactList(base.filter(l=>chLeadName(l).toLowerCase().includes(q)||(l.company_name||'').toLowerCase().includes(q)));
@@ -4436,23 +4532,36 @@ function chWireStaticListeners(){
     item.addEventListener('click',()=>chSwitchSubPage(item.dataset.sub));
   });
 
-  document.querySelectorAll('#chSub-calls .ch-calls-filter').forEach(f=>{
-    f.addEventListener('click',()=>{
-      if(f.classList.contains('disabled'))return;
-      document.querySelectorAll('#chSub-calls .ch-calls-filter').forEach(x=>x.classList.remove('active'));
-      f.classList.add('active');
-    });
-  });
-
-  document.querySelectorAll('#chTasksTabs .ch-tasks-tab').forEach(tab=>{
+  /* Manual Actions tabs */
+  document.querySelectorAll('#chManualTabs .ch-tasks-tab').forEach(tab=>{
     tab.addEventListener('click',()=>{
-      document.querySelectorAll('#chTasksTabs .ch-tasks-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('#chManualTabs .ch-tasks-tab').forEach(t=>t.classList.remove('active'));
       tab.classList.add('active');
-      chTaskView=tab.dataset.taskview;
-      chRenderTasksPage();
+      chManualView=tab.dataset.manualview;
+      chRenderManualActions();
     });
   });
+  chOn('chManualStartBtn','click',()=>{
+    const rows=chManualRows(chManualView);
+    if(!rows.length){toast('Nothing to start in this view','err');return;}
+    chOpenInConversations(rows[0].id);
+  });
 
+  /* Snippets search */
+  chOn('chSnippetsSearch','input',chRenderSnippets);
+
+  /* Trigger Links search + Link/Analyze tabs */
+  chOn('chTriggerSearch','input',chRenderTriggerLinks);
+  document.querySelectorAll('#chTriggerTabs .topt').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('#chTriggerTabs .topt').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const isLink=t.dataset.triggertab==='link';
+      const linkView=document.getElementById('chTriggerLinkView'),analyzeView=document.getElementById('chTriggerAnalyzeView');
+      if(linkView)linkView.style.display=isLink?'block':'none';
+      if(analyzeView)analyzeView.style.display=isLink?'none':'block';
+    });
+  });
 }
 
 window.__initApp = function(){
