@@ -2754,11 +2754,21 @@ function chSaveDraft(){
   toast('Draft saved');
 }
 
-function chFilterByTab(items,tab){
-  if(tab==='timeline')return items;
-  const map={calls:'Call',sms:'SMS',emails:'Email',notes:'Note'};
-  const key=map[tab];
-  return items.filter(a=>a.activity_type===key);
+function chFilterByTab(items, tab) {
+  if (tab === 'timeline') return items;
+
+  const map = {
+    calls: 'call',
+    sms: 'sms',
+    emails: 'email',
+    notes: 'note'
+  };
+
+  const key = map[tab];
+
+  return items.filter(a =>
+    String(a.activity_type || '').toLowerCase() === key
+  );
 }
 function chActivityMeta(type){
   const m={Call:{icon:'call',color:'bl'},SMS:{icon:'sms',color:'gr'},Email:{icon:'mail',color:'pu'},Note:{icon:'edit_note',color:'am'},review_request:{icon:'reviews',color:'pu'}};
@@ -2985,32 +2995,118 @@ function chDayLabel(d){
   return dt.toLocaleDateString(undefined,{month:'short',day:'numeric',year:dt.getFullYear()!==today.getFullYear()?'numeric':undefined});
 }
 function chRenderTimeline(items){
-  const feed=document.getElementById('chTimelineFeed');
-  if(!items.length){feed.innerHTML='<div class="ch-timeline-empty"><span class="mat" style="font-size:33px;opacity:.35">history</span><p style="font-size:13.5px">No activity yet for this lead.</p></div>';return;}
-  // Oldest first, like a real conversation thread.
-  const sorted=items.slice().sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
-  let html='',lastDay='';
-  sorted.forEach(a=>{
-    const meta=chActivityMeta(a.activity_type);
-    const dir=a.activity_data&&a.activity_data.direction;
-    const day=a.created_at?new Date(a.created_at).toDateString():'';
-    if(day&&day!==lastDay){html+=`<div class="ch-day-divider"><span><span class="mat sm" style="font-size:13px">event</span>${chDayLabel(a.created_at)}</span></div>`;lastDay=day;}
-    const time=a.created_at?new Date(a.created_at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'';
-    const isMsg=a.activity_type==='SMS'||a.activity_type==='Email';
-    if(isMsg){
-      const out=dir!=='inbound';
-      html+=`<div class="ch-bubble-row${out?' out':''}">
-        <div class="ch-bubble">
-          <div class="ch-bubble-kicker"><span class="mat">${meta.icon}</span>${a.activity_type}${dir?' · '+dir:''}</div>
-          <div>${a.notes?escapeHtml(a.notes):'<span style="color:var(--tx3)">No content recorded</span>'}</div>
-          <div class="ch-bubble-time">${time}</div>
+  const feed = document.getElementById('chTimelineFeed');
+
+  if(!items.length){
+    feed.innerHTML = `
+      <div class="ch-timeline-empty">
+        <span class="mat" style="font-size:33px;opacity:.35">history</span>
+        <p style="font-size:13.5px">No activity yet for this contact.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const sorted = items.slice().sort(
+    (a,b) => new Date(a.created_at || 0) - new Date(b.created_at || 0)
+  );
+
+  let html = '';
+  let lastDay = '';
+
+  sorted.forEach(a => {
+
+    const type = String(a.activity_type || '').toLowerCase();
+    const data = a.activity_data || {};
+    const dir = String(data.direction || '').toLowerCase();
+
+    const day = a.created_at
+      ? new Date(a.created_at).toDateString()
+      : '';
+
+    if(day && day !== lastDay){
+      html += `
+        <div class="ch-day-divider">
+          <span>
+            <span class="mat sm" style="font-size:13px">event</span>
+            ${chDayLabel(a.created_at)}
+          </span>
         </div>
-      </div>`;
+      `;
+
+      lastDay = day;
+    }
+
+    const time = a.created_at
+      ? new Date(a.created_at).toLocaleTimeString([],{
+          hour:'numeric',
+          minute:'2-digit'
+        })
+      : '';
+
+    const isMsg = type === 'sms' || type === 'email';
+
+    if(isMsg){
+
+      const outbound = dir !== 'inbound';
+
+      const message =
+        data.body ??
+        data.message ??
+        a.body ??
+        a.message ??
+        a.notes ??
+        '';
+
+      html += `
+        <div class="ch-bubble-row${outbound ? ' out' : ''}">
+          <div class="ch-bubble">
+
+            <div class="ch-bubble-kicker">
+              <span class="mat">
+                ${type === 'sms' ? 'sms' : 'mail'}
+              </span>
+
+              ${type.toUpperCase()}
+              ${dir ? ' · ' + escapeHtml(dir) : ''}
+            </div>
+
+            <div>
+              ${message
+                ? escapeHtml(message)
+                : '<span style="color:var(--tx3)">No content recorded</span>'
+              }
+            </div>
+
+            <div class="ch-bubble-time">
+              ${time}
+            </div>
+
+          </div>
+        </div>
+      `;
+
     }else{
-      html+=`<div class="ch-day-divider"><span class="badge ${meta.color}"><span class="mat sm">${meta.icon}</span>${a.activity_type||'Activity'}${dir?' · '+dir:''}${a.notes?' — '+escapeHtml(a.notes):''} · ${time}</span></div>`;
+
+      const meta = chActivityMeta(a.activity_type);
+
+      html += `
+        <div class="ch-day-divider">
+          <span class="badge ${meta.color}">
+            <span class="mat sm">${meta.icon}</span>
+            ${escapeHtml(a.activity_type || 'Activity')}
+            ${dir ? ' · ' + escapeHtml(dir) : ''}
+            ${a.notes ? ' — ' + escapeHtml(a.notes) : ''}
+            · ${time}
+          </span>
+        </div>
+      `;
     }
   });
-  feed.innerHTML=html;
+
+  feed.innerHTML = html;
+
+  feed.scrollTop = feed.scrollHeight;
 }
 
 async function chSendMessage(){
