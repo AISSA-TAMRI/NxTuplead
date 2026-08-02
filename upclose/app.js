@@ -642,7 +642,7 @@ async function cdpSaveNote(){
   const lid=currentClient.lead_id;
   if(!lid){toast('No linked lead — cannot save note.','err');return;}
   try{
-    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_lead',id:parseInt(lid),notes:note})});
+    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_notes',id:parseInt(lid),notes:note})});
     if(!res.ok)throw new Error();
     currentClient.notes=note;
     const idx=allClients.findIndex(c=>c.id===currentClient.id);if(idx>-1)allClients[idx].notes=note;
@@ -713,7 +713,7 @@ async function loadActivity(){
 }
 function deriveSyntheticActivity(leads){const events=[];leads.forEach(l=>{if(l.created_at)events.push({type:'created',description:`Lead created — ${l.company_name||'Unknown'}`,created_at:l.created_at,lead_id:l.id});if(l.last_contacted_at)events.push({type:'contacted',description:`Contacted — ${l.company_name||'Unknown'}`,created_at:l.last_contacted_at,lead_id:l.id});if(l.converted_at)events.push({type:'converted',description:`Converted to client — ${l.company_name||'Unknown'}`,created_at:l.converted_at,lead_id:l.id});});return events.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,30);}
 function activityIcon(type){const map={created:{cls:'ac',icon:'add_circle'},contacted:{cls:'bl',icon:'call'},converted:{cls:'gr',icon:'verified'},won:{cls:'gr',icon:'check_circle'},lost:{cls:'re',icon:'cancel'},note:{cls:'am',icon:'sticky_note_2'},meeting:{cls:'pu',icon:'event'},email:{cls:'ac',icon:'mail'},status:{cls:'am',icon:'swap_horiz'},review:{cls:'pu',icon:'reviews'},default:{cls:'gy',icon:'history'}};const t=(type||'').toLowerCase();for(const[k,v]of Object.entries(map)){if(t.includes(k))return v;}return map.default;}
-function renderActivityFeed(activities){const el=document.getElementById('activityFeed');if(!activities.length){el.innerHTML=`<div class="empty-state"><span class="mat">history_toggle_off</span><p>No activity recorded yet.</p></div>`;return;}el.innerHTML=activities.map((a,i)=>{const{cls,icon}=activityIcon(a.type||a.activity_type||'');return `<div class="arow" style="${i===activities.length-1?'border-bottom:none':''}"><div class="activity-icon ${cls}"><span class="mat sm">${icon}</span></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--tx)">${a.description||a.message||a.text||'Activity recorded'}</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">${fmtDate(a.created_at||a.date)}${a.lead_id?' · Lead #'+a.lead_id:''}</div></div></div>`;}).join('');}
+function renderActivityFeed(activities){const el=document.getElementById('activityFeed');if(!activities.length){el.innerHTML=`<div class="empty-state"><span class="mat">history_toggle_off</span><p>No activity recorded yet.</p></div>`;return;}el.innerHTML=activities.map((a,i)=>{const{cls,icon}=activityIcon(a.type||a.activity_type||'');return `<div class="arow" style="${i===activities.length-1?'border-bottom:none':''}"><div class="activity-icon ${cls}"><span class="mat sm">${icon}</span></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--tx)">${a.description||a.message||a.text||a.notes||'Activity recorded'}</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">${fmtDate(a.created_at||a.date)}${a.lead_id?' · Lead #'+a.lead_id:''}</div></div></div>`;}).join('');}
 function renderActivitySummary(){const el=document.getElementById('activitySummary');if(!el)return;const total=allLeads.length,potential=allLeads.filter(l=>l.status==='Potential').length,won=allLeads.filter(l=>l.status==='Won').length,lost=allLeads.filter(l=>l.status==='Lost').length,nc=allLeads.filter(l=>!l.last_contacted_at).length;el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Total Leads</span><span style="font-weight:700;font-size:15px">${total}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Potential</span><span style="font-weight:700;color:var(--bl)">${potential}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Won</span><span style="font-weight:700;color:var(--gr)">${won}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Lost</span><span style="font-weight:700;color:var(--re)">${lost}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:${nc>0?'var(--re-d)':'var(--bg)'};border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Never Contacted</span><span style="font-weight:700;color:${nc>0?'var(--re)':'var(--tx3)'}">${nc}</span></div>`;}
 
 function renderCalendar(){
@@ -860,7 +860,7 @@ toast(`✓ Status updated to ${newStatus}`, 'ok');
 }
 async function saveNote(){
   if(!currentLead)return;const note=document.getElementById('noteArea').value;
-  try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_lead',id:currentLead.id,notes:note})});if(!res.ok)throw new Error(`HTTP ${res.status}`);currentLead.notes=note;const idx=allLeads.findIndex(l=>l.id===currentLead.id);if(idx>-1)allLeads[idx].notes=note;toast('✓ Note saved','ok');}
+  try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_notes',id:currentLead.id,notes:note})});if(!res.ok)throw new Error(`HTTP ${res.status}`);currentLead.notes=note;const idx=allLeads.findIndex(l=>l.id===currentLead.id);if(idx>-1)allLeads[idx].notes=note;toast('✓ Note saved','ok');}
   catch(e){toast('Failed to save note.','err');}
 }
 /* --- Funnel Metrics data capture: these three fields (deal_value, show_status,
@@ -1688,7 +1688,7 @@ async function saveMhSchedule(){
   if(!date){toast('Please select a date.','err');return;}
   const lead=allLeads.find(l=>l.id==leadId);if(!lead){toast('Lead not found.','err');return;}
   const newNotes=[notes,meetUrl?'Google Meet: '+meetUrl:''].filter(Boolean).join('\n\n').trim()||lead.notes||'';
-  const payload={action:'update_lead',id:parseInt(leadId),preferred_date:date,preferred_time:time||null,notes:newNotes||null};
+  const payload={action:'update_schedule',id:parseInt(leadId),preferred_date:date,preferred_time:time||null,notes:newNotes||null};
   try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const idx=allLeads.findIndex(l=>l.id==leadId);if(idx>-1)allLeads[idx]={...allLeads[idx],...payload};
     closeMhModal();toast('✓ Meeting scheduled','ok');
@@ -3122,7 +3122,7 @@ async function chSendMessage(){
     let res;
     if(chActiveChannel==='note'){
       // Notes are internal-only — just another crm.activities row via lead-management, no external sync.
-      res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add_note',id:chActiveLeadId,note:body.value.trim()})});
+      res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add_note',id:chActiveLeadId,lead_id:chActiveLeadId,note:body.value.trim()})});
     }else{
       const endpoint=chActiveChannel==='email'?API.sendEmail:API.sendSms;
       const payload = {
@@ -3426,7 +3426,7 @@ function chManualStatusBadge(view){
 }
 async function chMarkContacted(id,notify=true){
   try{
-    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_lead',id:parseInt(id),last_contacted_at:new Date().toISOString()})});
+    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_last_contacted',id:parseInt(id),last_contacted_at:new Date().toISOString()})});
     if(!res.ok)throw new Error('HTTP '+res.status);
     const idx=allLeads.findIndex(l=>l.id===id);
     if(idx>-1)allLeads[idx].last_contacted_at=new Date().toISOString();
