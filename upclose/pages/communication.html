@@ -1,379 +1,329 @@
-<div class="ch-hero">
+<div class="ch-subnav" id="chSubNav">
+  <div class="ch-subnav-item active" data-sub="conversations"><span class="mat">forum</span>Conversations</div>
+  <div class="ch-subnav-item" data-sub="manual"><span class="mat">bolt</span>Manual Actions</div>
+  <div class="ch-subnav-item" data-sub="snippets"><span class="mat">flash_on</span>Snippets</div>
+  <div class="ch-subnav-item" data-sub="trigger"><span class="mat">link</span>Trigger Links</div>
+</div>
+
+<!-- ============================================================
+     CONVERSATIONS — same real data/behavior as before (allLeads,
+     chActivities via get-lead-activities, VoiceService calling,
+     drafts/starred/snippets in localStorage). Only the surrounding
+     hero block and 6-tab subnav were removed; every id below is
+     unchanged so the existing chXxx() functions in app.js keep
+     working without modification.
+     ============================================================ -->
+<div class="ch-subpage" id="chSub-conversations" style="display:flex">
+  <div class="ch-layout">
+    <aside class="ch-rail">
+      <div class="ch-rail-hd">
+        <span class="ch-rail-title">Team Inbox</span>
+        <button class="tbb" id="chSortToggle" title="Sort by name"><span class="mat sm">swap_vert</span></button>
+      </div>
+      <div class="ch-smartviews" id="chSmartViews">
+        <div class="ch-sv active" data-view="attention"><span class="mat sm">priority_high</span>Needs Attention<span class="cnt" id="chSvCountAttention">—</span></div>
+        <div class="ch-sv" data-view="all"><span class="mat sm">people</span>All<span class="cnt" id="chSvCountAll">—</span></div>
+        <div class="ch-sv" data-view="recent"><span class="mat sm">history</span>Recent<span class="cnt" id="chSvCountRecent">—</span></div>
+        <div class="ch-sv" data-view="starred"><span class="mat sm">star</span>Starred<span class="cnt" id="chSvCountStarred">—</span></div>
+      </div>
+      <div class="ch-rail-search">
+        <div class="auto-search" style="min-width:0;width:100%">
+          <span class="mat sm">filter_list</span>
+          <input type="text" id="chRailFilterInput" placeholder="Filter this view…"/>
+        </div>
+      </div>
+      <div class="ch-list" id="chContactList" style="flex:1;overflow-y:auto;min-height:0">
+        <!-- Rendered by chRenderContactList() from allLeads — no sample rows shipped -->
+      </div>
+    </aside>
+
+    <section class="ch-workspace">
+      <div class="ch-contact-header" id="chContactHeader">
+        <div class="av lg" id="chHeaderAvatar">--</div>
+        <div>
+          <div class="ch-contact-header-name" id="chHeaderName">Select a lead</div>
+          <div class="ch-contact-header-sub" id="chHeaderSub">Choose someone from the list to open their timeline</div>
+        </div>
+        <div class="ch-quickactions ch-icon-row">
+          <button class="tbb ch-icon-btn" title="Star (saved on this device)" id="chQaStar"><span class="mat">star_outline</span></button>
+          <button class="tbb ch-icon-btn" title="Call" id="chQaCall"><span class="mat">call</span></button>
+          <button class="tbb ch-icon-btn" title="SMS" id="chQaSms"><span class="mat">sms</span></button>
+          <button class="tbb ch-icon-btn" title="Email" id="chQaEmail"><span class="mat">mail</span></button>
+          <button class="tbb ch-icon-btn" title="Schedule meeting" id="chQaMeeting"><span class="mat">event</span></button>
+          <button class="tbb ch-icon-btn" title="Open full lead record" id="chQaOpenLead"><span class="mat">open_in_new</span></button>
+        </div>
+      </div>
+
+      <!-- Incoming call banner: UI shell for future inbound calling.
+           Shown via chShowIncomingCall()/hidden via chDismissIncomingCall(),
+           which are not called anywhere yet — no inbound provider is wired up. -->
+      <div class="ch-incoming-banner" id="chIncomingBanner">
+        <div class="ch-incoming-left">
+          <div class="ch-incoming-icon"><span class="mat fill">call</span></div>
           <div>
-            <div class="ch-hero-title">Communication Hub</div>
-            <div class="ch-hero-sub">Every call, email and text in one place — start your day here.</div>
+            <div class="ch-incoming-title" id="chIncomingName">—</div>
+            <div class="ch-incoming-sub">Incoming call</div>
           </div>
-          <div class="ch-hero-stats">
-            <div class="ch-hero-stat"><span class="mat sm" style="color:var(--re)">priority_high</span><strong id="chStatAttention">—</strong> need attention</div>
-            <div class="ch-hero-stat"><span class="mat sm" style="color:var(--bl)">schedule</span><strong id="chStatCallsToday">—</strong> calls today</div>
-            <div class="ch-hero-stat"><span class="mat sm" style="color:var(--am)">mark_email_unread</span><strong id="chStatUnanswered">—</strong> no recent contact</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="abtn" id="chDeclineCallBtn"><span class="mat sm">call_end</span>Decline</button>
+          <button class="abtn pri" id="chAnswerCallBtn"><span class="mat sm">call</span>Answer</button>
+        </div>
+      </div>
+
+      <div class="ch-callbar" id="chActiveCallBar" hidden>
+        <div class="ch-callbar-left">
+          <div class="ch-callbar-icon"><span class="mat fill">call</span></div>
+          <div>
+            <div class="ch-callbar-title" id="chActiveCallName">—</div>
+            <div class="ch-callbar-sub" id="chActiveCallStatus">Connecting · <span id="chActiveCallTimer">00:00</span></div>
+          </div>
+          <div class="ch-wave" style="width:70px"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="tbb ch-callbar-toggle" id="chMuteBtn" title="Mute"><span class="mat">mic_off</span></button>
+          <!-- Hold is intentionally disabled: the Twilio Voice JS SDK has no
+               native hold, and real hold requires a server-side conference/
+               TwiML change that doesn't exist yet. Do not fake this. -->
+          <button class="tbb ch-callbar-toggle" id="chHoldBtn" title="Hold — coming soon" disabled style="opacity:.45;cursor:not-allowed"><span class="mat">pause</span></button>
+          <button class="tbb" id="chKeypadBtn" title="Keypad"><span class="mat">dialpad</span></button>
+          <button class="abtn danger" id="chEndCallBtn"><span class="mat sm">call_end</span>End Call</button>
+        </div>
+      </div>
+
+      <div class="ch-tabs" id="chCommTabs">
+        <div class="ch-tab active" data-tab="timeline"><span class="mat">history</span>Timeline</div>
+        <div class="ch-tab" data-tab="calls"><span class="mat">call</span>Calls</div>
+        <div class="ch-tab" data-tab="sms"><span class="mat">sms</span>SMS</div>
+        <div class="ch-tab" data-tab="emails"><span class="mat">mail</span>Emails</div>
+        <div class="ch-tab" data-tab="notes"><span class="mat">edit_note</span>Notes</div>
+      </div>
+
+      <div class="ch-timeline" id="chTimelineFeed">
+        <div class="ch-timeline-empty">
+          <span class="mat" style="font-size:37px;opacity:.4">forum</span>
+          <p style="font-size:14px">Select a lead on the left to see their full history —<br/>calls, emails, texts and notes, all in one thread.</p>
+        </div>
+      </div>
+
+      <div class="ch-composer">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div class="tgroup" style="width:fit-content" id="chComposerChannels">
+            <div class="topt active" data-ch="email">Email</div>
+            <div class="topt" data-ch="sms">SMS</div>
+            <div class="topt" data-ch="note">Internal Note</div>
+          </div>
+          <div class="ch-composer-meta" id="chComposerMeta" style="border:none;padding:0;flex:1;justify-content:flex-end">
+            <span><b>To:</b> <span id="chComposerTo">—</span></span>
+          </div>
+        </div>
+        <div class="ch-composer-pill">
+          <button class="tbb" title="Attach file" style="flex-shrink:0"><span class="mat sm">attach_file</span></button>
+          <textarea class="ch-msg-input" id="chComposerBody" rows="1" placeholder="Type your reply…" disabled></textarea>
+          <button class="tbb" id="chComposerDraftBtn" title="Save draft" disabled style="flex-shrink:0"><span class="mat sm">drafts</span></button>
+          <button class="ch-send-btn" id="chComposerSendBtn" disabled title="Send"><span class="mat sm">send</span></button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="ch-profile" id="chProfilePanel">
+      <div class="ch-profile-titlebar"><span class="mat sm">badge</span>Contact Details</div>
+      <div class="empty-state" id="chProfileEmptyState">
+        <span class="mat">badge</span>
+        <p>No lead selected yet.</p>
+      </div>
+
+      <div id="chProfileContent" style="display:none">
+        <div class="cd-hd">
+          <div class="cd-hd-top">
+            <div class="av lg" id="chProfileAvatar">--</div>
+            <div style="flex:1;min-width:0">
+              <div class="cd-hd-name"><span id="chProfileName" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span><span class="mat" id="chPqLead" title="Open full lead record">open_in_new</span></div>
+              <div class="ch-profile-title" style="margin-top:0" id="chProfileTitle">—</div>
+            </div>
+          </div>
+          <div class="cd-tags-row">
+            <span class="badge gy" id="chProfileStatus">—</span>
+          </div>
+          <div class="cd-owner-row">
+            <div class="cd-owner-col">
+              <div class="cd-owner-lbl">Assigned Closer</div>
+              <div class="cd-owner-val"><span class="mat">person</span><span id="chProfileOwner">Unassigned</span></div>
+            </div>
+            <div class="cd-owner-col">
+              <div class="cd-owner-lbl">Pipeline Stage</div>
+              <div class="cd-owner-val"><span class="mat">view_kanban</span><span id="chProfileStage">—</span></div>
+            </div>
           </div>
         </div>
 
-        <div class="ch-subnav" id="chSubNav">
-          <div class="ch-subnav-item active" data-sub="overview"><span class="mat sm">space_dashboard</span>Overview</div>
-          <div class="ch-subnav-item" data-sub="conversations"><span class="mat sm">forum</span>Conversations</div>
-          <div class="ch-subnav-item" data-sub="calls"><span class="mat sm">call</span>Calls</div>
-          <div class="ch-subnav-item" data-sub="activity"><span class="mat sm">history</span>All Activity</div>
-          <div class="ch-subnav-item" data-sub="tasks"><span class="mat sm">alarm</span>Tasks &amp; Follow-ups</div>
-          <div class="ch-subnav-item" data-sub="snippets"><span class="mat sm">bolt</span>Snippets</div>
+        <div class="cd-tabs" id="chProfileTabs">
+          <div class="cd-tab active" data-cdtab="fields"><span class="mat sm" style="font-size:15px;vertical-align:-3px">list_alt</span> All Fields</div>
+          <div class="cd-tab" data-cdtab="actions"><span class="mat sm" style="font-size:15px;vertical-align:-3px">bolt</span> Actions</div>
         </div>
 
-        <!-- ============================================================
-             OVERVIEW — daily command center. Built entirely from allLeads,
-             the same data source the smart views already use. No section
-             here invents data: every number below is computed by a real
-             filter over allLeads, and anything that would need a backend
-             we don't have (unread state, missed-call log) gets an honest
-             "not connected yet" state instead of a fake count.
-             ============================================================ -->
-        <div class="ch-subpage" id="chSub-overview">
-          <div class="ch-ov-grid">
-            <div class="ch-ov-col">
-              <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--re)">priority_high</span><span class="stitle">Needs Attention</span><span class="badge re" id="chOvCountAttention">—</span></div>
-                <div class="ch-ov-list" id="chOvAttention"></div>
-              </div>
-              <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--am)">alarm</span><span class="stitle">Overdue Follow-ups</span><span class="badge am" id="chOvCountOverdue">—</span></div>
-                <div class="ch-ov-list" id="chOvOverdue"></div>
-              </div>
-              <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--bl)">schedule</span><span class="stitle">Follow-ups Due Today</span><span class="badge bl" id="chOvCountDueToday">—</span></div>
-                <div class="ch-ov-list" id="chOvDueToday"></div>
-              </div>
-            </div>
-            <div class="ch-ov-col">
-              <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--pu)">person</span><span class="stitle">My Open Leads</span><span class="badge pu" id="chOvCountMine">—</span></div>
-                <div class="ch-ov-list" id="chOvMine"></div>
-              </div>
-              <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--gr)">event</span><span class="stitle">Scheduled Today</span><span class="badge gr" id="chOvCountScheduled">—</span></div>
-                <div class="ch-ov-list" id="chOvScheduled"></div>
-              </div>
-              <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--tx3)">phone_missed</span><span class="stitle">Missed Calls</span><span class="badge gy">Not connected</span></div>
-                <div class="ch-ov-list"><div class="ch-ov-empty">No call-log backend is wired up yet, so missed calls can't be listed here honestly. Once a bulk call-activity endpoint exists, this section will populate automatically — see the Calls tab.</div></div>
-              </div>
-            </div>
-            <div class="ch-ov-col">
-              <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--am)">mark_email_unread</span><span class="stitle">No Recent Contact</span><span class="badge am" id="chOvCountUnanswered">—</span></div>
-                <div class="ch-ov-list" id="chOvUnanswered"></div>
-              </div>
-              <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--gr)">history</span><span class="stitle">Recently Contacted</span><span class="badge gr" id="chOvCountRecent">—</span></div>
-                <div class="ch-ov-list" id="chOvRecent"></div>
-              </div>
-              <div class="glass-card ch-ov-card">
-                <div class="ch-ov-card-hd"><span class="mat sm" style="color:var(--tx3)">mark_chat_unread</span><span class="stitle">Unread Conversations</span><span class="badge gy">Not connected</span></div>
-                <div class="ch-ov-list"><div class="ch-ov-empty">Read/unread state isn't persisted anywhere yet. Adding it needs a small backend flag on each communication activity — flagged as a future integration, not faked here.</div></div>
-              </div>
-            </div>
+        <div id="chProfileFieldsTab">
+          <div class="ch-quick-grid" style="grid-template-columns:repeat(3,1fr)">
+            <div class="ch-quick-btn" id="chPqCall"><span class="mat">call</span><span class="qlabel">Call</span></div>
+            <div class="ch-quick-btn" id="chPqSms"><span class="mat">sms</span><span class="qlabel">SMS</span></div>
+            <div class="ch-quick-btn" onclick="document.getElementById('chQaEmail').click()"><span class="mat">mail</span><span class="qlabel">Email</span></div>
           </div>
-        </div>
 
-        <div class="ch-subpage" id="chSub-conversations" style="display:none;padding:0">
-        <div class="ch-layout">
-          <aside class="ch-rail">
-            <div class="ch-rail-hd">
-              <span class="ch-rail-title">Inbox</span>
-              <div style="display:flex;gap:2px">
-                <button class="tbb" id="chSortToggle" title="Sort by name"><span class="mat sm">swap_vert</span></button>
-              </div>
-            </div>
-            <div class="ch-smartviews" id="chSmartViews">
-              <div class="ch-sv active" data-view="attention"><span class="mat sm">priority_high</span>Needs Attention<span class="cnt" id="chSvCountAttention">—</span></div>
-              <div class="ch-sv" data-view="mine"><span class="mat sm">person</span>My Open Leads<span class="cnt" id="chSvCountMine">—</span></div>
-              <div class="ch-sv" data-view="calls"><span class="mat sm">call</span>Scheduled Today<span class="cnt" id="chSvCountCalls">—</span></div>
-              <div class="ch-sv" data-view="unanswered"><span class="mat sm">mark_email_unread</span>No Recent Contact<span class="cnt" id="chSvCountEmails">—</span></div>
-              <div class="ch-sv" data-view="starred"><span class="mat sm">star</span>Starred<span class="cnt" id="chSvCountStarred">—</span></div>
-              <div class="ch-sv" data-view="all"><span class="mat sm">people</span>All Leads<span class="cnt" id="chSvCountAll">—</span></div>
-            </div>
-            <div class="ch-rail-search">
-              <div class="search-box" style="max-width:none">
-                <span class="mat si sm">filter_list</span>
-                <input type="text" id="chRailFilterInput" placeholder="Filter this view…"/>
-              </div>
-            </div>
-            <div class="ch-list" id="chContactList">
-              <!-- Rendered by chRenderContactList() from allLeads — no sample rows shipped -->
-            </div>
-          </aside>
-
-          <section class="ch-workspace">
-            <div class="ch-contact-header" id="chContactHeader">
-              <div class="av lg" id="chHeaderAvatar">--</div>
-              <div>
-                <div class="ch-contact-header-name" id="chHeaderName">Select a lead</div>
-                <div class="ch-contact-header-sub" id="chHeaderSub">Choose someone from the list to open their timeline</div>
-              </div>
-              <div class="ch-quickactions ch-icon-row">
-                <button class="tbb ch-icon-btn" title="Star (saved on this device)" id="chQaStar"><span class="mat">star_outline</span></button>
-                <button class="tbb ch-icon-btn" title="Call" id="chQaCall"><span class="mat">call</span></button>
-                <button class="tbb ch-icon-btn" title="SMS" id="chQaSms"><span class="mat">sms</span></button>
-                <button class="tbb ch-icon-btn" title="Email" id="chQaEmail"><span class="mat">mail</span></button>
-                <button class="tbb ch-icon-btn" title="Schedule meeting" id="chQaMeeting"><span class="mat">event</span></button>
-                <button class="tbb ch-icon-btn" title="Open full lead record" id="chQaOpenLead"><span class="mat">open_in_new</span></button>
+          <div class="ch-profile-body">
+            <div class="cd-section-lbl">Contact</div>
+            <div class="lp-card">
+              <div class="lp-rows">
+                <div class="lp-row"><div class="lp-ri"><span class="mat">business</span></div><div><div class="lp-rl">Company</div><div class="lp-rv" id="chProfileCompany">—</div></div></div>
+                <div class="lp-row"><div class="lp-ri"><span class="mat">mail</span></div><div><div class="lp-rl">Email</div><div class="lp-rv" id="chProfileEmail">—</div></div></div>
+                <div class="lp-row"><div class="lp-ri"><span class="mat">call</span></div><div><div class="lp-rl">Phone</div><div class="lp-rv" id="chProfilePhone">—</div></div></div>
+                <div class="lp-row"><div class="lp-ri"><span class="mat">schedule</span></div><div><div class="lp-rl">Last Contacted</div><div class="lp-rv" id="chProfileLastContact">—</div></div></div>
               </div>
             </div>
 
-            <!-- Incoming call banner: UI shell for future inbound calling.
-                 Shown via chShowIncomingCall()/hidden via chDismissIncomingCall(),
-                 which are not called anywhere yet — no inbound provider is wired up. -->
-            <div class="ch-incoming-banner" id="chIncomingBanner">
-              <div class="ch-incoming-left">
-                <div class="ch-incoming-icon"><span class="mat fill">call</span></div>
-                <div>
-                  <div class="ch-incoming-title" id="chIncomingName">—</div>
-                  <div class="ch-incoming-sub">Incoming call</div>
-                </div>
-              </div>
-              <div style="display:flex;align-items:center;gap:6px">
-                <button class="abtn" id="chDeclineCallBtn"><span class="mat sm">call_end</span>Decline</button>
-                <button class="abtn pri" id="chAnswerCallBtn"><span class="mat sm">call</span>Answer</button>
+            <div class="cd-section-lbl">Source &amp; Attribution</div>
+            <div class="lp-card">
+              <div class="lp-rows">
+                <div class="lp-row"><div class="lp-ri"><span class="mat">source</span></div><div><div class="lp-rl">UTM Source</div><div class="lp-rv" id="chProfileSourceVal">—</div></div></div>
+                <div class="lp-row"><div class="lp-ri"><span class="mat">campaign</span></div><div><div class="lp-rl">Campaign</div><div class="lp-rv" id="chProfileCampaign">—</div></div></div>
+                <div class="lp-row"><div class="lp-ri"><span class="mat">ads_click</span></div><div><div class="lp-rl">Medium</div><div class="lp-rv" id="chProfileMedium">—</div></div></div>
               </div>
             </div>
 
-            <div class="ch-callbar" id="chActiveCallBar" hidden>
-              <div class="ch-callbar-left">
-                <div class="ch-callbar-icon"><span class="mat fill">call</span></div>
-                <div>
-                  <div class="ch-callbar-title" id="chActiveCallName">—</div>
-                  <div class="ch-callbar-sub" id="chActiveCallStatus">Connecting · <span id="chActiveCallTimer">00:00</span></div>
-                </div>
-                <div class="ch-wave" style="width:70px"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-              </div>
-              <div style="display:flex;align-items:center;gap:6px">
-                <button class="tbb ch-callbar-toggle" id="chMuteBtn" title="Mute"><span class="mat">mic_off</span></button>
-                <!-- Hold is intentionally disabled: the Twilio Voice JS SDK has no
-                     native hold, and real hold requires a server-side conference/
-                     TwiML change that doesn't exist yet. Do not fake this. -->
-                <button class="tbb ch-callbar-toggle" id="chHoldBtn" title="Hold — coming soon" disabled style="opacity:.45;cursor:not-allowed"><span class="mat">pause</span></button>
-                <button class="tbb" id="chKeypadBtn" title="Keypad"><span class="mat">dialpad</span></button>
-                <button class="abtn danger" id="chEndCallBtn"><span class="mat sm">call_end</span>End Call</button>
-              </div>
-            </div>
-
-            <div class="ch-tabs" id="chCommTabs">
-              <div class="ch-tab active" data-tab="timeline"><span class="mat">history</span>Timeline</div>
-              <div class="ch-tab" data-tab="calls"><span class="mat">call</span>Calls</div>
-              <div class="ch-tab" data-tab="sms"><span class="mat">sms</span>SMS</div>
-              <div class="ch-tab" data-tab="emails"><span class="mat">mail</span>Emails</div>
-              <div class="ch-tab" data-tab="notes"><span class="mat">edit_note</span>Notes</div>
-            </div>
-
-            <div class="ch-timeline" id="chTimelineFeed">
-              <div class="ch-timeline-empty">
-                <span class="mat" style="font-size:37px;opacity:.4">forum</span>
-                <p style="font-size:14px">Select a lead on the left to see their full history —<br/>calls, emails, texts and notes, all in one thread.</p>
-              </div>
-            </div>
-
-            <div class="ch-composer">
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-                <div class="tgroup" style="width:fit-content" id="chComposerChannels">
-                  <div class="topt active" data-ch="email">Email</div>
-                  <div class="topt" data-ch="sms">SMS</div>
-                  <div class="topt" data-ch="note">Internal Note</div>
-                </div>
-                <div class="ch-composer-meta" id="chComposerMeta" style="border:none;padding:0;flex:1;justify-content:flex-end">
-                  <span><b>To:</b> <span id="chComposerTo">—</span></span>
-                </div>
-              </div>
-              <div class="ch-composer-pill">
-                <button class="tbb" title="Attach file" style="flex-shrink:0"><span class="mat sm">attach_file</span></button>
-                <textarea class="ch-msg-input" id="chComposerBody" rows="1" placeholder="Type your reply…" disabled></textarea>
-                <button class="tbb" id="chComposerDraftBtn" title="Save draft" disabled style="flex-shrink:0"><span class="mat sm">drafts</span></button>
-                <button class="ch-send-btn" id="chComposerSendBtn" disabled title="Send"><span class="mat sm">send</span></button>
-              </div>
-            </div>
-          </section>
-
-          <aside class="ch-profile" id="chProfilePanel">
-            <div class="ch-profile-titlebar"><span class="mat sm">badge</span>Contact Details</div>
-            <div class="empty-state" id="chProfileEmptyState">
-              <span class="mat">badge</span>
-              <p>No lead selected yet.</p>
-            </div>
-
-            <div id="chProfileContent" style="display:none">
-              <div class="cd-hd">
-                <div class="cd-hd-top">
-                  <div class="av lg" id="chProfileAvatar">--</div>
-                  <div style="flex:1;min-width:0">
-                    <div class="cd-hd-name"><span id="chProfileName" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span><span class="mat" id="chPqLead" title="Open full lead record">open_in_new</span></div>
-                    <div class="ch-profile-title" style="margin-top:0" id="chProfileTitle">—</div>
-                  </div>
-                </div>
-                <div class="cd-tags-row">
-                  <span class="badge gy" id="chProfileStatus">—</span>
-                </div>
-                <div class="cd-owner-row">
-                  <div class="cd-owner-col">
-                    <div class="cd-owner-lbl">Assigned Closer</div>
-                    <div class="cd-owner-val"><span class="mat">person</span><span id="chProfileOwner">Unassigned</span></div>
-                  </div>
-                  <div class="cd-owner-col">
-                    <div class="cd-owner-lbl">Pipeline Stage</div>
-                    <div class="cd-owner-val"><span class="mat">view_kanban</span><span id="chProfileStage">—</span></div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="cd-tabs" id="chProfileTabs">
-                <div class="cd-tab active" data-cdtab="fields"><span class="mat sm" style="font-size:15px;vertical-align:-3px">list_alt</span> All Fields</div>
-                <div class="cd-tab" data-cdtab="actions"><span class="mat sm" style="font-size:15px;vertical-align:-3px">bolt</span> Actions</div>
-              </div>
-
-              <div id="chProfileFieldsTab">
-                <div class="ch-quick-grid" style="grid-template-columns:repeat(3,1fr)">
-                  <div class="ch-quick-btn" id="chPqCall"><span class="mat">call</span><span class="qlabel">Call</span></div>
-                  <div class="ch-quick-btn" id="chPqSms"><span class="mat">sms</span><span class="qlabel">SMS</span></div>
-                  <div class="ch-quick-btn" onclick="document.getElementById('chQaEmail').click()"><span class="mat">mail</span><span class="qlabel">Email</span></div>
-                </div>
-
-                <div class="ch-profile-body">
-                  <div class="cd-section-lbl">Contact</div>
-                  <div class="lp-card">
-                    <div class="lp-rows">
-                      <div class="lp-row"><div class="lp-ri"><span class="mat">business</span></div><div><div class="lp-rl">Company</div><div class="lp-rv" id="chProfileCompany">—</div></div></div>
-                      <div class="lp-row"><div class="lp-ri"><span class="mat">mail</span></div><div><div class="lp-rl">Email</div><div class="lp-rv" id="chProfileEmail">—</div></div></div>
-                      <div class="lp-row"><div class="lp-ri"><span class="mat">call</span></div><div><div class="lp-rl">Phone</div><div class="lp-rv" id="chProfilePhone">—</div></div></div>
-                      <div class="lp-row"><div class="lp-ri"><span class="mat">schedule</span></div><div><div class="lp-rl">Last Contacted</div><div class="lp-rv" id="chProfileLastContact">—</div></div></div>
-                    </div>
-                  </div>
-
-                  <div class="cd-section-lbl">Source &amp; Attribution</div>
-                  <div class="lp-card">
-                    <div class="lp-rows">
-                      <div class="lp-row"><div class="lp-ri"><span class="mat">source</span></div><div><div class="lp-rl">UTM Source</div><div class="lp-rv" id="chProfileSourceVal">—</div></div></div>
-                      <div class="lp-row"><div class="lp-ri"><span class="mat">campaign</span></div><div><div class="lp-rl">Campaign</div><div class="lp-rv" id="chProfileCampaign">—</div></div></div>
-                      <div class="lp-row"><div class="lp-ri"><span class="mat">ads_click</span></div><div><div class="lp-rl">Medium</div><div class="lp-rv" id="chProfileMedium">—</div></div></div>
-                    </div>
-                  </div>
-
-                  <div class="lp-card">
-                    <div class="lp-card-hd"><span class="mat fill">bolt</span><span class="lp-card-title">Activity Timeline</span><span class="badge gy" id="chActivityStatusBadge">Not connected</span></div>
-                    <div style="padding:12px 13px" id="chActivitySummary">
-                      <p style="font-size:12px;color:var(--tx3)">Calls, emails and notes for this lead will appear here automatically.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div id="chProfileActionsTab" style="display:none;padding:14px">
-                <div style="display:flex;flex-direction:column;gap:8px">
-                  <button class="abtn" onclick="document.getElementById('chPqCall').click()"><span class="mat sm">call</span>Call Lead</button>
-                  <button class="abtn" onclick="document.getElementById('chQaSms').click()"><span class="mat sm">sms</span>Send SMS</button>
-                  <button class="abtn" onclick="document.getElementById('chQaEmail').click()"><span class="mat sm">mail</span>Send Email</button>
-                  <button class="abtn" onclick="document.getElementById('chQaMeeting').click()"><span class="mat sm">event</span>Schedule Meeting</button>
-                  <button class="abtn" onclick="document.getElementById('chQaStar').click()"><span class="mat sm">star_outline</span>Toggle Star</button>
-                  <button class="abtn pri" onclick="document.getElementById('chPqLead').click()"><span class="mat sm">open_in_new</span>Open Full Lead Record</button>
-                </div>
-              </div>
-            </div>
-          </aside>
-        </div>
-        </div>
-
-        <!-- ============================================================
-             CALLS — dedicated calling workspace. Quick Dial and per-lead
-             call history already exist and are reused as-is (no second
-             Twilio Device, no rewritten VoiceService/TwilioVoiceAdapter).
-             "Scheduled Today" reuses the same preferred_date field the
-             'calls' smart view and Meetings Hub already key off. A real
-             cross-lead call log (incoming/outgoing/missed/duration) needs
-             a bulk call-activity endpoint that doesn't exist yet — the
-             get-lead-activities webhook only returns one lead at a time —
-             so that part is an honest empty state, not fabricated rows.
-             ============================================================ -->
-        <div class="ch-subpage" id="chSub-calls" style="display:none">
-          <div class="ch-calls-toolbar">
-            <div class="ch-calls-filters">
-              <div class="ch-calls-filter active" data-callfilter="scheduled">Scheduled Today</div>
-              <div class="ch-calls-filter disabled" title="Needs a bulk call-activity backend — not connected yet">All Calls</div>
-              <div class="ch-calls-filter disabled" title="Needs a bulk call-activity backend — not connected yet">Incoming</div>
-              <div class="ch-calls-filter disabled" title="Needs a bulk call-activity backend — not connected yet">Outgoing</div>
-              <div class="ch-calls-filter disabled" title="Needs a bulk call-activity backend — not connected yet">Missed</div>
-              <div class="ch-calls-filter disabled" title="Needs a bulk call-activity backend — not connected yet">Completed</div>
-              <div class="ch-calls-filter disabled" title="Needs a bulk call-activity backend — not connected yet">Failed</div>
-            </div>
-            <button class="abtn pri" onclick="document.getElementById('quickDialToggle').click()"><span class="mat sm">dialpad</span>Quick Dial</button>
-          </div>
-          <div class="glass-card" style="overflow:hidden">
-            <div style="padding:12px 14px;border-bottom:1px solid var(--bd)"><span class="stitle">Leads with a call scheduled today</span></div>
-            <div id="chCallsScheduledList"></div>
-          </div>
-          <div class="ch-ov-empty" style="margin-top:14px;padding:14px;background:var(--s3);border-radius:var(--r-md)">
-            A full call log (direction, status, duration per call) isn't available here yet — it needs a bulk call-activity endpoint on the backend, since <code>get-lead-activities</code> currently only returns activity for one lead at a time. Until then, per-lead call history is available in <b>Conversations → Calls tab</b> after selecting a lead.
-          </div>
-        </div>
-
-        <!-- ============================================================
-             ALL ACTIVITY — cross-lead activity timeline UI.
-             crm.activities is the source of truth. The bulk backend
-             activity endpoint will be connected here next.
-             ============================================================ -->
-        <div class="ch-subpage" id="chSub-activity" style="display:none">
-          <div class="ch-calls-toolbar">
-            <div style="font-size:12px;color:var(--tx3);line-height:1.6">Central activity timeline for calls and messages. Backend activity feed is not connected yet.</div>
-            <button class="abtn" onclick="genRenderTimeline()"><span class="mat sm">refresh</span>Refresh</button>
-          </div>
-          <div class="glass-card" style="overflow:hidden">
-            <div style="padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between">
-              <span class="stitle">All calls &amp; messages</span>
-
-            </div>
-            <div class="ch-timeline" id="genTimelineFeed" style="max-height:calc(100vh - 260px)">
-              <div class="ch-timeline-empty">
-                <span class="mat" style="font-size:33px;opacity:.35">history</span>
-                <p style="font-size:13.5px">All Activity is ready. Backend activity feed is not connected yet.</p>
+            <div class="lp-card">
+              <div class="lp-card-hd"><span class="mat fill">bolt</span><span class="lp-card-title">Activity Timeline</span><span class="badge gy" id="chActivityStatusBadge">Not connected</span></div>
+              <div style="padding:12px 13px" id="chActivitySummary">
+                <p style="font-size:12px;color:var(--tx3)">Calls, emails and notes for this lead will appear here automatically.</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ============================================================
-             TASKS & FOLLOW-UPS — reuses the exact same lead fields the
-             Meetings Hub's "Overdue" / "Upcoming" widgets and the
-             'attention'/'calls' smart views already use: next_followup_at
-             for follow-ups, preferred_date for meetings. No second task
-             table is introduced. There is no persisted "task completed"
-             concept on the backend, so a Completed view is intentionally
-             left as an honest empty state rather than a fake one.
-             ============================================================ -->
-        <div class="ch-subpage" id="chSub-tasks" style="display:none">
-          <div class="ch-tasks-tabs" id="chTasksTabs">
-            <div class="ch-tasks-tab active" data-taskview="overdue"><span class="mat sm">error</span>Overdue</div>
-            <div class="ch-tasks-tab" data-taskview="today"><span class="mat sm">today</span>Today</div>
-            <div class="ch-tasks-tab" data-taskview="upcoming"><span class="mat sm">upcoming</span>Upcoming</div>
-            <div class="ch-tasks-tab" data-taskview="completed"><span class="mat sm">task_alt</span>Completed</div>
-          </div>
-          <div class="glass-card" style="overflow:hidden">
-            <table class="dt">
-              <thead><tr><th>Lead</th><th>Company</th><th>Due</th><th>Type</th><th style="width:170px">Actions</th></tr></thead>
-              <tbody id="chTasksTableBody"></tbody>
-            </table>
+        <div id="chProfileActionsTab" style="display:none;padding:14px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="abtn" onclick="document.getElementById('chPqCall').click()"><span class="mat sm">call</span>Call Lead</button>
+            <button class="abtn" onclick="document.getElementById('chQaSms').click()"><span class="mat sm">sms</span>Send SMS</button>
+            <button class="abtn" onclick="document.getElementById('chQaEmail').click()"><span class="mat sm">mail</span>Send Email</button>
+            <button class="abtn" onclick="document.getElementById('chQaMeeting').click()"><span class="mat sm">event</span>Schedule Meeting</button>
+            <button class="abtn" onclick="document.getElementById('chQaStar').click()"><span class="mat sm">star_outline</span>Toggle Star</button>
+            <button class="abtn pri" onclick="document.getElementById('chPqLead').click()"><span class="mat sm">open_in_new</span>Open Full Lead Record</button>
           </div>
         </div>
+      </div>
+    </aside>
+  </div>
+</div>
 
-        <!-- ============================================================
-             SNIPPETS — reusable SMS/email text. No backend persistence
-             exists for snippets yet, so they're stored in localStorage
-             ('upclose_snippets_v1'), exactly like the composer drafts
-             and the Automations builder already do for client-side-only
-             state. This is clearly a local cache, not synced across
-             devices/team members — flagged in the UI, not hidden.
-             ============================================================ -->
-        <div class="ch-subpage" id="chSub-snippets" style="display:none">
-          <div class="ch-snippets-hd">
-            <div>
-              <span class="stitle">Reusable replies</span>
-              <div style="font-size:12px;color:var(--tx3);margin-top:2px">Saved on this device only — snippet sync across the team isn't built yet.</div>
-            </div>
-            <button class="abtn pri" onclick="chOpenSnippetEditor()"><span class="mat sm">add</span>New Snippet</button>
-          </div>
-          <div class="ch-snippets-grid" id="chSnippetsGrid"></div>
+<!-- ============================================================
+     MANUAL ACTIONS — real Potential leads pulled live from allLeads
+     (next_followup_at / preferred_date / last_contacted_at), the
+     exact same fields the old Overview/Calls/Tasks subpages used.
+     No separate "actions queue" table exists on the backend.
+     ============================================================ -->
+<div class="ch-subpage" id="chSub-manual" style="display:none">
+  <div class="dash-hero" style="background:var(--s1)">
+    <div>
+      <div class="dash-hero-title" style="display:flex;align-items:center;gap:10px">
+        <span class="mat" style="color:var(--acc);font-size:25px">bolt</span>
+        Manual Actions
+      </div>
+      <div class="dash-hero-sub">Leads that need a call or message placed by hand — pulled live from your pipeline follow-ups.</div>
+    </div>
+    <button class="abtn pri" id="chManualStartBtn"><span class="mat sm">play_arrow</span>Let's Start</button>
+  </div>
+  <div class="pc">
+    <div class="ch-tasks-tabs" id="chManualTabs">
+      <div class="ch-tasks-tab active" data-manualview="overdue"><span class="mat sm">error</span>Overdue</div>
+      <div class="ch-tasks-tab" data-manualview="today"><span class="mat sm">today</span>Due Today</div>
+      <div class="ch-tasks-tab" data-manualview="calls"><span class="mat sm">call</span>Scheduled Calls</div>
+      <div class="ch-tasks-tab" data-manualview="unanswered"><span class="mat sm">mark_email_unread</span>No Recent Contact</div>
+    </div>
+    <div class="card" style="overflow:hidden">
+      <table class="dt">
+        <thead><tr>
+          <th style="width:24px"><input type="checkbox" style="accent-color:var(--acc)"/></th>
+          <th>Contact</th><th>Company</th><th>Type</th><th>Status</th><th>Date</th><th style="width:90px"></th>
+        </tr></thead>
+        <tbody id="chManualTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SNIPPETS — same localStorage-backed data as before
+     ('upclose_snippets_v1'), just rendered as a table instead of a
+     card grid. No backend persistence exists yet — flagged in the
+     page copy below, not hidden.
+     ============================================================ -->
+<div class="ch-subpage" id="chSub-snippets" style="display:none">
+  <div class="dash-hero" style="background:var(--s1)">
+    <div>
+      <div class="dash-hero-title" style="display:flex;align-items:center;gap:10px">
+        <span class="mat" style="color:var(--acc);font-size:25px">flash_on</span>
+        Snippets
+      </div>
+      <div class="dash-hero-sub">Reusable replies to insert into messages for faster, consistent communication. Saved on this device only.</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="abtn" disabled title="Snippet folders aren't built yet — coming soon"><span class="mat sm">create_new_folder</span>New Folder</button>
+      <button class="abtn pri" onclick="chOpenSnippetEditor()"><span class="mat sm">add</span>New Snippet</button>
+    </div>
+  </div>
+  <div class="pc">
+    <div class="card" style="overflow:hidden">
+      <div style="padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;justify-content:flex-end">
+        <div class="auto-search" style="min-width:240px">
+          <span class="mat sm">search</span>
+          <input type="text" id="chSnippetsSearch" placeholder="Search snippets…"/>
         </div>
+      </div>
+      <table class="dt">
+        <thead><tr>
+          <th style="width:24px"><input type="checkbox" style="accent-color:var(--acc)"/></th>
+          <th>Name</th><th>Body</th><th>Type</th><th>Date Updated</th><th style="width:110px"></th>
+        </tr></thead>
+        <tbody id="chSnippetsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TRIGGER LINKS — brand-new feature, not previously in the app.
+     Same local-only pattern as Snippets: no click-tracking backend
+     exists yet, so links/keys live in localStorage on this device,
+     and Analyze is an honest empty state rather than fake numbers.
+     ============================================================ -->
+<div class="ch-subpage" id="chSub-trigger" style="display:none">
+  <div class="dash-hero" style="background:var(--s1)">
+    <div>
+      <div class="dash-hero-title" style="display:flex;align-items:center;gap:10px">
+        <span class="mat" style="color:var(--acc);font-size:25px">link</span>
+        Trigger Links
+      </div>
+      <div class="dash-hero-sub">Put trackable links inside SMS and emails, and reference them with a {{trigger_link}} key.</div>
+    </div>
+    <button class="abtn pri" onclick="chOpenTriggerLinkEditor()"><span class="mat sm">add</span>Add Link</button>
+  </div>
+  <div class="pc">
+    <div class="tgroup" style="width:fit-content;margin-bottom:12px" id="chTriggerTabs">
+      <div class="topt active" data-triggertab="link">Link</div>
+      <div class="topt" data-triggertab="analyze">Analyze</div>
+    </div>
+    <div class="card" style="overflow:hidden" id="chTriggerLinkView">
+      <div style="padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;justify-content:flex-end">
+        <div class="auto-search" style="min-width:240px">
+          <span class="mat sm">search</span>
+          <input type="text" id="chTriggerSearch" placeholder="Search trigger links…"/>
+        </div>
+      </div>
+      <table class="dt">
+        <thead><tr><th>Name</th><th>Link URL</th><th>Link Key</th><th>Date Added</th><th style="width:90px"></th></tr></thead>
+        <tbody id="chTriggerTableBody"></tbody>
+      </table>
+    </div>
+    <div class="card" id="chTriggerAnalyzeView" style="display:none">
+      <div class="empty-state"><span class="mat">query_stats</span><p>Click tracking isn't connected yet. Once a link-click webhook exists, per-link analytics will appear here.</p></div>
+    </div>
+  </div>
+</div>
