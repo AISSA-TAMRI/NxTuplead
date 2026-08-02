@@ -22,7 +22,7 @@ const API={getLeads:'https://n8n.upleaddigital.com/webhook/get-leads',getClients
 };
  
 const N8N_API_KEY='REPLACE_WITH_YOUR_N8N_SHARED_SECRET';
-const PAGE_TITLES={dashboard:'Dashboard',opportunities:'Leads',pipeline:'Pipeline',clients:'Clients',communication:'Communication Hub',reviews:'Reviews',activity:'Activity',meetings:'Meetings Hub',analytics:'Analytics',funnel:'Funnel Metrics',reports:'Reports',automations:'Automations',settings:'Settings'};
+const PAGE_TITLES={dashboard:'Dashboard',opportunities:'Leads',pipeline:'Pipeline',clients:'Clients',communication:'Communication Hub',activity:'Activity',meetings:'Meetings Hub',analytics:'Analytics',funnel:'Funnel Metrics',reports:'Agency Reports',settings:'Settings',workspace:'Client Workspace'};
 const VALID_PAGES=Object.keys(PAGE_TITLES);
 let allLeads=[],allClients=[],currentLead=null,activeFilter='all',calYear=new Date().getFullYear(),calMonth=new Date().getMonth(),confirmCallback=null,activityLoaded=false,clientsLoaded=false,currentUser=null,currentProfile=null,pipelineDragId=null,closersMap={},closersLoaded=false;
 let recProviders={fathom:{connected:false,label:'Fathom AI'},googleMeet:{connected:false,label:'Google Meet Recordings'}};
@@ -69,7 +69,7 @@ document.addEventListener('click',e=>{const wrap=document.querySelector('.user-m
 function navigate(p,pushState=true){
   if(!VALID_PAGES.includes(p))p='dashboard';
   if(p==='calendar'){p='meetings';if(pushState&&location.hash!=='#meetings')history.pushState({page:'meetings'},'','#meetings');}
-  if(pushState&&location.hash!=='#'+p)history.pushState({page:p},'','#'+p);
+  if(pushState&&p!=='workspace'&&location.hash!=='#'+p)history.pushState({page:p},'','#'+p);
   document.querySelectorAll('.pv').forEach(x=>x.classList.remove('active'));
   const pv=document.getElementById('pv-'+p);if(pv)pv.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -88,16 +88,19 @@ function navigate(p,pushState=true){
   if(p==='funnel')renderFunnelDashboard();
   if(p==='reports')renderReports();
   if(p==='communication')renderCommunicationHub();
-  if(p==='automations')autoShowList();
-  if(p==='reviews'){
-    if(!clientsLoaded){clientsLoaded=true;loadClients().then(renderReviewsPage);}
-    else renderReviewsPage();
+  if(p==='workspace'){ cwBoot(); return; }
+  // leaving the workspace: restore the agency rail
+  if(activeWorkspaceClientId!==null){
+    activeWorkspaceClientId=null;
+    const na=document.getElementById('navAgency'),nc=document.getElementById('navClient');
+    if(na) na.style.display='';
+    if(nc) nc.style.display='none';
   }
 }
 window.addEventListener('popstate',e=>{navigate((e.state&&e.state.page)||pageFromHash(),false);});
-function pageFromHash(){const h=location.hash.replace('#','');if(h==='calendar')return'meetings';return VALID_PAGES.includes(h)?h:'dashboard';}
-function bootPage(){const p=pageFromHash();navigate(p,false);history.replaceState({page:p},'','#'+p);}
-function page(){return location.hash.replace('#','')||'dashboard';}
+function pageFromHash(){const h=location.hash.replace('#','');if(h==='calendar')return'meetings';if(h.indexOf('workspace/')===0)return'workspace';return VALID_PAGES.includes(h)?h:'dashboard';}
+function bootPage(){const p=pageFromHash();navigate(p,false);if(p!=='workspace')history.replaceState({page:p},'','#'+p);}
+function page(){return pageFromHash();}
 
   document.getElementById('sidebarToggle').addEventListener('click', () => {
   if (window.innerWidth <= 768) return;
@@ -532,7 +535,10 @@ function renderClientsTable(clients){
       <td style="font-size:13px;color:var(--tx2)">${c.phone||'—'}</td>
       <td style="font-size:13px;font-family:monospace;color:var(--tx3)">${lid}</td>
       <td style="font-size:13px;color:var(--tx3)">${created}</td>
-      <td onclick="event.stopPropagation()"><button class="tbb" style="width:28px;height:28px" onclick="openClientDetail(${cid})"><span class="mat sm">chevron_right</span></button></td>
+      <td onclick="event.stopPropagation()" style="white-space:nowrap;text-align:right">
+        <button class="cw-manage-btn" onclick="openClientWorkspace(${cid})" title="Open this client's workspace"><span class="mat sm">workspaces</span>Manage Workspace</button>
+        <button class="tbb" style="width:28px;height:28px" onclick="openClientDetail(${cid})"><span class="mat sm">chevron_right</span></button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -705,16 +711,266 @@ async function cdpDelete() {
     }
   );
 }
+/* ================================================================
+   ACTIVITY — AGENCY CRM AUDIT FEED
+   ----------------------------------------------------------------
+   Answers one question: "what happened inside UpClose?"
+
+   This page deliberately does NOT reproduce content that belongs to
+   another page. Communication content (full SMS threads, call detail)
+   lives in the Communication Hub; meeting summaries, Fathom markdown
+   and transcripts live in the Meetings Hub. Here those appear only as
+   a one-line summary plus a link across.
+
+   HONESTY NOTE: every row rendered comes from a real crm.activities
+   row returned by lead-management/get_activities. Nothing is derived,
+   inferred or synthesised from lead fields. Event types that the
+   backend does not write yet simply never appear — AF_EVENTS below is
+   pre-wired for them so they light up automatically once logging is
+   added, but the UI never invents them.
+   ================================================================ */
+
+let afEvents = [];          // raw rows from the last successful fetch
+let afGroupFilter = 'all';
+let afRangeDays = 0;        // 0 = all time
+let afSearch = '';
+let afLimit = 60;
+let afLoadError = false;
+
+/* ---- Event registry -------------------------------------------
+   key            normalised (lowercased) activity_type
+   group          crm | comms | meetings | notes
+   Rows for unknown types still render, in the 'crm' group, using the
+   activity_type as the title — so a new backend event is never lost.
+   --------------------------------------------------------------- */
+const AF_EVENTS = {
+  // --- currently written by the backend ---
+  'lead created':   {group:'crm',      cls:'ac', icon:'person_add',   title:'Lead created'},
+  'note':           {group:'notes',    cls:'am', icon:'sticky_note_2',title:'Note added'},
+  'call':           {group:'comms',    cls:'bl', icon:'call',         title:'Call'},
+  'sms':            {group:'comms',    cls:'pu', icon:'sms',          title:'SMS'},
+  'meeting':        {group:'meetings', cls:'gr', icon:'event',        title:'Meeting completed'},
+  // --- not written yet: pre-wired, appear only when real rows exist ---
+  'email':                {group:'comms',    cls:'ac', icon:'mail',            title:'Email'},
+  'lead_status_changed':  {group:'crm',      cls:'am', icon:'swap_horiz',      title:'Status changed'},
+  'pipeline_stage_changed':{group:'crm',     cls:'ac', icon:'view_kanban',     title:'Pipeline stage changed'},
+  'lead_assigned':        {group:'crm',      cls:'bl', icon:'assignment_ind',  title:'Lead assigned'},
+  'lead_converted':       {group:'crm',      cls:'gr', icon:'rocket_launch',   title:'Converted to client'},
+  'client_created':       {group:'crm',      cls:'gr', icon:'verified_user',   title:'Client created'},
+  'client_deleted':       {group:'crm',      cls:'re', icon:'domain_disabled', title:'Client deleted'},
+  'lead_deleted':         {group:'crm',      cls:'re', icon:'person_remove',   title:'Lead deleted'},
+  'deal_value_changed':   {group:'crm',      cls:'gr', icon:'payments',        title:'Deal value changed'},
+  'show_status_changed':  {group:'crm',      cls:'am', icon:'how_to_reg',      title:'Show status changed'},
+  'offer_status_changed': {group:'crm',      cls:'am', icon:'local_offer',     title:'Offer status changed'},
+  'meeting_booked':       {group:'meetings', cls:'gr', icon:'event_available', title:'Meeting booked'},
+  'meeting_rescheduled':  {group:'meetings', cls:'am', icon:'edit_calendar',   title:'Meeting rescheduled'},
+  'meeting_cancelled':    {group:'meetings', cls:'re', icon:'event_busy',      title:'Meeting cancelled'},
+  'task_created':         {group:'crm',      cls:'bl', icon:'task',            title:'Task created'},
+  'task_completed':       {group:'crm',      cls:'gr', icon:'task_alt',        title:'Task completed'},
+  'review_request':       {group:'crm',      cls:'pu', icon:'reviews',         title:'Review request sent'},
+  'automation_run':       {group:'crm',      cls:'ac', icon:'bolt',            title:'Automation triggered'},
+  'user_created':         {group:'crm',      cls:'ac', icon:'person_add_alt',  title:'Team member added'}
+};
+const AF_GROUPS = [
+  {key:'all',      label:'All'},
+  {key:'crm',      label:'CRM'},
+  {key:'comms',    label:'Communication'},
+  {key:'meetings', label:'Meetings'},
+  {key:'notes',    label:'Notes'}
+];
+
+function afMeta(row){
+  const t = String(row.activity_type||'').toLowerCase().trim();
+  return AF_EVENTS[t] || {group:'crm', cls:'gy', icon:'history', title:(row.activity_type||'Activity')};
+}
+function afSnippet(s, max){
+  const one = String(s==null?'':s).replace(/[\r\n]+/g,' ').replace(/\s{2,}/g,' ').trim();
+  if(!one) return '';
+  return one.length>max ? one.slice(0,max-1).trimEnd()+'…' : one;
+}
+function afActor(row){
+  if(row.user_id==null) return '';
+  const name = closersMap[row.user_id];
+  return name || ('User #'+row.user_id);
+}
+function afSubject(row){
+  if(row.lead_id!=null){
+    const l = allLeads.find(x=>x.id==row.lead_id);
+    if(l) return l.company_name || chLeadName(l) || ('Lead #'+row.lead_id);
+    return 'Lead #'+row.lead_id;
+  }
+  if(row.client_id!=null){
+    const c = allClients.find(x=>x.id==row.client_id);
+    if(c) return c.company_name || ('Client #'+row.client_id);
+    return 'Client #'+row.client_id;
+  }
+  return '';
+}
+function afTransition(from,to){
+  if(from==null && to==null) return '';
+  return `<span class="af-tr"><span class="af-tr-a">${escapeHtml(String(from==null?'—':from))}</span><span class="mat sm">arrow_right_alt</span><span class="af-tr-b">${escapeHtml(String(to==null?'—':to))}</span></span>`;
+}
+
+/* Compact per-type detail line. Communication and meeting rows are kept
+   deliberately thin — one line, then a link to the page that owns them. */
+function afDetail(row){
+  const t = String(row.activity_type||'').toLowerCase().trim();
+  const d = row.activity_data || {};
+  if(d.from!==undefined || d.to!==undefined) return afTransition(d.from, d.to);
+  if(d.old_value!==undefined || d.new_value!==undefined) return afTransition(d.old_value, d.new_value);
+
+  if(t==='sms' || t==='email'){
+    const dir = String(d.direction||'').toLowerCase()==='inbound' ? 'Inbound' : 'Outbound';
+    const body = afSnippet(d.body || row.notes, 70);
+    return escapeHtml(dir) + (body ? ' · ' + escapeHtml(body) : '');
+  }
+  if(t==='call'){
+    const dir = String(d.direction||'').toLowerCase()==='inbound' ? 'Inbound' : 'Outbound';
+    const bits = [dir];
+    if(d.status) bits.push(String(d.status));
+    const secs = parseInt(d.duration,10);
+    if(!isNaN(secs) && secs>0) bits.push(Math.floor(secs/60)+'m '+(secs%60)+'s');
+    return escapeHtml(bits.join(' · '));
+  }
+  if(t==='meeting'){
+    // Fathom writes its full markdown summary into notes — never shown here.
+    return escapeHtml(afSnippet(d.title || 'Meeting', 70));
+  }
+  if(t==='note') return escapeHtml(afSnippet(row.notes, 90));
+  return escapeHtml(afSnippet(row.notes, 90));
+}
+
+function afAction(row){
+  const t = String(row.activity_type||'').toLowerCase().trim();
+  if((t==='sms'||t==='call'||t==='email') && row.lead_id!=null)
+    return `<button class="af-link" onclick="navigate('communication');chOpenInConversations(${row.lead_id})">Open conversation</button>`;
+  if(t==='meeting' || t.indexOf('meeting_')===0)
+    return `<button class="af-link" onclick="navigate('meetings')">Open meeting</button>`;
+  if(row.lead_id!=null)
+    return `<button class="af-link" onclick="openLead(${row.lead_id})">Open lead</button>`;
+  if(row.client_id!=null)
+    return `<button class="af-link" onclick="navigate('clients');openClientDetail(${row.client_id})">Open client</button>`;
+  return '';
+}
+
+function afFiltered(){
+  let list = afEvents.slice();
+  if(afGroupFilter!=='all') list = list.filter(r=>afMeta(r).group===afGroupFilter);
+  if(afRangeDays>0){
+    const cutoff = Date.now() - afRangeDays*86400000;
+    list = list.filter(r=>r.created_at && new Date(r.created_at).getTime()>=cutoff);
+  }
+  if(afSearch){
+    const q = afSearch.toLowerCase();
+    list = list.filter(r=>{
+      const hay = [afMeta(r).title, afSubject(r), afActor(r), r.activity_type, r.notes].join(' ').toLowerCase();
+      return hay.indexOf(q)>-1;
+    });
+  }
+  return list.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+}
+
+function afDayLabel(iso){
+  const d=new Date(iso), today=new Date(), y=new Date(); y.setDate(today.getDate()-1);
+  if(d.toDateString()===today.toDateString()) return 'Today';
+  if(d.toDateString()===y.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:d.getFullYear()!==today.getFullYear()?'numeric':undefined});
+}
+
+function renderActivityFeed(){
+  const el = document.getElementById('activityFeed'); if(!el) return;
+  const countEl = document.getElementById('afCount');
+
+  if(afLoadError){
+    el.innerHTML = `<div class="empty-state"><span class="mat">cloud_off</span><p>Couldn't load the activity log. The <code>get_activities</code> action on the lead-management webhook didn't respond.</p></div>`;
+    if(countEl) countEl.textContent = '—';
+    return;
+  }
+  const list = afFiltered();
+  if(countEl) countEl.textContent = list.length ? `${list.length} event${list.length===1?'':'s'}` : 'No events';
+  if(!list.length){
+    el.innerHTML = `<div class="empty-state"><span class="mat">history_toggle_off</span><p>${afEvents.length?'No events match these filters.':'No activity recorded yet.'}</p></div>`;
+    return;
+  }
+
+  const page = list.slice(0, afLimit);
+  let html='', lastDay='';
+  page.forEach(row=>{
+    const day = row.created_at ? new Date(row.created_at).toDateString() : '';
+    if(day && day!==lastDay){
+      html += `<div class="ch-day-divider"><span><span class="mat sm" style="font-size:13px">event</span>${afDayLabel(row.created_at)}</span></div>`;
+      lastDay = day;
+    }
+    const m = afMeta(row);
+    const time = row.created_at ? new Date(row.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false}) : '--:--';
+    const subject = afSubject(row);
+    const actor = afActor(row);
+    const detail = afDetail(row);
+    const action = afAction(row);
+    html += `<div class="af-row">
+      <div class="af-time">${time}</div>
+      <div class="activity-icon ${m.cls}"><span class="mat sm">${m.icon}</span></div>
+      <div class="af-main">
+        <div class="af-title">${escapeHtml(m.title)}${subject?` <span class="af-subject">${escapeHtml(subject)}</span>`:''}</div>
+        ${detail||actor?`<div class="af-meta">${detail}${detail&&actor?'<span class="af-dot">·</span>':''}${actor?'by '+escapeHtml(actor):''}</div>`:''}
+      </div>
+      <div class="af-act">${action}</div>
+    </div>`;
+  });
+  if(list.length>afLimit){
+    html += `<div class="af-more"><button class="abtn" onclick="afShowMore()"><span class="mat sm">expand_more</span>Show ${Math.min(60,list.length-afLimit)} more</button></div>`;
+  }
+  el.innerHTML = html;
+}
+
+function afShowMore(){ afLimit += 60; renderActivityFeed(); }
+function afSetGroup(key, el){
+  afGroupFilter = key; afLimit = 60;
+  document.querySelectorAll('#afGroupFilter .topt').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderActivityFeed();
+}
+function afSetRange(days){ afRangeDays = parseInt(days,10)||0; afLimit=60; renderActivityFeed(); renderActivitySummary(); }
+function afOnSearch(v){ afSearch = (v||'').trim(); afLimit=60; renderActivityFeed(); }
+
+/* Breakdown panel — counts of what was actually returned, never a
+   projection of what "should" be there. */
+function renderActivitySummary(){
+  const el = document.getElementById('activitySummary'); if(!el) return;
+  if(afLoadError){ el.innerHTML = `<div style="font-size:12px;color:var(--tx3);padding:8px 2px">Unavailable while the activity log is disconnected.</div>`; return; }
+  const counts = {};
+  afEvents.forEach(r=>{ const m=afMeta(r); counts[m.group]=(counts[m.group]||0)+1; });
+  const rows = AF_GROUPS.filter(g=>g.key!=='all').map(g=>{
+    const n = counts[g.key]||0;
+    return `<div class="af-sum-row"><span>${g.label}</span><b${n?'':' style="color:var(--tx3)"'}>${n}</b></div>`;
+  }).join('');
+  const types = {};
+  afEvents.forEach(r=>{ const t=r.activity_type||'—'; types[t]=(types[t]||0)+1; });
+  const typeRows = Object.keys(types).sort((a,b)=>types[b]-types[a]).slice(0,8)
+    .map(t=>`<div class="af-sum-row"><span style="color:var(--tx3)">${escapeHtml(t)}</span><b>${types[t]}</b></div>`).join('');
+  el.innerHTML = rows
+    + (typeRows?`<div class="af-sum-hd">By event type</div>${typeRows}`:'')
+    + `<div class="af-sum-note">Only events the backend actually records appear here. CRM audit events — status changes, pipeline moves, assignments, conversions, deal-value edits — are not logged yet.</div>`;
+}
+
 async function loadActivity(){
-  document.getElementById('activityFeed').innerHTML=`<div style="text-align:center;padding:32px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div>`;
-  try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_activities'})});const data=await res.json();renderActivityFeed(Array.isArray(data)?data:(data.activities||[]));}
-  catch(e){renderActivityFeed(deriveSyntheticActivity(allLeads));}
+  const el = document.getElementById('activityFeed');
+  if(el) el.innerHTML = `<div style="text-align:center;padding:32px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div>`;
+  ensureClosersLoaded();
+  try{
+    const res = await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'get_activities'})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    afEvents = Array.isArray(data) ? data : (data.activities||[]);
+    afLoadError = false;
+  }catch(e){
+    console.warn('Activity: get_activities failed', e);
+    afEvents = []; afLoadError = true;
+  }
+  afLimit = 60;
+  renderActivityFeed();
   renderActivitySummary();
 }
-function deriveSyntheticActivity(leads){const events=[];leads.forEach(l=>{if(l.created_at)events.push({type:'created',description:`Lead created — ${l.company_name||'Unknown'}`,created_at:l.created_at,lead_id:l.id});if(l.last_contacted_at)events.push({type:'contacted',description:`Contacted — ${l.company_name||'Unknown'}`,created_at:l.last_contacted_at,lead_id:l.id});if(l.converted_at)events.push({type:'converted',description:`Converted to client — ${l.company_name||'Unknown'}`,created_at:l.converted_at,lead_id:l.id});});return events.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,30);}
-function activityIcon(type){const map={created:{cls:'ac',icon:'add_circle'},contacted:{cls:'bl',icon:'call'},converted:{cls:'gr',icon:'verified'},won:{cls:'gr',icon:'check_circle'},lost:{cls:'re',icon:'cancel'},note:{cls:'am',icon:'sticky_note_2'},meeting:{cls:'pu',icon:'event'},email:{cls:'ac',icon:'mail'},status:{cls:'am',icon:'swap_horiz'},review:{cls:'pu',icon:'reviews'},default:{cls:'gy',icon:'history'}};const t=(type||'').toLowerCase();for(const[k,v]of Object.entries(map)){if(t.includes(k))return v;}return map.default;}
-function renderActivityFeed(activities){const el=document.getElementById('activityFeed');if(!activities.length){el.innerHTML=`<div class="empty-state"><span class="mat">history_toggle_off</span><p>No activity recorded yet.</p></div>`;return;}el.innerHTML=activities.map((a,i)=>{const{cls,icon}=activityIcon(a.type||a.activity_type||'');return `<div class="arow" style="${i===activities.length-1?'border-bottom:none':''}"><div class="activity-icon ${cls}"><span class="mat sm">${icon}</span></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--tx)">${a.description||a.message||a.text||a.notes||'Activity recorded'}</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">${fmtDate(a.created_at||a.date)}${a.lead_id?' · Lead #'+a.lead_id:''}</div></div></div>`;}).join('');}
-function renderActivitySummary(){const el=document.getElementById('activitySummary');if(!el)return;const total=allLeads.length,potential=allLeads.filter(l=>l.status==='Potential').length,won=allLeads.filter(l=>l.status==='Won').length,lost=allLeads.filter(l=>l.status==='Lost').length,nc=allLeads.filter(l=>!l.last_contacted_at).length;el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Total Leads</span><span style="font-weight:700;font-size:15px">${total}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Potential</span><span style="font-weight:700;color:var(--bl)">${potential}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Won</span><span style="font-weight:700;color:var(--gr)">${won}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Lost</span><span style="font-weight:700;color:var(--re)">${lost}</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:${nc>0?'var(--re-d)':'var(--bg)'};border-radius:5px"><span style="font-size:13px;color:var(--tx2)">Never Contacted</span><span style="font-weight:700;color:${nc>0?'var(--re)':'var(--tx3)'}">${nc}</span></div>`;}
 
 function renderCalendar(){
   const mn=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -3670,6 +3926,11 @@ document.addEventListener('keydown',e=>{
    ================================================================ */
 
 const AUTO_STORE_KEY = 'upclose_automations_v1';
+// Automation definitions are client-marketing assets: one store per client
+// workspace, so client A's automations never appear inside client B's.
+function autoStoreKey(){
+  return activeWorkspaceClientId ? AUTO_STORE_KEY+'::client_'+activeWorkspaceClientId : AUTO_STORE_KEY+'::unscoped';
+}
 let autoAutomations = [];      // in-memory list, mirrors localStorage
 let autoStatusFilter = 'all';
 let autoCurrent = null;        // AutomationDefinition currently open in the builder
@@ -3678,24 +3939,18 @@ let autoConfigCtx = null;      // describes what autoConfigSave() should do
 
 // ---- Catalogs (mirrors the spec's trigger/condition/action lists) ----
 const AUTO_TRIGGERS = [
-  { cat:'Leads', items:[
-    { type:'lead_created', label:'Lead Created', icon:'person_add' },
-    { type:'lead_status_changed', label:'Lead Status Changed', icon:'sync_alt' },
-    { type:'pipeline_stage_changed', label:'Pipeline Stage Changed', icon:'view_kanban' },
-    { type:'lead_assigned', label:'Lead Assigned', icon:'assignment_ind' },
-    { type:'lead_updated', label:'Lead Updated', icon:'edit_note' },
+  { cat:'Subleads', items:[
+    { type:'sublead_created', label:'Sublead Created', icon:'person_add' },
+    { type:'sublead_status_changed', label:'Sublead Status Changed', icon:'sync_alt' },
+    { type:'sublead_updated', label:'Sublead Updated', icon:'edit_note' },
   ]},
   { cat:'Communication', items:[
-    { type:'call_completed', label:'Call Completed', icon:'call' },
-    { type:'sms_received', label:'SMS Received', icon:'sms' },
-    { type:'sms_sent', label:'SMS Sent', icon:'forward_to_inbox' },
-    { type:'email_received', label:'Email Received', icon:'mail' },
-    { type:'email_sent', label:'Email Sent', icon:'send' },
+    { type:'sublead_sms_received', label:'SMS Received', icon:'sms' },
+    { type:'sublead_sms_sent', label:'SMS Sent', icon:'forward_to_inbox' },
+    { type:'sublead_no_reply', label:'No Reply After Wait', icon:'schedule' },
   ]},
-  { cat:'Meetings', items:[
-    { type:'meeting_booked', label:'Meeting Booked', icon:'event_available' },
-    { type:'meeting_cancelled', label:'Meeting Cancelled', icon:'event_busy' },
-    { type:'meeting_completed', label:'Meeting Completed', icon:'task_alt' },
+  { cat:'Reputation', items:[
+    { type:'review_request_sent', label:'Review Request Sent', icon:'reviews' },
   ]},
   { cat:'Forms', items:[
     { type:'form_submitted', label:'Form Submitted', icon:'assignment_turned_in' },
@@ -3703,16 +3958,12 @@ const AUTO_TRIGGERS = [
 ];
 
 const AUTO_COND_FIELDS = [
-  { key:'lead_status', label:'Lead Status' },
-  { key:'pipeline_stage', label:'Pipeline Stage' },
-  { key:'lead_source', label:'Lead Source' },
-  { key:'owner', label:'Owner' },
+  { key:'sublead_status', label:'Sublead Status' },
+  { key:'sublead_source', label:'Sublead Source' },
   { key:'phone', label:'Phone' },
   { key:'email', label:'Email' },
-  { key:'deal_value', label:'Deal Value' },
-  { key:'call_status', label:'Call Status' },
-  { key:'call_duration', label:'Call Duration' },
-  { key:'meeting_status', label:'Meeting Status' },
+  { key:'first_name', label:'First Name' },
+  { key:'days_since_created', label:'Days Since Created' },
 ];
 
 const AUTO_OPERATORS = [
@@ -3727,23 +3978,14 @@ const AUTO_OPERATORS = [
 ];
 
 const AUTO_ACTIONS = [
-  { cat:'CRM', items:[
-    { action:'assign_owner', label:'Assign Owner', icon:'assignment_ind' },
-    { action:'change_lead_status', label:'Change Lead Status', icon:'sync_alt' },
-    { action:'change_pipeline_stage', label:'Change Pipeline Stage', icon:'view_kanban' },
+  { cat:'Sublead', items:[
+    { action:'change_lead_status', label:'Change Sublead Status', icon:'sync_alt' },
     { action:'add_note', label:'Add Note', icon:'sticky_note_2' },
     { action:'create_task', label:'Create Task', icon:'task' },
-    { action:'update_lead_field', label:'Update Lead Field', icon:'edit_note' },
   ]},
   { cat:'Communication', items:[
     { action:'send_sms', label:'Send SMS', icon:'sms' },
     { action:'send_email', label:'Send Email', icon:'mail' },
-  ]},
-  { cat:'Voice', items:[
-    { action:'create_call_task', label:'Create Call Task', icon:'call' },
-  ]},
-  { cat:'Meetings', items:[
-    { action:'create_meeting_task', label:'Create Meeting / Booking Task', icon:'event' },
   ]},
   { cat:'Reputation', items:[
     { action:'send_review_request', label:'Send Review Request', icon:'reviews' },
@@ -3765,17 +4007,18 @@ function autoFmtDateTime(iso){ if(!iso) return '—'; const d=new Date(iso); if(
 // ---- Persistence (localStorage draft cache — see honesty note above) ----
 function autoLoadStore(){
   try{
-    const raw = localStorage.getItem(AUTO_STORE_KEY);
+    const raw = localStorage.getItem(autoStoreKey());
     autoAutomations = raw ? JSON.parse(raw) : [];
   }catch(e){ console.error('Automations: failed to read local draft store', e); autoAutomations = []; }
 }
 function autoSaveStore(){
-  try{ localStorage.setItem(AUTO_STORE_KEY, JSON.stringify(autoAutomations)); }
+  try{ localStorage.setItem(autoStoreKey(), JSON.stringify(autoAutomations)); }
   catch(e){ console.error('Automations: failed to persist local draft store', e); }
 }
 
 // ---- List view ----
 function autoShowList(){
+  autoLoadStore();
   if(!autoAutomations.length && localStorage.getItem(AUTO_STORE_KEY)===null){ autoLoadStore(); }
   else if(!autoAutomations || autoAutomations===undefined){ autoLoadStore(); }
   document.getElementById('autoListView').style.display='';
@@ -4049,9 +4292,9 @@ function autoActionSummary(step){
   const cfg = step.config||{};
   switch(step.action){
     case 'assign_owner': return cfg.owner_name ? `Assign to ${escapeHtml(cfg.owner_name)}` : 'Choose an owner…';
-    case 'change_lead_status': return cfg.status ? `Set status to ${escapeHtml(cfg.status)}` : 'Choose a status…';
+    case 'change_lead_status': return cfg.status ? `Set sublead status to ${escapeHtml(cfg.status)}` : 'Choose a status…';
     case 'change_pipeline_stage': return cfg.stage ? `Move to stage: ${escapeHtml(cfg.stage)}` : 'Choose a stage…';
-    case 'add_note': return cfg.note ? escapeHtml(cfg.note).slice(0,60) : 'Add a note to the lead';
+    case 'add_note': return cfg.note ? escapeHtml(cfg.note).slice(0,60) : 'Add a note to the sublead';
     case 'create_task': return cfg.title ? `Task: ${escapeHtml(cfg.title)}` : 'Configure task…';
     case 'update_lead_field': return cfg.field ? `Set ${escapeHtml(cfg.field)} to ${escapeHtml(cfg.value||'')}` : 'Choose a field…';
     case 'send_sms': return cfg.template ? escapeHtml(cfg.template).slice(0,60) : 'Configure SMS message…';
@@ -4172,10 +4415,8 @@ async function autoOpenActionConfig(step){
       body = `<div class="form-group"><label class="form-label">Owner</label><select class="form-select" id="acfgOwner"><option value="">Select a closer…</option>${ownerOpts}</select></div>`;
       break;
     case 'change_lead_status':
-      body = `<div class="form-group"><label class="form-label">New Status</label><select class="form-select" id="acfgStatus">
-        <option value="Potential" ${cfg.status==='Potential'?'selected':''}>Potential</option>
-        <option value="Won" ${cfg.status==='Won'?'selected':''}>Won</option>
-        <option value="Lost" ${cfg.status==='Lost'?'selected':''}>Lost</option>
+      body = `<div class="form-group"><label class="form-label">New Sublead Status</label><select class="form-select" id="acfgStatus">
+        ${['new','contacted','qualified','won','lost'].map(o=>`<option value="${o}" ${cfg.status===o?'selected':''}>${o.charAt(0).toUpperCase()+o.slice(1)}</option>`).join('')}
       </select></div>`;
       break;
     case 'change_pipeline_stage':
@@ -4344,477 +4585,601 @@ function autoConfigSave(){
 }
 
 /* ================================================================
-   REVIEWS / REPUTATION MODULE
+   CLIENT WORKSPACE
    ----------------------------------------------------------------
-   Frontend-only UI + data model for Google Review requests, per the
-   architecture in the spec:
+   One reusable shell, scoped by activeWorkspaceClientId. There is no
+   per-client page or file — every view renders from cwClient and
+   cwSubleads.
 
-     UPCLOSE Lead/Customer -> Client Review Configuration ->
-     Send Review Request -> Twilio SMS -> reviews.upleaddigital.com/
-     {client-slug} -> Google Review
+   HARD RULE: this module reads crm.subleads only. It never touches
+   allLeads. Agency leads (crm.leads) are prospects for the agency;
+   subleads are customers generated FOR a client. The two are never
+   merged, counted together, or used interchangeably.
 
-   IMPORTANT — HONESTY NOTES:
-   - There is no backend Review Request API yet (API.sendReviewRequest
-     points at a webhook that does not exist). sendReviewRequestFromModal()
-     makes a REAL fetch() call to it — it is not simulated. Until that
-     endpoint is deployed, the call will fail and the UI reports that
-     honestly; nothing is ever marked "sent" locally.
-   - Client review configuration (review_url / google_review_url /
-     enabled) is persisted to localStorage ('upclose_review_configs_v1')
-     purely as a frontend draft cache, exactly like the Automations
-     module's local store. This is NOT PostgreSQL persistence — see the
-     report for the recommended `client_review_config` table.
-   - "Recent Review Requests" and the KPI row never fabricate numbers.
-     They read from the existing Activity Timeline endpoint
-     (API.leadManagement / action:get_activities) filtered to
-     activity_type === 'review_request'. Until a backend actually
-     writes those events, the UI shows an honest "Not connected" /
-     empty state — never a fake count.
-   - CLIENT SAFETY: review_url is always resolved through client_id
-     (lead.client_id / client.lead_id in this dataset), never taken
-     from ad-hoc frontend input at send time. The composer displays the
-     resolved client's URL for transparency, but the actual send
-     request only carries lead_id + client_id — the backend must be the
-     one to look up and inject the URL. A customer of Client A must
-     never be able to receive Client B's link.
+   Routing: #workspace/<client_id>/<subpage>. The agency router is
+   untouched; 'workspace' is a single extra page in VALID_PAGES.
    ================================================================ */
 
-const REVIEW_CONFIG_STORE_KEY = 'upclose_review_configs_v1';
-let reviewConfigs = {};        // { [client_id]: {review_url, google_review_url, enabled} }
-let reviewComposerCtx = null;  // {leadId, clientId, phone} for the open composer
-const REV_TEMPLATES_KEY='upclose_review_templates_v1';
-let revActivitiesCache=null;   // real review_request activities from the last successful fetch, reused by KPIs + client table + feed
-function revLoadTemplates(){
+const CW_API = {
+  getSubleads:      'https://n8n.upleaddigital.com/webhook/upclose-subleads',
+  createSublead:    'https://n8n.upleaddigital.com/webhook/upclose-sublead-create',
+  updateSublead:    'https://n8n.upleaddigital.com/webhook/upclose-sublead-update',
+  subleadActivities:'https://n8n.upleaddigital.com/webhook/upclose-sublead-activities',
+  reviewConfig:     'https://n8n.upleaddigital.com/webhook/upclose-client-review-config',
+  reviewConfigSave: 'https://n8n.upleaddigital.com/webhook/upclose-client-review-config-save',
+  reviewRequest:    'https://n8n.upleaddigital.com/webhook/upclose-sublead-review-request'
+};
+
+const CW_PAGES  = ['overview','subleads','conversations','campaigns','funnels','automations','reviews','reports'];
+const CW_TITLES = {overview:'Overview',subleads:'Subleads',conversations:'Conversations',campaigns:'Campaigns',funnels:'Funnels',automations:'Automations',reviews:'Reviews',reports:'Reports'};
+
+let activeWorkspaceClientId = null;
+let cwPage        = 'overview';
+let cwClient      = null;
+let cwSubleads    = [];
+let cwSubleadsError = null;
+let cwSubFilter   = 'all';
+let cwSubSearch   = '';
+let cwReviewConfig = null;      // {review_url, google_review_url, enabled, configured}
+let cwReviewActivities = null;  // real review_request rows, or null when unavailable
+
+/* ---- Entry / exit ---------------------------------------------- */
+
+function openClientWorkspace(clientId, sub){
+  if(clientId==null){ toast('No client selected','err'); return; }
+  activeWorkspaceClientId = parseInt(clientId,10);
+  cwPage = CW_PAGES.includes(sub) ? sub : 'overview';
+  history.pushState({page:'workspace'},'','#workspace/'+activeWorkspaceClientId+'/'+cwPage);
+  navigate('workspace', false);
+}
+
+function cwExit(){
+  activeWorkspaceClientId = null;
+  cwClient = null; cwSubleads = []; cwSubleadsError = null;
+  cwReviewConfig = null; cwReviewActivities = null;
+  document.getElementById('navAgency').style.display = '';
+  document.getElementById('navClient').style.display = 'none';
+  navigate('clients');
+}
+
+function cwGo(sub){
+  if(!CW_PAGES.includes(sub)) sub = 'overview';
+  cwPage = sub;
+  history.pushState({page:'workspace'},'','#workspace/'+activeWorkspaceClientId+'/'+sub);
+  cwRenderShell();
+}
+
+/* Called by navigate() whenever the 'workspace' page becomes active. */
+function cwBoot(){
+  const parts = location.hash.replace('#','').split('/');
+  const idFromHash = parts[1] ? parseInt(parts[1],10) : null;
+  if(idFromHash && !isNaN(idFromHash)) activeWorkspaceClientId = idFromHash;
+  if(parts[2] && CW_PAGES.includes(parts[2])) cwPage = parts[2];
+
+  if(!activeWorkspaceClientId){ cwExit(); return; }
+
+  document.getElementById('navAgency').style.display = 'none';
+  document.getElementById('navClient').style.display = '';
+
+  const apply = () => {
+    cwClient = allClients.find(c=>c.id==activeWorkspaceClientId) || null;
+    cwRenderIdentity();
+    cwRenderShell();
+    cwLoadSubleads();
+  };
+  if(!allClients.length) loadClients().then(apply).catch(apply);
+  else apply();
+}
+
+function cwRenderIdentity(){
+  const name = cwClient ? (cwClient.company_name || 'Client #'+activeWorkspaceClientId) : ('Client #'+activeWorkspaceClientId);
+  const sub  = cwClient ? [cwClient.email, cwClient.phone].filter(Boolean).join(' · ') || 'No contact details on file' : 'Client record not loaded';
+  const set = (id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set('cwClientName',name); set('cwClientSub',sub); set('cwRailName',name);
+  set('cwClientAvatar', initials(name));
+  const s=document.getElementById('cwSubleadModalSub');
+  if(s) s.textContent='Created for '+name+' only';
+}
+
+function cwRenderShell(){
+  CW_PAGES.forEach(p=>{
+    const el=document.getElementById('cwv-'+p);
+    if(el) el.style.display = (p===cwPage)?'block':'none';
+  });
+  document.querySelectorAll('#navClient .nav-item').forEach(n=>n.classList.toggle('active', n.dataset.cwpage===cwPage));
+  const t=document.getElementById('ptitle');
+  if(t) t.textContent = (cwClient?cwClient.company_name:'Client Workspace') + ' · ' + (CW_TITLES[cwPage]||'');
+  if(cwPage==='overview')     cwRenderOverview();
+  if(cwPage==='subleads')     cwRenderSubleads();
+  if(cwPage==='reviews')      cwRenderReviews();
+  if(cwPage==='automations')  autoShowList();
+}
+
+/* ---- Subleads data --------------------------------------------- */
+
+async function cwLoadSubleads(force){
+  if(!activeWorkspaceClientId) return;
+  const body=document.getElementById('cwSubTable');
+  if(body && (force||!cwSubleads.length)) body.innerHTML='<tr class="loading-row"><td colspan="7"><span class="spin mat sm">sync</span> Loading subleads…</td></tr>';
   try{
-    const list=JSON.parse(localStorage.getItem(REV_TEMPLATES_KEY)||'[]');
-    if(list.length)return list;
-  }catch(e){}
+    const res=await fetch(CW_API.getSubleads+'?client_id='+activeWorkspaceClientId);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    const rows=Array.isArray(data)?data:(data.subleads||[]);
+    // Defensive: the endpoint is scoped server-side, but never trust a row
+    // that claims a different client.
+    cwSubleads=rows.filter(r=>r && (r.client_id==null || String(r.client_id)===String(activeWorkspaceClientId)));
+    cwSubleadsError=null;
+  }catch(e){
+    console.warn('Client Workspace: get subleads failed',e);
+    cwSubleads=[]; cwSubleadsError=e.message||'request failed';
+  }
+  const n=document.getElementById('cwNavCountSubleads');
+  if(n) n.textContent = cwSubleadsError ? '—' : cwSubleads.length;
+  if(cwPage==='subleads') cwRenderSubleads();
+  if(cwPage==='overview') cwRenderOverview();
+  if(cwPage==='reviews')  cwRenderReviews();
+}
+
+function cwSubName(s){ return ((s.first_name||'')+' '+(s.last_name||'')).trim() || '—'; }
+function cwSubStatusCls(st){
+  const m={new:'bl',contacted:'am',qualified:'ac',won:'gr',lost:'re'};
+  return m[String(st||'').toLowerCase()]||'gy';
+}
+function cwFilteredSubleads(){
+  let list=cwSubleads.slice();
+  if(cwSubFilter!=='all') list=list.filter(s=>String(s.status||'').toLowerCase()===cwSubFilter);
+  if(cwSubSearch){
+    const q=cwSubSearch.toLowerCase();
+    list=list.filter(s=>[cwSubName(s),s.phone,s.email,s.source].join(' ').toLowerCase().indexOf(q)>-1);
+  }
+  return list.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+}
+function cwSetSubFilter(v,el){
+  cwSubFilter=v;
+  document.querySelectorAll('#cwSubStatusFilter .topt').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  cwRenderSubleads();
+}
+function cwOnSubSearch(v){ cwSubSearch=(v||'').trim(); cwRenderSubleads(); }
+
+function cwRenderSubleads(){
+  const body=document.getElementById('cwSubTable'); if(!body) return;
+  const count=document.getElementById('cwSubCount');
+  if(cwSubleadsError){
+    body.innerHTML=`<tr><td colspan="7"><div class="empty-state"><span class="mat">cloud_off</span><p>Couldn't reach the subleads endpoint (<code>upclose-subleads</code>). Check that the "sublead upclose" workflow is active in n8n.</p></div></td></tr>`;
+    if(count) count.textContent='—';
+    return;
+  }
+  const list=cwFilteredSubleads();
+  if(count) count.textContent = `${list.length} of ${cwSubleads.length} sublead${cwSubleads.length===1?'':'s'}`;
+  if(!list.length){
+    body.innerHTML=`<tr><td colspan="7"><div class="empty-state"><span class="mat">groups</span><p>${cwSubleads.length?'No subleads match these filters.':'No subleads for this client yet.'}</p>${cwSubleads.length?'':'<button class="abtn pri" onclick="cwOpenNewSublead()"><span class="mat sm">add</span>New Sublead</button>'}</div></td></tr>`;
+    return;
+  }
+  body.innerHTML=list.map(s=>{
+    const st=String(s.status||'new').toLowerCase();
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="av sm ${cwSubStatusCls(st)}">${initials(cwSubName(s))}</div><div><div style="font-weight:600">${escapeHtml(cwSubName(s))}</div><div style="font-size:12px;color:var(--tx3)">#${s.id}</div></div></div></td>
+      <td style="color:var(--tx2)">${s.phone?escapeHtml(s.phone):'<span style="color:var(--tx3)">—</span>'}</td>
+      <td style="color:var(--tx2)">${s.email?escapeHtml(s.email):'<span style="color:var(--tx3)">—</span>'}</td>
+      <td>
+        <select class="cw-status-select ${cwSubStatusCls(st)}" onchange="cwSetSubleadStatus(${s.id},this.value,this)">
+          ${['new','contacted','qualified','won','lost'].map(o=>`<option value="${o}" ${o===st?'selected':''}>${o.charAt(0).toUpperCase()+o.slice(1)}</option>`).join('')}
+        </select>
+      </td>
+      <td>${s.source?`<span class="badge ac" style="font-size:11px">${escapeHtml(s.source)}</span>`:'<span style="color:var(--tx3)">—</span>'}</td>
+      <td style="font-size:13px;color:var(--tx2)">${fmtDate(s.created_at)}</td>
+      <td style="text-align:right">
+        <button class="af-link" style="opacity:1" onclick="cwRequestReview(${s.id})" ${s.phone?'':'disabled style="opacity:.3;cursor:not-allowed"'}>Request review</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function cwSetSubleadStatus(id,status,el){
+  const prev=cwSubleads.find(s=>s.id==id);
+  const before=prev?prev.status:null;
+  if(el) el.disabled=true;
+  try{
+    const res=await fetch(CW_API.updateSublead,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:parseInt(id,10),client_id:activeWorkspaceClientId,status})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    if(prev) prev.status=status;
+    if(el){ el.className='cw-status-select '+cwSubStatusCls(status); }
+    toast('✓ Status updated','ok');
+    if(cwPage==='overview') cwRenderOverview();
+  }catch(e){
+    if(el && before) el.value=before;
+    toast('Failed to update status — check the upclose-sublead-update webhook','err');
+  }finally{ if(el) el.disabled=false; }
+}
+
+/* ---- Create sublead -------------------------------------------- */
+
+function cwOpenNewSublead(){
+  ['cwSubFirst','cwSubLast','cwSubPhone','cwSubEmail','cwSubSource'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('cwSubleadModal').classList.add('open');
+}
+function cwCloseNewSublead(){ document.getElementById('cwSubleadModal').classList.remove('open'); }
+
+async function cwSaveNewSublead(){
+  const v=id=>(document.getElementById(id).value||'').trim();
+  const payload={
+    client_id: activeWorkspaceClientId,
+    first_name: v('cwSubFirst'), last_name: v('cwSubLast'),
+    phone: v('cwSubPhone'), email: v('cwSubEmail'),
+    source: v('cwSubSource') || 'manual'
+  };
+  if(!payload.first_name && !payload.phone && !payload.email){ toast('Give at least a name, phone or email','err'); return; }
+  const btn=document.getElementById('cwSubSaveBtn');
+  btn.disabled=true; btn.innerHTML='<span class="mat sm spin">sync</span>Saving…';
+  try{
+    const res=await fetch(CW_API.createSublead,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    cwCloseNewSublead();
+    toast('✓ Sublead created','ok');
+    await cwLoadSubleads(true);
+  }catch(e){
+    toast('Failed to create sublead — check the upclose-sublead-create webhook','err');
+  }finally{
+    btn.disabled=false; btn.innerHTML='<span class="mat sm">save</span>Create Sublead';
+  }
+}
+
+/* ---- Overview --------------------------------------------------- */
+
+function cwRenderOverview(){
+  const kpis=document.getElementById('cwOvKpis');
+  const sub=document.getElementById('cwOverviewSub');
+  if(sub) sub.textContent = cwClient ? ('Live sublead performance for '+(cwClient.company_name||'this client')+'.') : 'Live sublead performance for this client.';
+  if(!kpis) return;
+
+  if(cwSubleadsError){
+    kpis.innerHTML=`<div class="stat-card c-re" style="grid-column:1/-1"><div class="mlbl">Subleads unavailable</div><div style="font-size:13px;color:var(--tx2);margin-top:6px">The <code>upclose-subleads</code> endpoint didn't respond. Nothing is estimated here.</div></div>`;
+    document.getElementById('cwOvLatest').innerHTML='<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--tx3)">No data</td></tr>';
+    document.getElementById('cwOvBreakdown').innerHTML='<div style="font-size:13px;color:var(--tx3)">Unavailable</div>';
+    return;
+  }
+
+  const total=cwSubleads.length;
+  const by=st=>cwSubleads.filter(s=>String(s.status||'').toLowerCase()===st).length;
+  const weekAgo=Date.now()-7*86400000;
+  const recent=cwSubleads.filter(s=>s.created_at && new Date(s.created_at).getTime()>=weekAgo).length;
+  const withPhone=cwSubleads.filter(s=>s.phone).length;
+
+  kpis.innerHTML=`
+    <div class="stat-card c-acc"><div class="mlbl">Total Subleads</div><div class="mval" style="margin:5px 0 0">${total}</div><div class="stat-trend neutral"><span class="mat">groups</span><span>all time</span></div></div>
+    <div class="stat-card c-bl"><div class="mlbl">New</div><div class="mval" style="margin:5px 0 0;color:var(--bl)">${by('new')}</div><div class="stat-trend neutral"><span class="mat">radio_button_unchecked</span><span>not yet contacted</span></div></div>
+    <div class="stat-card c-gr"><div class="mlbl">Won</div><div class="mval" style="margin:5px 0 0;color:var(--gr)">${by('won')}</div><div class="stat-trend up"><span class="mat">trending_up</span><span>converted</span></div></div>
+    <div class="stat-card c-am"><div class="mlbl">Added Last 7 Days</div><div class="mval" style="margin:5px 0 0;color:var(--am)">${recent}</div><div class="stat-trend neutral"><span class="mat">schedule</span><span>${withPhone} with a phone</span></div></div>`;
+
+  const latest=cwSubleads.slice().sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0)).slice(0,8);
+  const body=document.getElementById('cwOvLatest');
+  body.innerHTML = latest.length ? latest.map(s=>`<tr>
+      <td style="font-weight:600">${escapeHtml(cwSubName(s))}</td>
+      <td style="color:var(--tx2)">${s.phone?escapeHtml(s.phone):'—'}</td>
+      <td><span class="badge ${cwSubStatusCls(s.status)}">${escapeHtml(s.status||'new')}</span></td>
+      <td style="color:var(--tx2)">${s.source?escapeHtml(s.source):'—'}</td>
+      <td style="font-size:13px;color:var(--tx3)">${fmtDate(s.created_at)}</td>
+    </tr>`).join('')
+    : '<tr><td colspan="5"><div class="empty-state" style="padding:26px"><span class="mat">groups</span><p>No subleads yet.</p></div></td></tr>';
+
+  const bd=document.getElementById('cwOvBreakdown');
+  const statuses=['new','contacted','qualified','won','lost'];
+  bd.innerHTML=statuses.map(st=>{
+    const n=by(st), pct=total?Math.round(n/total*100):0;
+    return `<div><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px"><span style="color:var(--tx2);text-transform:capitalize">${st}</span><b>${n}</b></div><div class="health-bar-track" style="height:5px"><div class="health-bar-fill" style="width:${pct}%;background:var(--${cwSubStatusCls(st)==='gy'?'tx3':cwSubStatusCls(st)})"></div></div></div>`;
+  }).join('');
+
+  const rev=document.getElementById('cwOvReviews');
+  if(cwReviewActivities===null) rev.innerHTML='Not loaded — open the Reviews tab.';
+  else if(!cwReviewActivities.length) rev.innerHTML='No review requests sent for this client yet.';
+  else{
+    const last=cwReviewActivities[0];
+    rev.innerHTML=`<div style="font-size:24px;font-weight:800;color:var(--acc);letter-spacing:-0.03em">${cwReviewActivities.length}</div>
+      <div style="font-size:12px;color:var(--tx3);margin-top:2px">requests sent · last ${fmtDate(last.created_at)}</div>`;
+  }
+}
+
+/* ================================================================
+   REVIEWS — sublead-scoped
+   ----------------------------------------------------------------
+   Recipients are crm.subleads rows belonging to activeWorkspaceClientId.
+   Agency leads are never eligible. The review URL lives in
+   crm.client_review_config and is injected server-side by the
+   upclose-sublead-review-request workflow, so a sublead of client A
+   can never receive client B's link.
+   ================================================================ */
+
+const REV_TEMPLATES_KEY='upclose_review_templates_v1';
+let cwReviewComposerCtx=null;
+
+function revDefaultTemplate(){
+  return "Hi {{first_name}}, thanks for choosing {{business_name}}.\n\nWe'd really appreciate your feedback:\n\n{{review_url}}";
+}
+function revRenderTemplate(tpl,vars){
+  return String(tpl||'')
+    .replace(/{{\s*first_name\s*}}/gi, vars.first_name||'')
+    .replace(/{{\s*last_name\s*}}/gi,  vars.last_name||'')
+    .replace(/{{\s*business_name\s*}}/gi, vars.business_name||'');
+  // {{review_url}} is intentionally left intact — the backend substitutes it.
+}
+function revLoadTemplates(){
+  try{ const l=JSON.parse(localStorage.getItem(REV_TEMPLATES_KEY)||'[]'); if(l.length) return l; }catch(e){}
   const seeded=[{id:'rt_default',name:'Default',content:revDefaultTemplate(),created_at:new Date().toISOString()}];
   localStorage.setItem(REV_TEMPLATES_KEY,JSON.stringify(seeded));
   return seeded;
 }
-function revSaveTemplates(list){localStorage.setItem(REV_TEMPLATES_KEY,JSON.stringify(list));}
+function revSaveTemplates(l){ localStorage.setItem(REV_TEMPLATES_KEY,JSON.stringify(l)); }
 function revOpenTemplateEditor(id){
   const list=revLoadTemplates();
   const existing=id?list.find(t=>t.id===id):null;
   const name=prompt('Template name',existing?existing.name:'');
-  if(name===null)return;
+  if(name===null) return;
   const content=prompt('Message (use {{first_name}}, {{business_name}}, {{review_url}})',existing?existing.content:revDefaultTemplate());
-  if(content===null)return;
-  if(!name.trim()||!content.trim()){toast('Name and message are both required','err');return;}
-  if(existing){existing.name=name.trim();existing.content=content.trim();}
+  if(content===null) return;
+  if(!name.trim()||!content.trim()){ toast('Name and message are both required','err'); return; }
+  if(existing){ existing.name=name.trim(); existing.content=content.trim(); }
   else list.push({id:'rt_'+Date.now(),name:name.trim(),content:content.trim(),created_at:new Date().toISOString()});
-  revSaveTemplates(list);
-  revRenderTemplatesTable();
-  toast('Template saved');
+  revSaveTemplates(list); revRenderTemplatesTable(); toast('Template saved');
 }
 function revDeleteTemplate(id){
-  const list=revLoadTemplates().filter(t=>t.id!==id);
-  if(!list.length){toast('You need at least one template','err');return;}
-  revSaveTemplates(list);
-  revRenderTemplatesTable();
+  const l=revLoadTemplates().filter(t=>t.id!==id);
+  if(!l.length){ toast('You need at least one template','err'); return; }
+  revSaveTemplates(l); revRenderTemplatesTable();
 }
 function revRenderTemplatesTable(){
-  const body=document.getElementById('revTemplatesTableBody');if(!body)return;
-  const list=revLoadTemplates();
-  body.innerHTML=list.map(t=>`<tr>
+  const b=document.getElementById('revTemplatesTableBody'); if(!b) return;
+  b.innerHTML=revLoadTemplates().map(t=>`<tr>
     <td style="font-weight:600">${escapeHtml(t.name)}</td>
     <td style="max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2);font-size:12.5px">${escapeHtml(t.content)}</td>
     <td>${fmtDate(t.created_at)}</td>
     <td>
       <button class="tbb" title="Edit" onclick="revOpenTemplateEditor('${t.id}')"><span class="mat">edit</span></button>
       <button class="tbb" title="Delete" onclick="revDeleteTemplate('${t.id}')"><span class="mat">delete</span></button>
-    </td>
-  </tr>`).join('');
+    </td></tr>`).join('');
 }
 
-// ---- Persistence (localStorage draft cache — see honesty note above) ----
-function revLoadConfigs(){
+async function cwLoadReviewConfig(){
   try{
-    reviewConfigs = JSON.parse(localStorage.getItem(REVIEW_CONFIG_STORE_KEY) || '{}');
-  }catch(e){ console.error('Reviews: failed to read local config store', e); reviewConfigs = {}; }
+    const res=await fetch(CW_API.reviewConfig+'?client_id='+activeWorkspaceClientId);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const d=await res.json();
+    cwReviewConfig=Array.isArray(d)?(d[0]||null):d;
+  }catch(e){ cwReviewConfig=null; }
 }
-function revSaveConfigs(){
-  try{ localStorage.setItem(REVIEW_CONFIG_STORE_KEY, JSON.stringify(reviewConfigs)); }
-  catch(e){ console.error('Reviews: failed to persist local config store', e); }
-}
-function revGetConfig(clientId){ return reviewConfigs[String(clientId)] || null; }
-function revSetConfig(clientId, cfg){ reviewConfigs[String(clientId)] = {...cfg}; revSaveConfigs(); }
-
-// ---- Message template (kept intentionally simple, per spec §4) ----
-function revDefaultTemplate(){
-  return "Hi {{first_name}}, thanks for visiting {{business_name}}.\n\nWe'd appreciate your feedback:\n\n{{review_url}}";
-}
-function revRenderTemplate(tpl, vars){
-  return String(tpl || '')
-    .replace(/{{\s*first_name\s*}}/gi, vars.first_name || '')
-    .replace(/{{\s*last_name\s*}}/gi, vars.last_name || '')
-    .replace(/{{\s*business_name\s*}}/gi, vars.business_name || '')
-    .replace(/{{\s*review_url\s*}}/gi, vars.review_url || '');
+async function cwLoadReviewActivities(){
+  try{
+    const res=await fetch(CW_API.subleadActivities+'?client_id='+activeWorkspaceClientId);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const d=await res.json();
+    const rows=Array.isArray(d)?d:(d.activities||[]);
+    cwReviewActivities=rows.filter(a=>String(a.activity_type||'').toLowerCase()==='review_request')
+                           .sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  }catch(e){ cwReviewActivities=null; }
 }
 
-// ---- Reviews page ----
-async function renderReviewsPage(){
-  revLoadConfigs();
+async function cwRenderReviews(){
   revRenderTemplatesTable();
-  await revLoadRequestsFeed();
-  renderReviewClientConfigTable();
-  revRenderReadyToRequest();
+  await Promise.all([cwLoadReviewConfig(), cwLoadReviewActivities()]);
+  cwRenderReviewConfigBox();
+  cwRenderReviewKpis();
+  cwRenderReviewReady();
+  cwRenderReviewFeed();
 }
 
-function renderReviewOverviewKpis(items){
-  const el = document.getElementById('revKpiRow'); if(!el) return;
-  if(!items){
-    el.innerHTML = `
-      <div class="stat-card c-acc"><div class="mlbl">Requests Sent</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Connect the Review Request API</div></div>
-      <div class="stat-card c-gr"><div class="mlbl">Delivered</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires Twilio delivery webhook</div></div>
-      <div class="stat-card c-bl"><div class="mlbl">Link Clicks</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires click tracking on redirect</div></div>
-      <div class="stat-card c-am"><div class="mlbl">Google Redirects</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires redirect tracking</div></div>`;
+function cwRenderReviewConfigBox(){
+  const el=document.getElementById('cwRevConfigBox'); if(!el) return;
+  if(cwReviewConfig===null){
+    el.innerHTML=`<div style="font-size:13px;color:var(--am);display:flex;align-items:center;gap:8px"><span class="mat sm">warning</span>Couldn't reach <code>upclose-client-review-config</code>. Import the updated sublead workflow and run the migration.</div>`;
     return;
   }
-  const total=items.length;
-  const cutoff=Date.now()-30*86400000;
-  const last30=items.filter(a=>new Date(a.created_at).getTime()>=cutoff).length;
-  const byStatus=id=>items.filter(a=>((a.activity_data&&a.activity_data.status)||'pending')===id).length;
-  el.innerHTML = `
-    <div class="stat-card c-acc"><div class="mlbl">Requests Sent</div><div class="kpi-val-lg">${total}</div><div class="kpi-sub">${last30} in the last 30 days</div></div>
-    <div class="stat-card c-gr"><div class="mlbl">Delivered</div><div class="kpi-val-lg">${byStatus('delivered')}</div><div class="kpi-sub">of ${total} total requests</div></div>
-    <div class="stat-card c-re"><div class="mlbl">Failed</div><div class="kpi-val-lg">${byStatus('failed')}</div><div class="kpi-sub">delivery failures</div></div>
-    <div class="stat-card c-bl"><div class="mlbl">Link Clicks</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires click tracking on redirect</div></div>`;
+  const url=cwReviewConfig.review_url, on=cwReviewConfig.enabled===true;
+  if(!url){
+    el.innerHTML=`<div style="font-size:13px;color:var(--tx3)">No review destination set for this client yet. Requests cannot be sent until one is configured.</div>`;
+    return;
+  }
+  el.innerHTML=`<div class="lp-rows" style="border:1px solid var(--bd);border-radius:8px;overflow:hidden">
+    <div class="lp-row"><div class="lp-ri"><span class="mat">link</span></div><div style="min-width:0"><div class="lp-rl">Review Landing URL</div><div class="lp-rv" style="font-family:monospace;font-size:12.5px;word-break:break-all">${escapeHtml(url)}</div></div></div>
+    ${cwReviewConfig.google_review_url?`<div class="lp-row"><div class="lp-ri"><span class="mat">reviews</span></div><div style="min-width:0"><div class="lp-rl">Google Destination</div><div class="lp-rv" style="font-family:monospace;font-size:12.5px;word-break:break-all">${escapeHtml(cwReviewConfig.google_review_url)}</div></div></div>`:''}
+    <div class="lp-row"><div class="lp-ri"><span class="mat">${on?'check_circle':'block'}</span></div><div><div class="lp-rl">Status</div><div class="lp-rv"><span class="badge ${on?'gr':'gy'}">${on?'Enabled':'Disabled'}</span></div></div></div>
+  </div>`;
 }
 
-function renderReviewClientConfigTable(){
-  const tbody = document.getElementById('revClientConfigTable'); if(!tbody) return;
-  if(!allClients.length){
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><span class="mat">verified_user</span><p>No clients yet. Convert a lead to a client to configure review settings.</p><button class="abtn pri" onclick="navigate('opportunities')"><span class="mat sm">people</span>View Leads</button></div></td></tr>`;
+function cwRenderReviewKpis(){
+  const el=document.getElementById('cwRevKpis'); if(!el) return;
+  if(cwReviewActivities===null){
+    el.innerHTML=`<div class="stat-card"><div class="mlbl">Requests Sent</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Activity endpoint unavailable</div></div>
+      <div class="stat-card"><div class="mlbl">Eligible Subleads</div><div class="kpi-val-lg">—</div><div class="kpi-sub">—</div></div>
+      <div class="stat-card"><div class="mlbl">Delivered</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Needs the Twilio status callback</div></div>`;
     return;
   }
-  tbody.innerHTML = allClients.map(c=>{
-    const cfg = revGetConfig(c.id) || {};
-    const hasUrl = !!cfg.review_url;
-    const enabled = hasUrl && cfg.enabled !== false;
-    const statusLabel = !hasUrl ? 'Not configured' : (enabled ? 'Enabled' : 'Disabled');
-    const statusCls = !hasUrl ? 'gy' : (enabled ? 'gr' : 'am');
-    const sentCount = (revActivitiesCache && revActivitiesHaveClientId) ? revActivitiesCache.filter(a=>String(a.client_id)===String(c.id)).length : null;
-    return `<tr>
-      <td style="font-weight:600">${escapeHtml(c.company_name || '—')}</td>
-      <td style="font-family:monospace;font-size:12.5px;color:${hasUrl?'var(--tx2)':'var(--tx3)'}">${hasUrl?escapeHtml(cfg.review_url):'—'}</td>
-      <td style="font-family:monospace;font-size:12.5px;color:${cfg.google_review_url?'var(--tx2)':'var(--tx3)'}">${cfg.google_review_url?escapeHtml(cfg.google_review_url):'—'}</td>
-      <td>${sentCount===null?'<span style="color:var(--tx3)">—</span>':sentCount}</td>
-      <td><span class="badge ${statusCls}">${statusLabel}</span></td>
-      <td style="text-align:right;white-space:nowrap">
-        <button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewConfigEditor(${c.id})"><span class="mat sm">edit</span>Configure</button>
-        ${hasUrl?`<button class="abtn" style="padding:4px 10px;font-size:12px" onclick="revShowQr(${c.id})"><span class="mat sm">qr_code_2</span>QR</button>`:''}
-        ${hasUrl?`<button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(null,${c.id})"><span class="mat sm">send</span>Request</button>`:''}
-      </td>
-    </tr>`;
+  const eligible=cwSubleads.filter(s=>s.phone).length;
+  const last=cwReviewActivities[0];
+  el.innerHTML=`
+    <div class="stat-card c-acc"><div class="mlbl">Requests Sent</div><div class="kpi-val-lg">${cwReviewActivities.length}</div><div class="kpi-sub">${last?'last '+fmtDate(last.created_at):'none yet'}</div></div>
+    <div class="stat-card c-bl"><div class="mlbl">Eligible Subleads</div><div class="kpi-val-lg">${eligible}</div><div class="kpi-sub">have a phone number</div></div>
+    <div class="stat-card"><div class="mlbl">Delivered</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Twilio delivery callback not wired</div></div>`;
+}
+
+function cwRenderReviewReady(){
+  const el=document.getElementById('cwRevReadyList'); if(!el) return;
+  if(!cwReviewConfig || !cwReviewConfig.review_url || cwReviewConfig.enabled!==true){
+    el.innerHTML='<div class="empty-state"><span class="mat">link_off</span><p>Set an enabled review destination for this client before requesting reviews.</p></div>';
+    return;
+  }
+  const eligible=cwSubleads.filter(s=>s.phone);
+  if(!eligible.length){
+    el.innerHTML='<div class="empty-state"><span class="mat">groups</span><p>No subleads with a phone number yet.</p></div>';
+    return;
+  }
+  const cutoff=Date.now()-14*86400000;
+  const lastFor=id=>{
+    if(!cwReviewActivities) return undefined;
+    const rows=cwReviewActivities.filter(a=>String(a.sublead_id)===String(id));
+    return rows.length?new Date(rows[0].created_at).getTime():null;
+  };
+  const stale=eligible.filter(s=>{const l=lastFor(s.id); return l===undefined||l===null||l<cutoff;});
+  if(!stale.length){
+    el.innerHTML='<div class="empty-state"><span class="mat">task_alt</span><p>Every eligible sublead has been asked in the last 14 days.</p></div>';
+    return;
+  }
+  el.innerHTML=stale.slice(0,50).map(s=>{
+    const l=lastFor(s.id);
+    const meta = l===undefined ? 'request history unavailable' : (l===null?'never requested':'last requested '+fmtDate(new Date(l).toISOString()));
+    return `<div class="arow"><div class="activity-icon am"><span class="mat sm">person</span></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:var(--tx)">${escapeHtml(cwSubName(s))}</div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:2px">${escapeHtml(s.phone||'')} — ${meta}</div>
+      </div>
+      <button class="abtn" style="padding:4px 10px;font-size:12px" onclick="cwRequestReview(${s.id})"><span class="mat sm">send</span>Request</button></div>`;
   }).join('');
 }
-function revShowQr(clientId){
-  const cfg=revGetConfig(clientId);
-  if(!cfg||!cfg.review_url){toast('Configure a review URL for this client first','err');return;}
-  const url='https://api.qrserver.com/v1/create-qr-code/?size=320x320&data='+encodeURIComponent(cfg.review_url);
-  window.open(url,'_blank','noopener');
+
+function cwRenderReviewFeed(){
+  const el=document.getElementById('cwRevFeed'); if(!el) return;
+  const badge=document.getElementById('cwRevFeedBadge');
+  if(cwReviewActivities===null){
+    if(badge){ badge.textContent='Not connected'; badge.className='badge gy'; }
+    el.innerHTML='<div class="empty-state"><span class="mat">reviews</span><p>The <code>upclose-sublead-activities</code> endpoint didn\'t respond, so request history can\'t be shown.</p></div>';
+    return;
+  }
+  if(badge){ badge.textContent='Connected'; badge.className='badge gr'; }
+  if(!cwReviewActivities.length){
+    el.innerHTML='<div class="empty-state"><span class="mat">reviews</span><p>No review requests sent for this client yet.</p></div>';
+    return;
+  }
+  el.innerHTML=cwReviewActivities.slice(0,50).map(a=>{
+    const s=cwSubleads.find(x=>x.id==a.sublead_id);
+    const who=s?cwSubName(s):('Sublead #'+a.sublead_id);
+    const st=(a.activity_data&&a.activity_data.status)||'sent';
+    const cls={queued:'am',sent:'bl',delivered:'gr',failed:'re',undelivered:'re'}[String(st).toLowerCase()]||'gy';
+    return `<div class="arow"><div class="activity-icon pu"><span class="mat sm">reviews</span></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--tx)">Review request to <b>${escapeHtml(who)}</b> <span class="badge ${cls}" style="margin-left:6px">${escapeHtml(String(st))}</span></div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:2px">${fmtDate(a.created_at)}</div>
+      </div></div>`;
+  }).join('');
 }
 
-// ---- "Ready to Request" — real eligible CUSTOMERS (leads), not clients.
-// A client is the business being reviewed, never the recipient. Eligibility
-// is: a Won lead, with a phone number, whose client_id points to a client
-// that has review requests enabled. Staleness is measured per lead_id,
-// since each customer is asked individually. ----
-function revRenderReadyToRequest(){
-  const el=document.getElementById('revReadyList');if(!el)return;
+/* ---- Review config editor (server-backed) ---------------------- */
 
-  const hasLeadClientLink = allLeads.some(l=>l.client_id!=null);
-  if(!hasLeadClientLink){
-    el.innerHTML='<div class="empty-state"><span class="mat">link_off</span><p>Customers aren\'t linked to their client yet (lead.client_id is missing from the leads feed). Once that\'s wired up, eligible customers will be listed here automatically.</p></div>';
-    return;
-  }
-
-  const enabledClientIds=new Set(allClients.filter(c=>{
-    const cfg=revGetConfig(c.id);
-    return cfg&&cfg.review_url&&cfg.enabled!==false;
-  }).map(c=>c.id));
-  if(!enabledClientIds.size){
-    el.innerHTML='<div class="empty-state"><span class="mat">verified_user</span><p>No clients are configured and enabled yet. Set one up under Client Review Configuration below.</p></div>';
-    return;
-  }
-
-  const eligible=allLeads.filter(l=>l.status==='Won'&&l.phone&&enabledClientIds.has(l.client_id));
-  if(!eligible.length){
-    el.innerHTML='<div class="empty-state"><span class="mat">verified_user</span><p>No won customers with a phone number are linked to a configured, enabled client yet.</p></div>';
-    return;
-  }
-
-  const clientName=id=>{const c=allClients.find(x=>x.id===id);return c?(c.company_name||'—'):'—';};
-
-  if(!revActivitiesCache||!revActivitiesHaveLeadId){
-    el.innerHTML=eligible.slice(0,50).map(l=>`<div class="arow"><div class="activity-icon bl"><span class="mat sm">person</span></div><div style="flex:1;min-width:0">
-      <div style="font-size:13px;font-weight:600;color:var(--tx)">${escapeHtml(chLeadName(l))}</div>
-      <div style="font-size:11px;color:var(--tx3);margin-top:2px">${escapeHtml(clientName(l.client_id))} — last-requested date isn't available yet</div>
-    </div><button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(${l.id},${l.client_id})"><span class="mat sm">send</span>Request</button></div>`).join('');
-    return;
-  }
-
-  const cutoff=Date.now()-14*86400000;
-  const withLast=eligible.map(l=>{
-    const requests=revActivitiesCache.filter(a=>String(a.lead_id)===String(l.id));
-    const last=requests.length?Math.max(...requests.map(a=>new Date(a.created_at).getTime())):null;
-    return{lead:l,last};
-  });
-  const stale=withLast.filter(x=>x.last===null||x.last<cutoff);
-  if(!stale.length){
-    el.innerHTML='<div class="empty-state"><span class="mat">task_alt</span><p>Every eligible customer has been asked for a review in the last 14 days.</p></div>';
-    return;
-  }
-  stale.sort((a,b)=>(a.last||0)-(b.last||0));
-  el.innerHTML=stale.slice(0,50).map(x=>`<div class="arow"><div class="activity-icon am"><span class="mat sm">person</span></div><div style="flex:1;min-width:0">
-    <div style="font-size:13px;font-weight:600;color:var(--tx)">${escapeHtml(chLeadName(x.lead))}</div>
-    <div style="font-size:11px;color:var(--tx3);margin-top:2px">${escapeHtml(clientName(x.lead.client_id))} — ${x.last?'last requested '+fmtDate(new Date(x.last).toISOString()):'never requested'}</div>
-  </div><button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(${x.lead.id},${x.lead.client_id})"><span class="mat sm">send</span>Request</button></div>`).join('');
-}
-
-// ---- Client review configuration editor (used from Reviews page + CDP tab) ----
-function openReviewConfigEditor(clientId){
-  const c = allClients.find(x=>x.id==clientId); if(!c) return;
-  revLoadConfigs();
-  const cfg = revGetConfig(clientId) || {};
-  document.getElementById('revConfigModalTitle').textContent = 'Review Settings — ' + (c.company_name || 'Client');
-  document.getElementById('revConfigModalBody').innerHTML = `
-    <input type="hidden" id="revCfgClientId" value="${clientId}"/>
+function cwOpenReviewConfig(){
+  const cfg=cwReviewConfig||{};
+  document.getElementById('revConfigModalTitle').textContent='Review Settings — '+((cwClient&&cwClient.company_name)||'Client');
+  document.getElementById('revConfigModalBody').innerHTML=`
     <div class="form-group full"><label class="form-label">Review Landing URL</label><input class="form-input" id="revCfgReviewUrl" placeholder="https://reviews.upleaddigital.com/client-slug" value="${escapeHtml(cfg.review_url||'')}"/></div>
     <div class="form-group full"><label class="form-label">Google Review Destination URL</label><input class="form-input" id="revCfgGoogleUrl" placeholder="https://g.page/r/…/review" value="${escapeHtml(cfg.google_review_url||'')}"/></div>
     <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2);cursor:pointer;margin-top:2px">
-      <input type="checkbox" id="revCfgEnabled" ${cfg.enabled!==false?'checked':''}/> Enabled — eligible to receive review requests
+      <input type="checkbox" id="revCfgEnabled" ${cfg.enabled===false?'':'checked'}/> Enabled — eligible to receive review requests
     </label>
-    <div style="font-size:12px;color:var(--tx3);margin-top:6px;line-height:1.6">This URL belongs to the client/business, not to any individual lead. Every eligible customer of this client receives the same link. Saved locally as a frontend draft until the Client Review Configuration API is connected.</div>`;
+    <div style="font-size:12px;color:var(--tx3);margin-top:6px;line-height:1.6">Saved to <code>crm.client_review_config</code> against this client. Every sublead of this client receives this link; the send endpoint resolves it server-side.</div>`;
   document.getElementById('revConfigModal').classList.add('open');
 }
 function closeReviewConfigModal(){ document.getElementById('revConfigModal').classList.remove('open'); }
-function saveReviewConfig(){
-  const id = document.getElementById('revCfgClientId').value;
-  const cfg = {
+
+async function saveReviewConfig(){
+  const payload={
+    client_id: activeWorkspaceClientId,
     review_url: document.getElementById('revCfgReviewUrl').value.trim(),
     google_review_url: document.getElementById('revCfgGoogleUrl').value.trim(),
     enabled: document.getElementById('revCfgEnabled').checked
   };
-  revSetConfig(id, cfg);
-  closeReviewConfigModal();
-  renderReviewClientConfigTable();
-  if(currentClient && String(currentClient.id)===String(id)) renderCdpReviewsTab();
-  toast('✓ Review settings saved (frontend draft)','ok');
-}
-
-// ---- Client Detail Panel: Reviews tab ----
-function renderCdpReviewsTab(){
-  if(!currentClient) return;
-  revLoadConfigs();
-  const cfg = revGetConfig(currentClient.id) || {};
-  const urlEl=document.getElementById('cdpReviewUrl'), gUrlEl=document.getElementById('cdpGoogleReviewUrl'), enEl=document.getElementById('cdpReviewEnabled');
-  if(urlEl) urlEl.value = cfg.review_url || '';
-  if(gUrlEl) gUrlEl.value = cfg.google_review_url || '';
-  if(enEl) enEl.checked = cfg.enabled !== false;
-}
-function cdpSaveReviewConfig(){
-  if(!currentClient) return;
-  const cfg = {
-    review_url: document.getElementById('cdpReviewUrl').value.trim(),
-    google_review_url: document.getElementById('cdpGoogleReviewUrl').value.trim(),
-    enabled: document.getElementById('cdpReviewEnabled').checked
-  };
-  revSetConfig(currentClient.id, cfg);
-  renderReviewClientConfigTable();
-  toast('✓ Review settings saved (frontend draft)','ok');
-}
-function cdpCopyReviewLink(){
-  if(!currentClient) return;
-  const cfg = revGetConfig(currentClient.id);
-  if(!cfg || !cfg.review_url){ toast('No review URL configured yet','err'); return; }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(cfg.review_url).then(()=>toast('✓ Review link copied','ok')).catch(()=>toast('Could not copy link','err'));
-  }else{
-    toast('Clipboard not available in this browser','err');
+  try{
+    const res=await fetch(CW_API.reviewConfigSave,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    closeReviewConfigModal();
+    toast('✓ Review settings saved','ok');
+    cwRenderReviews();
+  }catch(e){
+    toast('Failed to save — check the upclose-client-review-config-save webhook','err');
   }
 }
 
-// ---- Request Review composer (used from Lead panel + Client panel + Reviews page) ----
-function openReviewRequestModal(leadId, clientIdOverride){
-  revLoadConfigs();
-  let lead = leadId ? allLeads.find(l=>l.id==leadId) : null;
-  let client = null;
+/* ---- Review composer ------------------------------------------- */
 
-  if(clientIdOverride!=null){
-    client = allClients.find(c=>c.id==clientIdOverride);
-  }else if(lead){
-    // Correct direction: a customer's business is found via lead.client_id.
-    // client.lead_id (the single lead that originally converted into this
-    // client record) is kept only as a legacy fallback for older rows that
-    // predate lead.client_id.
-    client = lead.client_id!=null ? allClients.find(c=>c.id==lead.client_id) : null;
-    if(!client) client = allClients.find(c=>c.lead_id==lead.id);
-  }else if(currentClient){
-    client = currentClient;
-  }
-
-  if(!client){
-    toast('This customer has no linked client yet — convert the lead to a client and configure review settings first.','err');
+function cwRequestReview(subleadId){
+  const s=cwSubleads.find(x=>x.id==subleadId);
+  if(!s){ toast('Sublead not found','err'); return; }
+  if(!s.phone){ toast('This sublead has no phone number','err'); return; }
+  if(!cwReviewConfig || !cwReviewConfig.review_url || cwReviewConfig.enabled!==true){
+    toast('Configure an enabled review destination on the Reviews tab first','err');
+    if(cwPage!=='reviews') cwGo('reviews');
     return;
   }
-  const cfg = revGetConfig(client.id);
-  if(!cfg || !cfg.review_url || cfg.enabled===false){
-    toast('No active review URL configured for '+(client.company_name||'this client')+'. Set it up under Reviews → Client Configuration.','err');
-    return;
-  }
+  const vars={first_name:s.first_name||'',last_name:s.last_name||'',business_name:(cwClient&&cwClient.company_name)||''};
+  const templates=revLoadTemplates();
+  const message=revRenderTemplate(templates[0].content,vars);
+  cwReviewComposerCtx={subleadId:s.id,vars};
 
-  // A client is a BUSINESS, not a recipient — it can have many customers
-  // (leads). If we weren't handed a specific customer, never guess one:
-  // resolve the client's real customers via lead.client_id and either
-  // auto-pick the only one, or ask which one.
-  if(!lead){
-    const clientLeads = allLeads.filter(l=>l.client_id===client.id);
-    if(!clientLeads.length){
-      toast('No customers are linked to '+(client.company_name||'this client')+' yet. Link a customer\'s client_id first, or open Request Review from that customer\'s lead record.','err');
-      return;
-    }
-    if(clientLeads.length===1){
-      lead = clientLeads[0];
-    }else{
-      openReviewLeadPicker(client, clientLeads);
-      return;
-    }
-  }
-
-  const firstName = lead.first_name || '';
-  const lastName = lead.last_name || '';
-  const phone = lead.phone || '';
-  const vars = { first_name:firstName, last_name:lastName, business_name:client.company_name||'', review_url:cfg.review_url };
-  const templates = revLoadTemplates();
-  const message = revRenderTemplate(templates[0].content, vars);
-
-  reviewComposerCtx = { leadId: lead.id, clientId: client.id, phone, vars };
-
-  const sendBtn = document.getElementById('reviewRequestSendBtn');
-  sendBtn.style.display = '';
-  document.getElementById('reviewRequestModalBody').innerHTML = `
+  const sendBtn=document.getElementById('reviewRequestSendBtn');
+  sendBtn.style.display=''; sendBtn.disabled=false;
+  sendBtn.innerHTML='<span class="mat sm">send</span>Send Review Request';
+  document.getElementById('reviewRequestModalBody').innerHTML=`
     <div class="lp-rows" style="border:1px solid var(--bd);border-radius:8px;overflow:hidden">
-      <div class="lp-row"><div class="lp-ri"><span class="mat">person</span></div><div><div class="lp-rl">Customer (recipient)</div><div class="lp-rv">${escapeHtml((firstName+' '+lastName).trim()||'—')}</div></div></div>
-      <div class="lp-row"><div class="lp-ri"><span class="mat">call</span></div><div><div class="lp-rl">Phone</div><div class="lp-rv">${phone?escapeHtml(phone):'<span style="color:var(--re)">No phone on file</span>'}</div></div></div>
-      <div class="lp-row"><div class="lp-ri"><span class="mat">store</span></div><div><div class="lp-rl">Business being reviewed</div><div class="lp-rv">${escapeHtml(client.company_name||'—')}</div></div></div>
-      <div class="lp-row"><div class="lp-ri"><span class="mat">link</span></div><div><div class="lp-rl">Review Link</div><div class="lp-rv" style="font-family:monospace;font-size:12.5px">${escapeHtml(cfg.review_url)}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">person</span></div><div><div class="lp-rl">Sublead (recipient)</div><div class="lp-rv">${escapeHtml(cwSubName(s))}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">call</span></div><div><div class="lp-rl">Phone</div><div class="lp-rv">${escapeHtml(s.phone)}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">store</span></div><div><div class="lp-rl">Business being reviewed</div><div class="lp-rv">${escapeHtml((cwClient&&cwClient.company_name)||'—')}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">link</span></div><div style="min-width:0"><div class="lp-rl">Review Link (resolved server-side)</div><div class="lp-rv" style="font-family:monospace;font-size:12.5px;word-break:break-all">${escapeHtml(cwReviewConfig.review_url)}</div></div></div>
     </div>
     <div class="form-group full" style="margin-top:12px"><label class="form-label">Template</label>
       <select class="form-select" id="revComposerTemplate" onchange="revApplyTemplate(this.value)">
         ${templates.map(t=>`<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('')}
       </select>
     </div>
-    <div class="form-group full"><label class="form-label">Message</label><textarea class="form-textarea" id="revComposerMessage" style="min-height:100px">${escapeHtml(message)}</textarea></div>
-    <div style="font-size:12px;color:var(--tx3);margin-top:2px;line-height:1.6">Sending happens server-side via Twilio once the Review Request API is connected. This button calls that endpoint directly — nothing is simulated.</div>`;
-  sendBtn.disabled = !phone;
-  sendBtn.innerHTML = '<span class="mat sm">send</span>Send Review Request';
-  document.getElementById('reviewRequestModal').classList.add('open');
-}
-
-// A client (business) can have many customers. When we only know the
-// client, ask which of its real customers (lead.client_id === client.id)
-// should receive the request, instead of silently guessing one.
-function openReviewLeadPicker(client, leads){
-  const sendBtn = document.getElementById('reviewRequestSendBtn');
-  sendBtn.style.display = 'none';
-  document.getElementById('reviewRequestModalBody').innerHTML = `
-    <div style="font-size:13px;color:var(--tx2);margin-bottom:10px"><b>${escapeHtml(client.company_name||'This client')}</b> has more than one customer on file. Pick who should receive the review request:</div>
-    <div class="lp-rows" style="border:1px solid var(--bd);border-radius:8px;overflow:hidden;max-height:280px;overflow-y:auto">
-      ${leads.map(l=>`<div class="lp-row" style="cursor:pointer" onclick="openReviewRequestModal(${l.id},${client.id})">
-        <div class="lp-ri"><span class="mat">person</span></div>
-        <div style="flex:1"><div class="lp-rl">${escapeHtml(chLeadName(l))}</div><div class="lp-rv">${l.phone?escapeHtml(l.phone):'<span style="color:var(--re)">No phone on file</span>'}</div></div>
-        <div class="lp-ri"><span class="mat">chevron_right</span></div>
-      </div>`).join('')}
-    </div>`;
+    <div class="form-group full"><label class="form-label">Message</label><textarea class="form-textarea" id="revComposerMessage" style="min-height:110px">${escapeHtml(message)}</textarea></div>
+    <div style="font-size:12px;color:var(--tx3);margin-top:2px;line-height:1.6">Leave <code>{{review_url}}</code> in the message — the backend replaces it with this client's configured link so the URL can never be spoofed from the browser.</div>`;
   document.getElementById('reviewRequestModal').classList.add('open');
 }
 
 function revApplyTemplate(templateId){
-  if(!reviewComposerCtx)return;
+  if(!cwReviewComposerCtx) return;
   const t=revLoadTemplates().find(x=>x.id===templateId);
   const box=document.getElementById('revComposerMessage');
-  if(t&&box)box.value=revRenderTemplate(t.content,reviewComposerCtx.vars);
+  if(t&&box) box.value=revRenderTemplate(t.content,cwReviewComposerCtx.vars);
 }
 function closeReviewRequestModal(){
   document.getElementById('reviewRequestModal').classList.remove('open');
-  reviewComposerCtx = null;
+  cwReviewComposerCtx=null;
 }
 
 async function sendReviewRequestFromModal(){
-  if(!reviewComposerCtx) return;
-  if(!reviewComposerCtx.leadId){ toast('No customer selected for this request','err'); return; }
-  const btn = document.getElementById('reviewRequestSendBtn');
-  const message = document.getElementById('revComposerMessage').value;
-  btn.disabled = true; btn.innerHTML = '<span class="mat sm spin">sync</span>Sending…';
+  if(!cwReviewComposerCtx) return;
+  const btn=document.getElementById('reviewRequestSendBtn');
+  const message=document.getElementById('revComposerMessage').value;
+  btn.disabled=true; btn.innerHTML='<span class="mat sm spin">sync</span>Sending…';
   try{
-    const res = await fetch(API.sendReviewRequest, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        action:'send_review_request',
-        lead_id: reviewComposerCtx.leadId,
-        client_id: reviewComposerCtx.clientId,
-        channel:'sms',
-        message
-      })
-    });
-    if(!res.ok) throw new Error('http_'+res.status);
-    await res.json().catch(()=>({}));
+    const res=await fetch(CW_API.reviewRequest,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sublead_id:cwReviewComposerCtx.subleadId,client_id:activeWorkspaceClientId,channel:'sms',message})});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok || data.success===false){
+      const reason={sublead_not_found:'That sublead does not belong to this client.',no_phone:'This sublead has no phone number.',no_review_url:'No review URL is configured for this client.',disabled:'Review requests are disabled for this client.'}[data.reason]||('Request rejected'+(data.reason?' ('+data.reason+')':''));
+      toast(reason,'err');
+      return;
+    }
     toast('✓ Review request sent','ok');
     closeReviewRequestModal();
-    revLoadRequestsFeed();
+    cwRenderReviews();
   }catch(e){
-    console.warn('Reviews: send-review-request endpoint not connected yet:', e);
-    toast('Review Request API is not connected yet. The composer is ready — wire up the send-review-request webhook to go live.', 'err');
+    toast('Failed to send — check the upclose-sublead-review-request webhook','err');
   }finally{
-    btn.disabled = false;
-    btn.innerHTML = '<span class="mat sm">send</span>Send Review Request';
+    btn.disabled=false; btn.innerHTML='<span class="mat sm">send</span>Send Review Request';
   }
 }
 
-// ---- Recent Review Requests feed (real Activity Timeline data only) ----
-let revActivitiesHaveClientId=false;
-let revActivitiesHaveLeadId=false;
-async function revLoadRequestsFeed(){
-  const el = document.getElementById('revRequestsFeed'); if(!el) return;
-  const badge = document.getElementById('revFeedStatusBadge');
-  el.innerHTML = `<div class="empty-state"><span class="spin mat sm">sync</span><p>Loading review requests…</p></div>`;
-  try{
-    const res = await fetch(API.leadManagement, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'get_activities'})});
-    if(!res.ok) throw new Error('not configured');
-    const data = await res.json();
-    const items = (Array.isArray(data)?data:(data.activities||[])).filter(a=>a.activity_type==='review_request');
-    revActivitiesCache = items;
-    revActivitiesHaveClientId = items.some(a=>a.client_id!=null);
-    revActivitiesHaveLeadId = items.some(a=>a.lead_id!=null);
-    if(badge){ badge.textContent='Connected'; badge.className='badge gr'; }
-    renderReviewOverviewKpis(items);
-    if(!items.length){ el.innerHTML = `<div class="empty-state"><span class="mat">reviews</span><p>No review requests sent yet.</p></div>`; return; }
-    items.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
-    el.innerHTML = items.slice(0,50).map(a=>{
-      const status = (a.activity_data && a.activity_data.status) || 'pending';
-      const statusCls = {sent:'bl',delivered:'gr',failed:'re',pending:'am'}[status] || 'gy';
-      const lead = a.lead_id!=null ? allLeads.find(l=>l.id==a.lead_id) : null;
-      const client = a.client_id!=null ? allClients.find(c=>c.id==a.client_id) : null;
-      const who = lead ? chLeadName(lead) : (a.lead_id!=null ? 'Lead #'+a.lead_id : 'Unknown customer');
-      const forWhom = client ? (client.company_name||'—') : (a.client_id!=null ? 'Client #'+a.client_id : 'Unknown business');
-      return `<div class="arow"><div class="activity-icon pu"><span class="mat sm">reviews</span></div><div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500;color:var(--tx)">Review request to <b>${escapeHtml(who)}</b> for ${escapeHtml(forWhom)} <span class="badge ${statusCls}" style="margin-left:6px">${escapeHtml(status)}</span></div>
-        <div style="font-size:11px;color:var(--tx3);margin-top:2px">${fmtDate(a.created_at)}</div>
-      </div></div>`;
-    }).join('');
-  }catch(e){
-    if(badge){ badge.textContent='Not connected'; badge.className='badge gy'; }
-    revActivitiesCache = null;
-    renderReviewOverviewKpis(null);
-    el.innerHTML = `<div class="empty-state"><span class="mat">reviews</span><p>No backend data yet. Connect the Activity Timeline API to see real review-request history here.</p></div>`;
-  }
+/* Client detail panel (agency Clients page) — reviews are configured
+   inside the workspace now, so the tab just routes there. */
+function renderCdpReviewsTab(){
+  const el=document.getElementById('cdpTabContent-reviews'); if(!el) return;
+  const id=currentClient?currentClient.id:null;
+  el.innerHTML=`<div class="cw-placeholder" style="padding:28px 20px">
+    <span class="mat">reviews</span>
+    <h3>Reviews live in the Client Workspace</h3>
+    <p>Review destinations and requests are scoped to this client's subleads, not to agency leads. Open the workspace to configure and send.</p>
+    ${id!=null?`<button class="abtn pri" onclick="openClientWorkspace(${id},'reviews')"><span class="mat sm">workspaces</span>Open Reviews Workspace</button>`:''}
+  </div>`;
 }
-
-
 
 /* ------------------------------------------------------------
    Deferred static UI wiring for the Communication Hub.
@@ -4995,6 +5360,5 @@ function chWireStaticListeners(){
 window.__initApp = function(){
   chWireStaticListeners();
   autoLoadStore();
-  revLoadConfigs();
   bootAuth();
 };
