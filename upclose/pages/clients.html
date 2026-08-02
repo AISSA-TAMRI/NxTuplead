@@ -132,7 +132,7 @@
                 <button class="abtn" id="cdp-call-btn"><span class="mat sm">call</span>Call</button>
                 <button class="abtn" onclick="navigate('meetings')"><span class="mat sm">event</span>Meeting</button>
                 <button class="abtn" onclick="cdpOpenLead()"><span class="mat sm">open_in_new</span>Open Related Lead</button>
-                <button class="abtn" onclick="if(currentClient)openReviewRequestModal(null,currentClient.id)"><span class="mat sm">reviews</span>Request Review</button>
+                <button class="abtn pri" onclick="if(currentClient)openClientWorkspace(currentClient.id)"><span class="mat sm">workspaces</span>Manage Workspace</button>
                 <button class="abtn danger" onclick="cdpDelete()"><span class="mat sm">delete</span>Delete</button>
               </div>
             </div>
@@ -212,20 +212,7 @@
               </div>
 
               <div id="cdpPanel-reviews" style="padding:18px 20px;display:none;flex-direction:column;gap:14px">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
-                  <span style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--tx3)">Review Configuration</span>
-                  <button class="abtn" style="padding:4px 10px;font-size:12px" onclick="cdpSaveReviewConfig()"><span class="mat sm">save</span>Save</button>
-                </div>
-                <div class="form-group full"><label class="form-label">Review Landing URL</label><input class="form-input" id="cdpReviewUrl" placeholder="https://reviews.upleaddigital.com/client-slug"/></div>
-                <div class="form-group full"><label class="form-label">Google Review Destination URL</label><input class="form-input" id="cdpGoogleReviewUrl" placeholder="https://g.page/r/…/review"/></div>
-                <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2);cursor:pointer">
-                  <input type="checkbox" id="cdpReviewEnabled" checked/> Enabled — eligible to receive review requests
-                </label>
-                <button class="abtn" onclick="cdpCopyReviewLink()"><span class="mat sm">content_copy</span>Copy Review Link</button>
-                <div style="padding:12px;background:rgba(210,187,255,0.04);border:1px solid rgba(210,187,255,0.1);border-radius:7px">
-                  <div style="font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--acc);margin-bottom:6px">Architecture Note</div>
-                  <div style="font-size:12.5px;color:var(--tx2);line-height:1.7">This URL belongs to the client/business, not to any individual lead — every eligible customer of this client receives the same link. Saved locally as a frontend draft until the Client Review Configuration API is connected (see report).</div>
-                </div>
+                <div id="cdpTabContent-reviews"></div>
               </div>
 
             </div>
