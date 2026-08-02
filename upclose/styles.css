@@ -938,3 +938,17 @@ html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
 .auto-picker-item span.plbl{font-size:13px;font-weight:500;color:var(--tx)}
 .auto-cond-row{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
 .auto-cond-row .form-group{flex:1;min-width:120px}
+
+/* ---- Communication Hub additions: snippet quick-insert popover +
+   bulk action bar. Everything else on this page reuses existing
+   classes (.dash-hero, .dt, .tgroup/.topt, .ch-subnav, etc). ---- */
+.ch-snip-pop{position:absolute;bottom:calc(100% + 8px);left:0;width:320px;max-height:260px;overflow-y:auto;background:var(--s2);border:1px solid var(--bd2);border-radius:10px;box-shadow:0 16px 40px rgba(0,0,0,0.45);padding:6px;display:none;z-index:40}
+.ch-snip-pop.open{display:block}
+.ch-snip-pop-item{padding:8px 10px;border-radius:7px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.ch-snip-pop-item:hover{background:var(--s3)}
+.ch-snip-pop-item b{font-size:12.5px;color:var(--tx)}
+.ch-snip-pop-item span{font-size:11.5px;color:var(--tx3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-snip-pop-empty{padding:12px;font-size:12px;color:var(--tx3)}
+.ch-snip-pop-empty a{color:var(--acc);cursor:pointer;text-decoration:none}
+
+.ch-bulk-bar{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--bd2);border-radius:8px;padding:9px 14px;margin-bottom:10px;font-size:12.5px;font-weight:600;color:var(--tx2)}
