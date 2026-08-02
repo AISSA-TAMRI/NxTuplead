@@ -2786,6 +2786,23 @@ function chIsMine(l){
   return me.includes(l.owner_id);
 }
 
+/* ---- Seen tracking for "Needs Attention" ----
+   Local-only, like starred/drafts: no "read" flag exists on the lead
+   record itself. A lead is remembered as "seen" together with the
+   exact next_followup_at/last_contacted_at it had at that moment —
+   so if either changes afterward (new follow-up scheduled, contact
+   info updated), it's treated as unseen again instead of staying
+   hidden forever. */
+const CH_SEEN_KEY='upclose_seen_attention_v1';
+function chLoadSeenMap(){try{return JSON.parse(localStorage.getItem(CH_SEEN_KEY)||'{}');}catch(e){return{};}}
+let chSeenMap=chLoadSeenMap();
+function chAttentionSignature(l){return(l.next_followup_at||'')+'|'+(l.last_contacted_at||'');}
+function chMarkSeen(l){
+  if(!l)return;
+  chSeenMap[l.id]=chAttentionSignature(l);
+  localStorage.setItem(CH_SEEN_KEY,JSON.stringify(chSeenMap));
+}
+
 function chAuthHeaders(){
   return{'Content-Type':'application/json','X-API-Key':N8N_API_KEY};
 }
@@ -2822,7 +2839,7 @@ function chSortLeads(list){
 function chFilteredLeads(view){
   const todayStr=new Date().toISOString().slice(0,10);
   switch(view){
-    case'attention':return allLeads.filter(chNeedsAttention);
+    case'attention':return allLeads.filter(l=>chNeedsAttention(l)&&chSeenMap[l.id]!==chAttentionSignature(l));
     case'mine':return allLeads.filter(l=>l.status==='Potential'&&chIsMine(l));
     case'calls':return allLeads.filter(l=>l.preferred_date&&l.preferred_date.slice(0,10)===todayStr);
     case'unanswered':return allLeads.filter(l=>!l.last_contacted_at&&l.status==='Potential');
@@ -2844,15 +2861,20 @@ function chUpdateCounts(){
   setEl('chSvCountAll',allLeads.length);
   setEl('chSvCountRecent',chFilteredLeads('recent').length);
   setEl('chSvCountStarred',chFilteredLeads('starred').length);
+  const overdue=typeof chManualRows==='function'?chManualRows('overdue').length:0;
+  const manualBadge=document.getElementById('chSubBadgeManual');
+  if(manualBadge){manualBadge.style.display=overdue>0?'':'none';manualBadge.textContent=overdue;}
   const navBadge=document.getElementById('navCountAttention');
   if(navBadge){navBadge.style.display=attn>0?'':'none';navBadge.textContent=attn;}
 }
 
 function chCurrentView(){const el=document.querySelector('#chSmartViews .ch-sv.active');return el?el.dataset.view:'attention';}
 
+let chLastRenderedList=[];
 function chRenderContactList(list){
   const wrap=document.getElementById('chContactList');if(!wrap)return;
   list=chSortLeads(list);
+  chLastRenderedList=list;
   if(!list.length){wrap.innerHTML='<div class="empty-state"><span class="mat">person_search</span><p>No leads in this view.</p></div>';return;}
   wrap.innerHTML=list.map(l=>{
     const name=chLeadName(l);
@@ -2879,6 +2901,7 @@ function chRenderContactList(list){
 function chSelectLead(id){
   chActiveLeadId=id;
   const l=allLeads.find(x=>x.id===id);
+  if(l&&chNeedsAttention(l)){chMarkSeen(l);chUpdateCounts();}
   chRenderContactList(chFilteredLeads(chCurrentView()));
   if(!l)return;
   const name=chLeadName(l);
@@ -3305,13 +3328,51 @@ function chManualStatusBadge(view){
   const m={overdue:'<span class="badge re">Overdue</span>',today:'<span class="badge am">Due Today</span>',calls:'<span class="badge bl">Scheduled</span>',unanswered:'<span class="badge gy">No Contact</span>'};
   return m[view]||'<span class="badge gy">—</span>';
 }
+async function chMarkContacted(id,notify=true){
+  try{
+    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_lead',id:parseInt(id),last_contacted_at:new Date().toISOString()})});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const idx=allLeads.findIndex(l=>l.id===id);
+    if(idx>-1)allLeads[idx].last_contacted_at=new Date().toISOString();
+    if(notify){
+      toast('✓ Marked as contacted','ok');
+      chRenderManualActions();chUpdateCounts();chRenderContactList(chFilteredLeads(chCurrentView()));
+    }
+    return true;
+  }catch(e){
+    if(notify)toast('Failed to update — try again','err');
+    return false;
+  }
+}
+async function chManualBulkMarkContacted(){
+  const ids=[...document.querySelectorAll('#chManualTableBody .ch-row-check:checked')].map(cb=>parseInt(cb.dataset.id));
+  if(!ids.length)return;
+  const btn=document.getElementById('chManualBulkMarkBtn');
+  if(btn){btn.disabled=true;btn.innerHTML='<span class="mat sm spin">sync</span>Updating…';}
+  const results=await Promise.all(ids.map(id=>chMarkContacted(id,false)));
+  const okCount=results.filter(Boolean).length;
+  toast(okCount===ids.length?`✓ Marked ${okCount} as contacted`:`Marked ${okCount} of ${ids.length} — some failed`,okCount===ids.length?'ok':'err');
+  chRenderManualActions();chUpdateCounts();chRenderContactList(chFilteredLeads(chCurrentView()));
+}
+function chManualUpdateBulkBar(){
+  const bar=document.getElementById('chManualBulkBar');if(!bar)return;
+  const checked=document.querySelectorAll('#chManualTableBody .ch-row-check:checked').length;
+  bar.style.display=checked?'flex':'none';
+  setEl('chManualBulkCount',checked+' selected');
+  const selectAll=document.getElementById('chManualSelectAll');
+  const total=document.querySelectorAll('#chManualTableBody .ch-row-check').length;
+  if(selectAll)selectAll.checked=total>0&&checked===total;
+}
 function chRenderManualActions(){
   const body=document.getElementById('chManualTableBody');if(!body)return;
   const rows=chManualRows(chManualView);
-  if(!rows.length){body.innerHTML='<tr><td colspan="6" style="padding:26px;text-align:center;color:var(--tx3);font-size:13px">Nothing in this view. Nice.</td></tr>';return;}
+  const selectAll=document.getElementById('chManualSelectAll');if(selectAll)selectAll.checked=false;
+  chManualUpdateBulkBar();
+  if(!rows.length){body.innerHTML='<tr><td colspan="7" style="padding:26px;text-align:center;color:var(--tx3);font-size:13px">Nothing in this view. Nice.</td></tr>';return;}
   body.innerHTML=rows.map(l=>{
     const name=chLeadName(l);
     return`<tr>
+      <td><input type="checkbox" class="ch-row-check" data-id="${l.id}" style="accent-color:var(--acc)"/></td>
       <td><div style="display:flex;align-items:center;gap:9px"><div class="av ${scClass(l.status||'Potential')}">${initials(l.company_name||name)}</div><span style="font-weight:600">${name}</span></div></td>
       <td>${l.company_name||'—'}</td>
       <td>${l.phone?'Call':'—'}</td>
@@ -3320,9 +3381,11 @@ function chRenderManualActions(){
       <td>
         <button class="tbb" title="Call" ${l.phone?'':'disabled style="opacity:.35;cursor:not-allowed"'} onclick="chCallLeadById(${l.id})"><span class="mat">call</span></button>
         <button class="tbb" title="Open Conversation" onclick="chOpenInConversations(${l.id})"><span class="mat">forum</span></button>
+        <button class="tbb" title="Mark Contacted" onclick="chMarkContacted(${l.id})"><span class="mat">task_alt</span></button>
       </td>
     </tr>`;
   }).join('');
+  body.querySelectorAll('.ch-row-check').forEach(cb=>cb.addEventListener('change',chManualUpdateBulkBar));
 }
 
 /* ---- SNIPPETS ----
@@ -3331,14 +3394,34 @@ function chRenderManualActions(){
 const CH_SNIPPETS_KEY='upclose_snippets_v1';
 function chLoadSnippets(){try{return JSON.parse(localStorage.getItem(CH_SNIPPETS_KEY)||'[]');}catch(e){return[];}}
 function chSaveSnippets(list){localStorage.setItem(CH_SNIPPETS_KEY,JSON.stringify(list));}
+function chSnippetsUpdateBulkBar(){
+  const bar=document.getElementById('chSnippetsBulkBar');if(!bar)return;
+  const checked=document.querySelectorAll('#chSnippetsTableBody .ch-row-check:checked').length;
+  bar.style.display=checked?'flex':'none';
+  setEl('chSnippetsBulkCount',checked+' selected');
+  const selectAll=document.getElementById('chSnippetsSelectAll');
+  const total=document.querySelectorAll('#chSnippetsTableBody .ch-row-check').length;
+  if(selectAll)selectAll.checked=total>0&&checked===total;
+}
+function chSnippetsBulkDelete(){
+  const ids=[...document.querySelectorAll('#chSnippetsTableBody .ch-row-check:checked')].map(cb=>cb.dataset.id);
+  if(!ids.length)return;
+  if(!confirm(`Delete ${ids.length} snippet(s)? This can't be undone.`))return;
+  chSaveSnippets(chLoadSnippets().filter(s=>!ids.includes(s.id)));
+  chRenderSnippets();
+  toast(`Deleted ${ids.length} snippet(s)`);
+}
 function chRenderSnippets(){
   const body=document.getElementById('chSnippetsTableBody');if(!body)return;
   const searchEl=document.getElementById('chSnippetsSearch');
   const q=(searchEl?searchEl.value:'').toLowerCase();
   let list=chLoadSnippets();
   if(q)list=list.filter(s=>s.name.toLowerCase().includes(q)||s.content.toLowerCase().includes(q));
-  if(!list.length){body.innerHTML='<tr><td colspan="5" style="padding:26px;text-align:center;color:var(--tx3);font-size:13px">No snippets yet. Create one to reuse it from the Conversations composer.</td></tr>';return;}
+  const selectAll=document.getElementById('chSnippetsSelectAll');if(selectAll)selectAll.checked=false;
+  chSnippetsUpdateBulkBar();
+  if(!list.length){body.innerHTML='<tr><td colspan="6" style="padding:26px;text-align:center;color:var(--tx3);font-size:13px">No snippets yet. Create one to reuse it from the Conversations composer.</td></tr>';return;}
   body.innerHTML=list.map(s=>`<tr>
+    <td><input type="checkbox" class="ch-row-check" data-id="${s.id}" style="accent-color:var(--acc)"/></td>
     <td style="font-weight:600">${escapeHtml(s.name)}</td>
     <td style="max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2)">${escapeHtml(s.content)}</td>
     <td>${s.channel==='sms'?'SMS':s.channel==='email'?'Email':'Text'}</td>
@@ -3349,6 +3432,7 @@ function chRenderSnippets(){
       <button class="tbb" title="Delete" onclick="chDeleteSnippet('${s.id}')"><span class="mat">delete</span></button>
     </td>
   </tr>`).join('');
+  body.querySelectorAll('.ch-row-check').forEach(cb=>cb.addEventListener('change',chSnippetsUpdateBulkBar));
 }
 function chOpenSnippetEditor(id){
   const list=chLoadSnippets();
@@ -3375,6 +3459,19 @@ function chInsertSnippet(id){
   if(!chActiveLeadId){toast('Select a lead in Conversations, then insert the snippet','err');return;}
   body.value=(body.value?body.value+'\n':'')+s.content;
   body.focus();
+}
+
+function chRenderSnippetQuickList(){
+  const pop=document.getElementById('chSnippetQuickList');if(!pop)return;
+  const list=chLoadSnippets();
+  if(!list.length){pop.innerHTML='<div class="ch-snip-pop-empty">No snippets saved yet — <a onclick="chToggleSnippetQuickList();chSwitchSubPage(\'snippets\')">create one →</a></div>';return;}
+  pop.innerHTML=list.map(s=>`<div class="ch-snip-pop-item" onclick="chInsertSnippet('${s.id}');chToggleSnippetQuickList()"><b>${escapeHtml(s.name)}</b><span>${escapeHtml(s.content.slice(0,64))}</span></div>`).join('');
+}
+function chToggleSnippetQuickList(force){
+  const pop=document.getElementById('chSnippetQuickList');if(!pop)return;
+  const opening=typeof force==='boolean'?force:!pop.classList.contains('open');
+  pop.classList.toggle('open',opening);
+  if(opening)chRenderSnippetQuickList();
 }
 
 /* ---- TRIGGER LINKS ----
@@ -4549,6 +4646,45 @@ function chWireStaticListeners(){
 
   /* Snippets search */
   chOn('chSnippetsSearch','input',chRenderSnippets);
+  chOn('chSnippetsSelectAll','change',e=>{
+    document.querySelectorAll('#chSnippetsTableBody .ch-row-check').forEach(cb=>cb.checked=e.target.checked);
+    chSnippetsUpdateBulkBar();
+  });
+  chOn('chSnippetsBulkDeleteBtn','click',chSnippetsBulkDelete);
+
+  /* Manual Actions bulk-select */
+  chOn('chManualSelectAll','change',e=>{
+    document.querySelectorAll('#chManualTableBody .ch-row-check').forEach(cb=>cb.checked=e.target.checked);
+    chManualUpdateBulkBar();
+  });
+  chOn('chManualBulkMarkBtn','click',chManualBulkMarkContacted);
+
+  /* Composer quick-insert snippet popover */
+  chOn('chComposerSnippetBtn','click',e=>{e.stopPropagation();chToggleSnippetQuickList();});
+  document.addEventListener('click',e=>{
+    const pop=document.getElementById('chSnippetQuickList');
+    if(pop&&pop.classList.contains('open')&&!pop.contains(e.target)&&e.target.id!=='chComposerSnippetBtn')chToggleSnippetQuickList(false);
+  });
+
+  /* Keyboard navigation through the Conversations inbox: ↑/↓ moves the
+     selection, Enter jumps focus into the reply box. Ignored while
+     typing in any input/textarea, or outside the Conversations tab. */
+  document.addEventListener('keydown',e=>{
+    if(chSubPage!=='conversations')return;
+    const tag=(document.activeElement&&document.activeElement.tagName)||'';
+    if(tag==='INPUT'||tag==='TEXTAREA')return;
+    if(!chLastRenderedList.length)return;
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      e.preventDefault();
+      let idx=chLastRenderedList.findIndex(l=>l.id===chActiveLeadId);
+      if(idx===-1)idx=0;else idx=e.key==='ArrowDown'?Math.min(chLastRenderedList.length-1,idx+1):Math.max(0,idx-1);
+      chSelectLead(chLastRenderedList[idx].id);
+      document.querySelector(`#chContactList .ch-contact[data-id="${chLastRenderedList[idx].id}"]`)?.scrollIntoView({block:'nearest'});
+    }else if(e.key==='Enter'&&chActiveLeadId){
+      const composer=document.getElementById('chComposerBody');
+      if(composer&&!composer.disabled)composer.focus();
+    }
+  });
 
   /* Trigger Links search + Link/Analyze tabs */
   chOn('chTriggerSearch','input',chRenderTriggerLinks);
