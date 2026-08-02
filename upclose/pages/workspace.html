@@ -1,0 +1,290 @@
+<!-- ===================================================================
+     CLIENT WORKSPACE — one reusable shell for every client.
+     Nothing here is per-client markup; everything is rendered from
+     cwClient / cwSubleads, scoped by activeWorkspaceClientId.
+     All IDs are cw-prefixed so they cannot collide with the eagerly
+     loaded agency fragments.
+     =================================================================== -->
+<div class="cw-shell">
+
+  <div class="cw-topbar">
+    <div class="cw-badge"><span class="mat sm">workspaces</span>Client Workspace</div>
+    <div class="cw-client">
+      <div class="cw-client-avatar" id="cwClientAvatar">—</div>
+      <div style="min-width:0">
+        <div class="cw-client-name" id="cwClientName">—</div>
+        <div class="cw-client-sub" id="cwClientSub">—</div>
+      </div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="abtn" onclick="cwExit()"><span class="mat sm">arrow_back</span>Back to Agency</button>
+  </div>
+
+  <!-- ============================ OVERVIEW ============================ -->
+  <div class="cwv" id="cwv-overview">
+    <div class="dash-hero" style="background:var(--s1)">
+      <div>
+        <div class="dash-hero-title" style="display:flex;align-items:center;gap:10px">
+          <span class="mat" style="color:var(--acc);font-size:25px">space_dashboard</span>
+          Overview
+        </div>
+        <div class="dash-hero-sub" id="cwOverviewSub">Live sublead performance for this client.</div>
+      </div>
+      <button class="abtn" onclick="cwLoadSubleads(true)"><span class="mat sm">refresh</span>Refresh</button>
+    </div>
+    <div class="pc" style="display:flex;flex-direction:column;gap:16px">
+      <div class="stat-grid" id="cwOvKpis"></div>
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start">
+        <div class="glass-card" style="overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--bd)">
+            <span class="stitle" style="display:flex;align-items:center;gap:6px"><span class="mat sm" style="color:var(--acc)">person_add</span>Latest Subleads</span>
+            <a style="font-size:12px;color:var(--acc);cursor:pointer" onclick="cwGo('subleads')">View all →</a>
+          </div>
+          <table class="dt">
+            <thead><tr><th>Name</th><th>Phone</th><th>Status</th><th>Source</th><th>Created</th></tr></thead>
+            <tbody id="cwOvLatest"><tr class="loading-row"><td colspan="5"><span class="spin mat sm">sync</span> Loading…</td></tr></tbody>
+          </table>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="glass-card" style="padding:14px">
+            <div class="stitle" style="margin-bottom:12px">Sublead Status</div>
+            <div id="cwOvBreakdown" style="display:flex;flex-direction:column;gap:8px"></div>
+          </div>
+          <div class="glass-card" style="padding:14px">
+            <div class="stitle" style="margin-bottom:10px">Review Requests</div>
+            <div id="cwOvReviews" style="font-size:13px;color:var(--tx3)">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ SUBLEADS ============================ -->
+  <div class="cwv" id="cwv-subleads">
+    <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div class="tgroup" id="cwSubStatusFilter">
+        <div class="topt active" onclick="cwSetSubFilter('all',this)">All</div>
+        <div class="topt" onclick="cwSetSubFilter('new',this)">New</div>
+        <div class="topt" onclick="cwSetSubFilter('contacted',this)">Contacted</div>
+        <div class="topt" onclick="cwSetSubFilter('won',this)">Won</div>
+        <div class="topt" onclick="cwSetSubFilter('lost',this)">Lost</div>
+      </div>
+      <div style="flex:1"></div>
+      <div class="af-search" style="width:220px">
+        <span class="mat sm">search</span>
+        <input type="text" id="cwSubSearch" placeholder="Search subleads…" oninput="cwOnSubSearch(this.value)"/>
+      </div>
+      <button class="abtn" onclick="cwLoadSubleads(true)"><span class="mat sm">refresh</span>Refresh</button>
+      <button class="abtn pri" onclick="cwOpenNewSublead()"><span class="mat sm">add</span>New Sublead</button>
+    </div>
+    <div class="pc">
+      <div class="card" style="overflow:hidden">
+        <table class="dt">
+          <thead><tr>
+            <th>Name</th><th>Phone</th><th>Email</th><th>Status</th><th>Source</th><th>Created</th><th style="width:150px"></th>
+          </tr></thead>
+          <tbody id="cwSubTable"><tr class="loading-row"><td colspan="7"><span class="spin mat sm">sync</span> Loading subleads…</td></tr></tbody>
+        </table>
+      </div>
+      <div style="padding:10px 4px;display:flex;align-items:center;border-top:1px solid var(--bd);margin-top:-1px">
+        <span style="font-size:13px;color:var(--tx3)" id="cwSubCount">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================= CONVERSATIONS ========================== -->
+  <div class="cwv" id="cwv-conversations">
+    <div class="pc">
+      <div class="cw-placeholder">
+        <span class="mat">forum</span>
+        <h3>Sublead Conversations</h3>
+        <p>Two-way SMS with this client's subleads isn't wired up yet. The Twilio inbound router (<code>FIND CONTACT</code>) currently resolves an incoming number against <code>crm.clients</code> and <code>crm.leads</code> only, so a sublead's reply has nowhere to land.</p>
+        <div class="cw-req">
+          <div class="cw-req-hd">Backend required</div>
+          <ul>
+            <li>Extend <code>FIND CONTACT</code> with a <code>crm.subleads</code> branch and define precedence on phone collisions</li>
+            <li>Write <code>sublead_id</code> in <code>SAVE INBOUND SMS</code></li>
+            <li>An outbound send endpoint scoped to <code>sublead_id</code> + <code>client_id</code></li>
+          </ul>
+        </div>
+        <p class="cw-note">Agency conversations are unaffected and remain in the Communication Hub.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ CAMPAIGNS =========================== -->
+  <div class="cwv" id="cwv-campaigns">
+    <div class="pc">
+      <div class="cw-placeholder">
+        <span class="mat">campaign</span>
+        <h3>Campaigns</h3>
+        <p>No campaign data exists anywhere in the system yet — there is no table, no workflow and no ad-platform connection. Rather than show an empty chart, this page stays honest until there is something real to display.</p>
+        <div class="cw-req">
+          <div class="cw-req-hd">Backend required</div>
+          <ul>
+            <li>A <code>crm.campaigns</code> table keyed by <code>client_id</code></li>
+            <li>Attribution from <code>crm.subleads.source</code> / <code>metadata</code> to a campaign</li>
+            <li>Ad spend ingestion per campaign and per period</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= FUNNELS ============================ -->
+  <div class="cwv" id="cwv-funnels">
+    <div class="pc">
+      <div class="cw-placeholder">
+        <span class="mat">insights</span>
+        <h3>Funnels</h3>
+        <p>Subleads currently carry <code>status</code> and <code>source</code> only. There are no stage, booking, show, offer or value fields, so cost-per-stage and conversion metrics cannot be calculated for a client's funnel.</p>
+        <div class="cw-req">
+          <div class="cw-req-hd">Backend required</div>
+          <ul>
+            <li>Funnel columns on <code>crm.subleads</code> (stage, booked_at, showed, offer_made, value)</li>
+            <li>Per-client ad spend, stored server-side rather than in the browser</li>
+          </ul>
+        </div>
+        <p class="cw-note">The agency-level Funnel Metrics page is unchanged.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================== AUTOMATIONS ========================== -->
+  <div class="cwv" id="cwv-automations">
+    <div id="autoListView">
+      <div class="dash-hero" style="background:var(--s1)">
+        <div>
+          <div class="dash-hero-title" style="display:flex;align-items:center;gap:10px">
+            <span class="mat" style="color:var(--acc);font-size:25px">bolt</span>
+            Automations
+          </div>
+          <div class="dash-hero-sub">Marketing automations for this client's subleads. Saved per client.</div>
+        </div>
+        <button class="abtn pri" onclick="autoOpenBuilder(null)"><span class="mat sm">add</span>Create Automation</button>
+      </div>
+      <div style="padding:12px 26px;border-bottom:1px solid var(--bd);background:var(--s1);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="tgroup" id="autoStatusFilterGroup">
+          <div class="topt active" data-val="all" onclick="autoSetStatusFilter('all',this)">All</div>
+          <div class="topt" data-val="active" onclick="autoSetStatusFilter('active',this)">Active</div>
+          <div class="topt" data-val="draft" onclick="autoSetStatusFilter('draft',this)">Draft</div>
+          <div class="topt" data-val="paused" onclick="autoSetStatusFilter('paused',this)">Paused</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="auto-search">
+          <span class="mat sm">search</span>
+          <input type="text" id="autoSearchInput" placeholder="Search automations…" oninput="autoRenderList()"/>
+        </div>
+      </div>
+      <div class="pc">
+        <div class="cw-inline-note"><span class="mat sm">info</span>There is no automation execution engine yet. Definitions are saved per client in this browser and never run server-side — the Runs column stays empty on purpose.</div>
+        <div class="card" style="overflow:visible">
+          <table class="dt">
+            <thead><tr>
+              <th>Name</th><th>Trigger</th><th>Status</th><th>Last Updated</th><th>Runs</th><th style="width:40px"></th>
+            </tr></thead>
+            <tbody id="autoListTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="autoBuilderView" style="display:none;flex-direction:column;height:100%">
+      <div class="auto-builder-topbar">
+        <button class="tbb" onclick="autoBackToList()" title="Back"><span class="mat">arrow_back</span></button>
+        <input type="text" class="auto-builder-name-input" id="autoBuilderNameInput" value="New Automation" oninput="autoOnNameInput()"/>
+        <span class="badge st-draft" id="autoBuilderStatusBadge">Draft</span>
+        <div style="flex:1"></div>
+        <button class="abtn" onclick="autoSaveDraft()"><span class="mat sm">save</span>Save Draft</button>
+        <button class="abtn pri" onclick="autoActivate()"><span class="mat sm">play_arrow</span><span id="autoActivateBtnLbl">Activate Automation</span></button>
+      </div>
+      <div class="auto-builder-canvas-wrap">
+        <div class="auto-flow" id="autoFlowCanvas"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= REVIEWS ============================ -->
+  <div class="cwv" id="cwv-reviews">
+    <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px">
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--tx);letter-spacing:-0.01em">Reviews &amp; Reputation</div>
+        <div style="font-size:12px;color:var(--tx3);margin-top:1px">Google review requests sent to this client's subleads. The destination URL belongs to the client and is resolved server-side.</div>
+      </div>
+      <div style="flex:1"></div>
+      <button class="abtn" onclick="cwRenderReviews()"><span class="mat sm">refresh</span>Refresh</button>
+    </div>
+    <div class="pc">
+      <div class="kpi-row" id="cwRevKpis" style="margin-bottom:18px"></div>
+
+      <div class="card" style="margin-bottom:18px;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+          <span class="mat" style="color:var(--acc)">verified_user</span>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:700;color:var(--tx)">Review Destination</div>
+            <div style="font-size:12px;color:var(--tx3);margin-top:1px">Stored against this client in <code>crm.client_review_config</code>. Every sublead of this client receives this link.</div>
+          </div>
+          <button class="abtn" onclick="cwOpenReviewConfig()"><span class="mat sm">tune</span>Configure</button>
+        </div>
+        <div id="cwRevConfigBox" style="padding:14px 16px"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+          <span class="mat" style="color:var(--acc)">task_alt</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--tx)">Ready to Request</div>
+            <div style="font-size:12px;color:var(--tx3);margin-top:1px">Subleads with a phone number who haven't been asked in the last 14 days.</div>
+          </div>
+        </div>
+        <div id="cwRevReadyList" style="padding:6px 4px"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+          <span class="mat" style="color:var(--acc)">flash_on</span>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:700;color:var(--tx)">Message Templates</div>
+            <div style="font-size:12px;color:var(--tx3);margin-top:1px">Saved on this device. <code>{{first_name}}</code> and <code>{{business_name}}</code> fill in here; <code>{{review_url}}</code> is substituted server-side at send time.</div>
+          </div>
+          <button class="abtn pri" style="padding:5px 10px;font-size:12px" onclick="revOpenTemplateEditor()"><span class="mat sm">add</span>New Template</button>
+        </div>
+        <table class="dt">
+          <thead><tr><th>Name</th><th>Message</th><th>Updated</th><th style="width:90px"></th></tr></thead>
+          <tbody id="revTemplatesTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="card" style="overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+          <span class="mat" style="color:var(--acc)">reviews</span>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:700;color:var(--tx)">Recent Review Requests</div>
+            <div style="font-size:12px;color:var(--tx3);margin-top:1px">Real <code>review_request</code> activity rows for this client's subleads.</div>
+          </div>
+          <span class="badge gy" id="cwRevFeedBadge">Not connected</span>
+        </div>
+        <div id="cwRevFeed" style="padding:6px 4px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= REPORTS ============================ -->
+  <div class="cwv" id="cwv-reports">
+    <div class="pc">
+      <div class="cw-placeholder">
+        <span class="mat">summarize</span>
+        <h3>Client Reports</h3>
+        <p>Client reporting needs a metric set that doesn't exist yet. Subleads have no stage history, no value and no campaign attribution, so any report today would be a count of rows by status — which the Overview page already shows honestly.</p>
+        <div class="cw-req">
+          <div class="cw-req-hd">Backend required</div>
+          <ul>
+            <li>Sublead stage history (audit rows with <code>sublead_id</code>)</li>
+            <li>Campaign attribution and per-client spend</li>
+            <li>Review outcome data (delivery status from the Twilio callback)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
