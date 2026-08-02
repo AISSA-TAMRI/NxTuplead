@@ -4421,42 +4421,61 @@ function revShowQr(clientId){
   window.open(url,'_blank','noopener');
 }
 
-// ---- "Ready to Request" — real eligible clients who haven't been asked
-// recently, built from the same client configs + activities already loaded.
-// If activity records don't carry client_id, we say so instead of guessing. ----
+// ---- "Ready to Request" — real eligible CUSTOMERS (leads), not clients.
+// A client is the business being reviewed, never the recipient. Eligibility
+// is: a Won lead, with a phone number, whose client_id points to a client
+// that has review requests enabled. Staleness is measured per lead_id,
+// since each customer is asked individually. ----
 function revRenderReadyToRequest(){
   const el=document.getElementById('revReadyList');if(!el)return;
-  const eligible=allClients.filter(c=>{
+
+  const hasLeadClientLink = allLeads.some(l=>l.client_id!=null);
+  if(!hasLeadClientLink){
+    el.innerHTML='<div class="empty-state"><span class="mat">link_off</span><p>Customers aren\'t linked to their client yet (lead.client_id is missing from the leads feed). Once that\'s wired up, eligible customers will be listed here automatically.</p></div>';
+    return;
+  }
+
+  const enabledClientIds=new Set(allClients.filter(c=>{
     const cfg=revGetConfig(c.id);
     return cfg&&cfg.review_url&&cfg.enabled!==false;
-  });
-  if(!eligible.length){
+  }).map(c=>c.id));
+  if(!enabledClientIds.size){
     el.innerHTML='<div class="empty-state"><span class="mat">verified_user</span><p>No clients are configured and enabled yet. Set one up under Client Review Configuration below.</p></div>';
     return;
   }
-  if(!revActivitiesCache||!revActivitiesHaveClientId){
-    el.innerHTML=eligible.map(c=>`<div class="arow"><div class="activity-icon bl"><span class="mat sm">store</span></div><div style="flex:1;min-width:0">
-      <div style="font-size:13px;font-weight:600;color:var(--tx)">${escapeHtml(c.company_name||'—')}</div>
-      <div style="font-size:11px;color:var(--tx3);margin-top:2px">Configured and enabled — last-requested date isn't available yet</div>
-    </div><button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(null,${c.id})"><span class="mat sm">send</span>Request</button></div>`).join('');
+
+  const eligible=allLeads.filter(l=>l.status==='Won'&&l.phone&&enabledClientIds.has(l.client_id));
+  if(!eligible.length){
+    el.innerHTML='<div class="empty-state"><span class="mat">verified_user</span><p>No won customers with a phone number are linked to a configured, enabled client yet.</p></div>';
     return;
   }
+
+  const clientName=id=>{const c=allClients.find(x=>x.id===id);return c?(c.company_name||'—'):'—';};
+
+  if(!revActivitiesCache||!revActivitiesHaveLeadId){
+    el.innerHTML=eligible.slice(0,50).map(l=>`<div class="arow"><div class="activity-icon bl"><span class="mat sm">person</span></div><div style="flex:1;min-width:0">
+      <div style="font-size:13px;font-weight:600;color:var(--tx)">${escapeHtml(chLeadName(l))}</div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:2px">${escapeHtml(clientName(l.client_id))} — last-requested date isn't available yet</div>
+    </div><button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(${l.id},${l.client_id})"><span class="mat sm">send</span>Request</button></div>`).join('');
+    return;
+  }
+
   const cutoff=Date.now()-14*86400000;
-  const withLast=eligible.map(c=>{
-    const requests=revActivitiesCache.filter(a=>String(a.client_id)===String(c.id));
+  const withLast=eligible.map(l=>{
+    const requests=revActivitiesCache.filter(a=>String(a.lead_id)===String(l.id));
     const last=requests.length?Math.max(...requests.map(a=>new Date(a.created_at).getTime())):null;
-    return{client:c,last};
+    return{lead:l,last};
   });
   const stale=withLast.filter(x=>x.last===null||x.last<cutoff);
   if(!stale.length){
-    el.innerHTML='<div class="empty-state"><span class="mat">task_alt</span><p>Everyone configured has been asked for a review in the last 14 days.</p></div>';
+    el.innerHTML='<div class="empty-state"><span class="mat">task_alt</span><p>Every eligible customer has been asked for a review in the last 14 days.</p></div>';
     return;
   }
   stale.sort((a,b)=>(a.last||0)-(b.last||0));
-  el.innerHTML=stale.map(x=>`<div class="arow"><div class="activity-icon am"><span class="mat sm">store</span></div><div style="flex:1;min-width:0">
-    <div style="font-size:13px;font-weight:600;color:var(--tx)">${escapeHtml(x.client.company_name||'—')}</div>
-    <div style="font-size:11px;color:var(--tx3);margin-top:2px">${x.last?'Last requested '+fmtDate(new Date(x.last).toISOString()):'Never requested'}</div>
-  </div><button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(null,${x.client.id})"><span class="mat sm">send</span>Request</button></div>`).join('');
+  el.innerHTML=stale.slice(0,50).map(x=>`<div class="arow"><div class="activity-icon am"><span class="mat sm">person</span></div><div style="flex:1;min-width:0">
+    <div style="font-size:13px;font-weight:600;color:var(--tx)">${escapeHtml(chLeadName(x.lead))}</div>
+    <div style="font-size:11px;color:var(--tx3);margin-top:2px">${escapeHtml(clientName(x.lead.client_id))} — ${x.last?'last requested '+fmtDate(new Date(x.last).toISOString()):'never requested'}</div>
+  </div><button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(${x.lead.id},${x.lead.client_id})"><span class="mat sm">send</span>Request</button></div>`).join('');
 }
 
 // ---- Client review configuration editor (used from Reviews page + CDP tab) ----
@@ -4525,11 +4544,21 @@ function cdpCopyReviewLink(){
 // ---- Request Review composer (used from Lead panel + Client panel + Reviews page) ----
 function openReviewRequestModal(leadId, clientIdOverride){
   revLoadConfigs();
-  const lead = leadId ? allLeads.find(l=>l.id==leadId) : null;
+  let lead = leadId ? allLeads.find(l=>l.id==leadId) : null;
   let client = null;
-  if(clientIdOverride!=null) client = allClients.find(c=>c.id==clientIdOverride);
-  else if(lead) client = allClients.find(c=>c.lead_id==lead.id);
-  else if(currentClient) client = currentClient;
+
+  if(clientIdOverride!=null){
+    client = allClients.find(c=>c.id==clientIdOverride);
+  }else if(lead){
+    // Correct direction: a customer's business is found via lead.client_id.
+    // client.lead_id (the single lead that originally converted into this
+    // client record) is kept only as a legacy fallback for older rows that
+    // predate lead.client_id.
+    client = lead.client_id!=null ? allClients.find(c=>c.id==lead.client_id) : null;
+    if(!client) client = allClients.find(c=>c.lead_id==lead.id);
+  }else if(currentClient){
+    client = currentClient;
+  }
 
   if(!client){
     toast('This customer has no linked client yet — convert the lead to a client and configure review settings first.','err');
@@ -4541,21 +4570,40 @@ function openReviewRequestModal(leadId, clientIdOverride){
     return;
   }
 
-  const contactLead = lead || (client.lead_id ? allLeads.find(l=>l.id==client.lead_id) : null);
-  const firstName = (contactLead && contactLead.first_name) || client.first_name || '';
-  const lastName = (contactLead && contactLead.last_name) || client.last_name || '';
-  const phone = (contactLead && contactLead.phone) || client.phone || '';
+  // A client is a BUSINESS, not a recipient — it can have many customers
+  // (leads). If we weren't handed a specific customer, never guess one:
+  // resolve the client's real customers via lead.client_id and either
+  // auto-pick the only one, or ask which one.
+  if(!lead){
+    const clientLeads = allLeads.filter(l=>l.client_id===client.id);
+    if(!clientLeads.length){
+      toast('No customers are linked to '+(client.company_name||'this client')+' yet. Link a customer\'s client_id first, or open Request Review from that customer\'s lead record.','err');
+      return;
+    }
+    if(clientLeads.length===1){
+      lead = clientLeads[0];
+    }else{
+      openReviewLeadPicker(client, clientLeads);
+      return;
+    }
+  }
+
+  const firstName = lead.first_name || '';
+  const lastName = lead.last_name || '';
+  const phone = lead.phone || '';
   const vars = { first_name:firstName, last_name:lastName, business_name:client.company_name||'', review_url:cfg.review_url };
   const templates = revLoadTemplates();
   const message = revRenderTemplate(templates[0].content, vars);
 
-  reviewComposerCtx = { leadId: contactLead ? contactLead.id : null, clientId: client.id, phone, vars };
+  reviewComposerCtx = { leadId: lead.id, clientId: client.id, phone, vars };
 
+  const sendBtn = document.getElementById('reviewRequestSendBtn');
+  sendBtn.style.display = '';
   document.getElementById('reviewRequestModalBody').innerHTML = `
     <div class="lp-rows" style="border:1px solid var(--bd);border-radius:8px;overflow:hidden">
-      <div class="lp-row"><div class="lp-ri"><span class="mat">person</span></div><div><div class="lp-rl">Customer</div><div class="lp-rv">${escapeHtml((firstName+' '+lastName).trim()||'—')}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">person</span></div><div><div class="lp-rl">Customer (recipient)</div><div class="lp-rv">${escapeHtml((firstName+' '+lastName).trim()||'—')}</div></div></div>
       <div class="lp-row"><div class="lp-ri"><span class="mat">call</span></div><div><div class="lp-rl">Phone</div><div class="lp-rv">${phone?escapeHtml(phone):'<span style="color:var(--re)">No phone on file</span>'}</div></div></div>
-      <div class="lp-row"><div class="lp-ri"><span class="mat">store</span></div><div><div class="lp-rl">Business</div><div class="lp-rv">${escapeHtml(client.company_name||'—')}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">store</span></div><div><div class="lp-rl">Business being reviewed</div><div class="lp-rv">${escapeHtml(client.company_name||'—')}</div></div></div>
       <div class="lp-row"><div class="lp-ri"><span class="mat">link</span></div><div><div class="lp-rl">Review Link</div><div class="lp-rv" style="font-family:monospace;font-size:12.5px">${escapeHtml(cfg.review_url)}</div></div></div>
     </div>
     <div class="form-group full" style="margin-top:12px"><label class="form-label">Template</label>
@@ -4565,11 +4613,29 @@ function openReviewRequestModal(leadId, clientIdOverride){
     </div>
     <div class="form-group full"><label class="form-label">Message</label><textarea class="form-textarea" id="revComposerMessage" style="min-height:100px">${escapeHtml(message)}</textarea></div>
     <div style="font-size:12px;color:var(--tx3);margin-top:2px;line-height:1.6">Sending happens server-side via Twilio once the Review Request API is connected. This button calls that endpoint directly — nothing is simulated.</div>`;
-  const sendBtn = document.getElementById('reviewRequestSendBtn');
   sendBtn.disabled = !phone;
   sendBtn.innerHTML = '<span class="mat sm">send</span>Send Review Request';
   document.getElementById('reviewRequestModal').classList.add('open');
 }
+
+// A client (business) can have many customers. When we only know the
+// client, ask which of its real customers (lead.client_id === client.id)
+// should receive the request, instead of silently guessing one.
+function openReviewLeadPicker(client, leads){
+  const sendBtn = document.getElementById('reviewRequestSendBtn');
+  sendBtn.style.display = 'none';
+  document.getElementById('reviewRequestModalBody').innerHTML = `
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:10px"><b>${escapeHtml(client.company_name||'This client')}</b> has more than one customer on file. Pick who should receive the review request:</div>
+    <div class="lp-rows" style="border:1px solid var(--bd);border-radius:8px;overflow:hidden;max-height:280px;overflow-y:auto">
+      ${leads.map(l=>`<div class="lp-row" style="cursor:pointer" onclick="openReviewRequestModal(${l.id},${client.id})">
+        <div class="lp-ri"><span class="mat">person</span></div>
+        <div style="flex:1"><div class="lp-rl">${escapeHtml(chLeadName(l))}</div><div class="lp-rv">${l.phone?escapeHtml(l.phone):'<span style="color:var(--re)">No phone on file</span>'}</div></div>
+        <div class="lp-ri"><span class="mat">chevron_right</span></div>
+      </div>`).join('')}
+    </div>`;
+  document.getElementById('reviewRequestModal').classList.add('open');
+}
+
 function revApplyTemplate(templateId){
   if(!reviewComposerCtx)return;
   const t=revLoadTemplates().find(x=>x.id===templateId);
@@ -4583,6 +4649,7 @@ function closeReviewRequestModal(){
 
 async function sendReviewRequestFromModal(){
   if(!reviewComposerCtx) return;
+  if(!reviewComposerCtx.leadId){ toast('No customer selected for this request','err'); return; }
   const btn = document.getElementById('reviewRequestSendBtn');
   const message = document.getElementById('revComposerMessage').value;
   btn.disabled = true; btn.innerHTML = '<span class="mat sm spin">sync</span>Sending…';
@@ -4614,6 +4681,7 @@ async function sendReviewRequestFromModal(){
 
 // ---- Recent Review Requests feed (real Activity Timeline data only) ----
 let revActivitiesHaveClientId=false;
+let revActivitiesHaveLeadId=false;
 async function revLoadRequestsFeed(){
   const el = document.getElementById('revRequestsFeed'); if(!el) return;
   const badge = document.getElementById('revFeedStatusBadge');
@@ -4625,6 +4693,7 @@ async function revLoadRequestsFeed(){
     const items = (Array.isArray(data)?data:(data.activities||[])).filter(a=>a.activity_type==='review_request');
     revActivitiesCache = items;
     revActivitiesHaveClientId = items.some(a=>a.client_id!=null);
+    revActivitiesHaveLeadId = items.some(a=>a.lead_id!=null);
     if(badge){ badge.textContent='Connected'; badge.className='badge gr'; }
     renderReviewOverviewKpis(items);
     if(!items.length){ el.innerHTML = `<div class="empty-state"><span class="mat">reviews</span><p>No review requests sent yet.</p></div>`; return; }
@@ -4632,9 +4701,13 @@ async function revLoadRequestsFeed(){
     el.innerHTML = items.slice(0,50).map(a=>{
       const status = (a.activity_data && a.activity_data.status) || 'pending';
       const statusCls = {sent:'bl',delivered:'gr',failed:'re',pending:'am'}[status] || 'gy';
+      const lead = a.lead_id!=null ? allLeads.find(l=>l.id==a.lead_id) : null;
+      const client = a.client_id!=null ? allClients.find(c=>c.id==a.client_id) : null;
+      const who = lead ? chLeadName(lead) : (a.lead_id!=null ? 'Lead #'+a.lead_id : 'Unknown customer');
+      const forWhom = client ? (client.company_name||'—') : (a.client_id!=null ? 'Client #'+a.client_id : 'Unknown business');
       return `<div class="arow"><div class="activity-icon pu"><span class="mat sm">reviews</span></div><div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500;color:var(--tx)">Google Review Request <span class="badge ${statusCls}" style="margin-left:6px">${escapeHtml(status)}</span></div>
-        <div style="font-size:11px;color:var(--tx3);margin-top:2px">${fmtDate(a.created_at)}${a.lead_id?' · Lead #'+a.lead_id:''}</div>
+        <div style="font-size:13px;font-weight:500;color:var(--tx)">Review request to <b>${escapeHtml(who)}</b> for ${escapeHtml(forWhom)} <span class="badge ${statusCls}" style="margin-left:6px">${escapeHtml(status)}</span></div>
+        <div style="font-size:11px;color:var(--tx3);margin-top:2px">${fmtDate(a.created_at)}</div>
       </div></div>`;
     }).join('');
   }catch(e){
