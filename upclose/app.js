@@ -2754,21 +2754,11 @@ function chSaveDraft(){
   toast('Draft saved');
 }
 
-function chFilterByTab(items, tab) {
-  if (tab === 'timeline') return items;
-
-  const map = {
-    calls: 'call',
-    sms: 'sms',
-    emails: 'email',
-    notes: 'note'
-  };
-
-  const key = map[tab];
-
-  return items.filter(a =>
-    String(a.activity_type || '').toLowerCase() === key
-  );
+function chFilterByTab(items,tab){
+  if(tab==='timeline')return items;
+  const map={calls:'Call',sms:'SMS',emails:'Email',notes:'Note'};
+  const key=map[tab];
+  return items.filter(a=>a.activity_type===key);
 }
 function chActivityMeta(type){
   const m={Call:{icon:'call',color:'bl'},SMS:{icon:'sms',color:'gr'},Email:{icon:'mail',color:'pu'},Note:{icon:'edit_note',color:'am'},review_request:{icon:'reviews',color:'pu'}};
@@ -2995,118 +2985,32 @@ function chDayLabel(d){
   return dt.toLocaleDateString(undefined,{month:'short',day:'numeric',year:dt.getFullYear()!==today.getFullYear()?'numeric':undefined});
 }
 function chRenderTimeline(items){
-  const feed = document.getElementById('chTimelineFeed');
-
-  if(!items.length){
-    feed.innerHTML = `
-      <div class="ch-timeline-empty">
-        <span class="mat" style="font-size:33px;opacity:.35">history</span>
-        <p style="font-size:13.5px">No activity yet for this contact.</p>
-      </div>
-    `;
-    return;
-  }
-
-  const sorted = items.slice().sort(
-    (a,b) => new Date(a.created_at || 0) - new Date(b.created_at || 0)
-  );
-
-  let html = '';
-  let lastDay = '';
-
-  sorted.forEach(a => {
-
-    const type = String(a.activity_type || '').toLowerCase();
-    const data = a.activity_data || {};
-    const dir = String(data.direction || '').toLowerCase();
-
-    const day = a.created_at
-      ? new Date(a.created_at).toDateString()
-      : '';
-
-    if(day && day !== lastDay){
-      html += `
-        <div class="ch-day-divider">
-          <span>
-            <span class="mat sm" style="font-size:13px">event</span>
-            ${chDayLabel(a.created_at)}
-          </span>
-        </div>
-      `;
-
-      lastDay = day;
-    }
-
-    const time = a.created_at
-      ? new Date(a.created_at).toLocaleTimeString([],{
-          hour:'numeric',
-          minute:'2-digit'
-        })
-      : '';
-
-    const isMsg = type === 'sms' || type === 'email';
-
+  const feed=document.getElementById('chTimelineFeed');
+  if(!items.length){feed.innerHTML='<div class="ch-timeline-empty"><span class="mat" style="font-size:33px;opacity:.35">history</span><p style="font-size:13.5px">No activity yet for this lead.</p></div>';return;}
+  // Oldest first, like a real conversation thread.
+  const sorted=items.slice().sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
+  let html='',lastDay='';
+  sorted.forEach(a=>{
+    const meta=chActivityMeta(a.activity_type);
+    const dir=a.activity_data&&a.activity_data.direction;
+    const day=a.created_at?new Date(a.created_at).toDateString():'';
+    if(day&&day!==lastDay){html+=`<div class="ch-day-divider"><span><span class="mat sm" style="font-size:13px">event</span>${chDayLabel(a.created_at)}</span></div>`;lastDay=day;}
+    const time=a.created_at?new Date(a.created_at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'';
+    const isMsg=a.activity_type==='SMS'||a.activity_type==='Email';
     if(isMsg){
-
-      const outbound = dir !== 'inbound';
-
-      const message =
-        data.body ??
-        data.message ??
-        a.body ??
-        a.message ??
-        a.notes ??
-        '';
-
-      html += `
-        <div class="ch-bubble-row${outbound ? ' out' : ''}">
-          <div class="ch-bubble">
-
-            <div class="ch-bubble-kicker">
-              <span class="mat">
-                ${type === 'sms' ? 'sms' : 'mail'}
-              </span>
-
-              ${type.toUpperCase()}
-              ${dir ? ' · ' + escapeHtml(dir) : ''}
-            </div>
-
-            <div>
-              ${message
-                ? escapeHtml(message)
-                : '<span style="color:var(--tx3)">No content recorded</span>'
-              }
-            </div>
-
-            <div class="ch-bubble-time">
-              ${time}
-            </div>
-
-          </div>
+      const out=dir!=='inbound';
+      html+=`<div class="ch-bubble-row${out?' out':''}">
+        <div class="ch-bubble">
+          <div class="ch-bubble-kicker"><span class="mat">${meta.icon}</span>${a.activity_type}${dir?' · '+dir:''}</div>
+          <div>${a.notes?escapeHtml(a.notes):'<span style="color:var(--tx3)">No content recorded</span>'}</div>
+          <div class="ch-bubble-time">${time}</div>
         </div>
-      `;
-
+      </div>`;
     }else{
-
-      const meta = chActivityMeta(a.activity_type);
-
-      html += `
-        <div class="ch-day-divider">
-          <span class="badge ${meta.color}">
-            <span class="mat sm">${meta.icon}</span>
-            ${escapeHtml(a.activity_type || 'Activity')}
-            ${dir ? ' · ' + escapeHtml(dir) : ''}
-            ${a.notes ? ' — ' + escapeHtml(a.notes) : ''}
-            · ${time}
-          </span>
-        </div>
-      `;
+      html+=`<div class="ch-day-divider"><span class="badge ${meta.color}"><span class="mat sm">${meta.icon}</span>${a.activity_type||'Activity'}${dir?' · '+dir:''}${a.notes?' — '+escapeHtml(a.notes):''} · ${time}</span></div>`;
     }
   });
-
-  feed.innerHTML = html;
-
-  feed.scrollTop = feed.scrollHeight;
+  feed.innerHTML=html;
 }
 
 async function chSendMessage(){
@@ -4382,6 +4286,51 @@ function autoConfigSave(){
 const REVIEW_CONFIG_STORE_KEY = 'upclose_review_configs_v1';
 let reviewConfigs = {};        // { [client_id]: {review_url, google_review_url, enabled} }
 let reviewComposerCtx = null;  // {leadId, clientId, phone} for the open composer
+const REV_TEMPLATES_KEY='upclose_review_templates_v1';
+let revActivitiesCache=null;   // real review_request activities from the last successful fetch, reused by KPIs + client table + feed
+function revLoadTemplates(){
+  try{
+    const list=JSON.parse(localStorage.getItem(REV_TEMPLATES_KEY)||'[]');
+    if(list.length)return list;
+  }catch(e){}
+  const seeded=[{id:'rt_default',name:'Default',content:revDefaultTemplate(),created_at:new Date().toISOString()}];
+  localStorage.setItem(REV_TEMPLATES_KEY,JSON.stringify(seeded));
+  return seeded;
+}
+function revSaveTemplates(list){localStorage.setItem(REV_TEMPLATES_KEY,JSON.stringify(list));}
+function revOpenTemplateEditor(id){
+  const list=revLoadTemplates();
+  const existing=id?list.find(t=>t.id===id):null;
+  const name=prompt('Template name',existing?existing.name:'');
+  if(name===null)return;
+  const content=prompt('Message (use {{first_name}}, {{business_name}}, {{review_url}})',existing?existing.content:revDefaultTemplate());
+  if(content===null)return;
+  if(!name.trim()||!content.trim()){toast('Name and message are both required','err');return;}
+  if(existing){existing.name=name.trim();existing.content=content.trim();}
+  else list.push({id:'rt_'+Date.now(),name:name.trim(),content:content.trim(),created_at:new Date().toISOString()});
+  revSaveTemplates(list);
+  revRenderTemplatesTable();
+  toast('Template saved');
+}
+function revDeleteTemplate(id){
+  const list=revLoadTemplates().filter(t=>t.id!==id);
+  if(!list.length){toast('You need at least one template','err');return;}
+  revSaveTemplates(list);
+  revRenderTemplatesTable();
+}
+function revRenderTemplatesTable(){
+  const body=document.getElementById('revTemplatesTableBody');if(!body)return;
+  const list=revLoadTemplates();
+  body.innerHTML=list.map(t=>`<tr>
+    <td style="font-weight:600">${escapeHtml(t.name)}</td>
+    <td style="max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2);font-size:12.5px">${escapeHtml(t.content)}</td>
+    <td>${fmtDate(t.created_at)}</td>
+    <td>
+      <button class="tbb" title="Edit" onclick="revOpenTemplateEditor('${t.id}')"><span class="mat">edit</span></button>
+      <button class="tbb" title="Delete" onclick="revDeleteTemplate('${t.id}')"><span class="mat">delete</span></button>
+    </td>
+  </tr>`).join('');
+}
 
 // ---- Persistence (localStorage draft cache — see honesty note above) ----
 function revLoadConfigs(){
@@ -4409,26 +4358,39 @@ function revRenderTemplate(tpl, vars){
 }
 
 // ---- Reviews page ----
-function renderReviewsPage(){
+async function renderReviewsPage(){
   revLoadConfigs();
-  renderReviewOverviewKpis();
+  revRenderTemplatesTable();
+  await revLoadRequestsFeed();
   renderReviewClientConfigTable();
-  revLoadRequestsFeed();
+  revRenderReadyToRequest();
 }
 
-function renderReviewOverviewKpis(){
+function renderReviewOverviewKpis(items){
   const el = document.getElementById('revKpiRow'); if(!el) return;
+  if(!items){
+    el.innerHTML = `
+      <div class="stat-card c-acc"><div class="mlbl">Requests Sent</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Connect the Review Request API</div></div>
+      <div class="stat-card c-gr"><div class="mlbl">Delivered</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires Twilio delivery webhook</div></div>
+      <div class="stat-card c-bl"><div class="mlbl">Link Clicks</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires click tracking on redirect</div></div>
+      <div class="stat-card c-am"><div class="mlbl">Google Redirects</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires redirect tracking</div></div>`;
+    return;
+  }
+  const total=items.length;
+  const cutoff=Date.now()-30*86400000;
+  const last30=items.filter(a=>new Date(a.created_at).getTime()>=cutoff).length;
+  const byStatus=id=>items.filter(a=>((a.activity_data&&a.activity_data.status)||'pending')===id).length;
   el.innerHTML = `
-    <div class="stat-card c-acc"><div class="mlbl">Requests Sent</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Connect the Review Request API</div></div>
-    <div class="stat-card c-gr"><div class="mlbl">Delivered</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires Twilio delivery webhook</div></div>
-    <div class="stat-card c-bl"><div class="mlbl">Link Clicks</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires click tracking on redirect</div></div>
-    <div class="stat-card c-am"><div class="mlbl">Google Redirects</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires redirect tracking</div></div>`;
+    <div class="stat-card c-acc"><div class="mlbl">Requests Sent</div><div class="kpi-val-lg">${total}</div><div class="kpi-sub">${last30} in the last 30 days</div></div>
+    <div class="stat-card c-gr"><div class="mlbl">Delivered</div><div class="kpi-val-lg">${byStatus('delivered')}</div><div class="kpi-sub">of ${total} total requests</div></div>
+    <div class="stat-card c-re"><div class="mlbl">Failed</div><div class="kpi-val-lg">${byStatus('failed')}</div><div class="kpi-sub">delivery failures</div></div>
+    <div class="stat-card c-bl"><div class="mlbl">Link Clicks</div><div class="kpi-val-lg">—</div><div class="kpi-sub">Requires click tracking on redirect</div></div>`;
 }
 
 function renderReviewClientConfigTable(){
   const tbody = document.getElementById('revClientConfigTable'); if(!tbody) return;
   if(!allClients.length){
-    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><span class="mat">verified_user</span><p>No clients yet. Convert a lead to a client to configure review settings.</p><button class="abtn pri" onclick="navigate('opportunities')"><span class="mat sm">people</span>View Leads</button></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><span class="mat">verified_user</span><p>No clients yet. Convert a lead to a client to configure review settings.</p><button class="abtn pri" onclick="navigate('opportunities')"><span class="mat sm">people</span>View Leads</button></div></td></tr>`;
     return;
   }
   tbody.innerHTML = allClients.map(c=>{
@@ -4437,17 +4399,64 @@ function renderReviewClientConfigTable(){
     const enabled = hasUrl && cfg.enabled !== false;
     const statusLabel = !hasUrl ? 'Not configured' : (enabled ? 'Enabled' : 'Disabled');
     const statusCls = !hasUrl ? 'gy' : (enabled ? 'gr' : 'am');
+    const sentCount = (revActivitiesCache && revActivitiesHaveClientId) ? revActivitiesCache.filter(a=>String(a.client_id)===String(c.id)).length : null;
     return `<tr>
       <td style="font-weight:600">${escapeHtml(c.company_name || '—')}</td>
       <td style="font-family:monospace;font-size:12.5px;color:${hasUrl?'var(--tx2)':'var(--tx3)'}">${hasUrl?escapeHtml(cfg.review_url):'—'}</td>
       <td style="font-family:monospace;font-size:12.5px;color:${cfg.google_review_url?'var(--tx2)':'var(--tx3)'}">${cfg.google_review_url?escapeHtml(cfg.google_review_url):'—'}</td>
+      <td>${sentCount===null?'<span style="color:var(--tx3)">—</span>':sentCount}</td>
       <td><span class="badge ${statusCls}">${statusLabel}</span></td>
       <td style="text-align:right;white-space:nowrap">
         <button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewConfigEditor(${c.id})"><span class="mat sm">edit</span>Configure</button>
+        ${hasUrl?`<button class="abtn" style="padding:4px 10px;font-size:12px" onclick="revShowQr(${c.id})"><span class="mat sm">qr_code_2</span>QR</button>`:''}
         ${hasUrl?`<button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(null,${c.id})"><span class="mat sm">send</span>Request</button>`:''}
       </td>
     </tr>`;
   }).join('');
+}
+function revShowQr(clientId){
+  const cfg=revGetConfig(clientId);
+  if(!cfg||!cfg.review_url){toast('Configure a review URL for this client first','err');return;}
+  const url='https://api.qrserver.com/v1/create-qr-code/?size=320x320&data='+encodeURIComponent(cfg.review_url);
+  window.open(url,'_blank','noopener');
+}
+
+// ---- "Ready to Request" — real eligible clients who haven't been asked
+// recently, built from the same client configs + activities already loaded.
+// If activity records don't carry client_id, we say so instead of guessing. ----
+function revRenderReadyToRequest(){
+  const el=document.getElementById('revReadyList');if(!el)return;
+  const eligible=allClients.filter(c=>{
+    const cfg=revGetConfig(c.id);
+    return cfg&&cfg.review_url&&cfg.enabled!==false;
+  });
+  if(!eligible.length){
+    el.innerHTML='<div class="empty-state"><span class="mat">verified_user</span><p>No clients are configured and enabled yet. Set one up under Client Review Configuration below.</p></div>';
+    return;
+  }
+  if(!revActivitiesCache||!revActivitiesHaveClientId){
+    el.innerHTML=eligible.map(c=>`<div class="arow"><div class="activity-icon bl"><span class="mat sm">store</span></div><div style="flex:1;min-width:0">
+      <div style="font-size:13px;font-weight:600;color:var(--tx)">${escapeHtml(c.company_name||'—')}</div>
+      <div style="font-size:11px;color:var(--tx3);margin-top:2px">Configured and enabled — last-requested date isn't available yet</div>
+    </div><button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(null,${c.id})"><span class="mat sm">send</span>Request</button></div>`).join('');
+    return;
+  }
+  const cutoff=Date.now()-14*86400000;
+  const withLast=eligible.map(c=>{
+    const requests=revActivitiesCache.filter(a=>String(a.client_id)===String(c.id));
+    const last=requests.length?Math.max(...requests.map(a=>new Date(a.created_at).getTime())):null;
+    return{client:c,last};
+  });
+  const stale=withLast.filter(x=>x.last===null||x.last<cutoff);
+  if(!stale.length){
+    el.innerHTML='<div class="empty-state"><span class="mat">task_alt</span><p>Everyone configured has been asked for a review in the last 14 days.</p></div>';
+    return;
+  }
+  stale.sort((a,b)=>(a.last||0)-(b.last||0));
+  el.innerHTML=stale.map(x=>`<div class="arow"><div class="activity-icon am"><span class="mat sm">store</span></div><div style="flex:1;min-width:0">
+    <div style="font-size:13px;font-weight:600;color:var(--tx)">${escapeHtml(x.client.company_name||'—')}</div>
+    <div style="font-size:11px;color:var(--tx3);margin-top:2px">${x.last?'Last requested '+fmtDate(new Date(x.last).toISOString()):'Never requested'}</div>
+  </div><button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openReviewRequestModal(null,${x.client.id})"><span class="mat sm">send</span>Request</button></div>`).join('');
 }
 
 // ---- Client review configuration editor (used from Reviews page + CDP tab) ----
@@ -4537,9 +4546,10 @@ function openReviewRequestModal(leadId, clientIdOverride){
   const lastName = (contactLead && contactLead.last_name) || client.last_name || '';
   const phone = (contactLead && contactLead.phone) || client.phone || '';
   const vars = { first_name:firstName, last_name:lastName, business_name:client.company_name||'', review_url:cfg.review_url };
-  const message = revRenderTemplate(revDefaultTemplate(), vars);
+  const templates = revLoadTemplates();
+  const message = revRenderTemplate(templates[0].content, vars);
 
-  reviewComposerCtx = { leadId: contactLead ? contactLead.id : null, clientId: client.id, phone };
+  reviewComposerCtx = { leadId: contactLead ? contactLead.id : null, clientId: client.id, phone, vars };
 
   document.getElementById('reviewRequestModalBody').innerHTML = `
     <div class="lp-rows" style="border:1px solid var(--bd);border-radius:8px;overflow:hidden">
@@ -4548,12 +4558,23 @@ function openReviewRequestModal(leadId, clientIdOverride){
       <div class="lp-row"><div class="lp-ri"><span class="mat">store</span></div><div><div class="lp-rl">Business</div><div class="lp-rv">${escapeHtml(client.company_name||'—')}</div></div></div>
       <div class="lp-row"><div class="lp-ri"><span class="mat">link</span></div><div><div class="lp-rl">Review Link</div><div class="lp-rv" style="font-family:monospace;font-size:12.5px">${escapeHtml(cfg.review_url)}</div></div></div>
     </div>
-    <div class="form-group full" style="margin-top:12px"><label class="form-label">Message</label><textarea class="form-textarea" id="revComposerMessage" style="min-height:100px">${escapeHtml(message)}</textarea></div>
+    <div class="form-group full" style="margin-top:12px"><label class="form-label">Template</label>
+      <select class="form-select" id="revComposerTemplate" onchange="revApplyTemplate(this.value)">
+        ${templates.map(t=>`<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group full"><label class="form-label">Message</label><textarea class="form-textarea" id="revComposerMessage" style="min-height:100px">${escapeHtml(message)}</textarea></div>
     <div style="font-size:12px;color:var(--tx3);margin-top:2px;line-height:1.6">Sending happens server-side via Twilio once the Review Request API is connected. This button calls that endpoint directly — nothing is simulated.</div>`;
   const sendBtn = document.getElementById('reviewRequestSendBtn');
   sendBtn.disabled = !phone;
   sendBtn.innerHTML = '<span class="mat sm">send</span>Send Review Request';
   document.getElementById('reviewRequestModal').classList.add('open');
+}
+function revApplyTemplate(templateId){
+  if(!reviewComposerCtx)return;
+  const t=revLoadTemplates().find(x=>x.id===templateId);
+  const box=document.getElementById('revComposerMessage');
+  if(t&&box)box.value=revRenderTemplate(t.content,reviewComposerCtx.vars);
 }
 function closeReviewRequestModal(){
   document.getElementById('reviewRequestModal').classList.remove('open');
@@ -4592,6 +4613,7 @@ async function sendReviewRequestFromModal(){
 }
 
 // ---- Recent Review Requests feed (real Activity Timeline data only) ----
+let revActivitiesHaveClientId=false;
 async function revLoadRequestsFeed(){
   const el = document.getElementById('revRequestsFeed'); if(!el) return;
   const badge = document.getElementById('revFeedStatusBadge');
@@ -4601,7 +4623,10 @@ async function revLoadRequestsFeed(){
     if(!res.ok) throw new Error('not configured');
     const data = await res.json();
     const items = (Array.isArray(data)?data:(data.activities||[])).filter(a=>a.activity_type==='review_request');
+    revActivitiesCache = items;
+    revActivitiesHaveClientId = items.some(a=>a.client_id!=null);
     if(badge){ badge.textContent='Connected'; badge.className='badge gr'; }
+    renderReviewOverviewKpis(items);
     if(!items.length){ el.innerHTML = `<div class="empty-state"><span class="mat">reviews</span><p>No review requests sent yet.</p></div>`; return; }
     items.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
     el.innerHTML = items.slice(0,50).map(a=>{
@@ -4614,6 +4639,8 @@ async function revLoadRequestsFeed(){
     }).join('');
   }catch(e){
     if(badge){ badge.textContent='Not connected'; badge.className='badge gy'; }
+    revActivitiesCache = null;
+    renderReviewOverviewKpis(null);
     el.innerHTML = `<div class="empty-state"><span class="mat">reviews</span><p>No backend data yet. Connect the Activity Timeline API to see real review-request history here.</p></div>`;
   }
 }
