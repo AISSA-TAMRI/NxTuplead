@@ -164,7 +164,7 @@
       <div class="ci" onclick="navigate('pipeline');closeCmdPal()"><span class="mat">view_kanban</span><span class="clbl">Pipeline</span></div>
       <div class="ci" onclick="navigate('meetings');closeCmdPal()"><span class="mat">calendar_today</span><span class="clbl">Meetings Hub</span></div>
       <div class="ci" onclick="navigate('analytics');closeCmdPal()"><span class="mat">bar_chart</span><span class="clbl">Analytics</span></div>
-      <div class="ci" onclick="navigate('automations');closeCmdPal()"><span class="mat">bolt</span><span class="clbl">Automations</span></div>
+      <div class="ci" onclick="navigate('clients');closeCmdPal()"><span class="mat">workspaces</span><span class="clbl">Client Workspaces</span></div>
     </div>
     <div class="cfoot">
       <span class="chint"><kbd>↑↓</kbd> Navigate</span>
@@ -198,13 +198,12 @@
         <span class="sub">Revenue OS</span>
       </div>
     </div>
-    <div class="nav-section">
+    <div class="nav-section" id="navAgency">
       <div class="nav-item" data-page="dashboard" onclick="navigate('dashboard')"><span class="mat">dashboard</span><span class="lbl">Dashboard</span></div>
       <div class="nav-item" data-page="opportunities" onclick="navigate('opportunities')"><span class="mat">people</span><span class="lbl">Leads</span><span class="nbadge" id="navCountLeads">—</span></div>
       <div class="nav-item" data-page="pipeline" onclick="navigate('pipeline')"><span class="mat">view_kanban</span><span class="lbl">Pipeline</span></div>
       <div class="nav-item" data-page="clients" onclick="navigate('clients')"><span class="mat">verified_user</span><span class="lbl">Clients</span><span class="nbadge" id="navCountClients" style="background:var(--gr-d);color:var(--gr)">—</span></div>
       <div class="nav-item" data-page="communication" onclick="navigate('communication')"><span class="mat">forum</span><span class="lbl">Communication Hub</span><span class="nbadge red" id="navCountAttention" style="display:none">—</span></div>
-      <div class="nav-item" data-page="reviews" onclick="navigate('reviews')"><span class="mat">reviews</span><span class="lbl">Reviews</span></div>
       <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
       <div class="nav-item" data-page="activity" onclick="navigate('activity')"><span class="mat">activity_zone</span><span class="lbl">Activity</span></div>
       <div class="nav-item" data-page="meetings" onclick="navigate('meetings')"><span class="mat">calendar_today</span><span class="lbl">Meetings Hub</span><span class="nbadge" id="navCountMeetings" style="display:none">—</span></div>
@@ -213,9 +212,24 @@
       <div class="nav-item" data-page="funnel" onclick="navigate('funnel')"><span class="mat">insights</span><span class="lbl">Funnel Metrics</span></div>
       <div class="nav-item" data-page="reports" onclick="navigate('reports')"><span class="mat">summarize</span><span class="lbl">Reports</span></div>
       <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
-      <div class="nav-item" data-page="automations" onclick="navigate('automations')"><span class="mat">bolt</span><span class="lbl">Automations</span></div>
-      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
       <div class="nav-item" data-page="settings" onclick="navigate('settings')"><span class="mat">settings</span><span class="lbl">Settings</span></div>
+    </div>
+    <div class="nav-section" id="navClient" style="display:none">
+      <div class="cw-rail-head">
+        <div class="cw-rail-kicker">Client Workspace</div>
+        <div class="cw-rail-name" id="cwRailName">—</div>
+        <button class="cw-rail-exit" onclick="cwExit()"><span class="mat sm">arrow_back</span><span class="lbl">Back to Agency</span></button>
+      </div>
+      <div class="nav-item" data-cwpage="overview" onclick="cwGo('overview')"><span class="mat">space_dashboard</span><span class="lbl">Overview</span></div>
+      <div class="nav-item" data-cwpage="subleads" onclick="cwGo('subleads')"><span class="mat">groups</span><span class="lbl">Subleads</span><span class="nbadge" id="cwNavCountSubleads">—</span></div>
+      <div class="nav-item" data-cwpage="conversations" onclick="cwGo('conversations')"><span class="mat">forum</span><span class="lbl">Conversations</span></div>
+      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
+      <div class="nav-item" data-cwpage="campaigns" onclick="cwGo('campaigns')"><span class="mat">campaign</span><span class="lbl">Campaigns</span></div>
+      <div class="nav-item" data-cwpage="funnels" onclick="cwGo('funnels')"><span class="mat">insights</span><span class="lbl">Funnels</span></div>
+      <div class="nav-item" data-cwpage="automations" onclick="cwGo('automations')"><span class="mat">bolt</span><span class="lbl">Automations</span></div>
+      <div style="height:1px;background:var(--bd);margin:8px 6px"></div>
+      <div class="nav-item" data-cwpage="reviews" onclick="cwGo('reviews')"><span class="mat">reviews</span><span class="lbl">Reviews</span></div>
+      <div class="nav-item" data-cwpage="reports" onclick="cwGo('reports')"><span class="mat">summarize</span><span class="lbl">Reports</span></div>
     </div>
     <div class="nav-bottom">
       <div id="sidebarAlert" style="display:none;background:var(--re-d);border:1px solid rgba(248,113,113,0.2);border-radius:6px;padding:10px 12px;margin-bottom:10px">
@@ -282,7 +296,6 @@
       <div class="pv" id="pv-dashboard" data-src="pages/dashboard.html"></div>
       <div class="pv" id="pv-opportunities" data-src="pages/opportunities.html"></div>
       <div class="pv" id="pv-clients" style="flex-direction:column;height:100%" data-src="pages/clients.html"></div>
-      <div class="pv" id="pv-reviews" data-src="pages/reviews.html"></div>
       <div class="pv" id="pv-activity" data-src="pages/activity.html"></div>
       <div class="pv" id="pv-meetings" data-src="pages/meetings.html"></div>
       <div class="pv" id="pv-settings" data-src="pages/settings.html"></div>
@@ -291,7 +304,7 @@
       <div class="pv" id="pv-analytics" data-src="pages/analytics.html"></div>
       <div class="pv" id="pv-funnel" data-src="pages/funnel.html"></div>
       <div class="pv" id="pv-reports" data-src="pages/reports.html"></div>
-      <div class="pv" id="pv-automations" data-src="pages/automations.html"></div>
+      <div class="pv" id="pv-workspace" data-src="pages/workspace.html"></div>
 
 <div id="mhScheduleModal" onclick="if(event.target===this)closeMhModal()">
         <div class="mh-modal-box">
@@ -364,6 +377,31 @@
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">
             <button class="abtn" onclick="closeAddTeamMemberModal()">Cancel</button>
             <button class="abtn pri" id="tmSubmitBtn" onclick="submitAddTeamMember()"><span class="mat sm">save</span>Create Account</button>
+          </div>
+        </div>
+      </div>
+
+
+<div id="cwSubleadModal" onclick="if(event.target===this)cwCloseNewSublead()">
+        <div class="mh-modal-box">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+            <div>
+              <div style="font-size:16px;font-weight:700;color:var(--tx)">New Sublead</div>
+              <div style="font-size:12px;color:var(--tx3);margin-top:2px" id="cwSubleadModalSub">Created for this client only</div>
+            </div>
+            <button class="tbb" onclick="cwCloseNewSublead()"><span class="mat">close</span></button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="cwSubFirst" placeholder="Jane"/></div>
+            <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="cwSubLast" placeholder="Doe"/></div>
+            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="cwSubPhone" type="tel" placeholder="+1 555 000 0000"/></div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="cwSubEmail" type="email" placeholder="jane@example.com"/></div>
+            <div class="form-group" style="grid-column:1/-1"><label class="form-label">Source</label><input class="form-input" id="cwSubSource" placeholder="manual, facebook, google…"/></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--tx3);margin-top:8px">Subleads belong to the client and are stored in <code>crm.subleads</code>. They are never mixed with agency leads.</div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">
+            <button class="abtn" onclick="cwCloseNewSublead()">Cancel</button>
+            <button class="abtn pri" id="cwSubSaveBtn" onclick="cwSaveNewSublead()"><span class="mat sm">save</span>Create Sublead</button>
           </div>
         </div>
       </div>
@@ -443,7 +481,6 @@
     <button class="abtn" id="btnWon" style="color:var(--gr);border-color:rgba(74,222,128,0.25)" onclick="lpStatus('Won')"><span class="mat sm">check_circle</span>Won</button>
     <button class="abtn" id="btnLost" style="color:var(--re);border-color:rgba(248,113,113,0.25)" onclick="lpStatus('Lost')"><span class="mat sm">cancel</span>Lost</button>
     <button class="abtn" id="btnPotential" style="color:var(--bl);border-color:rgba(137,206,255,0.25)" onclick="lpStatus('Potential')"><span class="mat sm">radio_button_unchecked</span>Active</button>
-    <button class="abtn" onclick="if(currentLead)openReviewRequestModal(currentLead.id)"><span class="mat sm">reviews</span>Request Review</button>
     <button class="abtn danger" onclick="lpDelete()"><span class="mat sm">delete</span></button>
   </div>
   <div class="lp-body" id="leadContent"></div>
