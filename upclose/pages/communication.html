@@ -237,21 +237,21 @@
         <span class="mat" style="color:var(--acc);font-size:25px">bolt</span>
         Manual Actions
       </div>
-      <div class="dash-hero-sub">Leads that need a call or message placed by hand — pulled live from your pipeline follow-ups.</div>
+      <div class="dash-hero-sub">Your work queue of scheduled follow-ups, backed by real records — pulled live from your pipeline follow-ups.</div>
     </div>
     <button class="abtn pri" id="chManualStartBtn"><span class="mat sm">play_arrow</span>Let's Start</button>
   </div>
   <div class="pc">
     <div class="ch-tasks-tabs" id="chManualTabs">
-      <div class="ch-tasks-tab active" data-manualview="overdue"><span class="mat sm">error</span>Overdue</div>
-      <div class="ch-tasks-tab" data-manualview="today"><span class="mat sm">today</span>Due Today</div>
-      <div class="ch-tasks-tab" data-manualview="calls"><span class="mat sm">call</span>Scheduled Calls</div>
-      <div class="ch-tasks-tab" data-manualview="unanswered"><span class="mat sm">mark_email_unread</span>No Recent Contact</div>
+      <div class="ch-tasks-tab active" data-manualview="overdue"><span class="mat sm">error</span>Overdue<span class="cnt" style="display:none"></span></div>
+      <div class="ch-tasks-tab" data-manualview="today"><span class="mat sm">today</span>Due Today<span class="cnt" style="display:none"></span></div>
+      <div class="ch-tasks-tab" data-manualview="calls"><span class="mat sm">call</span>Scheduled Calls<span class="cnt" style="display:none"></span></div>
+      <div class="ch-tasks-tab" data-manualview="unanswered"><span class="mat sm">mark_email_unread</span>No Recent Contact<span class="cnt" style="display:none"></span></div>
     </div>
     <div class="ch-bulk-bar" id="chManualBulkBar" style="display:none">
       <span id="chManualBulkCount">0 selected</span>
       <div style="flex:1"></div>
-      <button class="abtn pri" id="chManualBulkMarkBtn"><span class="mat sm">task_alt</span>Mark Contacted</button>
+      <button class="abtn pri" id="chManualBulkMarkBtn"><span class="mat sm">task_alt</span>Complete Selected</button>
     </div>
     <div class="card" style="overflow:hidden">
       <table class="dt">
