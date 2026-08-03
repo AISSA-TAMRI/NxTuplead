@@ -368,10 +368,10 @@
             <div class="form-group full">
               <label class="form-label">Role</label>
               <select class="form-select" id="tmRole" style="width:100%">
-                <option value="Closer">Closer</option>
-                <option value="Agent">Agent</option>
-                <option value="Manager">Manager</option>
                 <option value="Admin">Admin</option>
+                <option value="Closer">Closer</option>
+                <option value="Client Manager">Client Manager</option>
+                <option value="Analyst">Analyst</option>
               </select>
             </div>
           </div>
@@ -382,6 +382,24 @@
         </div>
       </div>
 
+
+<!-- ===================== EDIT CLIENT ===================== -->
+<div id="clientModal" onclick="if(event.target===this)closeClientModal()">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title">Edit Client</div>
+        <div style="font-size:12px;color:var(--tx3);margin-top:2px" id="clientModalSub">—</div>
+      </div>
+      <button class="tbb" onclick="closeClientModal()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="clientModalBody"></div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="closeClientModal()">Cancel</button>
+      <button class="abtn pri" id="ceSaveBtn" onclick="saveClientModal()"><span class="mat sm">save</span>Save Client</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===================== SNIPPET EDITOR ===================== -->
 <div id="snipModal" onclick="if(event.target===this)snipCloseEditor()">
