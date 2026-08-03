@@ -2,7 +2,7 @@
   <div class="ch-subnav-item active" data-sub="conversations"><span class="mat">forum</span>Conversations</div>
   <div class="ch-subnav-item" data-sub="manual"><span class="mat">bolt</span>Manual Actions<span class="badge re" id="chSubBadgeManual" style="margin-left:6px;display:none">0</span></div>
   <div class="ch-subnav-item" data-sub="snippets"><span class="mat">flash_on</span>Snippets</div>
-  <div class="ch-subnav-item" data-sub="trigger"><span class="mat">link</span>Trigger Links</div>
+  <div class="ch-subnav-item" data-sub="trigger"><span class="mat">link</span>Links</div>
 </div>
 
 <!-- ============================================================
@@ -209,6 +209,13 @@
             <button class="abtn" onclick="document.getElementById('chQaEmail').click()"><span class="mat sm">mail</span>Send Email</button>
             <button class="abtn" onclick="document.getElementById('chQaMeeting').click()"><span class="mat sm">event</span>Schedule Meeting</button>
             <button class="abtn" onclick="document.getElementById('chQaStar').click()"><span class="mat sm">star_outline</span>Toggle Star</button>
+            <div style="height:1px;background:var(--bd);margin:4px 0"></div>
+            <button class="abtn" onclick="chActionMarkContacted()"><span class="mat sm">task_alt</span>Mark Contacted</button>
+            <button class="abtn" onclick="chActionSetStatus()"><span class="mat sm">sync_alt</span>Change Lead Status</button>
+            <button class="abtn" onclick="chActionSetStage()"><span class="mat sm">view_kanban</span>Change Pipeline Stage</button>
+            <button class="abtn" onclick="chActionFollowUp()"><span class="mat sm">schedule</span>Schedule Follow-up</button>
+            <button class="abtn" onclick="chActionCreateTask()"><span class="mat sm">task</span>Create Task</button>
+            <div style="height:1px;background:var(--bd);margin:4px 0"></div>
             <button class="abtn pri" onclick="document.getElementById('chPqLead').click()"><span class="mat sm">open_in_new</span>Open Full Lead Record</button>
           </div>
         </div>
@@ -313,9 +320,9 @@
     <div>
       <div class="dash-hero-title" style="display:flex;align-items:center;gap:10px">
         <span class="mat" style="color:var(--acc);font-size:25px">link</span>
-        Trigger Links
+        Agency Links
       </div>
-      <div class="dash-hero-sub">Put trackable links inside SMS and emails, and reference them with a {{trigger_link}} key.</div>
+      <div class="dash-hero-sub">Agency sales links for outreach to business prospects. Reference one in a message with its {{trigger_link}} key. Client-facing links live in each Client Workspace.</div>
     </div>
     <button class="abtn pri" onclick="chOpenTriggerLinkEditor()"><span class="mat sm">add</span>Add Link</button>
   </div>
