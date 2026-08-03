@@ -1108,3 +1108,13 @@ html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
 .fu-run-decide .abtn{flex:1;justify-content:center}
 .ch-tasks-tab .cnt{margin-left:6px;font-size:10.5px;font-weight:700;background:var(--s4);border:1px solid var(--bd);color:var(--tx2);padding:0 6px;border-radius:20px}
 .ch-tasks-tab.active .cnt{background:var(--acc);border-color:transparent;color:#fff}
+
+/* ============ SNIPPET EDITOR ============ */
+#snipModal{position:fixed;inset:0;z-index:10700;display:none;align-items:center;justify-content:center;background:rgba(15,18,28,0.45);backdrop-filter:blur(6px)}
+#snipModal.open{display:flex}
+#snipModal .modal-box{max-height:88vh}
+#snipModal .modal-body{overflow-y:auto;padding:18px 22px}
+.snip-vars{display:flex;flex-wrap:wrap;gap:6px}
+.snip-var{font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;color:var(--acc);background:var(--acc-d);border:1px solid rgba(52,101,235,.2);border-radius:20px;padding:4px 10px;cursor:pointer;transition:all .15s var(--ease)}
+.snip-var:hover{background:var(--acc);color:#fff;border-color:transparent}
+.ch-snip-pop-empty .spin{margin-right:6px}
