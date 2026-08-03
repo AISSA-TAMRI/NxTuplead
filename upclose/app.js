@@ -10,6 +10,9 @@ const API={getLeads:'https://n8n.upleaddigital.com/webhook/get-leads',getClients
   logCall:'https://n8n.upleaddigital.com/webhook/upclose-start-call',
 
   adSpend:'https://n8n.upleaddigital.com/webhook/ad-spend',
+  adSpendSave:'https://n8n.upleaddigital.com/webhook/ad-spend-save',
+  adSpendList:'https://n8n.upleaddigital.com/webhook/ad-spend-list',
+  currentUser:'https://n8n.upleaddigital.com/webhook/get-current-user',
   createTeamMember:'https://n8n.upleaddigital.com/webhook/create-team-member',
 
   // Reputation / Reviews — integration point. This endpoint does not exist yet.
@@ -44,16 +47,43 @@ async function bootAuth(){
     bootPage();await loadLeads();await preloadClientsCount();
   }catch(e){console.error('Auth boot failed:',e);redirectToLogin();}
 }
+/* Supabase `profiles` supplies identity (name/email) only. Its `role`
+   column is unusable: Create Supabase User never sends a role in
+   user_metadata, so handle_new_user() stamps every single account
+   'Agent'. The CRM role lives in crm.users and is read from there. */
+const CRM_ROLES={admin:'Admin',closer:'Closer','client manager':'Client Manager',client_manager:'Client Manager',analyst:'Analyst'};
+function prettyRole(r){
+  const k=String(r||'').trim().toLowerCase();
+  return CRM_ROLES[k] || (r?String(r).trim():'');
+}
 async function loadUserProfile(user){
   try{
     const{data,error}=await sb.from('profiles').select('id,email,full_name,role,created_at').eq('id',user.id).single();
-    if(error){currentProfile={id:user.id,email:user.email,full_name:user.user_metadata?.full_name||user.email?.split('@')[0]||'User',role:user.user_metadata?.role||'Agent'};}
-    else{currentProfile=data;}
-  }catch(e){currentProfile={id:user.id,email:user.email,full_name:user.email?.split('@')[0]||'User',role:'Agent'};}
+    if(error){currentProfile={id:user.id,email:user.email,full_name:user.user_metadata?.full_name||user.email?.split('@')[0]||'User',role:null};}
+    else{currentProfile={...data, role:null};}
+  }catch(e){currentProfile={id:user.id,email:user.email,full_name:user.email?.split('@')[0]||'User',role:null};}
+  await loadCrmRole(user);
+}
+async function loadCrmRole(user){
+  try{
+    const res=await fetch(API.currentUser,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({supabase_user_id:user.id})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const raw=await res.json();
+    const payload=Array.isArray(raw)?raw[0]:raw;
+    const u=payload&&payload.user?payload.user:null;
+    if(!u){ console.warn('[Role] no crm.users row for this account'); return; }
+    currentProfile.role=u.role||null;
+    currentProfile.crm_user_id=u.id;
+    if(u.full_name) currentProfile.full_name=u.full_name;
+  }catch(e){
+    console.warn('[Role] get-current-user unavailable:',e);
+  }
 }
 function renderUserUI(){
   if(!currentProfile)return;
-  const name=currentProfile.full_name||currentProfile.email||'User',role=currentProfile.role||'Agent';
+  const name=currentProfile.full_name||currentProfile.email||'User';
+  const role=prettyRole(currentProfile.role)||'No CRM role';
   const initls=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
   setEl('userDisplayName',name);setEl('userRoleLabel',role);setEl('userAvatar',initls);setEl('userMenuEmail',currentProfile.email||'—');
   setEl('settingsName',name);setEl('settingsEmail',currentProfile.email||'—');setEl('settingsRole',role);setEl('settingsAvatar',initls);
@@ -635,11 +665,85 @@ function cdpOpenLead(){
   if(lead){openLead(lead.id);}else{toast('Lead #'+lid+' not found.','err');}
 }
 
-function cdpEdit(){
-  if(!currentClient)return;
-  const lid=currentClient.lead_id;
-  if(lid){const lead=allLeads.find(l=>l.id==lid);if(lead){currentLead=lead;lpEdit();return;}}
-  toast('No linked lead to edit.','err');
+/* ---- CLIENT EDITING (crm.clients only) --------------------------
+   Editing a client used to open the Edit Lead modal on the linked
+   crm.leads row, so the two records were impossible to change
+   independently. Clients now have their own modal and their own
+   backend action; nothing here writes to crm.leads.
+   The originating lead stays reachable via "Open Source Lead". */
+async function cdpEdit(){
+  if(!currentClient){ toast('No client selected','err'); return; }
+  const c=currentClient;
+  await ensureClosersLoaded();
+  const statuses=['Active','Paused','Churned'];
+  const cur=c.status||'Active';
+  if(!statuses.includes(cur)) statuses.unshift(cur);
+
+  document.getElementById('clientModalSub').textContent=
+    (c.company_name||'Client #'+c.id)+(c.lead_id?' · converted from lead #'+c.lead_id:'');
+  document.getElementById('clientModalBody').innerHTML=`
+    <div class="section-label">Business</div>
+    <div class="form-group full"><label class="form-label">Company Name</label>
+      <input class="form-input" id="ceCompany" value="${escapeHtml(c.company_name||'')}" placeholder="Acme Car Wash"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group"><label class="form-label">First Name</label>
+        <input class="form-input" id="ceFirst" value="${escapeHtml(c.first_name||'')}"/></div>
+      <div class="form-group"><label class="form-label">Last Name</label>
+        <input class="form-input" id="ceLast" value="${escapeHtml(c.last_name||'')}"/></div>
+      <div class="form-group"><label class="form-label">Email</label>
+        <input class="form-input" id="ceEmail" type="email" value="${escapeHtml(c.email||'')}"/></div>
+      <div class="form-group"><label class="form-label">Phone</label>
+        <input class="form-input" id="cePhone" type="tel" value="${escapeHtml(c.phone||'')}"/></div>
+    </div>
+    <div class="section-label">Account</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group"><label class="form-label">Account Manager</label>
+        <select class="form-select" id="ceManager">
+          <option value="">Unassigned</option>
+          ${Object.keys(closersMap).map(id=>`<option value="${id}" ${String(id)===String(c.account_manager_id)?'selected':''}>${escapeHtml(closersMap[id])}</option>`).join('')}
+        </select></div>
+      <div class="form-group"><label class="form-label">Client Status</label>
+        <select class="form-select" id="ceStatus">
+          ${statuses.map(st=>`<option value="${escapeHtml(st)}" ${st===cur?'selected':''}>${escapeHtml(st)}</option>`).join('')}
+        </select></div>
+    </div>
+    <div style="font-size:11.5px;color:var(--tx3);line-height:1.6;margin-top:4px">
+      Saves to <code>crm.clients</code> only. The originating lead record is not modified${c.lead_id?' — use Open Source Lead to edit lead #'+c.lead_id:''}.
+    </div>`;
+  document.getElementById('clientModal').classList.add('open');
+}
+function closeClientModal(){ document.getElementById('clientModal').classList.remove('open'); }
+
+async function saveClientModal(){
+  if(!currentClient) return;
+  const v=id=>(document.getElementById(id).value||'').trim();
+  const company=v('ceCompany');
+  if(!company){ toast('Company name is required','err'); return; }
+  const btn=document.getElementById('ceSaveBtn');
+  btn.disabled=true; btn.innerHTML='<span class="mat sm spin">sync</span>Saving…';
+  try{
+    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'update_client',id:currentClient.id,
+        company_name:company, first_name:v('ceFirst'), last_name:v('ceLast'),
+        email:v('ceEmail'), phone:v('cePhone'),
+        account_manager_id:v('ceManager'), status:v('ceStatus')})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    closeClientModal();
+    toast('✓ Client updated','ok');
+    const id=currentClient.id;
+    await loadClients();
+    const fresh=allClients.find(x=>x.id==id);
+    if(fresh){ currentClient=fresh; openClientDetail(id); }
+  }catch(e){
+    toast('Failed to save — check the update_client action on the lead-management webhook','err');
+  }finally{
+    btn.disabled=false; btn.innerHTML='<span class="mat sm">save</span>Save Client';
+  }
+}
+
+function cdpOpenSourceLead(){
+  if(!currentClient||!currentClient.lead_id){ toast('This client has no linked lead','err'); return; }
+  openLead(currentClient.lead_id);
 }
 
 async function cdpSaveNote(){
@@ -1158,31 +1262,16 @@ async function lpSetOfferMade(val){
     toast('✓ Offer status saved','ok');
   }catch(e){toast('Failed to save — check the update_offer_made webhook.','err');}
 }
-async function lpEdit(){
+function lpEdit(){
   if(!currentLead)return;
-
-  await loadClosers();
-
-  document.getElementById('modalTitle').textContent='Edit Lead';
-  document.getElementById('modalLeadId').value=currentLead.id;
-
-  document.getElementById('mFirstName').value=currentLead.first_name||'';
-  document.getElementById('mLastName').value=currentLead.last_name||'';
-  document.getElementById('mEmail').value=currentLead.email||'';
-  document.getElementById('mPhone').value=currentLead.phone||'';
-  document.getElementById('mCompany').value=currentLead.company_name||'';
-  document.getElementById('mStatus').value=currentLead.status||'Potential';
-
-  document.getElementById('mOwner').value=currentLead.owner_id||'';
-
-  document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
-  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';
-  document.getElementById('mUtmSource').value=currentLead.utm_source||'';
-  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';
-  document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
-  document.getElementById('mUtmContent').value=currentLead.utm_content||'';
-  document.getElementById('mNotes').value=currentLead.notes||'';
-
+  document.getElementById('modalTitle').textContent='Edit Lead';document.getElementById('modalLeadId').value=currentLead.id;
+  document.getElementById('mFirstName').value=currentLead.first_name||'';document.getElementById('mLastName').value=currentLead.last_name||'';
+  document.getElementById('mEmail').value=currentLead.email||'';document.getElementById('mPhone').value=currentLead.phone||'';
+  document.getElementById('mCompany').value=currentLead.company_name||'';document.getElementById('mStatus').value=currentLead.status||'Potential';
+  document.getElementById('mOwner').value=currentLead.owner_id||'';document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
+  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';document.getElementById('mUtmSource').value=currentLead.utm_source||'';
+  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
+  document.getElementById('mUtmContent').value=currentLead.utm_content||'';document.getElementById('mNotes').value=currentLead.notes||'';
   document.getElementById('modal').classList.add('open');
 }
 async function lpConvert() {
@@ -2031,8 +2120,21 @@ async function rptPopulateFilterOptions(){
     srcSel.value=cur;
   }
 }
+let rptSpendCache={};   // days -> amount, filled from crm.ad_spend
+async function rptFetchAdSpend(days){
+  try{
+    const res=await fetch(API.adSpend+`?days=${days}`);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const raw=await res.json();
+    const row=Array.isArray(raw)?(raw[0]||{}):raw;
+    rptSpendCache[days]=parseFloat(row.amount)||0;
+  }catch(e){ rptSpendCache[days]=0; }
+  return rptSpendCache[days];
+}
 function rptReadAdSpend(days){
-  try{return parseFloat(localStorage.getItem('nxtup-adspend-'+days))||0;}catch(e){return 0;}
+  // Reports read the same crm.ad_spend total the Funnel page uses.
+  if(rptSpendCache[days]===undefined){ rptFetchAdSpend(days); return 0; }
+  return rptSpendCache[days];
 }
 function rptEmptyState(icon,msg){
   return`<div class="empty-state" style="padding:32px 20px"><span class="mat">${icon}</span><p>${msg}</p></div>`;
@@ -2532,31 +2634,65 @@ function renderAnalytics(){
    doesn't live on a lead, so it's captured per-period below.
    ============================================================ */
 let fnPeriodDays=7;
-function fnPeriodKey(){return `nxtup-adspend-${fnPeriodDays}`;}
+let fnSpend=null;        // {amount, entries} or null when unavailable
+let fnSpendRows=null;
+
 async function fnLoadAdSpend(){
+  const note=document.getElementById('fnAdSpendNote');
   try{
     const res=await fetch(API.adSpend+`?days=${fnPeriodDays}`);
-    if(!res.ok)throw new Error('no endpoint yet');
-    const data=await res.json();
-    document.getElementById('fnAdSpendNote').textContent='Loaded from your ad-spend webhook.';
-    return parseFloat(data.amount)||0;
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const raw=await res.json();
+    const row=Array.isArray(raw)?(raw[0]||{}):raw;
+    fnSpend={amount:parseFloat(row.amount)||0, entries:parseInt(row.entries,10)||0};
+    if(note) note.innerHTML=fnSpend.entries
+      ? `<b>${fnSpend.entries}</b> spend entr${fnSpend.entries===1?'y':'ies'} in this period, stored in <code>crm.ad_spend</code>.`
+      : 'No ad spend recorded for this period yet. Add a day below and the cost metrics will calculate.';
+    return fnSpend.amount;
   }catch(e){
-    document.getElementById('fnAdSpendNote').innerHTML='Saved locally in this browser until the <code>ad-spend</code> n8n webhook is connected.';
-    return parseFloat(localStorage.getItem(fnPeriodKey()))||0;
+    fnSpend=null;
+    if(note) note.innerHTML='<span style="color:var(--am)">Ad spend service unavailable — the <code>ad-spend</code> webhook did not respond. Cost metrics stay blank rather than showing a stale number.</span>';
+    return 0;
   }
 }
-async function fnSaveAdSpend(){
-  const val=parseFloat(document.getElementById('fnAdSpendInput').value)||0;
+
+async function fnLoadAdSpendRows(){
   try{
-    const res=await fetch(API.adSpend,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({days:fnPeriodDays,amount:val})});
-    if(!res.ok)throw new Error('no endpoint yet');
-    toast('✓ Ad spend saved to server','ok');
-  }catch(e){
-    localStorage.setItem(fnPeriodKey(),String(val));
-    toast('✓ Ad spend saved locally (webhook not connected yet)','ok');
-  }
-  renderFunnelDashboard();
+    const res=await fetch(API.adSpendList+`?days=${fnPeriodDays}`);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const raw=await res.json();
+    fnSpendRows=Array.isArray(raw)?raw.filter(r=>r&&r.spend_date):[];
+  }catch(e){ fnSpendRows=null; }
+  fnRenderSpendRows();
 }
+
+function fnRenderSpendRows(){
+  const el=document.getElementById('fnAdSpendRows'); if(!el) return;
+  if(fnSpendRows===null){ el.innerHTML=''; return; }
+  if(!fnSpendRows.length){ el.innerHTML='<div style="font-size:12px;color:var(--tx3);padding:8px 0">No entries in this period.</div>'; return; }
+  el.innerHTML='<table class="dt"><thead><tr><th>Date</th><th>Amount</th><th>Note</th></tr></thead><tbody>'
+    + fnSpendRows.map(r=>`<tr><td style="font-weight:600">${fmtDate(r.spend_date)}</td><td>$${(parseFloat(r.amount)||0).toFixed(2)}</td><td style="color:var(--tx3)">${escapeHtml(r.note||'')}</td></tr>`).join('')
+    + '</tbody></table>';
+}
+
+async function fnSaveAdSpend(){
+  const amtEl=document.getElementById('fnAdSpendInput');
+  const dateEl=document.getElementById('fnAdSpendDate');
+  const val=parseFloat(amtEl.value);
+  if(isNaN(val)||val<0){ toast('Enter a valid amount','err'); return; }
+  const spend_date=(dateEl&&dateEl.value)||new Date().toISOString().slice(0,10);
+  try{
+    const res=await fetch(API.adSpendSave,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({spend_date, amount:val, note:''})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    toast('✓ Ad spend saved','ok');
+    amtEl.value='';
+    renderFunnelDashboard();
+  }catch(e){
+    toast('Failed to save — check the ad-spend-save webhook','err');
+  }
+}
+
 function fnSetPeriod(days){
   fnPeriodDays=days;
   document.querySelectorAll('#fnPeriodGroup .topt').forEach(t=>t.classList.toggle('active',parseInt(t.dataset.period)===days));
@@ -2582,8 +2718,10 @@ function fnMetricCard(label,value,valid,hint){
   </div>`;
 }
 async function renderFunnelDashboard(){
+  const dEl=document.getElementById('fnAdSpendDate');
+  if(dEl && !dEl.value) dEl.value=new Date().toISOString().slice(0,10);
   const spend=await fnLoadAdSpend();
-  document.getElementById('fnAdSpendInput').value=spend||'';
+  fnLoadAdSpendRows();
   const leads=fnLeadsInPeriod();
   const booked=leads.filter(l=>l.preferred_date).length;
   const shown=leads.filter(l=>l.show_status==='showed').length;
