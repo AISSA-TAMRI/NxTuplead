@@ -1158,31 +1158,16 @@ async function lpSetOfferMade(val){
     toast('✓ Offer status saved','ok');
   }catch(e){toast('Failed to save — check the update_offer_made webhook.','err');}
 }
-async function lpEdit(){
+function lpEdit(){
   if(!currentLead)return;
-
-  await loadClosers();
-
-  document.getElementById('modalTitle').textContent='Edit Lead';
-  document.getElementById('modalLeadId').value=currentLead.id;
-
-  document.getElementById('mFirstName').value=currentLead.first_name||'';
-  document.getElementById('mLastName').value=currentLead.last_name||'';
-  document.getElementById('mEmail').value=currentLead.email||'';
-  document.getElementById('mPhone').value=currentLead.phone||'';
-  document.getElementById('mCompany').value=currentLead.company_name||'';
-  document.getElementById('mStatus').value=currentLead.status||'Potential';
-
-  document.getElementById('mOwner').value=currentLead.owner_id||'';
-
-  document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
-  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';
-  document.getElementById('mUtmSource').value=currentLead.utm_source||'';
-  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';
-  document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
-  document.getElementById('mUtmContent').value=currentLead.utm_content||'';
-  document.getElementById('mNotes').value=currentLead.notes||'';
-
+  document.getElementById('modalTitle').textContent='Edit Lead';document.getElementById('modalLeadId').value=currentLead.id;
+  document.getElementById('mFirstName').value=currentLead.first_name||'';document.getElementById('mLastName').value=currentLead.last_name||'';
+  document.getElementById('mEmail').value=currentLead.email||'';document.getElementById('mPhone').value=currentLead.phone||'';
+  document.getElementById('mCompany').value=currentLead.company_name||'';document.getElementById('mStatus').value=currentLead.status||'Potential';
+  document.getElementById('mOwner').value=currentLead.owner_id||'';document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
+  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';document.getElementById('mUtmSource').value=currentLead.utm_source||'';
+  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
+  document.getElementById('mUtmContent').value=currentLead.utm_content||'';document.getElementById('mNotes').value=currentLead.notes||'';
   document.getElementById('modal').classList.add('open');
 }
 async function lpConvert() {
@@ -4178,12 +4163,321 @@ function chManualUpdateBulkBar(){
   if(selectAll)selectAll.checked=total>0&&checked===total;
 }
 
-/* ---- SNIPPETS ----
-   Local-only storage (see comment on the HTML block above). Shape:
-   { id, name, content, channel: 'sms'|'email'|'any', created_at } */
-const CH_SNIPPETS_KEY='upclose_snippets_v1';
-function chLoadSnippets(){try{return JSON.parse(localStorage.getItem(CH_SNIPPETS_KEY)||'[]');}catch(e){return[];}}
-function chSaveSnippets(list){localStorage.setItem(CH_SNIPPETS_KEY,JSON.stringify(list));}
+/* ================================================================
+   SNIPPETS  (PostgreSQL-backed via n8n — no localStorage)
+   ----------------------------------------------------------------
+   One module serves both workspaces, but the scope is explicit on
+   every call and enforced again server-side:
+
+     scope 'agency'  → crm.snippets WHERE scope='agency'   (crm.leads)
+     scope 'client'  → crm.snippets WHERE client_id = N    (crm.subleads)
+
+   An agency snippet can never be written with a client_id, and a
+   client snippet can never be read without one.
+   ================================================================ */
+
+const SNIP_API = {
+  list:   'https://n8n.upleaddigital.com/webhook/upclose-snippets',
+  save:   'https://n8n.upleaddigital.com/webhook/upclose-snippet-save',
+  remove: 'https://n8n.upleaddigital.com/webhook/upclose-snippet-delete'
+};
+
+const SNIP_VARS = ['first_name','last_name','company_name','email','phone'];
+
+let snipAgency  = null;   // null = not loaded, [] = loaded empty
+let snipClient  = null;
+let snipClientId = null;  // which client snipClient belongs to
+let snipError   = null;
+let snipEditCtx = null;
+
+function snipScopeOf(scope){ return scope==='client'?'client':'agency'; }
+function snipCache(scope){ return snipScopeOf(scope)==='client'?(snipClient||[]):(snipAgency||[]); }
+
+async function snipLoad(scope, force){
+  scope = snipScopeOf(scope);
+  if(scope==='client'){
+    if(!activeWorkspaceClientId) return [];
+    if(!force && snipClient && snipClientId===activeWorkspaceClientId) return snipClient;
+  }else if(!force && snipAgency){ return snipAgency; }
+
+  const qs = scope==='client' ? '?scope=client&client_id='+activeWorkspaceClientId : '?scope=agency';
+  try{
+    const res=await fetch(SNIP_API.list+qs);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const raw=await res.json();
+    const rows=(Array.isArray(raw)?raw:(raw.snippets||[])).filter(r=>r&&r.id);
+    snipError=null;
+    if(scope==='client'){ snipClient=rows; snipClientId=activeWorkspaceClientId; }
+    else snipAgency=rows;
+    return rows;
+  }catch(e){
+    console.warn('Snippets load failed',e);
+    snipError=e.message||'request failed';
+    if(scope==='client'){ snipClient=null; } else { snipAgency=null; }
+    return [];
+  }
+}
+
+/* ---- Variable rendering ----------------------------------------
+   Every supported token is replaced with a real value or an empty
+   string — an unresolved {{token}} or the word "undefined" can never
+   reach the composer. Missing fields are reported back so the user
+   knows what to fill in by hand. */
+function snipRender(content, subject){
+  const src = subject || {};
+  const values = {
+    first_name:   src.first_name,
+    last_name:    src.last_name,
+    company_name: src.company_name,
+    email:        src.email,
+    phone:        src.phone
+  };
+  const missing = [];
+  let out = String(content||'');
+  SNIP_VARS.forEach(k=>{
+    const re = new RegExp('{{\\s*'+k+'\\s*}}','gi');
+    if(!re.test(out)) return;
+    const v = values[k];
+    const clean = (v===undefined || v===null || String(v).trim()==='') ? '' : String(v).trim();
+    if(!clean) missing.push(k);
+    out = out.replace(new RegExp('{{\\s*'+k+'\\s*}}','gi'), clean);
+  });
+  // Tidy the gaps an empty value leaves behind.
+  out = out.replace(/[ \t]{2,}/g,' ').replace(/ +([,.!?])/g,'$1').replace(/\n{3,}/g,'\n\n').trim();
+  return {text:out, missing};
+}
+
+function snipInsertInto(textareaId, content, subject){
+  const box=document.getElementById(textareaId);
+  if(!box) return;
+  const {text,missing}=snipRender(content,subject);
+  box.value = box.value ? box.value.replace(/\s*$/,'')+'\n'+text : text;
+  box.focus();
+  box.setSelectionRange(box.value.length, box.value.length);
+  box.dispatchEvent(new Event('input',{bubbles:true}));
+  if(missing.length){
+    toast('Inserted — no value on file for: '+missing.map(m=>m.replace(/_/g,' ')).join(', '),'err');
+  }
+  // Deliberately never sends. The user reviews and presses send.
+}
+
+/* ================================================================
+   AGENCY — Communication Hub
+   ================================================================ */
+
+function chSnippetSubject(){
+  const l=(allLeads||[]).find(x=>x.id===chActiveLeadId);
+  return l?{first_name:l.first_name,last_name:l.last_name,company_name:l.company_name,email:l.email,phone:l.phone}:null;
+}
+
+async function chRenderSnippets(){
+  const body=document.getElementById('chSnippetsTableBody'); if(!body) return;
+  body.innerHTML='<tr><td colspan="6" style="padding:22px;text-align:center;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</td></tr>';
+  await snipLoad('agency');
+  const searchEl=document.getElementById('chSnippetsSearch');
+  const q=(searchEl?searchEl.value:'').toLowerCase();
+  let list=snipCache('agency');
+  if(q) list=list.filter(s=>String(s.name).toLowerCase().includes(q)||String(s.content).toLowerCase().includes(q));
+  const selectAll=document.getElementById('chSnippetsSelectAll'); if(selectAll) selectAll.checked=false;
+  chSnippetsUpdateBulkBar();
+
+  if(snipError){
+    body.innerHTML=`<tr><td colspan="6"><div class="empty-state"><span class="mat">cloud_off</span><p>Couldn't reach the snippets service (<code>upclose-snippets</code>).</p><button class="abtn" onclick="chRenderSnippets()"><span class="mat sm">refresh</span>Retry</button></div></td></tr>`;
+    return;
+  }
+  if(!list.length){
+    body.innerHTML=`<tr><td colspan="6"><div class="empty-state"><span class="mat">flash_on</span><p>${q?'No snippets match that search.':'No snippets yet. Create one to reuse it from the Conversations composer.'}</p></div></td></tr>`;
+    return;
+  }
+  body.innerHTML=list.map(s=>`<tr>
+    <td><input type="checkbox" class="ch-row-check" data-id="${s.id}" style="accent-color:var(--acc)"/></td>
+    <td style="font-weight:600">${escapeHtml(s.name)}</td>
+    <td style="max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2)">${escapeHtml(s.content)}</td>
+    <td>${s.channel==='sms'?'SMS':s.channel==='email'?'Email':'Any'}</td>
+    <td>${fmtDate(s.updated_at||s.created_at)}</td>
+    <td>
+      <button class="tbb" title="Use in Conversations" onclick="chInsertSnippet(${s.id})"><span class="mat">forum</span></button>
+      <button class="tbb" title="Edit" onclick="snipOpenEditor('agency',${s.id})"><span class="mat">edit</span></button>
+      <button class="tbb" title="Delete" onclick="chDeleteSnippet(${s.id})"><span class="mat">delete</span></button>
+    </td></tr>`).join('');
+  body.querySelectorAll('.ch-row-check').forEach(cb=>cb.addEventListener('change',chSnippetsUpdateBulkBar));
+}
+
+function chOpenSnippetEditor(id){ snipOpenEditor('agency', id); }
+
+async function chDeleteSnippet(id){
+  await snipDelete('agency',[id]);
+  chRenderSnippets();
+}
+async function chSnippetsBulkDelete(){
+  const ids=[...document.querySelectorAll('#chSnippetsTableBody .ch-row-check:checked')].map(cb=>parseInt(cb.dataset.id,10));
+  if(!ids.length) return;
+  if(!confirm(`Delete ${ids.length} snippet(s)? This can't be undone.`)) return;
+  await snipDelete('agency',ids);
+  chRenderSnippets();
+}
+
+function chInsertSnippet(id){
+  const s=snipCache('agency').find(x=>String(x.id)===String(id)); if(!s) return;
+  chSwitchSubPage('conversations');
+  if(!chActiveLeadId){ toast('Select a lead in Conversations, then insert the snippet','err'); return; }
+  snipInsertInto('chComposerBody', s.content, chSnippetSubject());
+}
+
+async function chRenderSnippetQuickList(){
+  const pop=document.getElementById('chSnippetQuickList'); if(!pop) return;
+  pop.innerHTML='<div class="ch-snip-pop-empty"><span class="spin mat sm">sync</span> Loading…</div>';
+  await snipLoad('agency');
+  const list=snipCache('agency');
+  if(snipError){ pop.innerHTML='<div class="ch-snip-pop-empty">Snippets service unavailable.</div>'; return; }
+  if(!list.length){
+    pop.innerHTML='<div class="ch-snip-pop-empty">No snippets yet — <a onclick="chToggleSnippetQuickList();chSwitchSubPage(\'snippets\')">create one →</a></div>';
+    return;
+  }
+  pop.innerHTML=list.map(s=>`<div class="ch-snip-pop-item" onclick="chInsertSnippet(${s.id});chToggleSnippetQuickList(false)"><b>${escapeHtml(s.name)}</b><span>${escapeHtml(String(s.content).slice(0,64))}</span></div>`).join('')
+    +'<div class="ch-snip-pop-item" onclick="chToggleSnippetQuickList(false);snipOpenEditor(\'agency\')" style="color:var(--acc)"><b>+ New snippet</b></div>';
+}
+function chToggleSnippetQuickList(force){
+  const pop=document.getElementById('chSnippetQuickList'); if(!pop) return;
+  const opening=typeof force==='boolean'?force:!pop.classList.contains('open');
+  pop.classList.toggle('open',opening);
+  if(opening) chRenderSnippetQuickList();
+}
+
+/* ================================================================
+   SHARED EDITOR + PERSISTENCE
+   ================================================================ */
+
+function snipOpenEditor(scope, id){
+  scope=snipScopeOf(scope);
+  const existing=id?snipCache(scope).find(s=>String(s.id)===String(id)):null;
+  snipEditCtx={scope, id:existing?existing.id:null};
+  document.getElementById('snipModalTitle').textContent=existing?'Edit Snippet':'New Snippet';
+  document.getElementById('snipModalSub').textContent=
+    scope==='client'
+      ? 'Client snippet · '+((cwClient&&cwClient.company_name)||'this client')+' only'
+      : 'Agency snippet · available on every agency lead';
+  document.getElementById('snipModalBody').innerHTML=`
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px">
+      <div class="form-group"><label class="form-label">Name</label>
+        <input class="form-input" id="snipName" placeholder="e.g. Intro follow-up" value="${escapeHtml(existing?existing.name:'')}"/></div>
+      <div class="form-group"><label class="form-label">Channel</label>
+        <select class="form-select" id="snipChannel">
+          <option value="any" ${!existing||existing.channel==='any'?'selected':''}>Any</option>
+          <option value="sms" ${existing&&existing.channel==='sms'?'selected':''}>SMS</option>
+          <option value="email" ${existing&&existing.channel==='email'?'selected':''}>Email</option>
+        </select></div>
+    </div>
+    <div class="form-group full"><label class="form-label">Message</label>
+      <textarea class="form-textarea" id="snipContent" style="min-height:130px" placeholder="Write your reusable message…">${escapeHtml(existing?existing.content:'')}</textarea></div>
+    <div class="form-group full">
+      <label class="form-label">Variables — click to insert</label>
+      <div class="snip-vars">
+        ${SNIP_VARS.map(v=>`<button type="button" class="snip-var" onclick="snipInsertVar('${v}')">{{${v}}}</button>`).join('')}
+      </div>
+      <div style="font-size:11.5px;color:var(--tx3);margin-top:6px;line-height:1.6">Filled from the ${scope==='client'?'selected sublead':'selected lead'} when you insert the snippet. A field with no value is replaced with nothing rather than the word “undefined”.</div>
+    </div>`;
+  document.getElementById('snipModal').classList.add('open');
+  setTimeout(()=>{const n=document.getElementById('snipName'); if(n) n.focus();},40);
+}
+function snipCloseEditor(){ document.getElementById('snipModal').classList.remove('open'); snipEditCtx=null; }
+
+function snipInsertVar(v){
+  const box=document.getElementById('snipContent'); if(!box) return;
+  const tok='{{'+v+'}}';
+  const s=box.selectionStart||box.value.length, e=box.selectionEnd||box.value.length;
+  box.value=box.value.slice(0,s)+tok+box.value.slice(e);
+  box.focus();
+  box.setSelectionRange(s+tok.length, s+tok.length);
+}
+
+async function snipSaveEditor(){
+  if(!snipEditCtx) return;
+  const name=document.getElementById('snipName').value.trim();
+  const content=document.getElementById('snipContent').value.trim();
+  if(!name||!content){ toast('Name and message are both required','err'); return; }
+  const btn=document.getElementById('snipSaveBtn');
+  btn.disabled=true; btn.innerHTML='<span class="mat sm spin">sync</span>Saving…';
+  const payload={
+    id:snipEditCtx.id||'',
+    scope:snipEditCtx.scope,
+    client_id:snipEditCtx.scope==='client'?activeWorkspaceClientId:'',
+    name, content,
+    channel:document.getElementById('snipChannel').value,
+    userEmail:(currentUser&&currentUser.email)||''
+  };
+  try{
+    const res=await fetch(SNIP_API.save,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    snipCloseEditor();
+    toast('✓ Snippet saved','ok');
+    await snipLoad(snipEditCtx?snipEditCtx.scope:payload.scope, true);
+    if(payload.scope==='client'){ cvxToggleSnippets(false); }
+    else chRenderSnippets();
+  }catch(e){
+    toast('Failed to save — check the upclose-snippet-save webhook','err');
+  }finally{
+    btn.disabled=false; btn.innerHTML='<span class="mat sm">save</span>Save Snippet';
+  }
+}
+
+async function snipDelete(scope, ids){
+  scope=snipScopeOf(scope);
+  try{
+    const res=await fetch(SNIP_API.remove,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ids, scope, client_id:scope==='client'?activeWorkspaceClientId:''})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    toast(ids.length>1?`Deleted ${ids.length} snippets`:'Snippet deleted','ok');
+    await snipLoad(scope,true);
+    return true;
+  }catch(e){ toast('Failed to delete — try again','err'); return false; }
+}
+
+/* ================================================================
+   CLIENT WORKSPACE — Conversations composer
+   ================================================================ */
+
+function cvxSnippetSubject(){
+  const s=cvxActive();
+  if(!s) return null;
+  return {
+    first_name:s.first_name, last_name:s.last_name,
+    company_name:(cwClient&&cwClient.company_name)||'',
+    email:s.email, phone:s.phone
+  };
+}
+
+async function cvxToggleSnippets(force){
+  const el=document.getElementById('cvxSnippetPop'); if(!el) return;
+  const show=force!==undefined?force:!el.classList.contains('open');
+  if(!show){ el.classList.remove('open'); return; }
+  el.classList.add('open');
+  el.innerHTML='<div class="ch-snip-item"><span class="spin mat sm">sync</span> Loading…</div>';
+  await snipLoad('client');
+  const links=cvxLoadLinks().map(l=>({id:'link:'+l.id,name:'🔗 '+l.name,content:l.url}));
+  const items=snipCache('client').concat(links);
+  if(snipError){ el.innerHTML='<div class="ch-snip-item">Snippets service unavailable.</div>'; return; }
+  el.innerHTML=(items.length
+      ? items.map(sn=>`<div class="ch-snip-item" onclick="cvxInsert('${sn.id}')"><b>${escapeHtml(sn.name)}</b><span>${escapeHtml(String(sn.content).slice(0,54))}</span></div>`).join('')
+      : '')
+    +'<div class="ch-snip-item" onclick="cvxToggleSnippets(false);snipOpenEditor(\'client\')" style="color:var(--acc)"><b>+ New snippet</b><span>Saved for this client</span></div>';
+}
+
+function cvxInsert(id){
+  const key=String(id);
+  let content=null;
+  if(key.indexOf('link:')===0){
+    const l=cvxLoadLinks().find(x=>('link:'+x.id)===key);
+    content=l?l.url:null;
+  }else{
+    const s=snipCache('client').find(x=>String(x.id)===key);
+    content=s?s.content:null;
+  }
+  if(content===null) return;
+  cvxToggleSnippets(false);
+  snipInsertInto('cvxComposerBody', content, cvxSnippetSubject());
+}
+
 function chSnippetsUpdateBulkBar(){
   const bar=document.getElementById('chSnippetsBulkBar');if(!bar)return;
   const checked=document.querySelectorAll('#chSnippetsTableBody .ch-row-check:checked').length;
@@ -4192,76 +4486,6 @@ function chSnippetsUpdateBulkBar(){
   const selectAll=document.getElementById('chSnippetsSelectAll');
   const total=document.querySelectorAll('#chSnippetsTableBody .ch-row-check').length;
   if(selectAll)selectAll.checked=total>0&&checked===total;
-}
-function chSnippetsBulkDelete(){
-  const ids=[...document.querySelectorAll('#chSnippetsTableBody .ch-row-check:checked')].map(cb=>cb.dataset.id);
-  if(!ids.length)return;
-  if(!confirm(`Delete ${ids.length} snippet(s)? This can't be undone.`))return;
-  chSaveSnippets(chLoadSnippets().filter(s=>!ids.includes(s.id)));
-  chRenderSnippets();
-  toast(`Deleted ${ids.length} snippet(s)`);
-}
-function chRenderSnippets(){
-  const body=document.getElementById('chSnippetsTableBody');if(!body)return;
-  const searchEl=document.getElementById('chSnippetsSearch');
-  const q=(searchEl?searchEl.value:'').toLowerCase();
-  let list=chLoadSnippets();
-  if(q)list=list.filter(s=>s.name.toLowerCase().includes(q)||s.content.toLowerCase().includes(q));
-  const selectAll=document.getElementById('chSnippetsSelectAll');if(selectAll)selectAll.checked=false;
-  chSnippetsUpdateBulkBar();
-  if(!list.length){body.innerHTML='<tr><td colspan="6" style="padding:26px;text-align:center;color:var(--tx3);font-size:13px">No snippets yet. Create one to reuse it from the Conversations composer.</td></tr>';return;}
-  body.innerHTML=list.map(s=>`<tr>
-    <td><input type="checkbox" class="ch-row-check" data-id="${s.id}" style="accent-color:var(--acc)"/></td>
-    <td style="font-weight:600">${escapeHtml(s.name)}</td>
-    <td style="max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2)">${escapeHtml(s.content)}</td>
-    <td>${s.channel==='sms'?'SMS':s.channel==='email'?'Email':'Text'}</td>
-    <td>${fmtDate(s.created_at)}</td>
-    <td>
-      <button class="tbb" title="Use in Conversations" onclick="chInsertSnippet('${s.id}')"><span class="mat">forum</span></button>
-      <button class="tbb" title="Edit" onclick="chOpenSnippetEditor('${s.id}')"><span class="mat">edit</span></button>
-      <button class="tbb" title="Delete" onclick="chDeleteSnippet('${s.id}')"><span class="mat">delete</span></button>
-    </td>
-  </tr>`).join('');
-  body.querySelectorAll('.ch-row-check').forEach(cb=>cb.addEventListener('change',chSnippetsUpdateBulkBar));
-}
-function chOpenSnippetEditor(id){
-  const list=chLoadSnippets();
-  const existing=id?list.find(s=>s.id===id):null;
-  const name=prompt('Snippet name',existing?existing.name:'');
-  if(name===null)return;
-  const content=prompt('Snippet text',existing?existing.content:'');
-  if(content===null)return;
-  if(!name.trim()||!content.trim()){toast('Name and text are both required','err');return;}
-  if(existing){existing.name=name.trim();existing.content=content.trim();}
-  else list.push({id:'sn_'+Date.now(),name:name.trim(),content:content.trim(),channel:'any',created_at:new Date().toISOString()});
-  chSaveSnippets(list);
-  chRenderSnippets();
-  toast('Snippet saved');
-}
-function chDeleteSnippet(id){
-  chSaveSnippets(chLoadSnippets().filter(s=>s.id!==id));
-  chRenderSnippets();
-}
-function chInsertSnippet(id){
-  const s=chLoadSnippets().find(x=>x.id===id);if(!s)return;
-  chSwitchSubPage('conversations');
-  const body=document.getElementById('chComposerBody');
-  if(!chActiveLeadId){toast('Select a lead in Conversations, then insert the snippet','err');return;}
-  body.value=(body.value?body.value+'\n':'')+s.content;
-  body.focus();
-}
-
-function chRenderSnippetQuickList(){
-  const pop=document.getElementById('chSnippetQuickList');if(!pop)return;
-  const list=chLoadSnippets();
-  if(!list.length){pop.innerHTML='<div class="ch-snip-pop-empty">No snippets saved yet — <a onclick="chToggleSnippetQuickList();chSwitchSubPage(\'snippets\')">create one →</a></div>';return;}
-  pop.innerHTML=list.map(s=>`<div class="ch-snip-pop-item" onclick="chInsertSnippet('${s.id}');chToggleSnippetQuickList()"><b>${escapeHtml(s.name)}</b><span>${escapeHtml(s.content.slice(0,64))}</span></div>`).join('');
-}
-function chToggleSnippetQuickList(force){
-  const pop=document.getElementById('chSnippetQuickList');if(!pop)return;
-  const opening=typeof force==='boolean'?force:!pop.classList.contains('open');
-  pop.classList.toggle('open',opening);
-  if(opening)chRenderSnippetQuickList();
 }
 
 /* ---- TRIGGER LINKS ----
@@ -5060,7 +5284,6 @@ let cwSubFilter   = 'all';
 let cwSubSearch   = '';
 let cwReviewConfig = null;      // {review_url, google_review_url, enabled, configured}
 let cwReviewActivities = null;  // real review_request rows, or null when unavailable
-let cwLoadedClientId   = null;  // guards against cross-client state bleed
 
 /* ---- Entry / exit ---------------------------------------------- */
 
@@ -5072,21 +5295,12 @@ function openClientWorkspace(clientId, sub){
   navigate('workspace', false);
 }
 
-/* Never throw during boot if the shell markup is an older cached copy —
-   a thrown error here stops app.js before window.__initApp is defined,
-   which leaves the app stuck on "Authenticating…" forever. */
-function cwSetRail(inWorkspace){
-  const na=document.getElementById('navAgency'), nc=document.getElementById('navClient');
-  if(na) na.style.display = inWorkspace ? 'none' : '';
-  if(nc) nc.style.display = inWorkspace ? '' : 'none';
-  return !!(na && nc);
-}
 function cwExit(){
   activeWorkspaceClientId = null;
   cwClient = null; cwSubleads = []; cwSubleadsError = null;
   cwReviewConfig = null; cwReviewActivities = null;
-  cvxActivities=null; cvxTasks=null; cvxActiveId=null; cvxFilter='all'; cvxSearch=''; cvxError=null;
-  cwSetRail(false);
+  document.getElementById('navAgency').style.display = '';
+  document.getElementById('navClient').style.display = 'none';
   navigate('clients');
 }
 
@@ -5105,21 +5319,9 @@ function cwBoot(){
   if(parts[2] && CW_PAGES.includes(parts[2])) cwPage = parts[2];
 
   if(!activeWorkspaceClientId){ cwExit(); return; }
-  if(!document.getElementById('cwv-overview')){
-    // pages/workspace.html did not load — fall back rather than half-render.
-    console.error('Client Workspace fragment missing: check pages/workspace.html');
-    cwExit(); return;
-  }
 
-  // Hard reset whenever the client context changes, so no data, cache or
-  // selection can bleed from one client's workspace into another's.
-  if(cwLoadedClientId !== null && cwLoadedClientId !== activeWorkspaceClientId){
-    cwSubleads=[]; cwSubleadsError=null; cwReviewConfig=null; cwReviewActivities=null;
-    cvxActivities=null; cvxTasks=null; cvxActiveId=null; cvxFilter='all'; cvxSearch=''; cvxError=null;
-  }
-  cwLoadedClientId = activeWorkspaceClientId;
-
-  cwSetRail(true);
+  document.getElementById('navAgency').style.display = 'none';
+  document.getElementById('navClient').style.display = '';
 
   const apply = () => {
     cwClient = allClients.find(c=>c.id==activeWorkspaceClientId) || null;
@@ -5152,7 +5354,6 @@ function cwRenderShell(){
   if(cwPage==='overview')     cwRenderOverview();
   if(cwPage==='subleads')     cwRenderSubleads();
   if(cwPage==='reviews')      cwRenderReviews();
-  if(cwPage==='conversations') cvxOpen();
   if(cwPage==='automations')  autoShowList();
 }
 
@@ -5657,11 +5858,8 @@ let cvxLoading      = false;
 let cvxError        = null;
 
 /* Client-scoped local stores. Client A can never read client B's. */
-function cvxSnippetKey(){ return 'upclose_cw_snippets_v1::client_'+activeWorkspaceClientId; }
 function cvxLinkKey(){    return 'upclose_cw_links_v1::client_'+activeWorkspaceClientId; }
 function cvxSeenKey(){    return 'upclose_cw_seen_v1::client_'+activeWorkspaceClientId; }
-function cvxLoadSnippets(){ try{ return JSON.parse(localStorage.getItem(cvxSnippetKey())||'[]'); }catch(e){ return []; } }
-function cvxSaveSnippets(l){ localStorage.setItem(cvxSnippetKey(), JSON.stringify(l)); }
 function cvxLoadLinks(){ try{ return JSON.parse(localStorage.getItem(cvxLinkKey())||'[]'); }catch(e){ return []; } }
 function cvxSaveLinks(l){ localStorage.setItem(cvxLinkKey(), JSON.stringify(l)); }
 function cvxLoadSeen(){ try{ return JSON.parse(localStorage.getItem(cvxSeenKey())||'{}'); }catch(e){ return {}; } }
@@ -5847,7 +6045,7 @@ function cvxRenderThread(){
     </div>
     <div style="flex:1"></div>
     <div style="display:flex;gap:5px">
-      <button class="tbb ch-icon-btn" title="${s.phone?'Call this sublead':'No phone number'}" ${s.phone?`onclick="cvxCall(${s.id})"`:'disabled'}><span class="mat">call</span></button>
+      <button class="tbb ch-icon-btn" title="${s.phone?'Call this sublead':'No phone number'}" ${s.phone?`onclick="cvxCall('${escapeHtml(s.phone)}')"`:'disabled'}><span class="mat">call</span></button>
       <button class="tbb ch-icon-btn" title="Request a review" onclick="cwRequestReview(${s.id})"><span class="mat">reviews</span></button>
     </div>`;
 
@@ -6007,46 +6205,15 @@ async function cvxSetStatus(v){
   s.status=v; cvxRenderAll();
 }
 
-function cvxCall(subleadId){
+function cvxCall(phone){
   // No sublead voice backend exists. Hand off to the device dialler
   // rather than pretending an in-app call was placed.
-  const s=cwSubleads.find(x=>String(x.id)===String(subleadId));
-  if(!s||!s.phone){ toast('No phone number for this sublead','err'); return; }
-  window.location.href='tel:'+String(s.phone).replace(/[^0-9+]/g,'');
+  window.location.href='tel:'+String(phone).replace(/[^0-9+]/g,'');
 }
 
 /* ---- Snippets & links (client-scoped) --------------------------- */
 
-function cvxToggleSnippets(force){
-  const el=document.getElementById('cvxSnippetPop'); if(!el) return;
-  const show=force!==undefined?force:!el.classList.contains('open');
-  if(show){
-    const items=cvxLoadSnippets().concat(cvxLoadLinks().map(l=>({id:l.id,name:'🔗 '+l.name,content:l.url})));
-    el.innerHTML=items.length
-      ? items.map(sn=>`<div class="ch-snip-item" onclick="cvxInsert('${sn.id}')"><b>${escapeHtml(sn.name)}</b><span>${escapeHtml(String(sn.content).slice(0,54))}</span></div>`).join('')
-        +'<div class="ch-snip-item" onclick="cvxNewSnippet()" style="color:var(--acc)"><b>+ New snippet</b></div>'
-      : '<div class="ch-snip-item" onclick="cvxNewSnippet()" style="color:var(--acc)"><b>+ New snippet</b><span>Saved for this client only</span></div>';
-    el.classList.add('open');
-  } else el.classList.remove('open');
-}
-function cvxInsert(id){
-  const all=cvxLoadSnippets().concat(cvxLoadLinks().map(l=>({id:l.id,content:l.url})));
-  const sn=all.find(x=>x.id===id); if(!sn) return;
-  const s=cvxActive();
-  const box=document.getElementById('cvxComposerBody');
-  let txt=String(sn.content)
-    .replace(/{{\s*first_name\s*}}/gi,(s&&s.first_name)||'')
-    .replace(/{{\s*business_name\s*}}/gi,(cwClient&&cwClient.company_name)||'');
-  box.value=(box.value?box.value+' ':'')+txt;
-  cvxToggleSnippets(false); box.focus();
-}
-function cvxNewSnippet(){
-  const name=prompt('Snippet name'); if(name===null||!name.trim()) return;
-  const content=prompt('Snippet text (use {{first_name}}, {{business_name}})'); if(content===null||!content.trim()) return;
-  const l=cvxLoadSnippets(); l.push({id:'cs_'+Date.now(),name:name.trim(),content:content.trim()});
-  cvxSaveSnippets(l); cvxToggleSnippets(true); toast('Snippet saved for this client');
-}
-function cvxNewLink(){
+async function cvxNewLink(){
   const name=prompt('Link name'); if(name===null||!name.trim()) return;
   const url=prompt('URL','https://'); if(url===null||!url.trim()) return;
   const l=cvxLoadLinks(); l.push({id:'cl_'+Date.now(),name:name.trim(),url:url.trim()});
