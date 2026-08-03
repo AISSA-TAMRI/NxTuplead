@@ -1082,3 +1082,29 @@ html[data-theme="dark"] .rec-video-area{border-bottom:1px solid var(--bd)}
 .cvx-task-t{font-size:12.5px;color:var(--tx);font-weight:500;line-height:1.4}
 .cvx-task-m{font-size:11px;color:var(--tx3);margin-top:1px}
 @media(max-width:1240px){.cvx-wrap{grid-template-columns:250px 1fr}.cvx-profile{display:none}}
+
+/* ============ FOLLOW-UP QUEUE ============ */
+#fuModal,#fuRunner{position:fixed;inset:0;z-index:10600;display:none;align-items:center;justify-content:center;background:rgba(15,18,28,0.45);backdrop-filter:blur(6px)}
+#fuModal.open,#fuRunner.open{display:flex}
+#fuModal .modal-box,#fuRunner .modal-box{max-height:88vh}
+#fuModal .modal-body,#fuRunner .modal-body{overflow-y:auto;padding:18px 22px}
+.modal-title{font-size:16px;font-weight:700;color:var(--tx);letter-spacing:-0.01em}
+.fu-types{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.fu-type{display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 6px;border:1px solid var(--bd);border-radius:var(--r-xs);background:var(--s3);cursor:pointer;font-size:11.5px;font-weight:600;color:var(--tx2);text-align:center;transition:all .15s var(--ease)}
+.fu-type .mat{font-size:20px;color:var(--tx3)}
+.fu-type:hover{background:var(--s4);color:var(--tx)}
+.fu-type.active{background:var(--acc-d);border-color:rgba(52,101,235,.35);color:var(--acc)}
+.fu-type.active .mat{color:var(--acc)}
+.fu-run-lead{display:flex;align-items:center;gap:11px;padding-bottom:13px;border-bottom:1px solid var(--bd);margin-bottom:14px}
+.fu-run-name{font-size:15px;font-weight:700;color:var(--tx);letter-spacing:-0.01em}
+.fu-run-sub{font-size:12px;color:var(--tx3);margin-top:1px}
+.fu-run-required{background:var(--acc-d);border:1px solid rgba(52,101,235,.18);border-radius:var(--r-xs);padding:12px 14px;margin-bottom:14px}
+.fu-run-lbl{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);margin-bottom:4px}
+.fu-run-txt{font-size:13.5px;font-weight:600;color:var(--tx)}
+.fu-run-note{font-size:12.5px;color:var(--tx2);margin-top:6px;line-height:1.6;white-space:pre-wrap}
+.fu-run-do{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.fu-run-do .abtn{justify-content:center}
+.fu-run-decide{display:flex;gap:8px;padding-top:13px;border-top:1px solid var(--bd)}
+.fu-run-decide .abtn{flex:1;justify-content:center}
+.ch-tasks-tab .cnt{margin-left:6px;font-size:10.5px;font-weight:700;background:var(--s4);border:1px solid var(--bd);color:var(--tx2);padding:0 6px;border-radius:20px}
+.ch-tasks-tab.active .cnt{background:var(--acc);border-color:transparent;color:#fff}
