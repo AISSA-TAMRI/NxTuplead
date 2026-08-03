@@ -1158,31 +1158,16 @@ async function lpSetOfferMade(val){
     toast('✓ Offer status saved','ok');
   }catch(e){toast('Failed to save — check the update_offer_made webhook.','err');}
 }
-async function lpEdit(){
+function lpEdit(){
   if(!currentLead)return;
-
-  await loadClosers();
-
-  document.getElementById('modalTitle').textContent='Edit Lead';
-  document.getElementById('modalLeadId').value=currentLead.id;
-
-  document.getElementById('mFirstName').value=currentLead.first_name||'';
-  document.getElementById('mLastName').value=currentLead.last_name||'';
-  document.getElementById('mEmail').value=currentLead.email||'';
-  document.getElementById('mPhone').value=currentLead.phone||'';
-  document.getElementById('mCompany').value=currentLead.company_name||'';
-  document.getElementById('mStatus').value=currentLead.status||'Potential';
-
-  document.getElementById('mOwner').value=currentLead.owner_id||'';
-
-  document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
-  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';
-  document.getElementById('mUtmSource').value=currentLead.utm_source||'';
-  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';
-  document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
-  document.getElementById('mUtmContent').value=currentLead.utm_content||'';
-  document.getElementById('mNotes').value=currentLead.notes||'';
-
+  document.getElementById('modalTitle').textContent='Edit Lead';document.getElementById('modalLeadId').value=currentLead.id;
+  document.getElementById('mFirstName').value=currentLead.first_name||'';document.getElementById('mLastName').value=currentLead.last_name||'';
+  document.getElementById('mEmail').value=currentLead.email||'';document.getElementById('mPhone').value=currentLead.phone||'';
+  document.getElementById('mCompany').value=currentLead.company_name||'';document.getElementById('mStatus').value=currentLead.status||'Potential';
+  document.getElementById('mOwner').value=currentLead.owner_id||'';document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
+  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';document.getElementById('mUtmSource').value=currentLead.utm_source||'';
+  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
+  document.getElementById('mUtmContent').value=currentLead.utm_content||'';document.getElementById('mNotes').value=currentLead.notes||'';
   document.getElementById('modal').classList.add('open');
 }
 async function lpConvert() {
@@ -1243,46 +1228,48 @@ async function lpDelete(){
   });
 }
 async function loadClosers() {
+  const select = document.getElementById("mOwner");
+  if (!select) return;
+  select.innerHTML = '<option value="">Loading…</option>';
+  try {
+    const response = await fetch("https://n8n.upleaddigital.com/webhook/get-closers");
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const raw = await response.json();
+    const closers = Array.isArray(raw) ? raw : (raw.closers || raw.data || []);
 
-    const select = document.getElementById("mOwner");
-
-    select.innerHTML = '<option value="">Loading...</option>';
-
-    try {
-
-        const response = await fetch(
-            "https://n8n.upleaddigital.com/webhook/get-closers"
-        );
-
-        if (!response.ok) throw new Error(await response.text());
-
-        const closers = await response.json();
-
-        select.innerHTML = '<option value="">Select a closer...</option>';
-
-        closers.forEach(user => {
-            const option = document.createElement("option");
-            option.value = user.id;
-            option.textContent = user.full_name;
-            select.appendChild(option);
-            closersMap[user.id]=user.full_name;
-        });
-        closersLoaded=true;
-
-    } catch (err) {
-        console.error(err);
-        select.innerHTML = '<option value="">Unable to load closers</option>';
+    if (!closers.length) {
+      // Reached the backend fine, but crm.users has nobody with an
+      // Admin/Closer role. Say so instead of showing a silent empty list.
+      select.innerHTML = '<option value="">No closers found — check user roles</option>';
+      console.warn('[Closers] get-closers returned 0 rows. Every assignable user must exist in crm.users with role Admin or Closer.');
+      closersLoaded = true;
+      return;
     }
-} 
+
+    select.innerHTML = '<option value="">Select a closer…</option>';
+    closers.forEach(user => {
+      const option = document.createElement("option");
+      option.value = user.id;
+      option.textContent = user.full_name || user.email || ('User #' + user.id);
+      select.appendChild(option);
+      closersMap[user.id] = option.textContent;
+    });
+    closersLoaded = true;
+  } catch (err) {
+    console.error('[Closers] load failed:', err);
+    select.innerHTML = '<option value="">Unable to load closers</option>';
+  }
+}
 async function ensureClosersLoaded(){
   if(closersLoaded)return;
   try{
     const response=await fetch("https://n8n.upleaddigital.com/webhook/get-closers");
-    if(!response.ok)throw new Error(await response.text());
-    const closers=await response.json();
-    closers.forEach(user=>{closersMap[user.id]=user.full_name;});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    const raw=await response.json();
+    const closers=Array.isArray(raw)?raw:(raw.closers||raw.data||[]);
+    closers.forEach(user=>{closersMap[user.id]=user.full_name||user.email||('User #'+user.id);});
     closersLoaded=true;
-  }catch(e){console.error(e);}
+  }catch(e){console.error('[Closers] load failed:',e);}
 }
 async function openCreateLead() {
 
@@ -3040,10 +3027,7 @@ function chActionSetStage(){
   chLeadAction({action:'update_pipeline_stage',id:l.id,pipeline_stage:v.trim()},'✓ Pipeline stage updated');
 }
 function chActionFollowUp(){
-  const l=chActionLead(); if(!l) return;
-  const v=prompt('Follow up on (YYYY-MM-DD)', new Date(Date.now()+86400000).toISOString().slice(0,10));
-  if(v===null||!v.trim()) return;
-  chLeadAction({action:'update_followup',id:l.id,next_followup_at:v.trim()},'✓ Follow-up scheduled');
+  const l=chActionLead(); if(l) fuOpenModal(l.id);
 }
 function chActionCreateTask(){
   const l=chActionLead(); if(!l) return;
@@ -3187,7 +3171,7 @@ function chUpdateCounts(){
   setEl('chSvCountAll',allLeads.length);
   setEl('chSvCountRecent',chFilteredLeads('recent').length);
   setEl('chSvCountStarred',chFilteredLeads('starred').length);
-  const overdue=typeof chManualRows==='function'?chManualRows('overdue').length:0;
+  const overdue=(typeof fuBuckets==='function'&&fuQueue)?fuBuckets().overdue.length:0;
   const manualBadge=document.getElementById('chSubBadgeManual');
   if(manualBadge){manualBadge.style.display=overdue>0?'':'none';manualBadge.textContent=overdue;}
   const navBadge=document.getElementById('navCountAttention');
@@ -3575,6 +3559,7 @@ let chManualView='overdue';
 
 function chSwitchSubPage(sub,persist=true){
   if(!CH_SUBPAGES.includes(sub))sub='conversations';
+  if(sub==='manual') fuLoad();
   chSubPage=sub;
   if(persist)localStorage.setItem(CH_SUBPAGE_KEY,sub);
   document.querySelectorAll('#chSubNav .ch-subnav-item').forEach(i=>i.classList.toggle('active',i.dataset.sub===sub));
@@ -3718,28 +3703,430 @@ function chCallLeadById(id){
   chStartCall(l,l.phone);
 }
 
-/* ---- MANUAL ACTIONS ----
-   Replaces the old Overview/Calls/Tasks subpages with one table view.
-   Every row is a real Potential lead pulled from allLeads — nothing here
-   is a separate "action queue" table. */
-function chManualRows(view){
-  const now=new Date(),todayStr=now.toISOString().slice(0,10);
-  const potential=(allLeads||[]).filter(l=>l.status==='Potential');
-  if(view==='overdue')return potential.filter(l=>l.next_followup_at&&new Date(l.next_followup_at)<now).sort((a,b)=>new Date(a.next_followup_at)-new Date(b.next_followup_at));
-  if(view==='today')return potential.filter(l=>l.next_followup_at&&l.next_followup_at.slice(0,10)===todayStr).sort((a,b)=>(a.next_followup_at||'').localeCompare(b.next_followup_at||''));
-  if(view==='calls')return potential.filter(l=>l.preferred_date&&l.preferred_date.slice(0,10)===todayStr).sort((a,b)=>(a.preferred_time||'').localeCompare(b.preferred_time||''));
-  if(view==='unanswered')return potential.filter(l=>!l.last_contacted_at).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
-  return[];
+/* ================================================================
+   FOLLOW-UP ACTION QUEUE  (agency — crm.leads only)
+   ----------------------------------------------------------------
+   Manual Actions is now backed by real crm.tasks rows with
+   task_kind='followup'. Nothing on this screen is derived from lead
+   fields any more, so a row can always be completed, rescheduled or
+   skipped and the change persists.
+
+   Conceptual split, deliberately preserved:
+     Conversations  → work with one lead
+     Manual Actions → the human-action work queue (this module)
+     Activity       → historical record
+     Tasks          → generic work (task_kind='task')
+
+   crm.leads.next_followup_at is a denormalised mirror of the earliest
+   pending follow-up. Every mutation calls crm.sync_lead_next_followup()
+   server-side, so the column can never drift from the queue.
+   ================================================================ */
+
+let fuQueue        = null;   // null = not loaded / failed, [] = loaded empty
+let fuError        = null;
+let fuLoading      = false;
+let fuModalCtx     = null;   // {leadId, followupId|null}
+let fuRunner       = null;   // {ids:[], index:int} — the "Let's Start" session
+
+const FU_ACTIONS = {
+  call:    {label:'Call',              icon:'call',        cls:'bl'},
+  sms:     {label:'SMS',               icon:'sms',         cls:'pu'},
+  email:   {label:'Email',             icon:'mail',        cls:'ac'},
+  general: {label:'General Follow-up', icon:'flag',        cls:'gy'}
+};
+function fuMeta(t){ return FU_ACTIONS[String(t||'general').toLowerCase()]||FU_ACTIONS.general; }
+
+async function fuApi(payload){
+  const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)});
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return res.json().catch(()=>[]);
 }
-function chManualDateLabel(l,view){
-  if(view==='calls')return l.preferred_time?fmtTime(l.preferred_time):fmtDate(l.preferred_date);
-  if(view==='unanswered')return l.created_at?fmtDate(l.created_at):'—';
-  return l.next_followup_at?fmtDate(l.next_followup_at):'—';
+
+async function fuLoad(force){
+  if(fuLoading) return;
+  fuLoading=true; fuError=null;
+  if(force||fuQueue===null) chRenderManualActions();
+  try{
+    const raw=await fuApi({action:'list_followups',status:'pending'});
+    fuQueue=(Array.isArray(raw)?raw:(raw.followups||[])).filter(r=>r&&r.id);
+  }catch(e){
+    console.warn('Follow-up queue load failed',e);
+    fuQueue=null; fuError=e.message||'request failed';
+  }finally{ fuLoading=false; }
+  chRenderManualActions();
+  chUpdateCounts();
 }
-function chManualStatusBadge(view){
-  const m={overdue:'<span class="badge re">Overdue</span>',today:'<span class="badge am">Due Today</span>',calls:'<span class="badge bl">Scheduled</span>',unanswered:'<span class="badge gy">No Contact</span>'};
-  return m[view]||'<span class="badge gy">—</span>';
+
+/* ---- Bucketing -------------------------------------------------- */
+
+function fuBuckets(){
+  const out={overdue:[],today:[],calls:[],unanswered:[]};
+  const now=Date.now();
+  const dayStart=new Date(); dayStart.setHours(0,0,0,0);
+  const dayEnd=new Date();   dayEnd.setHours(23,59,59,999);
+  (fuQueue||[]).forEach(t=>{
+    if(!t.due_at) return;
+    const due=new Date(t.due_at).getTime();
+    if(due<dayStart.getTime()) out.overdue.push(t);
+    else if(due<=dayEnd.getTime()) out.today.push(t);
+    if(String(t.action_type||'').toLowerCase()==='call' && due>=now) out.calls.push(t);
+  });
+  // No Recent Contact is a lead-level signal, not a queue item: leads in
+  // the active pipeline that have never been contacted and have no
+  // follow-up booked, i.e. work nobody has scheduled yet.
+  const queued=new Set((fuQueue||[]).map(t=>t.lead_id));
+  out.unanswered=(allLeads||[])
+    .filter(l=>l.status==='Potential' && !l.last_contacted_at && !queued.has(l.id))
+    .sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
+  return out;
 }
+
+function fuCountsUpdate(){
+  const b=fuBuckets();
+  [['overdue',b.overdue.length],['today',b.today.length],['calls',b.calls.length],['unanswered',b.unanswered.length]]
+    .forEach(([k,n])=>{
+      const el=document.querySelector(`#chManualTabs [data-manualview="${k}"] .cnt`);
+      if(el){ el.textContent=n; el.style.display=n?'':'none'; }
+    });
+}
+
+/* ---- Table ------------------------------------------------------ */
+
+function fuDueLabel(t){
+  if(!t.due_at) return '—';
+  const d=new Date(t.due_at), now=new Date();
+  const day=d.toDateString()===now.toDateString()?'Today':d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+  const time=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
+  const late=d.getTime()<Date.now();
+  return `<span ${late?'style="color:var(--re);font-weight:600"':''}>${day} ${time}</span>`;
+}
+function fuName(t){ return ((t.first_name||'')+' '+(t.last_name||'')).trim()||'—'; }
+
+function chRenderManualActions(){
+  const body=document.getElementById('chManualTableBody'); if(!body) return;
+  const selectAll=document.getElementById('chManualSelectAll'); if(selectAll) selectAll.checked=false;
+  chManualUpdateBulkBar();
+
+  if(fuQueue===null && !fuError){
+    body.innerHTML='<tr><td colspan="7" style="padding:26px;text-align:center;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading action queue…</td></tr>';
+    return;
+  }
+  if(fuError){
+    body.innerHTML=`<tr><td colspan="7"><div class="empty-state"><span class="mat">cloud_off</span><p>Couldn't load the action queue. The <code>list_followups</code> action on the lead-management webhook didn't respond.</p><button class="abtn" onclick="fuLoad(true)"><span class="mat sm">refresh</span>Retry</button></div></td></tr>`;
+    return;
+  }
+
+  fuCountsUpdate();
+  const b=fuBuckets();
+  const view=chManualView;
+  const rows=b[view]||[];
+  const startBtn=document.getElementById('chManualStartBtn');
+  if(startBtn) startBtn.disabled = view==='unanswered' ? !rows.length : !rows.length;
+
+  if(!rows.length){ body.innerHTML=fuEmptyState(view); return; }
+
+  if(view==='unanswered'){
+    // Lead rows: nothing is scheduled yet, so the primary action is to
+    // schedule one rather than to complete something.
+    body.innerHTML=rows.map(l=>`<tr>
+      <td><input type="checkbox" class="ch-row-check" data-id="${l.id}" style="accent-color:var(--acc)"/></td>
+      <td><div style="display:flex;align-items:center;gap:9px"><div class="av ${scClass(l.status||'Potential')}">${initials(l.company_name||chLeadName(l))}</div><span style="font-weight:600">${escapeHtml(chLeadName(l))}</span></div></td>
+      <td>${escapeHtml(l.company_name||'—')}</td>
+      <td><span class="badge gy">Not scheduled</span></td>
+      <td><span class="badge gy">No contact</span></td>
+      <td style="font-size:13px;color:var(--tx3)">added ${fmtDate(l.created_at)}</td>
+      <td>
+        <button class="tbb" title="Schedule follow-up" onclick="fuOpenModal(${l.id})"><span class="mat">event_upcoming</span></button>
+        <button class="tbb" title="Call" ${l.phone?'':'disabled style="opacity:.35;cursor:not-allowed"'} onclick="chCallLeadById(${l.id})"><span class="mat">call</span></button>
+        <button class="tbb" title="Open conversation" onclick="chOpenInConversations(${l.id})"><span class="mat">forum</span></button>
+        <button class="tbb" title="Mark contacted" onclick="chMarkContacted(${l.id})"><span class="mat">task_alt</span></button>
+      </td></tr>`).join('');
+  }else{
+    body.innerHTML=rows.map(t=>{
+      const m=fuMeta(t.action_type);
+      return `<tr>
+        <td><input type="checkbox" class="ch-row-check" data-id="${t.id}" data-lead="${t.lead_id}" style="accent-color:var(--acc)"/></td>
+        <td><div style="display:flex;align-items:center;gap:9px"><div class="av ${scClass(t.lead_status||'Potential')}">${initials(t.company_name||fuName(t))}</div>
+          <div><div style="font-weight:600">${escapeHtml(fuName(t))}</div>
+          ${t.assigned_name?`<div style="font-size:11px;color:var(--tx3)">${escapeHtml(t.assigned_name)}</div>`:''}</div></div></td>
+        <td>${escapeHtml(t.company_name||'—')}</td>
+        <td><span class="badge ${m.cls}"><span class="mat sm" style="font-size:12px">${m.icon}</span>${m.label}</span></td>
+        <td>${t.priority==='high'?'<span class="badge re">High</span>':chManualStatusBadge(view)}</td>
+        <td style="font-size:13px">${fuDueLabel(t)}</td>
+        <td>
+          <button class="tbb" title="Do it now" onclick="fuRunSingle(${t.id})"><span class="mat">play_arrow</span></button>
+          <button class="tbb" title="Open conversation" onclick="chOpenInConversations(${t.lead_id})"><span class="mat">forum</span></button>
+          <button class="tbb" title="Reschedule" onclick="fuOpenModal(${t.lead_id},${t.id})"><span class="mat">edit_calendar</span></button>
+          <button class="tbb" title="Complete" onclick="fuComplete(${t.id})"><span class="mat">task_alt</span></button>
+        </td></tr>`;
+    }).join('');
+  }
+  body.querySelectorAll('.ch-row-check').forEach(cb=>cb.addEventListener('change',chManualUpdateBulkBar));
+}
+
+function fuEmptyState(view){
+  const copy={
+    overdue:['event_available','Nothing overdue','Follow-ups land here once their due date and time have passed. Schedule one from a lead panel, a conversation, or the No Recent Contact tab.'],
+    today:['today','Nothing due today','Follow-ups scheduled for today appear here. Use Schedule Follow-up on any lead to add one.'],
+    calls:['call','No calls scheduled','This shows pending follow-ups whose action type is Call. Choose Call when scheduling a follow-up and it will appear here.'],
+    unanswered:['mark_email_unread','Everyone has been contacted','This lists active leads with no recorded contact and no follow-up booked. It fills as new leads arrive.']
+  }[view]||['inbox','Nothing here',''];
+  return `<tr><td colspan="7"><div class="empty-state"><span class="mat">${copy[0]}</span><p style="font-weight:600;color:var(--tx2);margin-bottom:6px">${copy[1]}</p><p style="font-size:13px;max-width:420px;margin:0 auto">${copy[2]}</p></div></td></tr>`;
+}
+
+/* ---- Schedule Follow-up modal ----------------------------------- */
+
+async function fuOpenModal(leadId, followupId){
+  const lead=(allLeads||[]).find(l=>l.id==leadId);
+  if(!lead && !followupId){ toast('Lead not found','err'); return; }
+  const existing=followupId?(fuQueue||[]).find(t=>t.id==followupId):null;
+  fuModalCtx={leadId:parseInt(leadId,10), followupId:followupId||null};
+
+  await ensureClosersLoaded();
+  const ownerId=existing?existing.assigned_to:(lead?lead.owner_id:null);
+  const when=existing&&existing.due_at?new Date(existing.due_at):new Date(Date.now()+86400000);
+  const dateVal=when.toISOString().slice(0,10);
+  const timeVal=existing&&existing.due_at
+    ? when.toTimeString().slice(0,5)
+    : '09:00';
+  const act=String((existing&&existing.action_type)||'call').toLowerCase();
+
+  document.getElementById('fuModalTitle').textContent=existing?'Reschedule Follow-up':'Schedule Follow-up';
+  document.getElementById('fuModalSub').textContent=
+    (lead?(chLeadName(lead)+(lead.company_name?' · '+lead.company_name:'')):('Lead #'+leadId));
+
+  document.getElementById('fuModalBody').innerHTML=`
+    <div class="form-group full">
+      <label class="form-label">Action Type</label>
+      <div class="fu-types" id="fuTypeGroup">
+        ${Object.entries(FU_ACTIONS).map(([k,v])=>`
+          <div class="fu-type ${k===act?'active':''}" data-type="${k}" onclick="fuPickType('${k}',this)">
+            <span class="mat">${v.icon}</span><span>${v.label}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="fuDate" value="${dateVal}"/></div>
+      <div class="form-group"><label class="form-label">Time</label><input class="form-input" type="time" id="fuTime" value="${timeVal}"/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group"><label class="form-label">Assigned To</label>
+        <select class="form-select" id="fuAssigned">
+          <option value="">Unassigned</option>
+          ${Object.keys(closersMap).map(id=>`<option value="${id}" ${String(id)===String(ownerId)?'selected':''}>${escapeHtml(closersMap[id])}</option>`).join('')}
+        </select>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Defaults to this lead's closer.</div>
+      </div>
+      <div class="form-group"><label class="form-label">Priority</label>
+        <select class="form-select" id="fuPriority">
+          <option value="normal" ${(existing&&existing.priority)==='normal'||!existing?'selected':''}>Normal</option>
+          <option value="high" ${(existing&&existing.priority)==='high'?'selected':''}>High</option>
+          <option value="low" ${(existing&&existing.priority)==='low'?'selected':''}>Low</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group full"><label class="form-label">Note (optional)</label>
+      <textarea class="form-textarea" id="fuNote" placeholder="What needs to happen on this follow-up?">${escapeHtml((existing&&existing.description)||'')}</textarea>
+    </div>
+    <div style="font-size:11.5px;color:var(--tx3);line-height:1.6">Saved as a follow-up in <code>crm.tasks</code>. The lead's Next Follow-up always reflects the earliest pending one.</div>`;
+  document.getElementById('fuModal').classList.add('open');
+}
+function fuPickType(k,el){
+  document.querySelectorAll('#fuTypeGroup .fu-type').forEach(x=>x.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+function fuCloseModal(){ document.getElementById('fuModal').classList.remove('open'); fuModalCtx=null; }
+
+async function fuSaveModal(){
+  if(!fuModalCtx) return;
+  const date=document.getElementById('fuDate').value;
+  const time=document.getElementById('fuTime').value||'09:00';
+  if(!date){ toast('Pick a date','err'); return; }
+  const typeEl=document.querySelector('#fuTypeGroup .fu-type.active');
+  const action_type=typeEl?typeEl.dataset.type:'general';
+  const due_at=new Date(date+'T'+time).toISOString();
+  const btn=document.getElementById('fuSaveBtn');
+  btn.disabled=true; btn.innerHTML='<span class="mat sm spin">sync</span>Saving…';
+  try{
+    if(fuModalCtx.followupId){
+      await fuApi({action:'reschedule_followup',id:fuModalCtx.followupId,due_at,action_type});
+    }else{
+      await fuApi({action:'create_followup',
+        lead_id:fuModalCtx.leadId, due_at, action_type,
+        assigned_to:document.getElementById('fuAssigned').value||'',
+        priority:document.getElementById('fuPriority').value,
+        title:fuMeta(action_type).label,
+        note:document.getElementById('fuNote').value.trim(),
+        userEmail:(currentUser&&currentUser.email)||''});
+    }
+    fuCloseModal();
+    toast('✓ Follow-up scheduled','ok');
+    await fuLoad(true);
+    await loadLeads();
+  }catch(e){
+    toast('Failed to save — check the lead-management webhook','err');
+  }finally{
+    btn.disabled=false; btn.innerHTML='<span class="mat sm">save</span>Save Follow-up';
+  }
+}
+
+/* ---- Row actions ------------------------------------------------- */
+
+async function fuComplete(id, markContacted){
+  try{
+    await fuApi({action:'complete_followup',id,mark_contacted:markContacted!==false});
+    toast('✓ Follow-up completed','ok');
+    await fuLoad(true); await loadLeads();
+  }catch(e){ toast('Failed to complete — try again','err'); }
+}
+async function fuSkip(id){
+  try{
+    await fuApi({action:'skip_followup',id});
+    toast('Skipped','ok');
+    await fuLoad(true); await loadLeads();
+  }catch(e){ toast('Failed to skip — try again','err'); }
+}
+
+/* ---- "Let's Start" work queue ------------------------------------ */
+
+function fuStartSession(){
+  const b=fuBuckets();
+  if(chManualView==='unanswered'){
+    const first=b.unanswered[0];
+    if(!first){ toast('Nothing to start in this view','err'); return; }
+    fuOpenModal(first.id); return;
+  }
+  const rows=b[chManualView]||[];
+  if(!rows.length){ toast('Nothing to start in this view','err'); return; }
+  fuRunner={ids:rows.map(t=>t.id), index:0};
+  fuRenderRunner();
+  document.getElementById('fuRunner').classList.add('open');
+}
+function fuRunSingle(id){
+  fuRunner={ids:[id], index:0};
+  fuRenderRunner();
+  document.getElementById('fuRunner').classList.add('open');
+}
+function fuCloseRunner(){
+  document.getElementById('fuRunner').classList.remove('open');
+  fuRunner=null;
+  fuLoad(true);
+}
+function fuCurrent(){
+  if(!fuRunner) return null;
+  const id=fuRunner.ids[fuRunner.index];
+  return (fuQueue||[]).find(t=>t.id==id)||null;
+}
+function fuAdvance(){
+  if(!fuRunner) return;
+  fuRunner.index++;
+  if(fuRunner.index>=fuRunner.ids.length){
+    document.getElementById('fuRunnerBody').innerHTML=
+      `<div class="empty-state" style="padding:40px 20px"><span class="mat">task_alt</span><p style="font-weight:600;color:var(--tx2)">Queue cleared</p><p style="font-size:13px">You worked through every action in this view.</p><button class="abtn pri" onclick="fuCloseRunner()">Done</button></div>`;
+    document.getElementById('fuRunnerProgress').textContent='';
+    return;
+  }
+  fuRenderRunner();
+}
+
+function fuRenderRunner(){
+  const box=document.getElementById('fuRunnerBody'); if(!box) return;
+  const t=fuCurrent();
+  document.getElementById('fuRunnerProgress').textContent=
+    fuRunner?`${fuRunner.index+1} of ${fuRunner.ids.length}`:'';
+  if(!t){ fuAdvance(); return; }
+  const m=fuMeta(t.action_type);
+  const lead=(allLeads||[]).find(l=>l.id==t.lead_id);
+  box.innerHTML=`
+    <div class="fu-run-lead">
+      <div class="av lg ${scClass(t.lead_status||'Potential')}">${initials(t.company_name||fuName(t))}</div>
+      <div style="min-width:0">
+        <div class="fu-run-name">${escapeHtml(fuName(t))}</div>
+        <div class="fu-run-sub">${escapeHtml(t.company_name||'—')}${t.pipeline_stage?' · '+escapeHtml(t.pipeline_stage):''}</div>
+      </div>
+      <div style="flex:1"></div>
+      <span class="badge ${m.cls}"><span class="mat sm" style="font-size:12px">${m.icon}</span>${m.label}</span>
+    </div>
+
+    <div class="fu-run-required">
+      <div class="fu-run-lbl">Required action</div>
+      <div class="fu-run-txt">${escapeHtml(t.title||m.label)}${t.due_at?` · due ${fmtDate(t.due_at)}`:''}</div>
+      ${t.description?`<div class="fu-run-note">${escapeHtml(t.description)}</div>`:''}
+    </div>
+
+    <div class="lp-rows" style="border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin-bottom:14px">
+      <div class="lp-row"><div class="lp-ri"><span class="mat">call</span></div><div><div class="lp-rl">Phone</div><div class="lp-rv">${t.phone?escapeHtml(t.phone):'—'}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">mail</span></div><div style="min-width:0"><div class="lp-rl">Email</div><div class="lp-rv" style="word-break:break-all">${t.email?escapeHtml(t.email):'—'}</div></div></div>
+      <div class="lp-row"><div class="lp-ri"><span class="mat">history</span></div><div><div class="lp-rl">Last Contacted</div><div class="lp-rv">${t.last_contacted_at?fmtDate(t.last_contacted_at):'Never'}</div></div></div>
+    </div>
+
+    <div class="fu-run-do">
+      <button class="abtn" ${t.phone?`onclick="fuDoCall(${t.lead_id})"`:'disabled style="opacity:.4"'}><span class="mat sm">call</span>Call</button>
+      <button class="abtn" onclick="fuDoOpen(${t.lead_id},'sms')"><span class="mat sm">sms</span>SMS</button>
+      <button class="abtn" ${t.email?`onclick="fuDoOpen(${t.lead_id},'email')"`:'disabled style="opacity:.4"'}><span class="mat sm">mail</span>Email</button>
+    </div>
+
+    <div class="fu-run-decide">
+      <button class="abtn" onclick="fuRunnerSkip()"><span class="mat sm">skip_next</span>Skip</button>
+      <button class="abtn" onclick="fuRunnerReschedule()"><span class="mat sm">edit_calendar</span>Reschedule</button>
+      <button class="abtn pri" onclick="fuRunnerComplete()"><span class="mat sm">task_alt</span>Complete &amp; Next</button>
+    </div>`;
+  if(lead) currentLead=lead;
+}
+function fuDoCall(leadId){ chCallLeadById(leadId); }
+function fuDoOpen(leadId, channel){
+  // Hand the actual message off to Conversations, which owns composing.
+  fuCloseRunner();
+  chOpenInConversations(leadId);
+  setTimeout(()=>{
+    const tab=document.querySelector(`#chComposerChannels [data-channel="${channel}"]`);
+    if(tab) tab.click();
+  },260);
+}
+async function fuRunnerComplete(){
+  const t=fuCurrent(); if(!t) return;
+  await fuApi({action:'complete_followup',id:t.id,mark_contacted:true}).catch(()=>toast('Complete failed','err'));
+  fuQueue=(fuQueue||[]).filter(x=>x.id!==t.id);
+  toast('✓ Completed','ok');
+  fuAdvance();
+}
+async function fuRunnerSkip(){
+  const t=fuCurrent(); if(!t) return;
+  await fuApi({action:'skip_followup',id:t.id}).catch(()=>toast('Skip failed','err'));
+  fuQueue=(fuQueue||[]).filter(x=>x.id!==t.id);
+  fuAdvance();
+}
+function fuRunnerReschedule(){
+  const t=fuCurrent(); if(!t) return;
+  fuCloseRunner();
+  fuOpenModal(t.lead_id,t.id);
+}
+
+/* ---- Bulk complete from the table -------------------------------- */
+
+async function fuBulkComplete(){
+  const boxes=[...document.querySelectorAll('#chManualTableBody .ch-row-check:checked')];
+  if(!boxes.length) return;
+  const btn=document.getElementById('chManualBulkMarkBtn');
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="mat sm spin">sync</span>Updating…'; }
+  if(chManualView==='unanswered'){
+    // Lead rows — stamp contact, there is no queue item to complete.
+    const ids=boxes.map(cb=>parseInt(cb.dataset.id,10));
+    const r=await Promise.all(ids.map(id=>chMarkContacted(id,false)));
+    toast(`Marked ${r.filter(Boolean).length} of ${ids.length} as contacted`, r.every(Boolean)?'ok':'err');
+  }else{
+    const ids=boxes.map(cb=>parseInt(cb.dataset.id,10));
+    let ok=0;
+    for(const id of ids){
+      try{ await fuApi({action:'complete_followup',id,mark_contacted:true}); ok++; }catch(e){}
+    }
+    toast(`Completed ${ok} of ${ids.length}`, ok===ids.length?'ok':'err');
+  }
+  if(btn){ btn.disabled=false; btn.innerHTML='<span class="mat sm">task_alt</span>Complete Selected'; }
+  await fuLoad(true); await loadLeads();
+}
+
 async function chMarkContacted(id,notify=true){
   try{
     const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'update_last_contacted',id:parseInt(id),last_contacted_at:new Date().toISOString()})});
@@ -3774,30 +4161,6 @@ function chManualUpdateBulkBar(){
   const selectAll=document.getElementById('chManualSelectAll');
   const total=document.querySelectorAll('#chManualTableBody .ch-row-check').length;
   if(selectAll)selectAll.checked=total>0&&checked===total;
-}
-function chRenderManualActions(){
-  const body=document.getElementById('chManualTableBody');if(!body)return;
-  const rows=chManualRows(chManualView);
-  const selectAll=document.getElementById('chManualSelectAll');if(selectAll)selectAll.checked=false;
-  chManualUpdateBulkBar();
-  if(!rows.length){body.innerHTML='<tr><td colspan="7" style="padding:26px;text-align:center;color:var(--tx3);font-size:13px">Nothing in this view. Nice.</td></tr>';return;}
-  body.innerHTML=rows.map(l=>{
-    const name=chLeadName(l);
-    return`<tr>
-      <td><input type="checkbox" class="ch-row-check" data-id="${l.id}" style="accent-color:var(--acc)"/></td>
-      <td><div style="display:flex;align-items:center;gap:9px"><div class="av ${scClass(l.status||'Potential')}">${initials(l.company_name||name)}</div><span style="font-weight:600">${name}</span></div></td>
-      <td>${l.company_name||'—'}</td>
-      <td>${l.phone?'Call':'—'}</td>
-      <td>${chManualStatusBadge(chManualView)}</td>
-      <td>${chManualDateLabel(l,chManualView)}</td>
-      <td>
-        <button class="tbb" title="Call" ${l.phone?'':'disabled style="opacity:.35;cursor:not-allowed"'} onclick="chCallLeadById(${l.id})"><span class="mat">call</span></button>
-        <button class="tbb" title="Open Conversation" onclick="chOpenInConversations(${l.id})"><span class="mat">forum</span></button>
-        <button class="tbb" title="Mark Contacted" onclick="chMarkContacted(${l.id})"><span class="mat">task_alt</span></button>
-      </td>
-    </tr>`;
-  }).join('');
-  body.querySelectorAll('.ch-row-check').forEach(cb=>cb.addEventListener('change',chManualUpdateBulkBar));
 }
 
 /* ---- SNIPPETS ----
@@ -4694,13 +5057,21 @@ function openClientWorkspace(clientId, sub){
   navigate('workspace', false);
 }
 
+/* Never throw during boot if the shell markup is an older cached copy —
+   a thrown error here stops app.js before window.__initApp is defined,
+   which leaves the app stuck on "Authenticating…" forever. */
+function cwSetRail(inWorkspace){
+  const na=document.getElementById('navAgency'), nc=document.getElementById('navClient');
+  if(na) na.style.display = inWorkspace ? 'none' : '';
+  if(nc) nc.style.display = inWorkspace ? '' : 'none';
+  return !!(na && nc);
+}
 function cwExit(){
   activeWorkspaceClientId = null;
   cwClient = null; cwSubleads = []; cwSubleadsError = null;
   cwReviewConfig = null; cwReviewActivities = null;
   cvxActivities=null; cvxTasks=null; cvxActiveId=null; cvxFilter='all'; cvxSearch=''; cvxError=null;
-  document.getElementById('navAgency').style.display = '';
-  document.getElementById('navClient').style.display = 'none';
+  cwSetRail(false);
   navigate('clients');
 }
 
@@ -4719,6 +5090,11 @@ function cwBoot(){
   if(parts[2] && CW_PAGES.includes(parts[2])) cwPage = parts[2];
 
   if(!activeWorkspaceClientId){ cwExit(); return; }
+  if(!document.getElementById('cwv-overview')){
+    // pages/workspace.html did not load — fall back rather than half-render.
+    console.error('Client Workspace fragment missing: check pages/workspace.html');
+    cwExit(); return;
+  }
 
   // Hard reset whenever the client context changes, so no data, cache or
   // selection can bleed from one client's workspace into another's.
@@ -4728,8 +5104,7 @@ function cwBoot(){
   }
   cwLoadedClientId = activeWorkspaceClientId;
 
-  document.getElementById('navAgency').style.display = 'none';
-  document.getElementById('navClient').style.display = '';
+  cwSetRail(true);
 
   const apply = () => {
     cwClient = allClients.find(c=>c.id==activeWorkspaceClientId) || null;
@@ -5862,11 +6237,7 @@ function chWireStaticListeners(){
       chRenderManualActions();
     });
   });
-  chOn('chManualStartBtn','click',()=>{
-    const rows=chManualRows(chManualView);
-    if(!rows.length){toast('Nothing to start in this view','err');return;}
-    chOpenInConversations(rows[0].id);
-  });
+  chOn('chManualStartBtn','click',fuStartSession);
 
   /* Snippets search */
   chOn('chSnippetsSearch','input',chRenderSnippets);
@@ -5881,7 +6252,7 @@ function chWireStaticListeners(){
     document.querySelectorAll('#chManualTableBody .ch-row-check').forEach(cb=>cb.checked=e.target.checked);
     chManualUpdateBulkBar();
   });
-  chOn('chManualBulkMarkBtn','click',chManualBulkMarkContacted);
+  chOn('chManualBulkMarkBtn','click',fuBulkComplete);
 
   /* Composer quick-insert snippet popover */
   chOn('chComposerSnippetBtn','click',e=>{e.stopPropagation();chToggleSnippetQuickList();});
