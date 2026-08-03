@@ -94,21 +94,44 @@
 
   <!-- ========================= CONVERSATIONS ========================== -->
   <div class="cwv" id="cwv-conversations">
-    <div class="pc">
-      <div class="cw-placeholder">
-        <span class="mat">forum</span>
-        <h3>Sublead Conversations</h3>
-        <p>Two-way SMS with this client's subleads isn't wired up yet. The Twilio inbound router (<code>FIND CONTACT</code>) currently resolves an incoming number against <code>crm.clients</code> and <code>crm.leads</code> only, so a sublead's reply has nowhere to land.</p>
-        <div class="cw-req">
-          <div class="cw-req-hd">Backend required</div>
-          <ul>
-            <li>Extend <code>FIND CONTACT</code> with a <code>crm.subleads</code> branch and define precedence on phone collisions</li>
-            <li>Write <code>sublead_id</code> in <code>SAVE INBOUND SMS</code></li>
-            <li>An outbound send endpoint scoped to <code>sublead_id</code> + <code>client_id</code></li>
-          </ul>
+    <div class="cvx-wrap">
+
+      <aside class="cvx-rail">
+        <div class="cvx-rail-top">
+          <div class="af-search" style="width:100%">
+            <span class="mat sm">search</span>
+            <input type="text" id="cvxSearch" placeholder="Search conversations…" oninput="cvxOnSearch(this.value)"/>
+          </div>
         </div>
-        <p class="cw-note">Agency conversations are unaffected and remain in the Communication Hub.</p>
-      </div>
+        <div class="ch-smartviews cvx-filters" id="cvxFilters">
+          <div class="ch-sv active" onclick="cvxSetFilter('all',this)"><span class="mat sm">inbox</span>All</div>
+          <div class="ch-sv" onclick="cvxSetFilter('unread',this)"><span class="mat sm">mark_email_unread</span>Unread<span class="cnt" id="cvxUnreadCount" style="display:none"></span></div>
+          <div class="ch-sv" onclick="cvxSetFilter('open',this)"><span class="mat sm">radio_button_unchecked</span>Open</div>
+          <div class="ch-sv" onclick="cvxSetFilter('followup',this)"><span class="mat sm">schedule</span>Due</div>
+          <div class="ch-sv" onclick="cvxSetFilter('closed',this)"><span class="mat sm">task_alt</span>Closed</div>
+        </div>
+        <div class="ch-list cvx-list" id="cvxList"></div>
+        <div class="cvx-rail-foot">
+          <button class="abtn" style="width:100%;justify-content:center" onclick="cvxLoad(true)"><span class="mat sm">refresh</span>Refresh</button>
+        </div>
+      </aside>
+
+      <section class="cvx-center">
+        <div class="cvx-thread-hd" id="cvxThreadHeader"></div>
+        <div class="cvx-thread" id="cvxThread"></div>
+        <div class="cvx-composer">
+          <div class="ch-snip-pop cvx-snip-pop" id="cvxSnippetPop"></div>
+          <div class="cvx-composer-row">
+            <button class="tbb" title="Snippets &amp; links (client-scoped)" onclick="cvxToggleSnippets()"><span class="mat">bolt</span></button>
+            <textarea class="ch-msg-input" id="cvxComposerBody" rows="1" placeholder="Select a conversation…" disabled onkeydown="cvxComposerKey(event)"></textarea>
+            <button class="ch-send-btn" id="cvxSendBtn" disabled title="Send (Ctrl+Enter)" onclick="cvxSend()"><span class="mat sm">send</span></button>
+          </div>
+          <div class="cvx-composer-meta">SMS · sent from the agency Twilio number · delivery status updates automatically</div>
+        </div>
+      </section>
+
+      <aside class="cvx-profile" id="cvxProfile"></aside>
+
     </div>
   </div>
 
