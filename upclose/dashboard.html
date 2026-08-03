@@ -383,6 +383,24 @@
       </div>
 
 
+<!-- ===================== SNIPPET EDITOR ===================== -->
+<div id="snipModal" onclick="if(event.target===this)snipCloseEditor()">
+  <div class="modal-box" style="max-width:540px">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title" id="snipModalTitle">New Snippet</div>
+        <div style="font-size:12px;color:var(--tx3);margin-top:2px" id="snipModalSub">—</div>
+      </div>
+      <button class="tbb" onclick="snipCloseEditor()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="snipModalBody"></div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="snipCloseEditor()">Cancel</button>
+      <button class="abtn pri" id="snipSaveBtn" onclick="snipSaveEditor()"><span class="mat sm">save</span>Save Snippet</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== SCHEDULE FOLLOW-UP ===================== -->
 <div id="fuModal" onclick="if(event.target===this)fuCloseModal()">
   <div class="modal-box" style="max-width:520px">
