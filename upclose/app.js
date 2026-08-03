@@ -2993,6 +2993,51 @@ function genRenderTimeline(){
   }).join('')+'</div>';
 }
 
+/* ---- Agency Hub sales actions -----------------------------------
+   Agency-only: these operate on crm.leads via lead_id. They must never
+   be reused for subleads — the Client Workspace has its own endpoints. */
+function chActionLead(){
+  const l=allLeads.find(x=>x.id==chActiveLeadId);
+  if(!l) toast('Select a lead first','err');
+  return l||null;
+}
+async function chLeadAction(payload, okMsg){
+  try{
+    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    toast(okMsg,'ok');
+    await loadLeads();
+    if(chActiveLeadId) chSelectLead(chActiveLeadId);
+    return true;
+  }catch(e){ toast('Action failed — check the lead-management webhook','err'); return false; }
+}
+function chActionMarkContacted(){ const l=chActionLead(); if(l) chMarkContacted(l.id); }
+function chActionSetStatus(){
+  const l=chActionLead(); if(!l) return;
+  const v=prompt('New lead status (Potential / Won / Lost)', l.status||'Potential');
+  if(v===null||!v.trim()) return;
+  chLeadAction({action:'update_status',id:l.id,status:v.trim()},'✓ Lead status updated');
+}
+function chActionSetStage(){
+  const l=chActionLead(); if(!l) return;
+  const v=prompt('Pipeline stage', l.pipeline_stage||'');
+  if(v===null||!v.trim()) return;
+  chLeadAction({action:'update_pipeline_stage',id:l.id,pipeline_stage:v.trim()},'✓ Pipeline stage updated');
+}
+function chActionFollowUp(){
+  const l=chActionLead(); if(!l) return;
+  const v=prompt('Follow up on (YYYY-MM-DD)', new Date(Date.now()+86400000).toISOString().slice(0,10));
+  if(v===null||!v.trim()) return;
+  chLeadAction({action:'update_followup',id:l.id,next_followup_at:v.trim()},'✓ Follow-up scheduled');
+}
+function chActionCreateTask(){
+  const l=chActionLead(); if(!l) return;
+  const title=prompt('Task title'); if(title===null||!title.trim()) return;
+  const due=prompt('Due date (YYYY-MM-DD, optional)','');
+  chLeadAction({action:'create_task',id:l.id,title:title.trim(),due_at:(due||'').trim(),
+                userEmail:(currentUser&&currentUser.email)||''},'✓ Task created');
+}
+
 function chDraftKey(leadId,channel){return'chDraft_'+leadId+'_'+channel;}
 
 function chLoadDraft(){
@@ -4622,6 +4667,7 @@ let cwSubFilter   = 'all';
 let cwSubSearch   = '';
 let cwReviewConfig = null;      // {review_url, google_review_url, enabled, configured}
 let cwReviewActivities = null;  // real review_request rows, or null when unavailable
+let cwLoadedClientId   = null;  // guards against cross-client state bleed
 
 /* ---- Entry / exit ---------------------------------------------- */
 
@@ -4637,6 +4683,7 @@ function cwExit(){
   activeWorkspaceClientId = null;
   cwClient = null; cwSubleads = []; cwSubleadsError = null;
   cwReviewConfig = null; cwReviewActivities = null;
+  cvxActivities=null; cvxTasks=null; cvxActiveId=null; cvxFilter='all'; cvxSearch=''; cvxError=null;
   document.getElementById('navAgency').style.display = '';
   document.getElementById('navClient').style.display = 'none';
   navigate('clients');
@@ -4657,6 +4704,14 @@ function cwBoot(){
   if(parts[2] && CW_PAGES.includes(parts[2])) cwPage = parts[2];
 
   if(!activeWorkspaceClientId){ cwExit(); return; }
+
+  // Hard reset whenever the client context changes, so no data, cache or
+  // selection can bleed from one client's workspace into another's.
+  if(cwLoadedClientId !== null && cwLoadedClientId !== activeWorkspaceClientId){
+    cwSubleads=[]; cwSubleadsError=null; cwReviewConfig=null; cwReviewActivities=null;
+    cvxActivities=null; cvxTasks=null; cvxActiveId=null; cvxFilter='all'; cvxSearch=''; cvxError=null;
+  }
+  cwLoadedClientId = activeWorkspaceClientId;
 
   document.getElementById('navAgency').style.display = 'none';
   document.getElementById('navClient').style.display = '';
@@ -4692,6 +4747,7 @@ function cwRenderShell(){
   if(cwPage==='overview')     cwRenderOverview();
   if(cwPage==='subleads')     cwRenderSubleads();
   if(cwPage==='reviews')      cwRenderReviews();
+  if(cwPage==='conversations') cvxOpen();
   if(cwPage==='automations')  autoShowList();
 }
 
@@ -5166,6 +5222,502 @@ async function sendReviewRequestFromModal(){
   }finally{
     btn.disabled=false; btn.innerHTML='<span class="mat sm">send</span>Send Review Request';
   }
+}
+
+/* ================================================================
+   CLIENT WORKSPACE — CONVERSATIONS
+   ----------------------------------------------------------------
+   Sublead-native inbox. Scoped by activeWorkspaceClientId + sublead_id.
+
+   ABSOLUTE RULE: this module never reads allLeads, never calls any
+   lead_id endpoint, and never falls back to an agency lead when a
+   sublead cannot be resolved. crm.leads and crm.subleads are separate
+   domains; the agency Communication Hub owns the former.
+   ================================================================ */
+
+const CVX_API = {
+  activities: 'https://n8n.upleaddigital.com/webhook/upclose-sublead-activities',
+  sendSms:    'https://n8n.upleaddigital.com/webhook/upclose-sublead-sms',
+  addNote:    'https://n8n.upleaddigital.com/webhook/upclose-sublead-note',
+  createTask: 'https://n8n.upleaddigital.com/webhook/upclose-sublead-task-create',
+  tasks:      'https://n8n.upleaddigital.com/webhook/upclose-sublead-tasks'
+};
+
+let cvxActivities   = null;   // null = not loaded / unavailable, [] = loaded empty
+let cvxTasks        = null;
+let cvxActiveId     = null;   // selected sublead_id
+let cvxFilter       = 'all';
+let cvxSearch       = '';
+let cvxLoading      = false;
+let cvxError        = null;
+
+/* Client-scoped local stores. Client A can never read client B's. */
+function cvxSnippetKey(){ return 'upclose_cw_snippets_v1::client_'+activeWorkspaceClientId; }
+function cvxLinkKey(){    return 'upclose_cw_links_v1::client_'+activeWorkspaceClientId; }
+function cvxSeenKey(){    return 'upclose_cw_seen_v1::client_'+activeWorkspaceClientId; }
+function cvxLoadSnippets(){ try{ return JSON.parse(localStorage.getItem(cvxSnippetKey())||'[]'); }catch(e){ return []; } }
+function cvxSaveSnippets(l){ localStorage.setItem(cvxSnippetKey(), JSON.stringify(l)); }
+function cvxLoadLinks(){ try{ return JSON.parse(localStorage.getItem(cvxLinkKey())||'[]'); }catch(e){ return []; } }
+function cvxSaveLinks(l){ localStorage.setItem(cvxLinkKey(), JSON.stringify(l)); }
+function cvxLoadSeen(){ try{ return JSON.parse(localStorage.getItem(cvxSeenKey())||'{}'); }catch(e){ return {}; } }
+function cvxSaveSeen(m){ localStorage.setItem(cvxSeenKey(), JSON.stringify(m)); }
+
+/* ---- Derived state (all from real activity rows) ---------------- */
+
+function cvxFor(subleadId){
+  if(!cvxActivities) return [];
+  return cvxActivities.filter(a=>String(a.sublead_id)===String(subleadId));
+}
+function cvxLast(subleadId){
+  const rows=cvxFor(subleadId);
+  return rows.length?rows[0]:null;   // cvxActivities is sorted desc
+}
+/* Unread = an inbound message newer than the last time this thread was
+   opened. Derived from real rows; never a fabricated counter. */
+function cvxIsUnread(s){
+  const rows=cvxFor(s.id).filter(a=>String((a.activity_data||{}).direction||'').toLowerCase()==='inbound');
+  if(!rows.length) return false;
+  const seen=cvxLoadSeen()[s.id];
+  return !seen || new Date(rows[0].created_at).getTime() > new Date(seen).getTime();
+}
+function cvxNeedsFollowUp(s){
+  if(s.next_followup_at) return new Date(s.next_followup_at).getTime() <= Date.now();
+  return false;
+}
+function cvxIsClosed(s){ return ['won','lost'].includes(String(s.status||'').toLowerCase()); }
+
+function cvxFiltered(){
+  let list=cwSubleads.slice();
+  if(cvxFilter==='unread')    list=list.filter(cvxIsUnread);
+  if(cvxFilter==='open')      list=list.filter(s=>!cvxIsClosed(s));
+  if(cvxFilter==='closed')    list=list.filter(cvxIsClosed);
+  if(cvxFilter==='followup')  list=list.filter(cvxNeedsFollowUp);
+  if(cvxSearch){
+    const q=cvxSearch.toLowerCase();
+    list=list.filter(s=>[cwSubName(s),s.phone,s.email,s.source].join(' ').toLowerCase().indexOf(q)>-1);
+  }
+  return list.sort((a,b)=>{
+    const la=cvxLast(a.id), lb=cvxLast(b.id);
+    const ta=la?new Date(la.created_at).getTime():new Date(a.created_at||0).getTime();
+    const tb=lb?new Date(lb.created_at).getTime():new Date(b.created_at||0).getTime();
+    return tb-ta;
+  });
+}
+
+/* ---- Loading ---------------------------------------------------- */
+
+async function cvxLoad(force){
+  if(!activeWorkspaceClientId) return;
+  if(cvxLoading) return;
+  cvxLoading=true; cvxError=null;
+  cvxRenderList();
+  try{
+    const [aRes,tRes]=await Promise.all([
+      fetch(CVX_API.activities+'?client_id='+activeWorkspaceClientId),
+      fetch(CVX_API.tasks+'?client_id='+activeWorkspaceClientId).catch(()=>null)
+    ]);
+    if(!aRes.ok) throw new Error('HTTP '+aRes.status);
+    const raw=await aRes.json();
+    const rows=Array.isArray(raw)?raw:(raw.activities||[]);
+    cvxActivities=rows
+      .filter(a=>a.sublead_id!=null)
+      .sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+    if(tRes && tRes.ok){
+      const t=await tRes.json();
+      cvxTasks=Array.isArray(t)?t:(t.tasks||[]);
+    } else cvxTasks=null;
+  }catch(e){
+    console.warn('Conversations: activity load failed',e);
+    cvxActivities=null; cvxError=e.message||'request failed';
+  }finally{
+    cvxLoading=false;
+  }
+  cvxRenderAll();
+}
+
+async function cvxOpen(){
+  if(!cwSubleads.length && !cwSubleadsError) await cwLoadSubleads();
+  await cvxLoad();
+}
+
+function cvxRenderAll(){ cvxRenderList(); cvxRenderThread(); cvxRenderProfile(); }
+
+/* ---- LEFT: inbox ------------------------------------------------ */
+
+function cvxSetFilter(v,el){
+  cvxFilter=v;
+  document.querySelectorAll('#cvxFilters .ch-sv').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  cvxRenderList();
+}
+function cvxOnSearch(v){ cvxSearch=(v||'').trim(); cvxRenderList(); }
+
+function cvxRenderList(){
+  const el=document.getElementById('cvxList'); if(!el) return;
+  const counts=document.getElementById('cvxUnreadCount');
+  if(cwSubleadsError){
+    el.innerHTML='<div class="empty-state" style="padding:28px 16px"><span class="mat">cloud_off</span><p>Subleads endpoint unavailable.</p></div>';
+    return;
+  }
+  if(cvxLoading && !cwSubleads.length){
+    el.innerHTML='<div style="text-align:center;padding:28px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading…</div>';
+    return;
+  }
+  const list=cvxFiltered();
+  if(counts){
+    const u=cwSubleads.filter(cvxIsUnread).length;
+    counts.textContent=u||''; counts.style.display=u?'':'none';
+  }
+  if(!list.length){
+    el.innerHTML=`<div class="empty-state" style="padding:28px 16px"><span class="mat">forum</span><p>${cwSubleads.length?'No conversations match this filter.':'No subleads for this client yet.'}</p></div>`;
+    return;
+  }
+  el.innerHTML=list.map(s=>{
+    const last=cvxLast(s.id);
+    const unread=cvxIsUnread(s);
+    const dir=last?String((last.activity_data||{}).direction||'').toLowerCase():'';
+    const preview=last?cvxPreview(last):'No messages yet';
+    const when=last?fmtDate(last.created_at):(s.created_at?fmtDate(s.created_at):'');
+    return `<div class="ch-contact cvx-item ${String(s.id)===String(cvxActiveId)?'active':''}" onclick="cvxSelect(${s.id})">
+      <div class="av sm ${cwSubStatusCls(s.status)}">${initials(cwSubName(s))}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="cvx-name ${unread?'unread':''}">${escapeHtml(cwSubName(s))}</span>
+          ${unread?'<span class="cvx-dot"></span>':''}
+          <div style="flex:1"></div>
+          <span class="cvx-when">${escapeHtml(when)}</span>
+        </div>
+        <div class="cvx-preview">${dir==='outbound'?'<span class="mat sm" style="font-size:12px;color:var(--tx3)">reply</span> ':''}${escapeHtml(preview)}</div>
+        <div class="cvx-tags">
+          <span class="badge ${cwSubStatusCls(s.status)}" style="font-size:10px">${escapeHtml(s.status||'new')}</span>
+          ${s.source?`<span class="cvx-tag">${escapeHtml(s.source)}</span>`:''}
+          ${cvxNeedsFollowUp(s)?'<span class="cvx-tag due"><span class="mat sm" style="font-size:11px">schedule</span>due</span>':''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function cvxPreview(a){
+  const d=a.activity_data||{};
+  const t=String(a.activity_type||'').toLowerCase();
+  if(t==='call') return 'Call · '+(d.status||d.direction||'');
+  if(t==='note') return 'Note: '+String(a.notes||'').replace(/\s+/g,' ').slice(0,60);
+  if(t==='review_request') return 'Review request sent';
+  return String(d.body||a.notes||'').replace(/\s+/g,' ').slice(0,64);
+}
+
+/* ---- CENTER: thread --------------------------------------------- */
+
+function cvxSelect(id){
+  cvxActiveId=id;
+  const seen=cvxLoadSeen(); seen[id]=new Date().toISOString(); cvxSaveSeen(seen);
+  cvxRenderAll();
+  const box=document.getElementById('cvxComposerBody');
+  if(box){ box.disabled=false; setTimeout(()=>box.focus(),40); }
+}
+
+function cvxActive(){ return cwSubleads.find(s=>String(s.id)===String(cvxActiveId))||null; }
+
+function cvxRenderThread(){
+  const feed=document.getElementById('cvxThread'); if(!feed) return;
+  const s=cvxActive();
+  const hdr=document.getElementById('cvxThreadHeader');
+  const send=document.getElementById('cvxSendBtn');
+  const body=document.getElementById('cvxComposerBody');
+
+  if(!s){
+    hdr.innerHTML='<div class="cvx-hd-name">Select a conversation</div><div class="cvx-hd-sub">Choose a sublead from the list to open their timeline.</div>';
+    feed.innerHTML='<div class="ch-timeline-empty"><span class="mat" style="font-size:33px;opacity:.35">forum</span><p style="font-size:13.5px">No conversation selected.</p></div>';
+    if(send) send.disabled=true;
+    if(body){ body.disabled=true; body.value=''; }
+    return;
+  }
+  hdr.innerHTML=`<div style="display:flex;align-items:center;gap:10px;min-width:0">
+      <div class="av lg ${cwSubStatusCls(s.status)}">${initials(cwSubName(s))}</div>
+      <div style="min-width:0">
+        <div class="cvx-hd-name">${escapeHtml(cwSubName(s))}</div>
+        <div class="cvx-hd-sub">${escapeHtml(s.phone||'No phone')}${s.email?' · '+escapeHtml(s.email):''} · <span class="badge ${cwSubStatusCls(s.status)}" style="font-size:10px">${escapeHtml(s.status||'new')}</span></div>
+      </div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex;gap:5px">
+      <button class="tbb ch-icon-btn" title="${s.phone?'Call this sublead':'No phone number'}" ${s.phone?`onclick="cvxCall(${s.id})"`:'disabled'}><span class="mat">call</span></button>
+      <button class="tbb ch-icon-btn" title="Request a review" onclick="cwRequestReview(${s.id})"><span class="mat">reviews</span></button>
+    </div>`;
+
+  if(cvxError){
+    feed.innerHTML=`<div class="ch-timeline-empty"><span class="mat" style="font-size:33px;opacity:.35">cloud_off</span><p style="font-size:13.5px">Couldn't load this conversation. The <code>upclose-sublead-activities</code> endpoint didn't respond.</p></div>`;
+    if(send) send.disabled=true;
+    return;
+  }
+  if(send) send.disabled=!s.phone;
+  if(body) body.disabled=!s.phone;
+  if(body && !s.phone) body.placeholder='This sublead has no phone number';
+  else if(body) body.placeholder='Type a message…  (Ctrl+Enter to send)';
+
+  const rows=cvxFor(s.id).slice().reverse();   // oldest first
+  if(!rows.length){
+    feed.innerHTML='<div class="ch-timeline-empty"><span class="mat" style="font-size:33px;opacity:.35">chat_bubble</span><p style="font-size:13.5px">No messages yet. Send the first one below.</p></div>';
+    return;
+  }
+  let html='', lastDay='';
+  rows.forEach(a=>{
+    const day=a.created_at?new Date(a.created_at).toDateString():'';
+    if(day && day!==lastDay){
+      html+=`<div class="ch-day-divider"><span>${escapeHtml(cvxDayLabel(a.created_at))}</span></div>`;
+      lastDay=day;
+    }
+    html+=cvxRenderEvent(a);
+  });
+  feed.innerHTML=html;
+  feed.scrollTop=feed.scrollHeight;
+}
+
+function cvxDayLabel(iso){
+  const d=new Date(iso), t=new Date(), y=new Date(); y.setDate(t.getDate()-1);
+  if(d.toDateString()===t.toDateString()) return 'Today';
+  if(d.toDateString()===y.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function cvxRenderEvent(a){
+  const t=String(a.activity_type||'').toLowerCase();
+  const d=a.activity_data||{};
+  const time=a.created_at?new Date(a.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false}):'';
+
+  if(t==='sms'||t==='email'){
+    const out=String(d.direction||'').toLowerCase()!=='inbound';
+    const text=d.body||a.notes||'';
+    const st=d.status?String(d.status):'';
+    const stCls={delivered:'gr',sent:'bl',queued:'am',failed:'re',undelivered:'re',received:'gy'}[st.toLowerCase()]||'gy';
+    return `<div class="ch-bubble-row ${out?'out':''}">
+      <div style="max-width:76%">
+        <div class="ch-bubble-kicker" style="${out?'justify-content:flex-end':''}">
+          <span class="mat">${t==='email'?'mail':'sms'}</span>${out?'Sent':'Received'} · ${escapeHtml(time)}
+          ${out&&st?`<span class="badge ${stCls}" style="font-size:9.5px;padding:1px 6px">${escapeHtml(st)}</span>`:''}
+        </div>
+        <div class="ch-bubble">${escapeHtml(text)}</div>
+      </div></div>`;
+  }
+  if(t==='note'){
+    return `<div class="cvx-sys note"><span class="mat sm">sticky_note_2</span>
+      <div><div class="cvx-sys-hd">Internal note · ${escapeHtml(time)}</div>
+      <div class="cvx-sys-body">${escapeHtml(String(a.notes||'').slice(0,400))}</div></div></div>`;
+  }
+  if(t==='call'){
+    const dir=String(d.direction||'').toLowerCase()==='inbound'?'Inbound':'Outbound';
+    const secs=parseInt(d.duration,10);
+    const dur=(!isNaN(secs)&&secs>0)?` · ${Math.floor(secs/60)}m ${secs%60}s`:'';
+    return `<div class="cvx-sys"><span class="mat sm">call</span>
+      <div><div class="cvx-sys-hd">${dir} call${dur} · ${escapeHtml(time)}</div>
+      ${d.status?`<div class="cvx-sys-body">${escapeHtml(String(d.status))}</div>`:''}</div></div>`;
+  }
+  if(t==='review_request'){
+    return `<div class="cvx-sys"><span class="mat sm">reviews</span>
+      <div><div class="cvx-sys-hd">Review request sent · ${escapeHtml(time)}</div></div></div>`;
+  }
+  // Unknown / future event types: compact one-liner, never raw dumps.
+  return `<div class="cvx-sys"><span class="mat sm">bolt</span>
+    <div><div class="cvx-sys-hd">${escapeHtml(a.activity_type||'Event')} · ${escapeHtml(time)}</div>
+    ${a.notes?`<div class="cvx-sys-body">${escapeHtml(String(a.notes).replace(/\s+/g,' ').slice(0,160))}</div>`:''}</div></div>`;
+}
+
+/* ---- Composer ---------------------------------------------------- */
+
+async function cvxSend(){
+  const s=cvxActive(); if(!s) return;
+  const box=document.getElementById('cvxComposerBody');
+  const text=(box.value||'').trim();
+  if(!text) return;
+  if(!s.phone){ toast('This sublead has no phone number','err'); return; }
+  const btn=document.getElementById('cvxSendBtn');
+  btn.disabled=true; box.disabled=true;
+  try{
+    const res=await fetch(CVX_API.sendSms,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sublead_id:s.id,client_id:activeWorkspaceClientId,body:text,
+        userEmail:(currentUser&&currentUser.email)||''})});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok||data.success===false){
+      const why={sublead_not_found:'That sublead does not belong to this client.',no_phone:'This sublead has no phone number.'}[data.reason]||'Send failed';
+      toast(why,'err'); return;
+    }
+    box.value='';
+    toast('✓ Message sent','ok');
+    await cvxLoad(true);
+    await cwLoadSubleads(true);
+  }catch(e){
+    toast('Failed to send — check the upclose-sublead-sms webhook','err');
+  }finally{
+    btn.disabled=false; box.disabled=false; box.focus();
+  }
+}
+
+function cvxComposerKey(e){
+  if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); cvxSend(); }
+}
+
+async function cvxAddNote(){
+  const s=cvxActive(); if(!s) return;
+  const note=prompt('Internal note (not sent to the sublead)');
+  if(note===null||!note.trim()) return;
+  try{
+    const res=await fetch(CVX_API.addNote,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sublead_id:s.id,client_id:activeWorkspaceClientId,note:note.trim(),
+        userEmail:(currentUser&&currentUser.email)||''})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    toast('✓ Note added','ok'); cvxLoad(true);
+  }catch(e){ toast('Failed to add note — check the upclose-sublead-note webhook','err'); }
+}
+
+async function cvxCreateTask(){
+  const s=cvxActive(); if(!s) return;
+  const title=prompt('Task title'); if(title===null||!title.trim()) return;
+  const due=prompt('Due date (YYYY-MM-DD, optional)','');
+  try{
+    const res=await fetch(CVX_API.createTask,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sublead_id:s.id,client_id:activeWorkspaceClientId,title:title.trim(),
+        due_at:(due||'').trim(),userEmail:(currentUser&&currentUser.email)||''})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    toast('✓ Task created','ok'); cvxLoad(true);
+  }catch(e){ toast('Failed to create task — check the upclose-sublead-task-create webhook','err'); }
+}
+
+async function cvxScheduleFollowUp(){
+  const s=cvxActive(); if(!s) return;
+  const when=prompt('Follow up on (YYYY-MM-DD)', new Date(Date.now()+86400000).toISOString().slice(0,10));
+  if(when===null||!when.trim()) return;
+  try{
+    const res=await fetch(CW_API.updateSublead,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:s.id,client_id:activeWorkspaceClientId,next_followup_at:when.trim()})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    s.next_followup_at=new Date(when.trim()).toISOString();
+    toast('✓ Follow-up scheduled','ok'); cvxRenderAll();
+  }catch(e){ toast('Failed to schedule — check the upclose-sublead-update webhook','err'); }
+}
+
+async function cvxSetStatus(v){
+  const s=cvxActive(); if(!s) return;
+  await cwSetSubleadStatus(s.id, v, null);
+  s.status=v; cvxRenderAll();
+}
+
+function cvxCall(subleadId){
+  // No sublead voice backend exists. Hand off to the device dialler
+  // rather than pretending an in-app call was placed.
+  const s=cwSubleads.find(x=>String(x.id)===String(subleadId));
+  if(!s||!s.phone){ toast('No phone number for this sublead','err'); return; }
+  window.location.href='tel:'+String(s.phone).replace(/[^0-9+]/g,'');
+}
+
+/* ---- Snippets & links (client-scoped) --------------------------- */
+
+function cvxToggleSnippets(force){
+  const el=document.getElementById('cvxSnippetPop'); if(!el) return;
+  const show=force!==undefined?force:!el.classList.contains('open');
+  if(show){
+    const items=cvxLoadSnippets().concat(cvxLoadLinks().map(l=>({id:l.id,name:'🔗 '+l.name,content:l.url})));
+    el.innerHTML=items.length
+      ? items.map(sn=>`<div class="ch-snip-item" onclick="cvxInsert('${sn.id}')"><b>${escapeHtml(sn.name)}</b><span>${escapeHtml(String(sn.content).slice(0,54))}</span></div>`).join('')
+        +'<div class="ch-snip-item" onclick="cvxNewSnippet()" style="color:var(--acc)"><b>+ New snippet</b></div>'
+      : '<div class="ch-snip-item" onclick="cvxNewSnippet()" style="color:var(--acc)"><b>+ New snippet</b><span>Saved for this client only</span></div>';
+    el.classList.add('open');
+  } else el.classList.remove('open');
+}
+function cvxInsert(id){
+  const all=cvxLoadSnippets().concat(cvxLoadLinks().map(l=>({id:l.id,content:l.url})));
+  const sn=all.find(x=>x.id===id); if(!sn) return;
+  const s=cvxActive();
+  const box=document.getElementById('cvxComposerBody');
+  let txt=String(sn.content)
+    .replace(/{{\s*first_name\s*}}/gi,(s&&s.first_name)||'')
+    .replace(/{{\s*business_name\s*}}/gi,(cwClient&&cwClient.company_name)||'');
+  box.value=(box.value?box.value+' ':'')+txt;
+  cvxToggleSnippets(false); box.focus();
+}
+function cvxNewSnippet(){
+  const name=prompt('Snippet name'); if(name===null||!name.trim()) return;
+  const content=prompt('Snippet text (use {{first_name}}, {{business_name}})'); if(content===null||!content.trim()) return;
+  const l=cvxLoadSnippets(); l.push({id:'cs_'+Date.now(),name:name.trim(),content:content.trim()});
+  cvxSaveSnippets(l); cvxToggleSnippets(true); toast('Snippet saved for this client');
+}
+function cvxNewLink(){
+  const name=prompt('Link name'); if(name===null||!name.trim()) return;
+  const url=prompt('URL','https://'); if(url===null||!url.trim()) return;
+  const l=cvxLoadLinks(); l.push({id:'cl_'+Date.now(),name:name.trim(),url:url.trim()});
+  cvxSaveLinks(l); toast('Link saved for this client'); cvxRenderProfile();
+}
+
+/* ---- RIGHT: sublead profile ------------------------------------- */
+
+function cvxRenderProfile(){
+  const el=document.getElementById('cvxProfile'); if(!el) return;
+  const s=cvxActive();
+  if(!s){
+    el.innerHTML='<div class="empty-state" style="padding:34px 18px"><span class="mat">person_search</span><p>Select a conversation to see sublead details.</p></div>';
+    return;
+  }
+  const meta=(s.metadata&&typeof s.metadata==='object')?s.metadata:{};
+  const utm=['utm_source','utm_medium','utm_campaign','utm_content','utm_term']
+    .filter(k=>meta[k]).map(k=>`<div class="lp-row"><div class="lp-ri"><span class="mat">ads_click</span></div><div><div class="lp-rl">${k.replace('utm_','UTM ')}</div><div class="lp-rv">${escapeHtml(String(meta[k]))}</div></div></div>`).join('');
+  const myTasks=(cvxTasks||[]).filter(t=>String(t.sublead_id)===String(s.id));
+
+  el.innerHTML=`
+    <div class="cvx-prof-hd">
+      <div class="av lg ${cwSubStatusCls(s.status)}">${initials(cwSubName(s))}</div>
+      <div style="min-width:0">
+        <div class="cvx-prof-name">${escapeHtml(cwSubName(s))}</div>
+        <div class="cvx-prof-sub">Sublead #${s.id} · ${escapeHtml((cwClient&&cwClient.company_name)||'')}</div>
+      </div>
+    </div>
+
+    <div class="cvx-quick">
+      <div class="ch-quick-btn" onclick="${s.phone?`cvxCall(${s.id})`:''}" ${s.phone?'':'style="opacity:.35;cursor:not-allowed"'}><span class="mat">call</span><span class="qlabel">Call</span></div>
+      <div class="ch-quick-btn" onclick="cvxAddNote()"><span class="mat">sticky_note_2</span><span class="qlabel">Note</span></div>
+      <div class="ch-quick-btn" onclick="cvxCreateTask()"><span class="mat">task</span><span class="qlabel">Task</span></div>
+      <div class="ch-quick-btn" onclick="cvxScheduleFollowUp()"><span class="mat">schedule</span><span class="qlabel">Follow-up</span></div>
+      <div class="ch-quick-btn" onclick="cwRequestReview(${s.id})"><span class="mat">reviews</span><span class="qlabel">Review</span></div>
+      <div class="ch-quick-btn" onclick="cvxNewLink()"><span class="mat">link</span><span class="qlabel">Add Link</span></div>
+    </div>
+
+    <div class="cvx-sec">
+      <div class="cvx-sec-hd">Status</div>
+      <select class="form-select" onchange="cvxSetStatus(this.value)">
+        ${['new','contacted','qualified','won','lost'].map(o=>`<option value="${o}" ${String(s.status||'new').toLowerCase()===o?'selected':''}>${o.charAt(0).toUpperCase()+o.slice(1)}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="cvx-sec">
+      <div class="cvx-sec-hd">Contact</div>
+      <div class="lp-rows">
+        <div class="lp-row"><div class="lp-ri"><span class="mat">call</span></div><div><div class="lp-rl">Phone</div><div class="lp-rv">${s.phone?escapeHtml(s.phone):'—'}</div></div></div>
+        <div class="lp-row"><div class="lp-ri"><span class="mat">mail</span></div><div style="min-width:0"><div class="lp-rl">Email</div><div class="lp-rv" style="word-break:break-all">${s.email?escapeHtml(s.email):'—'}</div></div></div>
+        <div class="lp-row"><div class="lp-ri"><span class="mat">source</span></div><div><div class="lp-rl">Source</div><div class="lp-rv">${s.source?escapeHtml(s.source):'—'}</div></div></div>
+        ${utm||'<div class="lp-row"><div class="lp-ri"><span class="mat">campaign</span></div><div><div class="lp-rl">Campaign / UTM</div><div class="lp-rv" style="color:var(--tx3)">Not captured at intake yet</div></div></div>'}
+      </div>
+    </div>
+
+    <div class="cvx-sec">
+      <div class="cvx-sec-hd">Follow-up</div>
+      <div class="lp-rows">
+        <div class="lp-row"><div class="lp-ri"><span class="mat">history</span></div><div><div class="lp-rl">Last Contacted</div><div class="lp-rv">${s.last_contacted_at?fmtDate(s.last_contacted_at):'—'}</div></div></div>
+        <div class="lp-row"><div class="lp-ri"><span class="mat">event_upcoming</span></div><div><div class="lp-rl">Next Follow-up</div><div class="lp-rv" ${cvxNeedsFollowUp(s)?'style="color:var(--am);font-weight:600"':''}>${s.next_followup_at?fmtDate(s.next_followup_at):'—'}</div></div></div>
+      </div>
+    </div>
+
+    <div class="cvx-sec">
+      <div class="cvx-sec-hd">Tasks</div>
+      ${cvxTasks===null
+        ? '<div class="cvx-muted">Task list unavailable — check the <code>upclose-sublead-tasks</code> webhook.</div>'
+        : (myTasks.length
+            ? myTasks.map(t=>`<div class="cvx-task"><span class="mat sm">${String(t.status)==='done'?'task_alt':'radio_button_unchecked'}</span><div><div class="cvx-task-t">${escapeHtml(t.title||'')}</div><div class="cvx-task-m">${t.due_at?'due '+fmtDate(t.due_at):'no due date'}</div></div></div>`).join('')
+            : '<div class="cvx-muted">No tasks for this sublead.</div>')}
+    </div>
+
+    <div class="cvx-sec">
+      <div class="cvx-sec-hd">Automations</div>
+      <div class="cvx-muted">No automation engine is running, so there is no live automation state for this sublead. Build definitions under <a onclick="cwGo('automations')" style="color:var(--acc);cursor:pointer">Automations</a>.</div>
+    </div>`;
 }
 
 /* Client detail panel (agency Clients page) — reviews are configured
