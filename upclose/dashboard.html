@@ -368,6 +368,7 @@
             <div class="form-group full">
               <label class="form-label">Role</label>
               <select class="form-select" id="tmRole" style="width:100%">
+                <option value="Closer">Closer</option>
                 <option value="Agent">Agent</option>
                 <option value="Manager">Manager</option>
                 <option value="Admin">Admin</option>
@@ -381,6 +382,41 @@
         </div>
       </div>
 
+
+<!-- ===================== SCHEDULE FOLLOW-UP ===================== -->
+<div id="fuModal" onclick="if(event.target===this)fuCloseModal()">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title" id="fuModalTitle">Schedule Follow-up</div>
+        <div style="font-size:12px;color:var(--tx3);margin-top:2px" id="fuModalSub">—</div>
+      </div>
+      <button class="tbb" onclick="fuCloseModal()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="fuModalBody"></div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="fuCloseModal()">Cancel</button>
+      <button class="abtn pri" id="fuSaveBtn" onclick="fuSaveModal()"><span class="mat sm">save</span>Save Follow-up</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ACTION QUEUE RUNNER ===================== -->
+<div id="fuRunner" onclick="if(event.target===this)fuCloseRunner()">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-hd">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span class="mat" style="color:var(--acc)">bolt</span>
+        <div>
+          <div class="modal-title">Action Queue</div>
+          <div style="font-size:12px;color:var(--tx3);margin-top:2px" id="fuRunnerProgress"></div>
+        </div>
+      </div>
+      <button class="tbb" onclick="fuCloseRunner()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="fuRunnerBody"></div>
+  </div>
+</div>
 
 <div id="cwSubleadModal" onclick="if(event.target===this)cwCloseNewSublead()">
         <div class="mh-modal-box">
