@@ -1,5 +1,3 @@
-
-
 window.SUPABASE_URL      = 'https://gfmcsuqehgbetdsszwyd.supabase.co';
 window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmbWNzdXFlaGdiZXRkc3N6d3lkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMzE5NjAsImV4cCI6MjA5NjYwNzk2MH0.frXLKeNjyWFF15gog9Qr5Mfvl8Yaqlhuvmgp-O8drPg';
 
