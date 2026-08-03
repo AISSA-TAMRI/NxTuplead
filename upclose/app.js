@@ -90,7 +90,7 @@ function renderUserUI(){
 }
 function setEl(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
 function showApp(){const loader=document.getElementById('authLoader');loader.classList.add('fade');setTimeout(()=>{loader.style.display='none';document.getElementById('app').classList.add('ready');},320);}
-function redirectToLogin(){window.location.replace('index.html');}
+function redirectToLogin(){window.location.replace('/upclose/index.html');}
 async function handleSignOut(){closeUserMenu();try{await sb.auth.signOut();}catch(e){console.error('SignOut error:',e);}redirectToLogin();}
 function toggleUserMenu(){document.getElementById('userMenu').classList.toggle('open');}
 function closeUserMenu(){document.getElementById('userMenu').classList.remove('open');}
@@ -671,10 +671,30 @@ function cdpOpenLead(){
    independently. Clients now have their own modal and their own
    backend action; nothing here writes to crm.leads.
    The originating lead stays reachable via "Open Source Lead". */
+/* Every active team member can own a client account — not just the
+   Admin/Closer set that get-closers returns for lead assignment. The
+   Client Manager role exists for exactly this, so it must appear here. */
+let teamUsers=null;
+async function ensureTeamUsers(){
+  if(teamUsers) return teamUsers;
+  try{
+    const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'list_users'})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const raw=await res.json();
+    teamUsers=(Array.isArray(raw)?raw:(raw.users||[])).filter(u=>u&&u.id);
+  }catch(e){
+    console.warn('[Team] list_users unavailable, falling back to closers',e);
+    await ensureClosersLoaded();
+    teamUsers=Object.keys(closersMap).map(id=>({id,full_name:closersMap[id],role:''}));
+  }
+  return teamUsers;
+}
+
 async function cdpEdit(){
   if(!currentClient){ toast('No client selected','err'); return; }
   const c=currentClient;
-  await ensureClosersLoaded();
+  const team=await ensureTeamUsers();
   const statuses=['Active','Paused','Churned'];
   const cur=c.status||'Active';
   if(!statuses.includes(cur)) statuses.unshift(cur);
@@ -700,7 +720,7 @@ async function cdpEdit(){
       <div class="form-group"><label class="form-label">Account Manager</label>
         <select class="form-select" id="ceManager">
           <option value="">Unassigned</option>
-          ${Object.keys(closersMap).map(id=>`<option value="${id}" ${String(id)===String(c.account_manager_id)?'selected':''}>${escapeHtml(closersMap[id])}</option>`).join('')}
+          ${team.map(u=>`<option value="${u.id}" ${String(u.id)===String(c.account_manager_id)?'selected':''}>${escapeHtml(u.full_name||u.email||('User #'+u.id))}${u.role?' — '+escapeHtml(prettyRole(u.role)):''}</option>`).join('')}
         </select></div>
       <div class="form-group"><label class="form-label">Client Status</label>
         <select class="form-select" id="ceStatus">
@@ -2703,11 +2723,17 @@ function fnLeadsInPeriod(){
   const cutoff=new Date();cutoff.setDate(cutoff.getDate()-fnPeriodDays);
   return allLeads.filter(l=>l.created_at&&new Date(l.created_at)>=cutoff);
 }
-function fnStageCard(label,count,pctOfPrev,icon){
+function fnStageCard(label,count,pctOfPrev,icon,prevCount){
+  // When the previous stage has no data, a "0%" reads as a real conversion
+  // failure. Say the stage is unmeasured instead of implying a result.
+  let sub='';
+  if(pctOfPrev===null) sub='';
+  else if(!prevCount) sub='<div class="stat-trend neutral" style="margin-top:4px;color:var(--am)"><span class="mat">warning</span>previous stage not recorded</div>';
+  else sub=`<div class="stat-trend neutral" style="margin-top:4px">${pctOfPrev}% of previous stage</div>`;
   return `<div class="card" style="flex:1;padding:14px 16px;min-width:0">
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span class="mat sm" style="color:var(--tx3)">${icon}</span><span class="mlbl">${label}</span></div>
     <div class="mval">${count}</div>
-    ${pctOfPrev!==null?`<div class="stat-trend neutral" style="margin-top:4px">${pctOfPrev}% of previous stage</div>`:''}
+    ${sub}
   </div>`;
 }
 function fnMetricCard(label,value,valid,hint){
@@ -2731,9 +2757,11 @@ async function renderFunnelDashboard(){
 
   document.getElementById('fnFunnelStages').innerHTML=
     fnStageCard('Booked Calls',booked,null,'event_available')+
-    fnStageCard('Shown',shown,booked?Math.round(shown/booked*100):0,'how_to_reg')+
-    fnStageCard('Offers Made',offered,shown?Math.round(offered/shown*100):0,'local_offer')+
-    fnStageCard('Won',won,offered?Math.round(won/offered*100):0,'check_circle');
+    fnStageCard('Shown',shown,booked?Math.round(shown/booked*100):0,'how_to_reg',booked)+
+    fnStageCard('Offers Made',offered,shown?Math.round(offered/shown*100):0,'local_offer',shown)+
+    fnStageCard('Won',won,offered?Math.round(won/offered*100):0,'check_circle',offered);
+
+  fnRenderCoverage(leads);
 
   const cpbc=spend>0&&booked>0?spend/booked:null;
   const cps=spend>0&&shown>0?spend/shown:null;
@@ -2759,6 +2787,59 @@ async function renderFunnelDashboard(){
     <div class="csm" style="padding:14px 16px"><div class="kpi-sub">Average LTV (Won deals)</div><div class="kpi-val-lg">${avgLtv!==null?'$'+avgLtv.toFixed(2):'—'}</div><div class="kpi-sub ${avgLtv===null?'kpi-warn':''}">${avgLtv!==null?wonLeads.length+' won deals with a value':'Enter Deal Value on won leads'}</div></div>
     <div class="csm" style="padding:14px 16px"><div class="kpi-sub">Total Revenue Won</div><div class="kpi-val-lg">${totalRevenue>0?'$'+totalRevenue.toFixed(2):'—'}</div><div class="kpi-sub">${wonLeads.length} of ${won} won leads have a value</div></div>
     <div class="csm" style="padding:14px 16px"><div class="kpi-sub">CPA vs Avg LTV</div><div class="kpi-val-lg">${cpa!==null&&avgLtv!==null?(avgLtv/cpa).toFixed(2)+'x':'—'}</div><div class="kpi-sub">${cpa!==null&&avgLtv!==null?'Return per acquisition dollar':'Needs ad spend + deal values'}</div></div>`;
+}
+
+/* Which leads are blocking the funnel, and what each one is missing.
+   Every row is a real lead; the Open button jumps straight to the panel
+   where those three fields are edited. */
+const FN_FIELDS=[
+  {key:'preferred_date', label:'Booked date',     stage:'Booked Calls', has:l=>!!l.preferred_date},
+  {key:'show_status',    label:'Meeting outcome', stage:'Shown',        has:l=>l.show_status==='showed'||l.show_status==='no_show'},
+  {key:'offer_made',     label:'Offer made',      stage:'Offers Made',  has:l=>l.offer_made===true||l.offer_made===false},
+  {key:'deal_value',     label:'Deal value',      stage:'LTV',          has:l=>l.deal_value!==null&&l.deal_value!==undefined&&l.deal_value!=='',
+   onlyWon:true}
+];
+
+function fnRenderCoverage(leads){
+  const sum=document.getElementById('fnCoverageSummary');
+  const body=document.getElementById('fnCoverageBody');
+  if(!sum||!body) return;
+
+  if(!leads.length){
+    sum.innerHTML='<div style="font-size:13px;color:var(--tx3)">No leads in this period, so there is nothing to measure yet.</div>';
+    body.innerHTML=''; return;
+  }
+
+  sum.innerHTML=FN_FIELDS.map(f=>{
+    const pool=f.onlyWon?leads.filter(l=>l.status==='Won'):leads;
+    const have=pool.filter(f.has).length;
+    const pct=pool.length?Math.round(have/pool.length*100):0;
+    const cls=pct===100?'gr':pct===0?'re':'am';
+    return `<div class="fn-cov">
+      <div class="fn-cov-top"><span>${f.label}</span><b>${have}/${pool.length}</b></div>
+      <div class="health-bar-track" style="height:5px"><div class="health-bar-fill" style="width:${pct}%;background:var(--${cls})"></div></div>
+      <div class="fn-cov-sub">feeds <b>${f.stage}</b>${f.onlyWon?' · won leads only':''}</div>
+    </div>`;
+  }).join('');
+
+  const gaps=leads.map(l=>{
+    const missing=FN_FIELDS.filter(f=>(!f.onlyWon||l.status==='Won')&&!f.has(l)).map(f=>f.label);
+    return missing.length?{lead:l,missing}:null;
+  }).filter(Boolean);
+
+  if(!gaps.length){
+    body.innerHTML='<div class="empty-state" style="padding:26px"><span class="mat">task_alt</span><p>Every lead in this period has complete funnel data.</p></div>';
+    return;
+  }
+  body.innerHTML=`<table class="dt"><thead><tr><th>Lead</th><th>Status</th><th>Missing</th><th style="width:90px"></th></tr></thead><tbody>`
+    + gaps.slice(0,60).map(g=>`<tr>
+        <td style="font-weight:600">${escapeHtml(g.lead.company_name||chLeadName(g.lead))}</td>
+        <td><span class="badge ${scClass(g.lead.status||'Potential')}">${escapeHtml(g.lead.status||'—')}</span></td>
+        <td>${g.missing.map(m=>`<span class="fn-gap">${escapeHtml(m)}</span>`).join('')}</td>
+        <td style="text-align:right"><button class="abtn" style="padding:4px 10px;font-size:12px" onclick="openLead(${g.lead.id})"><span class="mat sm">edit</span>Fill in</button></td>
+      </tr>`).join('')
+    + `</tbody></table>`
+    + (gaps.length>60?`<div style="padding:10px 14px;font-size:12px;color:var(--tx3)">Showing 60 of ${gaps.length} leads with gaps.</div>`:'');
 }
 
 /* ============================================================
