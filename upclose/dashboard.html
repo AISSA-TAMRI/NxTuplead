@@ -7,11 +7,11 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script src="supabase-config.js"></script>
+<script src="/upclose/supabase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@twilio/voice-sdk@2.18.3/dist/twilio.min.js"></script>
-<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="/upclose/styles.css"/>
 
 </head>
 <body>
@@ -26,7 +26,7 @@
 
 <div id="sessionBanner">
   <span class="mat sm">warning</span> Your session has expired.
-  <button class="abtn danger" style="padding:3px 10px;font-size:12px" onclick="window.location.replace('index.html')">Sign in again</button>
+  <button class="abtn danger" style="padding:3px 10px;font-size:12px" onclick="window.location.replace('/upclose/index.html')">Sign in again</button>
 </div>
 
 <div class="lp-overlay" id="lpOverlay" onclick="closeLeadPanel()"></div>
@@ -293,18 +293,18 @@
     </header>
 
     <div id="workspace">
-      <div class="pv" id="pv-dashboard" data-src="pages/dashboard.html"></div>
-      <div class="pv" id="pv-opportunities" data-src="pages/opportunities.html"></div>
-      <div class="pv" id="pv-clients" style="flex-direction:column;height:100%" data-src="pages/clients.html"></div>
-      <div class="pv" id="pv-activity" data-src="pages/activity.html"></div>
-      <div class="pv" id="pv-meetings" data-src="pages/meetings.html"></div>
-      <div class="pv" id="pv-settings" data-src="pages/settings.html"></div>
-      <div class="pv" id="pv-communication" data-src="pages/communication.html"></div>
-      <div class="pv" id="pv-pipeline" data-src="pages/pipeline.html"></div>
-      <div class="pv" id="pv-analytics" data-src="pages/analytics.html"></div>
-      <div class="pv" id="pv-funnel" data-src="pages/funnel.html"></div>
-      <div class="pv" id="pv-reports" data-src="pages/reports.html"></div>
-      <div class="pv" id="pv-workspace" data-src="pages/workspace.html"></div>
+      <div class="pv" id="pv-dashboard" data-src="/upclose/pages/dashboard.html"></div>
+      <div class="pv" id="pv-opportunities" data-src="/upclose/pages/opportunities.html"></div>
+      <div class="pv" id="pv-clients" style="flex-direction:column;height:100%" data-src="/upclose/pages/clients.html"></div>
+      <div class="pv" id="pv-activity" data-src="/upclose/pages/activity.html"></div>
+      <div class="pv" id="pv-meetings" data-src="/upclose/pages/meetings.html"></div>
+      <div class="pv" id="pv-settings" data-src="/upclose/pages/settings.html"></div>
+      <div class="pv" id="pv-communication" data-src="/upclose/pages/communication.html"></div>
+      <div class="pv" id="pv-pipeline" data-src="/upclose/pages/pipeline.html"></div>
+      <div class="pv" id="pv-analytics" data-src="/upclose/pages/analytics.html"></div>
+      <div class="pv" id="pv-funnel" data-src="/upclose/pages/funnel.html"></div>
+      <div class="pv" id="pv-reports" data-src="/upclose/pages/reports.html"></div>
+      <div class="pv" id="pv-workspace" data-src="/upclose/pages/workspace.html"></div>
 
 <div id="mhScheduleModal" onclick="if(event.target===this)closeMhModal()">
         <div class="mh-modal-box">
@@ -398,6 +398,39 @@
       <button class="abtn" onclick="closeClientModal()">Cancel</button>
       <button class="abtn pri" id="ceSaveBtn" onclick="saveClientModal()"><span class="mat sm">save</span>Save Client</button>
     </div>
+  </div>
+</div>
+
+<!-- ===================== LANDING PAGE EDITOR ===================== -->
+<div id="acqModal" onclick="if(event.target===this)acqCloseForm()">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title" id="acqModalTitle">New Landing Page</div>
+        <div style="font-size:12px;color:var(--tx3);margin-top:2px" id="acqModalSub">—</div>
+      </div>
+      <button class="tbb" onclick="acqCloseForm()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="acqModalBody"></div>
+    <div class="modal-ft">
+      <button class="abtn" onclick="acqCloseForm()">Cancel</button>
+      <button class="abtn pri" id="acqSaveBtn" onclick="acqSaveForm()"><span class="mat sm">save</span>Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== INTEGRATION SNIPPET ===================== -->
+<div id="acqSnipModal" onclick="if(event.target===this)acqCloseSnippet()">
+  <div class="modal-box" style="max-width:680px">
+    <div class="modal-hd">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span class="mat" style="color:var(--acc)">code</span>
+        <div class="modal-title" id="acqSnipTitle">Integration</div>
+      </div>
+      <button class="tbb" onclick="acqCloseSnippet()"><span class="mat">close</span></button>
+    </div>
+    <div class="modal-body" id="acqSnipBody"></div>
+    <div class="modal-ft"><button class="abtn pri" onclick="acqCloseSnippet()">Done</button></div>
   </div>
 </div>
 
@@ -561,8 +594,8 @@
     <button class="abtn" style="padding:9px 12px" onclick="lpEdit()"><span class="mat sm">more_vert</span></button>
   </div>
 </div>
-<script src="app.js"></script>
-<script src="loader.js"></script>
-<script src="theme.js"></script>
+<script src="/upclose/app.js"></script>
+<script src="/upclose/loader.js"></script>
+<script src="/upclose/theme.js"></script>
 </body>
 </html>
