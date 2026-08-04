@@ -137,19 +137,26 @@
 
   <!-- ============================ CAMPAIGNS =========================== -->
   <div class="cwv" id="cwv-campaigns">
-    <div class="pc">
-      <div class="cw-placeholder">
-        <span class="mat">campaign</span>
-        <h3>Campaigns</h3>
-        <p>No campaign data exists anywhere in the system yet — there is no table, no workflow and no ad-platform connection. Rather than show an empty chart, this page stays honest until there is something real to display.</p>
-        <div class="cw-req">
-          <div class="cw-req-hd">Backend required</div>
-          <ul>
-            <li>A <code>crm.campaigns</code> table keyed by <code>client_id</code></li>
-            <li>Attribution from <code>crm.subleads.source</code> / <code>metadata</code> to a campaign</li>
-            <li>Ad spend ingestion per campaign and per period</li>
-          </ul>
+    <div style="border-bottom:1px solid var(--bd);padding:10px 24px;background:var(--s1);display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--tx);letter-spacing:-0.01em">Campaigns &amp; Lead Capture</div>
+        <div style="font-size:12px;color:var(--tx3);margin-top:1px">One entry per landing page. The capture key identifies the page, so every lead carries its own attribution.</div>
+      </div>
+      <div style="flex:1"></div>
+      <button class="abtn" onclick="cwRenderCampaigns()"><span class="mat sm">refresh</span>Refresh</button>
+      <button class="abtn pri" onclick="acqOpenForm()"><span class="mat sm">add</span>New Landing Page</button>
+    </div>
+    <div class="pc" style="display:flex;flex-direction:column;gap:16px">
+      <div id="acqForms" style="display:flex;flex-direction:column;gap:12px"></div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+          <span class="mat" style="color:var(--acc)">receipt_long</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--tx)">Recent Submissions</div>
+            <div style="font-size:12px;color:var(--tx3);margin-top:1px">Every post your forms make, including duplicates and rejections.</div>
+          </div>
         </div>
+        <div id="acqSubmissions"></div>
       </div>
     </div>
   </div>
