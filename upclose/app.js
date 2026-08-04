@@ -5517,7 +5517,8 @@ let cwSubleadsError = null;
 let cwSubFilter   = 'all';
 let cwSubSearch   = '';
 let cwReviewConfig = null;      // {review_url, google_review_url, enabled, configured}
-let cwReviewActivities = null;  // real review_request rows, or null when unavailable
+let cwReviewActivities = null;
+let cwLoadedClientId   = null;  // guards against cross-client state bleed
 
 /* ---- Entry / exit ---------------------------------------------- */
 
@@ -5529,12 +5530,25 @@ function openClientWorkspace(clientId, sub){
   navigate('workspace', false);
 }
 
+/* Never throw during boot if the shell markup is an older cached copy —
+   a thrown error here stops app.js before window.__initApp is defined. */
+function cwSetRail(inWorkspace){
+  const na=document.getElementById('navAgency'), nc=document.getElementById('navClient');
+  if(na) na.style.display = inWorkspace ? 'none' : '';
+  if(nc) nc.style.display = inWorkspace ? '' : 'none';
+}
+function cwResetWorkspaceState(){
+  cwClient=null; cwSubleads=[]; cwSubleadsError=null;
+  cwReviewConfig=null; cwReviewActivities=null;
+  cvxActivities=null; cvxTasks=null; cvxActiveId=null;
+  cvxFilter='all'; cvxSearch=''; cvxError=null;
+  acqForms=null; acqSubmissions=null; acqError=null;
+  snipClient=null; snipClientId=null;
+}
 function cwExit(){
   activeWorkspaceClientId = null;
-  cwClient = null; cwSubleads = []; cwSubleadsError = null;
-  cwReviewConfig = null; cwReviewActivities = null;
-  document.getElementById('navAgency').style.display = '';
-  document.getElementById('navClient').style.display = 'none';
+  cwResetWorkspaceState();
+  cwSetRail(false);
   navigate('clients');
 }
 
@@ -5554,8 +5568,15 @@ function cwBoot(){
 
   if(!activeWorkspaceClientId){ cwExit(); return; }
 
-  document.getElementById('navAgency').style.display = 'none';
-  document.getElementById('navClient').style.display = '';
+  if(!document.getElementById('cwv-overview')){
+    console.error('Client Workspace fragment missing: check pages/workspace.html');
+    cwExit(); return;
+  }
+  // Hard reset whenever the client changes, so no cached data, selection
+  // or snippet list can bleed from one client's workspace into another's.
+  if(cwLoadedClientId!==null && cwLoadedClientId!==activeWorkspaceClientId) cwResetWorkspaceState();
+  cwLoadedClientId=activeWorkspaceClientId;
+  cwSetRail(true);
 
   const apply = () => {
     cwClient = allClients.find(c=>c.id==activeWorkspaceClientId) || null;
@@ -5589,6 +5610,8 @@ function cwRenderShell(){
   if(cwPage==='subleads')     cwRenderSubleads();
   if(cwPage==='reviews')      cwRenderReviews();
   if(cwPage==='automations')  autoShowList();
+  if(cwPage==='conversations')cvxOpen();
+  if(cwPage==='campaigns')    cwRenderCampaigns();
 }
 
 /* ---- Subleads data --------------------------------------------- */
@@ -6065,6 +6088,229 @@ async function sendReviewRequestFromModal(){
 }
 
 /* ================================================================
+   CLIENT ACQUISITION — landing pages, keys and attribution
+   ----------------------------------------------------------------
+   One crm.client_forms row per landing page / campaign. The public key
+   is per-form, so the key that submits a lead IS the attribution: no
+   browser-supplied campaign name is trusted, and crm.clients.id never
+   leaves the server.
+   ================================================================ */
+
+const ACQ_API = {
+  forms:       'https://n8n.upleaddigital.com/webhook/upclose-client-forms',
+  saveForm:    'https://n8n.upleaddigital.com/webhook/upclose-client-form-save',
+  submissions: 'https://n8n.upleaddigital.com/webhook/upclose-form-submissions',
+  intake:      'https://n8n.upleaddigital.com/webhook/upclose-intake'
+};
+const ACQ_SNIPPET_SRC = 'https://nxtuplead.vercel.app/upclose/upclose-capture.js';
+
+let acqForms       = null;   // null = not loaded / failed
+let acqSubmissions = null;
+let acqError       = null;
+let acqEditId      = null;
+
+async function cwRenderCampaigns(){
+  const wrap=document.getElementById('acqForms'); if(!wrap) return;
+  wrap.innerHTML='<div style="text-align:center;padding:28px;color:var(--tx3)"><span class="spin mat sm">sync</span> Loading landing pages…</div>';
+  try{
+    const res=await fetch(ACQ_API.forms+'?client_id='+activeWorkspaceClientId);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const raw=await res.json();
+    acqForms=(Array.isArray(raw)?raw:(raw.forms||[])).filter(f=>f&&f.id);
+    acqError=null;
+  }catch(e){ acqForms=null; acqError=e.message||'request failed'; }
+  acqRenderForms();
+  acqLoadSubmissions();
+}
+
+function acqRenderForms(){
+  const wrap=document.getElementById('acqForms'); if(!wrap) return;
+  if(acqError){
+    wrap.innerHTML=`<div class="empty-state"><span class="mat">cloud_off</span><p>Couldn't reach <code>upclose-client-forms</code>. Import the sublead workflow and run the acquisition migration.</p></div>`;
+    return;
+  }
+  if(!acqForms||!acqForms.length){
+    wrap.innerHTML=`<div class="empty-state"><span class="mat">campaign</span><p>No landing pages yet. Create one to get a capture key you can drop into your site.</p><button class="abtn pri" onclick="acqOpenForm()"><span class="mat sm">add</span>New Landing Page</button></div>`;
+    return;
+  }
+  wrap.innerHTML=acqForms.map(f=>{
+    const conv=f.leads_total?Math.round((f.leads_won/f.leads_total)*100):0;
+    return `<div class="acq-card ${f.is_active?'':'off'}">
+      <div class="acq-hd">
+        <div style="min-width:0">
+          <div class="acq-name">${escapeHtml(f.name)}${f.is_active?'':' <span class="badge gy">Paused</span>'}</div>
+          <div class="acq-sub">${f.landing_page_url?`<a href="${escapeHtml(f.landing_page_url)}" target="_blank" rel="noopener">${escapeHtml(f.landing_page_url)}</a>`:'<span style="color:var(--tx3)">No URL recorded</span>'}${f.campaign?' · campaign <b>'+escapeHtml(f.campaign)+'</b>':''}</div>
+        </div>
+        <div style="flex:1"></div>
+        <button class="tbb" title="Edit" onclick="acqOpenForm(${f.id})"><span class="mat">edit</span></button>
+        <button class="tbb" title="Integration code" onclick="acqShowSnippet(${f.id})"><span class="mat">code</span></button>
+      </div>
+      <div class="acq-stats">
+        <div><div class="mlbl">Leads</div><b>${f.leads_total}</b></div>
+        <div><div class="mlbl">Last 7 days</div><b>${f.leads_7d}</b></div>
+        <div><div class="mlbl">Won</div><b>${f.leads_won}</b><span class="acq-pct">${f.leads_total?conv+'%':''}</span></div>
+        <div><div class="mlbl">Submissions</div><b>${f.submissions_count}</b></div>
+        <div><div class="mlbl">Rejected</div><b${f.rejected_total>0?' style="color:var(--am)"':''}>${f.rejected_total}</b></div>
+        <div><div class="mlbl">Last received</div><b style="font-size:13px">${f.last_submission_at?fmtDate(f.last_submission_at):'—'}</b></div>
+      </div>
+      <div class="acq-key">
+        <span class="mat sm">key</span>
+        <code id="acqKey${f.id}">${escapeHtml(f.form_key)}</code>
+        <button class="af-link" style="opacity:1" onclick="acqCopy('${f.id}')">Copy</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function acqCopy(id){
+  const el=document.getElementById('acqKey'+id); if(!el) return;
+  navigator.clipboard.writeText(el.textContent).then(
+    ()=>toast('✓ Key copied','ok'),
+    ()=>toast('Copy failed — select the text manually','err'));
+}
+
+/* ---- Editor ------------------------------------------------------ */
+
+function acqOpenForm(id){
+  const f=id?(acqForms||[]).find(x=>x.id==id):null;
+  acqEditId=f?f.id:null;
+  document.getElementById('acqModalTitle').textContent=f?'Edit Landing Page':'New Landing Page';
+  document.getElementById('acqModalSub').textContent=(cwClient&&cwClient.company_name)||'This client';
+  document.getElementById('acqModalBody').innerHTML=`
+    <div class="form-group full"><label class="form-label">Name</label>
+      <input class="form-input" id="acqName" placeholder="e.g. Spring promo — Google Ads" value="${escapeHtml(f?f.name:'')}"/></div>
+    <div class="form-group full"><label class="form-label">Landing Page URL</label>
+      <input class="form-input" id="acqUrl" placeholder="https://client-site.com/offer" value="${escapeHtml(f&&f.landing_page_url?f.landing_page_url:'')}"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="form-group"><label class="form-label">Campaign</label>
+        <input class="form-input" id="acqCampaign" placeholder="spring_promo" value="${escapeHtml(f&&f.campaign?f.campaign:'')}"/>
+        <div style="font-size:11px;color:var(--tx3);margin-top:4px">Used when the page sends no utm_campaign.</div></div>
+      <div class="form-group"><label class="form-label">Source label</label>
+        <input class="form-input" id="acqSource" placeholder="landing_page" value="${escapeHtml(f&&f.source?f.source:'landing_page')}"/></div>
+    </div>
+    <div class="form-group full"><label class="form-label">Allowed Domains</label>
+      <input class="form-input" id="acqOrigins" placeholder="client-site.com, www.client-site.com" value="${escapeHtml(f&&f.allowed_origins?[].concat(f.allowed_origins).join(', '):'')}"/>
+      <div style="font-size:11px;color:var(--tx3);margin-top:4px">Comma separated. Submissions from any other domain are rejected server-side. Leave empty to accept any domain.</div></div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2);cursor:pointer;margin-top:4px">
+      <input type="checkbox" id="acqActive" ${f&&f.is_active===false?'':'checked'}/> Active — accepting submissions
+    </label>
+    ${f?`<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--am);cursor:pointer;margin-top:8px">
+      <input type="checkbox" id="acqRotate"/> Rotate the capture key
+    </label>
+    <div style="font-size:11.5px;color:var(--tx3);margin-top:4px;line-height:1.6">Rotating invalidates the old key immediately. Any live page still using it stops capturing until you paste the new one.</div>`:''}`;
+  document.getElementById('acqModal').classList.add('open');
+}
+function acqCloseForm(){ document.getElementById('acqModal').classList.remove('open'); acqEditId=null; }
+
+async function acqSaveForm(){
+  const name=document.getElementById('acqName').value.trim();
+  if(!name){ toast('Give this landing page a name','err'); return; }
+  const rot=document.getElementById('acqRotate');
+  const btn=document.getElementById('acqSaveBtn');
+  btn.disabled=true; btn.innerHTML='<span class="mat sm spin">sync</span>Saving…';
+  try{
+    const res=await fetch(ACQ_API.saveForm,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        id:acqEditId||'', client_id:activeWorkspaceClientId, name,
+        landing_page_url:document.getElementById('acqUrl').value.trim(),
+        campaign:document.getElementById('acqCampaign').value.trim(),
+        source:document.getElementById('acqSource').value.trim(),
+        allowed_origins:document.getElementById('acqOrigins').value.trim(),
+        is_active:document.getElementById('acqActive').checked,
+        rotate_key:!!(rot&&rot.checked)
+      })});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    acqCloseForm();
+    toast('✓ Landing page saved','ok');
+    cwRenderCampaigns();
+  }catch(e){
+    toast('Failed to save — check the upclose-client-form-save webhook','err');
+  }finally{
+    btn.disabled=false; btn.innerHTML='<span class="mat sm">save</span>Save';
+  }
+}
+
+/* ---- Integration snippet ----------------------------------------- */
+
+function acqShowSnippet(id){
+  const f=(acqForms||[]).find(x=>x.id==id); if(!f) return;
+  const tag=`<script src="${ACQ_SNIPPET_SRC}"\n        data-upclose-key="${f.form_key}"><\/script>`;
+  const html=`<form data-upclose data-upclose-thanks="Thanks — we'll call you shortly.">\n  <input name="first_name" placeholder="First name" required>\n  <input name="phone" type="tel" placeholder="Phone">\n  <input name="email" type="email" placeholder="Email">\n  <textarea name="message" placeholder="How can we help?"><\/textarea>\n  <button type="submit">Send<\/button>\n  <div data-upclose-message style="display:none"><\/div>\n<\/form>`;
+  document.getElementById('acqSnipTitle').textContent='Integration — '+f.name;
+  document.getElementById('acqSnipBody').innerHTML=`
+    <div class="acq-step">
+      <div class="acq-step-n">1</div>
+      <div style="flex:1;min-width:0">
+        <div class="acq-step-t">Add the script anywhere on the page</div>
+        <div class="acq-step-d">Works on WordPress (Custom HTML block or theme footer), Webflow, Carrd, Unbounce, or plain HTML.</div>
+        <pre class="acq-code" id="acqSnipTag">${escapeHtml(tag)}</pre>
+        <button class="af-link" style="opacity:1" onclick="acqCopyEl('acqSnipTag')">Copy script</button>
+      </div>
+    </div>
+    <div class="acq-step">
+      <div class="acq-step-n">2</div>
+      <div style="flex:1;min-width:0">
+        <div class="acq-step-t">Mark your existing form</div>
+        <div class="acq-step-d">Add <code>data-upclose</code> to the form you already have. Field names <code>first_name</code>, <code>last_name</code>, <code>phone</code>, <code>email</code>, <code>message</code> are recognised automatically — <code>name</code> is split into first and last if you only collect one field.</div>
+        <pre class="acq-code" id="acqSnipHtml">${escapeHtml(html)}</pre>
+        <button class="af-link" style="opacity:1" onclick="acqCopyEl('acqSnipHtml')">Copy example</button>
+      </div>
+    </div>
+    <div class="acq-step">
+      <div class="acq-step-n">3</div>
+      <div style="flex:1;min-width:0">
+        <div class="acq-step-t">Nothing else to configure</div>
+        <div class="acq-step-d">UTM parameters, <code>gclid</code>, <code>fbclid</code>, referrer and landing page URL are captured on arrival and kept for the session, so a lead that converts three pages later still carries the campaign that paid for the click. A honeypot field is injected automatically.</div>
+      </div>
+    </div>
+    <div class="cw-inline-note" style="margin:4px 0 0">
+      <span class="mat sm">shield</span>
+      This key identifies one landing page only. It resolves to a client server-side — no client ID is present in your page source. If it is ever abused, rotate it from Edit and this page alone is affected.
+    </div>
+    <div style="font-size:11.5px;color:var(--tx3);margin-top:10px;line-height:1.6">Optional form attributes: <code>data-upclose-redirect="/thank-you"</code>, <code>data-upclose-thanks="…"</code>, <code>data-upclose-message="#myBox"</code>. Events <code>upclose:success</code> and <code>upclose:error</code> fire on the form for analytics.</div>`;
+  document.getElementById('acqSnipModal').classList.add('open');
+}
+function acqCloseSnippet(){ document.getElementById('acqSnipModal').classList.remove('open'); }
+function acqCopyEl(id){
+  const el=document.getElementById(id); if(!el) return;
+  navigator.clipboard.writeText(el.textContent).then(
+    ()=>toast('✓ Copied','ok'), ()=>toast('Copy failed','err'));
+}
+
+/* ---- Submission log ---------------------------------------------- */
+
+async function acqLoadSubmissions(){
+  const el=document.getElementById('acqSubmissions'); if(!el) return;
+  try{
+    const res=await fetch(ACQ_API.submissions+'?client_id='+activeWorkspaceClientId);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const raw=await res.json();
+    acqSubmissions=(Array.isArray(raw)?raw:(raw.submissions||[])).filter(r=>r&&r.id);
+  }catch(e){ acqSubmissions=null; }
+  acqRenderSubmissions();
+}
+function acqRenderSubmissions(){
+  const el=document.getElementById('acqSubmissions'); if(!el) return;
+  if(acqSubmissions===null){
+    el.innerHTML='<div class="empty-state" style="padding:22px"><span class="mat">receipt_long</span><p>Submission log unavailable.</p></div>';
+    return;
+  }
+  if(!acqSubmissions.length){
+    el.innerHTML='<div class="empty-state" style="padding:22px"><span class="mat">receipt_long</span><p>No submissions received yet. Every post to your form appears here — including rejected ones, so you can tell "the form did not fire" from "the lead was a duplicate".</p></div>';
+    return;
+  }
+  const cls={created:'gr',duplicate:'am',rejected:'re'};
+  el.innerHTML='<table class="dt"><thead><tr><th>When</th><th>Landing page</th><th>Outcome</th><th>Detail</th></tr></thead><tbody>'
+    + acqSubmissions.map(r=>`<tr>
+        <td style="font-size:13px">${fmtDate(r.created_at)}</td>
+        <td>${escapeHtml(r.form_name||'—')}</td>
+        <td><span class="badge ${cls[r.outcome]||'gy'}">${escapeHtml(r.outcome)}</span></td>
+        <td style="color:var(--tx3);font-size:12.5px">${r.reason?escapeHtml(r.reason.replace(/_/g,' ')):(r.sublead_id?'sublead #'+r.sublead_id:'—')}</td>
+      </tr>`).join('')
+    + '</tbody></table>';
+}
+
+/* ================================================================
    CLIENT WORKSPACE — CONVERSATIONS
    ----------------------------------------------------------------
    Sublead-native inbox. Scoped by activeWorkspaceClientId + sublead_id.
@@ -6463,9 +6709,21 @@ function cvxRenderProfile(){
     el.innerHTML='<div class="empty-state" style="padding:34px 18px"><span class="mat">person_search</span><p>Select a conversation to see sublead details.</p></div>';
     return;
   }
+  // Attribution now lives in real columns written by the public intake
+  // endpoint; metadata is only the fallback for older rows.
   const meta=(s.metadata&&typeof s.metadata==='object')?s.metadata:{};
-  const utm=['utm_source','utm_medium','utm_campaign','utm_content','utm_term']
-    .filter(k=>meta[k]).map(k=>`<div class="lp-row"><div class="lp-ri"><span class="mat">ads_click</span></div><div><div class="lp-rl">${k.replace('utm_','UTM ')}</div><div class="lp-rv">${escapeHtml(String(meta[k]))}</div></div></div>`).join('');
+  const attr=k=>s[k]||meta[k]||'';
+  const utmRows=[
+    ['form_name','Landing page','web'],
+    ['utm_campaign','Campaign','campaign'],
+    ['utm_source','UTM source','ads_click'],
+    ['utm_medium','UTM medium','share'],
+    ['utm_content','UTM content','style'],
+    ['utm_term','UTM term','tag'],
+    ['landing_page','Page URL','link'],
+    ['referrer','Referrer','open_in_new']
+  ].filter(([k])=>attr(k));
+  const utm=utmRows.map(([k,label,icon])=>`<div class="lp-row"><div class="lp-ri"><span class="mat">${icon}</span></div><div style="min-width:0"><div class="lp-rl">${label}</div><div class="lp-rv" style="word-break:break-all">${escapeHtml(String(attr(k)))}</div></div></div>`).join('');
   const myTasks=(cvxTasks||[]).filter(t=>String(t.sublead_id)===String(s.id));
 
   el.innerHTML=`
