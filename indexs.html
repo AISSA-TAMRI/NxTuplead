@@ -66,10 +66,10 @@ tailwind.config = {
         track: "#e6eaf2",
 
         /* brand */
-        primary: "#155eef",
-        "primary-dim": "#0e47c9",
-        "primary-bright": "#0e47c9",
-        accent: "#08916a",
+        primary: "#1331dd",
+        "primary-dim": "#0e239f",
+        "primary-bright": "#0e239f",
+        accent: "#0870ad",
 
         /* type */
         ink: "#0b1b33",
@@ -117,11 +117,11 @@ tailwind.config = {
     --ink-soft:#4c5a70;
     --ink-faint:#7a879b;
 
-    --brand:#155eef;
-    --brand-deep:#0e47c9;
-    --brand-press:#0b3aa6;
-    --brand-wash:#eef3fe;
-    --teal:#08916a;
+    --brand:#1331dd;
+    --brand-deep:#0e239f;
+    --brand-press:#0a1b7a;
+    --brand-wash:#eff1fe;
+    --sky:#52baf7;
 
     --shadow-xs:0 1px 2px rgba(11,27,51,.05);
     --shadow-sm:0 1px 2px rgba(11,27,51,.04), 0 2px 6px -1px rgba(11,27,51,.05);
@@ -204,7 +204,7 @@ tailwind.config = {
   .chart-canvas{ box-shadow: var(--shadow-xs); }
 
   /* process step markers */
-  .step-icon{ background: var(--brand-wash); border:1px solid #dbe6fd; }
+  .step-icon{ background: var(--brand-wash); border:1px solid #d0d6fb; }
 
   /* unavailable dates need to read as unavailable, not invisible */
   #dateGrid button:disabled, #dateGridEmb button:disabled{ color: rgba(122,135,155,.6); }
@@ -214,7 +214,7 @@ tailwind.config = {
   /* client logo chips in the case-study switcher */
   #crdSelector .opt-card > span:first-child,
   #crdAvatar{ background:#ffffff; box-shadow: inset 0 0 0 1px var(--line); padding:3px; }
-  #crdSelector .opt-card.selected > span:first-child{ box-shadow: inset 0 0 0 1px #c3d6fb; }
+  #crdSelector .opt-card.selected > span:first-child{ box-shadow: inset 0 0 0 1px #b9c2f9; }
 
   /* partner logo strip — one optical size for every mark */
   .logo-tile{
@@ -256,7 +256,7 @@ tailwind.config = {
      Type accents
      --------------------------------------------------------- */
   .text-gradient{
-    background: linear-gradient(96deg, #0b1b33 0%, #12336f 45%, #155eef 100%);
+    background: linear-gradient(96deg, #0b1b33 0%, #0f2688 45%, #1331dd 100%);
     -webkit-background-clip: text; background-clip:text; color: transparent;
   }
 
@@ -274,6 +274,23 @@ tailwind.config = {
     box-shadow: 0 1px 2px rgba(11,27,51,.10), 0 12px 26px -10px rgba(21,94,239,.55);
   }
   .btn-primary:active{ background: var(--brand-press); transform: scale(.98); }
+
+  /* High-contrast CTA — reserved for primary conversion actions only.
+     Blue is the brand/structure color throughout the page (nav, headings,
+     focus states); teal is used ONLY here, so the eye always knows exactly
+     where to click. */
+  .btn-cta{
+    background: linear-gradient(135deg, #6cc4f8 0%, #52baf7 55%, #38a9ef 100%);
+    color:#0b1b33;
+    box-shadow: 0 1px 2px rgba(11,27,51,.12), 0 10px 22px -8px rgba(82,186,247,.65);
+    transition: background .2s ease, box-shadow .25s var(--ease), transform .18s var(--ease);
+  }
+  .btn-cta:hover{
+    background: linear-gradient(135deg, #52baf7 0%, #2e9de6 100%);
+    box-shadow: 0 1px 2px rgba(11,27,51,.12), 0 14px 30px -10px rgba(82,186,247,.7);
+  }
+  .btn-cta:active{ background:#2e9de6; transform: scale(.98); }
+  .btn-cta:focus-visible{ outline: 2px solid #1331dd; outline-offset: 3px; }
 
   /* ---------------------------------------------------------
      Forms
@@ -368,10 +385,10 @@ tailwind.config = {
   }
   footer.site-footer .glass:hover{ background: rgba(255,255,255,.11); border-color: rgba(255,255,255,.22); color:#ffffff; }
   footer.site-footer a{ transition: color .2s ease; }
-  footer.site-footer a:hover{ color:#8fb4ff; }
+  footer.site-footer a:hover{ color:#52baf7; }
   footer.site-footer .border-line-soft{ border-color: rgba(255,255,255,.10); }
   footer.site-footer .material-symbols-outlined{ color: inherit; }
-  footer.site-footer a:focus-visible{ outline-color:#8fb4ff; }
+  footer.site-footer a:focus-visible{ outline-color:#52baf7; }
 
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior:auto !important; }
@@ -450,10 +467,10 @@ tailwind.config = {
       </div>
 
       <div class="flex items-center gap-2">
-        <button type="button" data-scroll-to-booking class="hidden sm:inline-flex btn-primary text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-transform hover:scale-[1.03] active:scale-95">
+        <button type="button" data-scroll-to-booking class="hidden sm:inline-flex btn-cta px-5 py-2.5 rounded-full text-sm font-semibold transition-transform hover:scale-[1.03] active:scale-95">
           Apply Now
         </button>
-        <button id="menuBtn" aria-label="Open menu" aria-expanded="false" class="lg:hidden h-10 w-10 rounded-full glass flex items-center justify-center">
+        <button id="menuBtn" aria-label="Open menu" aria-expanded="false" class="lg:hidden h-11 w-11 rounded-full glass flex items-center justify-center">
           <span class="material-symbols-outlined text-[22px]">menu</span>
         </button>
       </div>
@@ -465,7 +482,7 @@ tailwind.config = {
 <div id="mobileMenu" class="fixed inset-0 z-[60] bg-void/98 backdrop-blur-xl translate-x-full transition-transform duration-400 ease-out lg:hidden">
   <div class="flex items-center justify-between px-5 pt-5">
     <img src="images/logo-header-full.png" alt="Uplead Digital" class="brand-logo h-7 w-auto"/>
-    <button id="menuCloseBtn" aria-label="Close menu" class="h-10 w-10 rounded-full glass flex items-center justify-center">
+    <button id="menuCloseBtn" aria-label="Close menu" class="h-11 w-11 rounded-full glass flex items-center justify-center">
       <span class="material-symbols-outlined text-[22px]">close</span>
     </button>
   </div>
@@ -477,7 +494,7 @@ tailwind.config = {
     <a href="#faq" class="mobile-link py-4 border-b border-line-soft">FAQ</a>
   </div>
   <div class="px-6 mt-10">
-    <button type="button" data-scroll-to-booking class="mobile-link btn-primary text-white w-full text-center block px-6 py-4 rounded-2xl text-lg font-bold">Apply Now</button>
+    <button type="button" data-scroll-to-booking class="mobile-link btn-cta w-full text-center block px-6 py-4 rounded-2xl text-lg font-bold">Apply Now</button>
   </div>
 </div>
 
@@ -488,7 +505,7 @@ tailwind.config = {
       <p class="text-sm font-semibold truncate">Grow your membership</p>
       <p class="text-[11px] text-ink-faint truncate">Free custom growth plan</p>
     </div>
-    <button type="button" data-scroll-to-booking class="btn-primary text-white px-5 py-3 rounded-xl font-bold text-sm shrink-0 flex items-center gap-1.5">
+    <button type="button" data-scroll-to-booking class="btn-cta px-5 py-3 rounded-xl font-bold text-sm shrink-0 flex items-center gap-1.5">
       Apply Now <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
     </button>
   </div>
@@ -512,8 +529,9 @@ tailwind.config = {
           <span class="font-mono text-[11px] tracking-wider uppercase text-ink-soft">Trusted by Hundreds of Car Washes Nationwide</span>
         </div>
 
-        <h1 class="text-[2.5rem] leading-[1.08] sm:text-6xl sm:leading-[1.05] font-extrabold tracking-tight mb-6 text-balance">
-          <span class="text-gradient">ATTENTION CAR WASH&nbsp;OWNERS</span>
+        <h1 class="mb-6 text-balance">
+          <span class="block text-lg sm:text-2xl font-bold text-ink-soft tracking-tight mb-1 sm:mb-2">Attention</span>
+          <span class="block text-gradient text-[2.25rem] leading-[1.1] sm:text-6xl sm:leading-[1.05] font-extrabold tracking-tight">Car Wash&nbsp;Owners</span>
         </h1>
 
         <p class="text-base sm:text-xl text-ink-soft leading-relaxed mb-7 sm:mb-10 max-w-xl mx-auto">
@@ -521,7 +539,7 @@ tailwind.config = {
         </p>
 
         <div class="flex justify-center mb-8 sm:mb-14">
-          <button type="button" data-scroll-to-booking class="btn-primary text-white px-10 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
+          <button type="button" data-scroll-to-booking class="btn-cta px-10 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
             APPLY NOW
             <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
           </button>
@@ -533,10 +551,10 @@ tailwind.config = {
         <svg viewBox="0 0 900 220" class="w-full h-auto" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
             <linearGradient id="lineGrad" x1="0" y1="0" x2="900" y2="0" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#08916a" stop-opacity="0"/>
-              <stop offset="20%" stop-color="#08916a"/>
-              <stop offset="60%" stop-color="#155eef"/>
-              <stop offset="100%" stop-color="#2f6fe4"/>
+              <stop offset="0%" stop-color="#52baf7" stop-opacity="0"/>
+              <stop offset="25%" stop-color="#52baf7"/>
+              <stop offset="65%" stop-color="#1331dd"/>
+              <stop offset="100%" stop-color="#0e239f"/>
             </linearGradient>
           </defs>
           <path d="M10 180 L 150 150 L 230 190 L 320 100 L 410 140 L 520 60 L 610 95 L 730 30 L 890 40"
@@ -961,7 +979,7 @@ tailwind.config = {
             </div>
           </div>
 
-          <button type="button" data-scroll-to-booking class="btn-primary text-white w-full mt-8 px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.01] active:scale-95">
+          <button type="button" data-scroll-to-booking class="btn-cta w-full mt-8 px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.01] active:scale-95">
             Book a Call
           </button>
           <p class="text-center text-xs text-ink-faint mt-4">Your figures and the goal you set — not a promise of results. On the call we'll talk about closing it.</p>
@@ -1224,7 +1242,7 @@ tailwind.config = {
       </div>
       <div class="flex flex-col items-center gap-6 mt-14 reveal">
         <p class="text-center text-ink font-medium text-lg max-w-lg">From cold scroll to paying member — before they've ever visited the wash.</p>
-        <button type="button" data-scroll-to-booking class="btn-primary text-white px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
+        <button type="button" data-scroll-to-booking class="btn-cta px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
           Get Your Membership Growth Plan
           <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
         </button>
@@ -1327,7 +1345,7 @@ tailwind.config = {
                 <g id="crdBars"></g>
                 <line x1="16" y1="122" x2="380" y2="122" stroke="#0b1b33" stroke-opacity="0.14"/>
                 <text id="crdStartLabel" font-family="JetBrains Mono, monospace" font-size="11" fill="#64748b"></text>
-                <text id="crdEndLabel" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#08916a" text-anchor="end"></text>
+                <text id="crdEndLabel" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#0870ad" text-anchor="end"></text>
                 <text id="crdStartAxis" x="20" y="135" font-family="JetBrains Mono, monospace" font-size="9" fill="#64748b">Start</text>
                 <text id="crdEndAxis" x="352" y="135" font-family="JetBrains Mono, monospace" font-size="9" fill="#64748b" text-anchor="middle">Now</text>
               </svg>
@@ -1337,16 +1355,16 @@ tailwind.config = {
               <svg id="crdLineChart" viewBox="0 0 400 140" class="w-full h-auto rounded-xl border border-line bg-white chart-canvas" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <defs>
                   <linearGradient id="crdLineFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#155eef" stop-opacity="0.35"/>
-                    <stop offset="100%" stop-color="#155eef" stop-opacity="0"/>
+                    <stop offset="0%" stop-color="#1331dd" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#1331dd" stop-opacity="0"/>
                   </linearGradient>
                 </defs>
                 <path d="M20 108 L 90 100 L 160 92 L 230 68 L 300 42 L 376 24 L 376 130 L 20 130 Z" fill="url(#crdLineFill)"/>
-                <path d="M20 108 L 90 100 L 160 92 L 230 68 L 300 42 L 376 24" stroke="#155eef" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="20" cy="108" r="4" fill="#93b4f6"/>
-                <circle cx="376" cy="24" r="5" fill="#08916a"/>
+                <path d="M20 108 L 90 100 L 160 92 L 230 68 L 300 42 L 376 24" stroke="#1331dd" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="20" cy="108" r="4" fill="#52baf7"/>
+                <circle cx="376" cy="24" r="5" fill="#0870ad"/>
                 <text id="crdLineStartLabel" x="20" y="128" font-family="JetBrains Mono, monospace" font-size="10" fill="#64748b"></text>
-                <text id="crdLineEndLabel" x="340" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#08916a"></text>
+                <text id="crdLineEndLabel" x="340" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#0870ad"></text>
               </svg>
               <p id="crdMembershipCaption" class="text-xs text-ink-faint mt-2"></p>
             </div>
@@ -1355,7 +1373,7 @@ tailwind.config = {
       </div>
 
       <div class="flex justify-center mt-14 reveal">
-        <button type="button" data-scroll-to-booking class="btn-primary text-white px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
+        <button type="button" data-scroll-to-booking class="btn-cta px-8 py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
           Apply Now — Get My Growth Plan
           <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
         </button>
@@ -1441,7 +1459,7 @@ tailwind.config = {
       <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-10 max-w-3xl mx-auto leading-tight">
         Ready to grow your car wash memberships?
       </h2>
-      <button type="button" data-scroll-to-booking class="btn-primary text-white inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-lg transition-transform hover:scale-105 active:scale-95">
+      <button type="button" data-scroll-to-booking class="btn-cta inline-flex items-center gap-3 px-10 py-5 rounded-2xl font-bold text-lg transition-transform hover:scale-105 active:scale-95">
         Get Started Today
         <span class="material-symbols-outlined">rocket_launch</span>
       </button>
@@ -1606,7 +1624,7 @@ tailwind.config = {
   const barsG       = document.getElementById('crdBars');
 
   const barX = [20, 60, 100, 140, 180, 220, 260, 300, 340];
-  const barFill = ['#155eef','#155eef','#155eef','#155eef','#155eef','#155eef','#155eef','#155eef','#08916a'];
+  const barFill = ['#1331dd','#1331dd','#1331dd','#1331dd','#1331dd','#1331dd','#1331dd','#1331dd','#0870ad'];
   const barOpacity = [0.35, 0.45, 0.4, 0.55, 0.65, 0.6, 0.8, 1, 1];
   const baseline = 122;
 
