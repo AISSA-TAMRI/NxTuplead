@@ -15,10 +15,7 @@ const API={getLeads:'https://n8n.upleaddigital.com/webhook/get-leads',getClients
   currentUser:'https://n8n.upleaddigital.com/webhook/get-current-user',
   createTeamMember:'https://n8n.upleaddigital.com/webhook/create-team-member',
 
-  // Reputation / Reviews — integration point. This endpoint does not exist yet.
-  // When it is built server-side, it must resolve the review_url from
-  // lead_id -> client_id -> client review configuration. It must NEVER
-  // trust a review_url supplied by the frontend. See ReviewRequestService.
+
   sendReviewRequest:'https://n8n.upleaddigital.com/webhook/send-review-request',
 
   getVoiceToken:'https://upclose-voice-3210.twil.io/voice-token'
@@ -212,16 +209,40 @@ window.addEventListener('mousemove',e=>{
 async function loadLeads(){
   renderTableLoading();
   try{
-    const res=await fetch(API.getLeads);const data=await res.json();
-    allLeads=Array.isArray(data)?data:[];
-    renderTable(allLeads);updateSidebarCounts();updateDashboard();
+    const res=await fetch(API.getLeads);
+    const data=await res.json();
+
+    allLeads=(Array.isArray(data)?data:[]).map(lead => ({
+      ...lead,
+
+      preferred_date:
+        lead.preferred_date_display ||
+        lead.preferred_date_raw ||
+        (lead.preferred_date ? String(lead.preferred_date).slice(0,10) : null),
+
+      preferred_time:
+        lead.preferred_time_display ||
+        lead.preferred_time_raw ||
+        (lead.preferred_time ? String(lead.preferred_time).slice(0,5) : null)
+    }));
+
+    renderTable(allLeads);
+    updateSidebarCounts();
+    updateDashboard();
+
     if(page()==='pipeline')renderPipeline();
     if(page()==='meetings')renderMeetingsHub();
     if(page()==='analytics')renderAnalytics();
     if(page()==='reports')renderReports();
     if(page()==='communication')renderCommunicationHub();
+
     updateMeetingsBadge();
-  }catch(e){document.getElementById('leadsTable').innerHTML=`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--re)"><span class="mat sm">error</span> No Leads</td></tr>`;}
+
+  }catch(e){
+    document.getElementById('leadsTable').innerHTML=
+      `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--re)">
+      <span class="mat sm">error</span> No Leads</td></tr>`;
+  }
 }
 function renderTableLoading(){document.getElementById('leadsTable').innerHTML=`<tr class="loading-row"><td colspan="9"><span class="spin mat sm">sync</span> Loading leads…</td></tr>`;}
 function renderTable(leads){
