@@ -159,7 +159,7 @@ tailwind.config = {
   .font-mono{ font-feature-settings:normal; }
 
   /* numeric readouts stay optically stable while they change */
-  #calc_gap, #calc_monthly, #calc_annual, #calc_ltv_total, #crdStat,
+  #calc_gap, #calc_monthly, #calc_annual, #calc_ltv_total,
   #dateGrid button, #dateGridEmb button{ font-variant-numeric: tabular-nums; }
 
   /* ---------------------------------------------------------
@@ -210,6 +210,38 @@ tailwind.config = {
   #dateGrid button:disabled, #dateGridEmb button:disabled{ color: rgba(154,167,194,.45); }
   #dateGrid button.opt-card, #dateGridEmb button.opt-card{ color: var(--ink); }
   #timeGrid .opt-card, #timeGridEmb .opt-card{ color: var(--ink); }
+
+  /* ---------------------------------------------------------
+     Case studies — wash-type colour coding
+     One accent token per wash type, applied to the panel rail, the
+     type pill, the stat values and the chart, so the category of the
+     selected wash is obvious without adding a new visual language.
+     --------------------------------------------------------- */
+  .cs-card{ position:relative; overflow:hidden; }
+  .cs-card::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background: var(--cs-accent);
+  }
+  .cs-type{
+    display:inline-flex; align-items:center; gap:.45rem;
+    padding:.4rem .75rem; border-radius:9999px;
+    font-family:'JetBrains Mono', ui-monospace, monospace;
+    font-size:10px; font-weight:700; line-height:1;
+    letter-spacing:.16em; text-transform:uppercase;
+    color: var(--cs-accent);
+    background: var(--cs-wash);
+    border:1px solid var(--cs-line);
+    white-space:nowrap;
+  }
+  .cs-type .material-symbols-outlined{ font-size:16px; color:inherit; }
+  .cs-card--express{ --cs-accent:#60a5fa; --cs-wash:rgba(96,165,250,.12); --cs-line:rgba(96,165,250,.32); }
+  .cs-card--full   { --cs-accent:#34d399; --cs-wash:rgba(52,211,153,.12); --cs-line:rgba(52,211,153,.30); }
+  .cs-card--iba    { --cs-accent:#a5b4fc; --cs-wash:rgba(129,140,248,.14); --cs-line:rgba(129,140,248,.34); }
+  .cs-stat-value{ font-variant-numeric: tabular-nums; white-space:nowrap; }
+  @media (max-width: 360px){
+    .cs-type{ font-size:9px; letter-spacing:.12em; padding:.35rem .6rem; }
+    .cs-stat-value{ font-size:1.375rem; }
+  }
 
   /* client logo chips in the case-study switcher */
   #crdSelector .opt-card > span:first-child,
@@ -1261,120 +1293,65 @@ tailwind.config = {
     <div class="max-w-container mx-auto px-5 sm:px-6">
       <div class="text-center max-w-2xl mx-auto mb-16 reveal">
         <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">Real Results</p>
-        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Real Members, Real Data</h2>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
-        <div class="card rounded-2xl p-6 reveal">
-          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">Asbury Circle</div>
-          <div class="text-4xl font-extrabold text-primary-bright mb-2">2x</div>
-          <div class="text-sm text-ink-soft">Membership base increase</div>
-          <div class="mt-4 h-1 w-full bg-track rounded-full overflow-hidden"><div class="bg-primary h-full w-full"></div></div>
-        </div>
-        <div class="card rounded-2xl p-6 reveal">
-          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">Lowell Express</div>
-          <div class="text-4xl font-extrabold text-accent mb-2">+106%</div>
-          <div class="text-sm text-ink-soft">Growth in 5 months</div>
-          <div class="mt-4 h-1 w-full bg-track rounded-full overflow-hidden"><div class="bg-accent h-full w-full"></div></div>
-        </div>
-        <div class="card rounded-2xl p-6 reveal">
-          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">KP's Car Wash</div>
-          <div class="text-4xl font-extrabold text-primary-bright mb-2">124+</div>
-          <div class="text-sm text-ink-soft">New members / month</div>
-          <div class="mt-4 h-1 w-full bg-track rounded-full overflow-hidden"><div class="bg-primary h-full w-[80%]"></div></div>
-        </div>
-        <div class="card rounded-2xl p-6 reveal">
-          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">Star Car Wash</div>
-          <div class="text-4xl font-extrabold text-accent mb-2">+19.7%</div>
-          <div class="text-sm text-ink-soft">Growth in first month</div>
-          <div class="mt-4 h-1 w-full bg-track rounded-full overflow-hidden"><div class="bg-accent h-full w-[70%]"></div></div>
-        </div>
-        <div class="card rounded-2xl p-6 reveal">
-          <div class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-3">Dublin Details</div>
-          <div class="text-4xl font-extrabold text-primary-bright mb-2">350+</div>
-          <div class="text-sm text-ink-soft">Total new signups</div>
-          <div class="mt-4 h-1 w-full bg-track rounded-full overflow-hidden"><div class="bg-primary h-full w-[95%]"></div></div>
-        </div>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">We grow every kind of car wash.</h2>
+        <p class="text-ink-soft text-lg">Express, full service, flex, in-bay, touchless — one system, built for the membership model.</p>
       </div>
 
       <div id="crdSelector" class="flex flex-wrap justify-center gap-3 sm:gap-4 mt-14 mb-10 reveal">
-        <button type="button" class="opt-card selected flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-line" data-client="asbury">
+        <button type="button" class="opt-card selected flex items-center gap-3 px-4 py-3 rounded-2xl border border-line text-left" data-client="carwashcity" aria-pressed="true">
+          <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-tint flex items-center justify-center">
+            <img src="images/logo-car-wash-city-express.png" alt="" class="w-full h-full object-contain"/>
+          </span>
+          <span class="flex flex-col leading-tight">
+            <span class="text-sm font-semibold whitespace-nowrap">Car Wash City</span>
+            <span class="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-faint whitespace-nowrap mt-0.5">Express Tunnel</span>
+          </span>
+        </button>
+        <button type="button" class="opt-card flex items-center gap-3 px-4 py-3 rounded-2xl border border-line text-left" data-client="asbury" aria-pressed="false">
           <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-tint flex items-center justify-center">
             <img src="images/logo-asbury-circle.png" alt="" class="w-full h-full object-contain"/>
           </span>
-          <span class="text-sm font-semibold whitespace-nowrap">Asbury Circle</span>
+          <span class="flex flex-col leading-tight">
+            <span class="text-sm font-semibold whitespace-nowrap">Asbury Circle</span>
+            <span class="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-faint whitespace-nowrap mt-0.5">Full Service</span>
+          </span>
         </button>
-        <button type="button" class="opt-card flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-line" data-client="lowell">
+        <button type="button" class="opt-card flex items-center gap-3 px-4 py-3 rounded-2xl border border-line text-left" data-client="lowell" aria-pressed="false">
           <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-tint flex items-center justify-center">
             <img src="images/logo-lowell-express.png" alt="" class="w-full h-full object-contain"/>
           </span>
-          <span class="text-sm font-semibold whitespace-nowrap">Lowell Express</span>
-        </button>
-        <button type="button" class="opt-card flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-line" data-client="kps">
-          <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-tint flex items-center justify-center">
-            <img src="images/logo-kps-car-wash.png" alt="" class="w-full h-full object-contain"/>
+          <span class="flex flex-col leading-tight">
+            <span class="text-sm font-semibold whitespace-nowrap">Lowell Express</span>
+            <span class="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-faint whitespace-nowrap mt-0.5">IBA &amp; Touchless</span>
           </span>
-          <span class="text-sm font-semibold whitespace-nowrap">KP's Car Wash</span>
-        </button>
-        <button type="button" class="opt-card flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-line" data-client="star">
-          <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-tint flex items-center justify-center">
-            <img src="images/logo-star-car-wash.png" alt="" class="w-full h-full object-contain"/>
-          </span>
-          <span class="text-sm font-semibold whitespace-nowrap">Star Car Wash</span>
-        </button>
-        <button type="button" class="opt-card flex items-center gap-2.5 px-4 py-3 rounded-2xl border border-line" data-client="dublin">
-          <span class="h-8 w-8 rounded-full overflow-hidden shrink-0 bg-tint flex items-center justify-center">
-            <img src="images/logo-dublin-details.png" alt="" class="w-full h-full object-contain"/>
-          </span>
-          <span class="text-sm font-semibold whitespace-nowrap">Dublin Details</span>
         </button>
       </div>
 
-      <div class="card rounded-3xl overflow-hidden reveal">
+      <div id="crdPanel" class="cs-card cs-card--express card rounded-3xl overflow-hidden reveal">
         <div class="grid grid-cols-1 lg:grid-cols-2">
           <div class="p-8 sm:p-12">
-            <div class="flex items-center gap-3 mb-8">
+            <span id="crdType" class="cs-type">
+              <span id="crdTypeIcon" class="material-symbols-outlined" aria-hidden="true">local_car_wash</span><span id="crdTypeLabel">Express Tunnel</span>
+            </span>
+            <div class="flex items-center gap-3 mt-6">
               <span id="crdAvatar" class="h-9 w-9 rounded-full overflow-hidden bg-tint flex items-center justify-center text-white font-bold text-sm shrink-0">
-                <img src="images/logo-asbury-circle.png" alt="" class="w-full h-full object-contain"/>
+                <img src="images/logo-car-wash-city-express.png" alt="" class="w-full h-full object-contain"/>
               </span>
-              <span id="crdName" class="font-semibold">Asbury Circle Car Wash</span>
+              <span id="crdName" class="font-semibold text-lg">Car Wash City</span>
             </div>
-            <div id="crdStat" class="text-4xl sm:text-5xl font-extrabold text-primary-bright mb-2">2x</div>
-            <p id="crdStatLabel" class="text-ink-soft mb-8">Membership base increase</p>
-            <p id="crdQuote" class="text-xl sm:text-2xl font-semibold leading-snug mb-6">"This marketing strategy? It completely flipped our business around. We got a ton of new customers coming in, and the growth? Absolutely unreal."</p>
-            <p id="crdAuthor" class="text-ink-soft">— Dino, Owner of Asbury Circle Car Wash</p>
+            <p id="crdLocation" class="text-sm text-ink-faint mt-1 pl-12">Illinois</p>
+            <p id="crdContext" class="text-xl sm:text-2xl font-semibold leading-snug mt-6">Mid-market express operator growing slowly through walk-ins and POS upsells. One month changed their trajectory entirely.</p>
+            <ul id="crdStats" class="mt-8 pt-7 border-t border-line-soft grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4"></ul>
           </div>
-          <div class="bg-surface-2 p-8 sm:p-12 flex flex-col justify-center gap-8 border-t lg:border-t-0 lg:border-l border-line-soft">
-            <div>
-              <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">Daily Growth</p>
-              <svg id="crdChart" viewBox="0 0 400 140" class="w-full h-auto rounded-xl border border-line bg-surface-1 chart-canvas" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <line x1="16" y1="36" x2="380" y2="36" stroke="#eef2fb" stroke-opacity="0.10" stroke-dasharray="3 4"/>
-                <line x1="16" y1="79" x2="380" y2="79" stroke="#eef2fb" stroke-opacity="0.10" stroke-dasharray="3 4"/>
-                <g id="crdBars"></g>
-                <line x1="16" y1="122" x2="380" y2="122" stroke="#eef2fb" stroke-opacity="0.18"/>
-                <text id="crdStartLabel" font-family="JetBrains Mono, monospace" font-size="11" fill="#9aa7c2"></text>
-                <text id="crdEndLabel" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#60a5fa" text-anchor="end"></text>
-                <text id="crdStartAxis" x="20" y="135" font-family="JetBrains Mono, monospace" font-size="9" fill="#9aa7c2">Start</text>
-                <text id="crdEndAxis" x="352" y="135" font-family="JetBrains Mono, monospace" font-size="9" fill="#9aa7c2" text-anchor="middle">Now</text>
-              </svg>
-            </div>
-            <div>
-              <p class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">Membership Growth</p>
-              <svg id="crdLineChart" viewBox="0 0 400 140" class="w-full h-auto rounded-xl border border-line bg-surface-1 chart-canvas" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="crdLineFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
-                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-                <path d="M20 108 L 90 100 L 160 92 L 230 68 L 300 42 L 376 24 L 376 130 L 20 130 Z" fill="url(#crdLineFill)"/>
-                <path d="M20 108 L 90 100 L 160 92 L 230 68 L 300 42 L 376 24" stroke="#3b82f6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="20" cy="108" r="4" fill="#60a5fa"/>
-                <circle cx="376" cy="24" r="5" fill="#93c5fd"/>
-                <text id="crdLineStartLabel" x="20" y="128" font-family="JetBrains Mono, monospace" font-size="10" fill="#9aa7c2"></text>
-                <text id="crdLineEndLabel" x="340" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#93c5fd"></text>
-              </svg>
-              <p id="crdMembershipCaption" class="text-xs text-ink-faint mt-2"></p>
-            </div>
+          <div class="bg-surface-2 p-8 sm:p-12 flex flex-col justify-center border-t lg:border-t-0 lg:border-l border-line-soft">
+            <p id="crdChartTitle" class="font-mono text-[11px] uppercase tracking-widest text-ink-faint mb-2">New Members Per Month</p>
+            <svg id="crdChart" viewBox="0 0 400 200" class="w-full h-auto rounded-xl border border-line bg-surface-1 chart-canvas" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="crdChartTitle">
+              <line x1="16" y1="70" x2="384" y2="70" stroke="#eef2fb" stroke-opacity="0.09" stroke-dasharray="3 4"/>
+              <line x1="16" y1="110" x2="384" y2="110" stroke="#eef2fb" stroke-opacity="0.09" stroke-dasharray="3 4"/>
+              <g id="crdBars"></g>
+              <line x1="16" y1="150" x2="384" y2="150" stroke="#eef2fb" stroke-opacity="0.18"/>
+            </svg>
+            <p id="crdChartCaption" class="text-xs text-ink-faint mt-3 leading-relaxed"></p>
           </div>
         </div>
       </div>
@@ -1624,148 +1601,196 @@ tailwind.config = {
 
   const avatarEl    = document.getElementById('crdAvatar');
   const nameEl      = document.getElementById('crdName');
-  const statEl      = document.getElementById('crdStat');
-  const statLabelEl = document.getElementById('crdStatLabel');
-  const quoteEl     = document.getElementById('crdQuote');
-  const authorEl    = document.getElementById('crdAuthor');
   const barsG       = document.getElementById('crdBars');
 
-  const barX = [20, 60, 100, 140, 180, 220, 260, 300, 340];
-  const barFill = ['#3b82f6','#3b82f6','#3b82f6','#3b82f6','#3b82f6','#3b82f6','#3b82f6','#3b82f6','#60a5fa'];
-  const barOpacity = [0.35, 0.45, 0.4, 0.55, 0.65, 0.6, 0.8, 1, 1];
-  const baseline = 122;
+  const ACCENT = { express: '#60a5fa', full: '#34d399', iba: '#a5b4fc' };
 
+  /* Every figure below is supplied case-study data. Charts plot only the
+     values that were actually provided — no interpolated points, no
+     derived ROI, no invented timelines. */
   const data = {
+    carwashcity: {
+      name: 'Car Wash City',
+      location: 'Illinois',
+      type: 'Express Tunnel',
+      typeKey: 'express',
+      typeIcon: 'local_car_wash',
+      avatar: '<img src="images/logo-car-wash-city-express.png" alt="" class="w-full h-full object-contain"/>',
+      context: 'Mid-market express operator growing slowly through walk-ins and POS upsells. One month changed their trajectory entirely.',
+      stats: [
+        { value: '36',    label: 'New members, month one' },
+        { value: '$3.07', label: 'Cost per member' },
+        { value: '100+',  label: 'Members per month, sustained' }
+      ],
+      chartTitle: 'New Members Per Month',
+      bars: [
+        { display: '36',   value: 36,  label: 'Month one' },
+        { display: '100+', value: 100, label: 'Sustained' }
+      ],
+      caption: '36 new members in month one — now 100+ members per month, sustained.'
+    },
     asbury: {
       name: 'Asbury Circle Car Wash',
+      location: 'New Jersey',
+      type: 'Full Service',
+      typeKey: 'full',
+      typeIcon: 'cleaning_services',
       avatar: '<img src="images/logo-asbury-circle.png" alt="" class="w-full h-full object-contain"/>',
-      stat: '2x', statColorClass: 'text-primary-bright',
-      statLabel: 'more members each month',
-      quote: '"This marketing strategy? It completely flipped our business around. We got a ton of new customers coming in, and the growth? Absolutely unreal."',
-      author: '— Dino, Owner of Asbury Circle Car Wash',
-      bars: [24, 36, 32, 50, 62, 58, 78, 92, 102],
-      startLabel: '1,300', endLabel: '1,700',
-      lineStartLabel: '1,300', lineEndLabel: '1,700',
-      membershipCaption: 'Grew from 1,300 to 1,700 members in 5 months — $34 cost per member, 500% ROI'
+      context: 'Previously sitting at 1,200 members with no online growth. They now add 150–200+ new members every month.',
+      stats: [
+        { value: '150–200+', label: 'New members per month' },
+        { value: '$600+',    label: 'Lifetime value per member' },
+        { value: '$34',      label: 'Cost per member' }
+      ],
+      chartTitle: 'New Members Per Month',
+      bars: [
+        { display: 'None',      value: 0,   label: 'Before' },
+        { display: '150–200+', value: 200, label: 'Now' }
+      ],
+      caption: 'No online growth before — now 150–200+ new members every month, on a base of 1,200.'
     },
     lowell: {
       name: 'Lowell Express Car Wash',
+      location: 'Lowell, Michigan',
+      type: 'IBA & Touchless',
+      typeKey: 'iba',
+      typeIcon: 'garage',
       avatar: '<img src="images/logo-lowell-express.png" alt="" class="w-full h-full object-contain"/>',
-      stat: '106%', statColorClass: 'text-accent',
-      statLabel: 'Membership Growth in Under Five Months',
-      quote: '"Since we started working with Uplead Digital, we\'ve seen explosive growth in our membership. We\'ve grown 106% in just 5 months. Best support system in the space — completely transparent with everything they do."',
-      author: '— Bruce, Owner of Lowell Express Car Wash',
-      bars: [18, 26, 34, 48, 66, 80, 88, 96, 108],
-      startLabel: '0%', endLabel: '+106%',
-      lineStartLabel: 'Start', lineEndLabel: '+106%',
-      membershipCaption: 'Gained 51 new members in the first month, adding over $12,750 in LTV revenue'
-    },
-    kps: {
-      name: "KP's Car Wash",
-      avatar: '<img src="images/logo-kps-car-wash.png" alt="" class="w-full h-full object-contain"/>',
-      stat: '20%', statColorClass: 'text-primary-bright',
-      statLabel: 'increase in first month',
-      quote: '"Shot up 20% in the first month, bringing in over $6,600 in LTV revenue and setting us up for steady growth down the road."',
-      author: "— Jason, Owner of KP's Car Wash",
-      bars: [30, 38, 44, 50, 58, 64, 72, 80, 88],
-      startLabel: 'Launch', endLabel: '+20%',
-      lineStartLabel: 'Launch', lineEndLabel: '+20%',
-      membershipCaption: 'Grew 20% in the first month, adding over $6,600 in LTV revenue'
-    },
-    star: {
-      name: 'Star Car Wash',
-      avatar: '<img src="images/logo-star-car-wash.png" alt="" class="w-full h-full object-contain"/>',
-      stat: '19.7%', statColorClass: 'text-accent',
-      statLabel: 'growth in first month',
-      quote: '"Really took off in just a couple of months, growing strong right out the gate. Brought in a good chunk of revenue, and now we\'ve got a solid way to keep folks rolling in."',
-      author: '— Dallas, Owner of Star Car Wash',
-      bars: [20, 42, 58, 66, 70, 74, 78, 82, 86],
-      startLabel: '0%', endLabel: '+19.7%',
-      lineStartLabel: 'Start', lineEndLabel: '+19.7%',
-      membershipCaption: 'Grew nearly 30% in just under 2 months'
-    },
-    dublin: {
-      name: 'Dublin Details',
-      avatar: '<img src="images/logo-dublin-details.png" alt="" class="w-full h-full object-contain"/>',
-      stat: '300', statColorClass: 'text-primary-bright',
-      statLabel: 'new members in 6 months',
-      quote: '"Wasn\'t expecting results like this so quick. The place is thriving now, and we\'re only just getting started!"',
-      author: '— Matthew, Owner of Dublin Details',
-      bars: [16, 28, 42, 54, 66, 76, 86, 94, 100],
-      startLabel: '50', endLabel: '350+',
-      lineStartLabel: '50', lineEndLabel: '350+',
-      membershipCaption: 'Started with just 50 members, now grown to over 350'
+      context: 'A local wash looking to grow beyond walk-ins. In four months, they more than doubled their entire membership base.',
+      stats: [
+        { value: '266 → 548', label: 'Member growth' },
+        { value: '106%',       label: 'Membership growth' },
+        { value: '4 mo',       label: 'Time to double' }
+      ],
+      chartTitle: 'Membership Growth',
+      bars: [
+        { display: '266', value: 266, label: 'Start' },
+        { display: '548', value: 548, label: 'After 4 mo' }
+      ],
+      caption: '266 to 548 members in four months — 106% membership growth.'
     }
   };
 
-  const startLabelEl = document.getElementById('crdStartLabel');
-  const endLabelEl   = document.getElementById('crdEndLabel');
-  const lineStartEl  = document.getElementById('crdLineStartLabel');
-  const lineEndEl    = document.getElementById('crdLineEndLabel');
-  const membershipCaptionEl = document.getElementById('crdMembershipCaption');
+  const panelEl     = document.getElementById('crdPanel');
+  const typeIconEl  = document.getElementById('crdTypeIcon');
+  const typeLabelEl = document.getElementById('crdTypeLabel');
+  const locationEl  = document.getElementById('crdLocation');
+  const contextEl   = document.getElementById('crdContext');
+  const statsEl     = document.getElementById('crdStats');
+  const chartTitleEl   = document.getElementById('crdChartTitle');
+  const chartCaptionEl = document.getElementById('crdChartCaption');
+  const TYPE_CLASSES = ['cs-card--express', 'cs-card--full', 'cs-card--iba'];
+
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const BASELINE = 150, MAX_H = 110, BAR_W = 96, BAR_X = [68, 236];
+
+  function svgEl(tag, attrs, text){
+    const el = document.createElementNS(SVG_NS, tag);
+    for(const key in attrs){ el.setAttribute(key, attrs[key]); }
+    if(text !== undefined) el.textContent = text;
+    return el;
+  }
 
   function renderChart(c){
+    const accent = ACCENT[c.typeKey];
     const bars = c.bars;
+    const max = Math.max.apply(null, bars.map(function(b){ return b.value; })) || 1;
     barsG.innerHTML = '';
-    bars.forEach((h, i) => {
-      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-      rect.setAttribute('x', barX[i]);
-      rect.setAttribute('y', baseline - h);
-      rect.setAttribute('width', 24);
-      rect.setAttribute('height', h);
-      rect.setAttribute('rx', 4);
-      rect.setAttribute('fill', barFill[i]);
-      rect.setAttribute('opacity', barOpacity[i]);
-      barsG.appendChild(rect);
+
+    bars.forEach(function(b, i){
+      const isLast = i === bars.length - 1;
+      const x = BAR_X[i];
+      const h = b.value > 0 ? Math.max(10, Math.round((b.value / max) * MAX_H)) : 8;
+      const y = BASELINE - h;
+
+      if(b.value > 0){
+        barsG.appendChild(svgEl('rect', {
+          x: x, y: y, width: BAR_W, height: h, rx: 6,
+          fill: isLast ? accent : '#3b82f6',
+          opacity: isLast ? 1 : 0.4
+        }));
+      } else {
+        barsG.appendChild(svgEl('rect', {
+          x: x, y: y, width: BAR_W, height: h, rx: 4,
+          fill: 'none', stroke: '#6b7690', 'stroke-opacity': 0.6, 'stroke-dasharray': '4 4'
+        }));
+      }
+
+      barsG.appendChild(svgEl('text', {
+        x: x + BAR_W / 2, y: y - 12, 'text-anchor': 'middle',
+        'font-family': 'JetBrains Mono, monospace', 'font-size': 16, 'font-weight': 700,
+        fill: isLast ? accent : '#9aa7c2'
+      }, b.display));
+
+      barsG.appendChild(svgEl('text', {
+        x: x + BAR_W / 2, y: 172, 'text-anchor': 'middle',
+        'font-family': 'JetBrains Mono, monospace', 'font-size': 10,
+        fill: '#6b7690'
+      }, b.label));
     });
 
-    const firstH = bars[0];
-    const lastH  = bars[bars.length - 1];
-    startLabelEl.setAttribute('x', barX[0]);
-    startLabelEl.setAttribute('y', Math.max(12, baseline - firstH - 8));
-    startLabelEl.textContent = c.startLabel;
+    barsG.appendChild(svgEl('text', {
+      x: 200, y: 143, 'text-anchor': 'middle',
+      'font-family': 'JetBrains Mono, monospace', 'font-size': 18,
+      fill: '#6b7690'
+    }, '\u2192'));
+  }
 
-    endLabelEl.setAttribute('x', barX[barX.length - 1] + 24);
-    endLabelEl.setAttribute('y', Math.max(12, baseline - lastH - 8));
-    endLabelEl.textContent = c.endLabel;
+  function renderStats(c){
+    const accent = ACCENT[c.typeKey];
+    statsEl.innerHTML = '';
+    c.stats.forEach(function(st){
+      const li = document.createElement('li');
+      const v = document.createElement('div');
+      v.className = 'cs-stat-value text-2xl font-extrabold';
+      v.style.color = accent;
+      v.textContent = st.value;
+      const l = document.createElement('div');
+      l.className = 'font-mono text-[10px] uppercase tracking-[0.13em] text-ink-faint leading-relaxed mt-1.5';
+      l.textContent = st.label;
+      li.appendChild(v);
+      li.appendChild(l);
+      statsEl.appendChild(li);
+    });
   }
 
   function setClient(key){
     const c = data[key];
     if(!c) return;
 
+    TYPE_CLASSES.forEach(function(cls){ panelEl.classList.remove(cls); });
+    panelEl.classList.add('cs-card--' + c.typeKey);
+
+    typeIconEl.textContent  = c.typeIcon;
+    typeLabelEl.textContent = c.type;
+
     const isLogo = c.avatar.indexOf('<img') === 0;
     avatarEl.innerHTML = c.avatar;
     avatarEl.classList.toggle('bg-tint', isLogo);
-    avatarEl.classList.toggle('bg-gradient-to-br', !isLogo);
-    avatarEl.classList.toggle('from-primary', !isLogo);
-    avatarEl.classList.toggle('to-primary-dim', !isLogo);
+    avatarEl.classList.toggle('bg-surface-3', !isLogo);
 
-    nameEl.textContent = c.name;
-    statLabelEl.textContent = c.statLabel;
-    quoteEl.textContent = c.quote;
-    authorEl.textContent = c.author;
+    nameEl.textContent     = c.name;
+    locationEl.textContent = c.location;
+    contextEl.textContent  = c.context;
 
-    statEl.textContent = c.stat;
-    statEl.classList.remove('text-primary-bright', 'text-accent');
-    statEl.classList.add(c.statColorClass);
+    renderStats(c);
 
+    chartTitleEl.textContent   = c.chartTitle;
+    chartCaptionEl.textContent = c.caption;
     renderChart(c);
 
-    lineStartEl.textContent = c.lineStartLabel;
-    lineEndEl.textContent = c.lineEndLabel;
-    membershipCaptionEl.textContent = c.membershipCaption;
-
-    selector.querySelectorAll('[data-client]').forEach(btn => {
-      btn.classList.toggle('selected', btn.dataset.client === key);
+    selector.querySelectorAll('[data-client]').forEach(function(btn){
+      const on = btn.dataset.client === key;
+      btn.classList.toggle('selected', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   }
 
-  selector.querySelectorAll('[data-client]').forEach(btn => {
-    btn.addEventListener('click', () => setClient(btn.dataset.client));
+  selector.querySelectorAll('[data-client]').forEach(function(btn){
+    btn.addEventListener('click', function(){ setClient(btn.dataset.client); });
   });
 
-  setClient('asbury');
+  setClient('carwashcity');
 })();
 </script>
 
