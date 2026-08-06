@@ -914,7 +914,15 @@ const AF_EVENTS = {
   'task_completed':       {group:'crm',      cls:'gr', icon:'task_alt',        title:'Task completed'},
   'review_request':       {group:'crm',      cls:'pu', icon:'reviews',         title:'Review request sent'},
   'automation_run':       {group:'crm',      cls:'ac', icon:'bolt',            title:'Automation triggered'},
-  'user_created':         {group:'crm',      cls:'ac', icon:'person_add_alt',  title:'Team member added'}
+  'user_created':         {group:'crm',      cls:'ac', icon:'person_add_alt',  title:'Team member added'},
+  // --- meeting automation lifecycle (crm.automation_jobs) ---
+  'automation_scheduled': {group:'meetings', cls:'ac', icon:'schedule_send',   title:'Sequence scheduled'},
+  'automation_paused':    {group:'meetings', cls:'am', icon:'pause_circle',    title:'Sequence paused'},
+  'automation_resumed':   {group:'meetings', cls:'bl', icon:'play_circle',     title:'Sequence resumed'},
+  'automation_cancelled': {group:'meetings', cls:'re', icon:'block',           title:'Sequence cancelled'},
+  'automation_skipped':   {group:'meetings', cls:'gy', icon:'skip_next',       title:'Automation skipped'},
+  'automation_expired':   {group:'meetings', cls:'gy', icon:'timer_off',       title:'Automation expired'},
+  'automation_failed':    {group:'meetings', cls:'re', icon:'error',           title:'Automation failed'}
 };
 const AF_GROUPS = [
   {key:'all',      label:'All'},
@@ -967,7 +975,15 @@ function afDetail(row){
   if(t==='sms' || t==='email'){
     const dir = String(d.direction||'').toLowerCase()==='inbound' ? 'Inbound' : 'Outbound';
     const body = afSnippet(d.body || row.notes, 70);
-    return escapeHtml(dir) + (body ? ' · ' + escapeHtml(body) : '');
+    // d.automation is written by crm.mark_automation_sent — never inferred here.
+    const auto = d.automation ? '<span class="af-auto">AUTO</span> ' : '';
+    return auto + escapeHtml(dir) + (body ? ' · ' + escapeHtml(body) : '');
+  }
+  if(t.indexOf('automation_')===0){
+    const bits=[];
+    if(d.automation_type) bits.push(String(d.automation_type));
+    if(row.notes) bits.push(afSnippet(row.notes,70));
+    return escapeHtml(bits.join(' · '));
   }
   if(t==='call'){
     const dir = String(d.direction||'').toLowerCase()==='inbound' ? 'Inbound' : 'Outbound';
@@ -991,6 +1007,8 @@ function afAction(row){
     return `<button class="af-link" onclick="navigate('communication');chOpenInConversations(${row.lead_id})">Open conversation</button>`;
   if(t==='meeting' || t.indexOf('meeting_')===0)
     return `<button class="af-link" onclick="navigate('meetings')">Open meeting</button>`;
+  if(t.indexOf('automation_')===0 && row.lead_id!=null)
+    return `<button class="af-link" onclick="openLead(${row.lead_id})">Open sequence</button>`;
   if(row.lead_id!=null)
     return `<button class="af-link" onclick="openLead(${row.lead_id})">Open lead</button>`;
   if(row.client_id!=null)
@@ -1138,6 +1156,7 @@ function openLead(id){
   const lead=allLeads.find(l=>l.id==id);if(!lead)return;
   currentLead=lead;
   const sc=scClass(lead.status),name=((lead.first_name||'')+' '+(lead.last_name||'')).trim()||'—',status=lead.status||'Potential';
+  const meetLink=leadMeetLink(lead);
   document.getElementById('lp-company').textContent=lead.company_name||'—';
   document.getElementById('lp-tier').textContent=lead.utm_source?`Source: ${lead.utm_source}`:'Lead';
   document.getElementById('lp-sub').textContent=name+(lead.utm_campaign?' · '+lead.utm_campaign:'');
@@ -1184,6 +1203,7 @@ function openLead(id){
         </div>
       </div>
     </div></div>
+    <div id="lpSeqCard"></div>
     <div class="lp-card"><div class="lp-card-hd"><span class="mat">person</span><span class="lp-card-title">Contact</span><span class="mat sm" style="margin-left:auto;cursor:pointer;color:var(--tx3)" onclick="lpEdit()">edit</span></div>
     <div class="lp-rows">
       <div class="lp-row"><div class="lp-ri"><span class="mat">badge</span></div><div><div class="lp-rl">Full Name</div><div class="lp-rv">${name}</div></div></div>
@@ -1194,6 +1214,8 @@ function openLead(id){
     <div class="lp-rows">
       <div class="lp-row"><div class="lp-ri"><span class="mat">event</span></div><div><div class="lp-rl">Preferred Date</div><div class="lp-rv">${fmtDate(lead.preferred_date)}</div></div></div>
       <div class="lp-row"><div class="lp-ri"><span class="mat">schedule</span></div><div><div class="lp-rl">Preferred Time</div><div class="lp-rv">${fmtTime(lead.preferred_time)}${lead.preferred_timezone?` <span style="color:var(--tx3);font-weight:400">(${lead.preferred_timezone})</span>`:''}</div></div></div>
+      ${lead.meeting_start_time?`<div class="lp-row"><div class="lp-ri"><span class="mat">event_available</span></div><div><div class="lp-rl">Booked Meeting</div><div class="lp-rv">${seqFmtWhen(lead.meeting_start_time)}${lead.meeting_status?` <span style="color:var(--tx3);font-weight:400">(${escHtml(lead.meeting_status)})</span>`:''}</div></div></div>`:''}
+      ${meetLink?`<div class="lp-row"><div class="lp-ri"><span class="mat">video_chat</span></div><div><div class="lp-rl">Meeting Link</div><div class="lp-rv"><a href="${meetLink}" target="_blank" rel="noopener">${escHtml(meetLink)}</a></div></div></div>`:''}
       <div class="lp-row"><div class="lp-ri"><span class="mat">history</span></div><div><div class="lp-rl">Last Contacted</div><div class="lp-rv" style="${!lead.last_contacted_at?'color:var(--tx3)':''}">${lead.last_contacted_at?fmtDate(lead.last_contacted_at):'Never contacted'}</div></div></div>
       <div class="lp-row"><div class="lp-ri"><span class="mat">alarm</span></div><div><div class="lp-rl">Next Follow-Up</div><div class="lp-rv" style="${lead.next_followup_at?'color:var(--am)':'color:var(--tx3)'}">${lead.next_followup_at?fmtDate(lead.next_followup_at):'Not set'}</div></div></div>
       ${lead.converted_at?`<div class="lp-row"><div class="lp-ri"><span class="mat">verified</span></div><div><div class="lp-rl">Converted At</div><div class="lp-rv" style="color:var(--gr)">${fmtDate(lead.converted_at)}</div></div></div>`:''}
@@ -1207,6 +1229,8 @@ function openLead(id){
     <div class="lp-tl-wrap">${buildTimeline(lead)}</div></div>`;
   document.getElementById('leadPanel').classList.add('lp-open');
   document.getElementById('lpOverlay').classList.add('show');
+  renderLeadSequence();
+  seqLoad(lead,false);
 }
 function buildTimeline(lead){
   const events=[];
@@ -1289,7 +1313,14 @@ async function lpSetShowStatus(val){
     const g=document.getElementById('lpShowStatusGroup');
     if(g)g.querySelectorAll('.topt').forEach(t=>t.classList.remove('active'));
     if(g){const map={showed:0,no_show:1,'':2};g.children[map[val]].classList.add('active');}
-    toast('✓ Meeting outcome saved','ok');
+    /* The outcome is the automation trigger. Enqueue/cancel happens server-side
+       (crm.tg_leads_automation -> crm.sync_meeting_outcome_automation); all the
+       UI does is re-read what the database decided. Nothing is assumed here. */
+    toast(val==='no_show'?'✓ Outcome saved — no-show sequence queued'
+         :val==='showed' ?'✓ Outcome saved — remaining pre-call messages stopped'
+                         :'✓ Meeting outcome saved','ok');
+    if(leadMeetingId(currentLead)){seqJobs=null;seqMeetingId=null;await seqLoad(currentLead,true);}
+    loadLeads().then(()=>{const u=allLeads.find(l=>l.id===(currentLead&&currentLead.id));if(u)currentLead=u;});
   }catch(e){toast('Failed to save — check the update_show_status webhook.','err');}
 }
 async function lpSetOfferMade(val){
@@ -1303,6 +1334,229 @@ async function lpSetOfferMade(val){
     toast('✓ Offer status saved','ok');
   }catch(e){toast('Failed to save — check the update_offer_made webhook.','err');}
 }
+/* ================================================================
+   MEETING AUTOMATION SEQUENCES  (crm.automation_jobs)
+   ----------------------------------------------------------------
+   Read-and-control layer over the EXISTING pre-call runner. Every row
+   rendered here is a real crm.automation_jobs row returned by the
+   list_automation_jobs action on the lead-management webhook — nothing
+   is derived from lead fields, nothing is cached in localStorage, and
+   no schedule is ever computed in the browser.
+
+   Scheduling, enqueueing, cancelling on outcome change and every stop
+   condition live in PostgreSQL (see upclose-automation-migration.sql).
+   This file only shows state and sends three operations: pause, resume,
+   cancel remaining.
+
+   The per-lead summary (seq_state / seq_sent / seq_total / seq_next_*)
+   rides along on get_leads, so the Meetings Hub gets sequence awareness
+   with no extra request.
+   ================================================================ */
+const SEQ_TYPES={
+  precall: {label:'Pre-Call Sequence',  icon:'schedule_send'},
+  postcall:{label:'Post-Call Sequence', icon:'mark_email_read'},
+  noshow:  {label:'No-Show Sequence',   icon:'person_off'}
+};
+const SEQ_ORDER={precall:0,postcall:1,noshow:2};
+const SEQ_JOB_STATES={
+  pending:  {label:'Scheduled', cls:'bl', icon:'schedule'},
+  paused:   {label:'Paused',    cls:'am', icon:'pause_circle'},
+  blocked:  {label:'Needs copy',cls:'gy', icon:'edit_note'},
+  sent:     {label:'Sent',      cls:'gr', icon:'check_circle'},
+  skipped:  {label:'Skipped',   cls:'gy', icon:'skip_next'},
+  expired:  {label:'Expired',   cls:'gy', icon:'timer_off'},
+  cancelled:{label:'Cancelled', cls:'gy', icon:'cancel'},
+  failed:   {label:'Failed',    cls:'re', icon:'error'}
+};
+const SEQ_STATES={
+  active:   {label:'Active',        cls:'gr'},
+  paused:   {label:'Paused',        cls:'am'},
+  blocked:  {label:'Awaiting copy', cls:'gy'},
+  completed:{label:'Completed',     cls:'bl'},
+  cancelled:{label:'Cancelled',     cls:'gy'},
+  stopped:  {label:'Stopped',       cls:'gy'}
+};
+
+let seqJobs=null, seqMeetingId=null, seqLoading=false, seqError=null, seqBusy=false;
+
+function seqTypeMeta(t){return SEQ_TYPES[t]||{label:t||'Sequence',icon:'bolt'};}
+function seqJobMeta(s){return SEQ_JOB_STATES[String(s||'').toLowerCase()]||{label:s||'—',cls:'gy',icon:'help'};}
+function seqStateMeta(s){return SEQ_STATES[String(s||'').toLowerCase()]||{label:s||'—',cls:'gy'};}
+
+/* ---- Real meeting relationship ---------------------------------
+   get_leads now exposes the latest non-cancelled crm.meetings row.
+   leadMeetLink prefers the stored google_meet_link and only falls back
+   to the old notes scrape for leads booked before that column existed. */
+function leadMeetingId(lead){return lead&&lead.meeting_id!=null&&lead.meeting_id!==''?lead.meeting_id:null;}
+function leadMeetLink(lead){
+  if(!lead)return null;
+  if(lead.meeting_link){const u=String(lead.meeting_link).trim();return u.indexOf('http')===0?u:'https://'+u;}
+  const m=lead.notes&&lead.notes.match(/meet\.google\.com\/[^\s]+/);
+  return m?'https://'+m[0]:null;
+}
+function seqFmtWhen(iso){
+  if(!iso)return'—';
+  const d=new Date(iso);if(isNaN(d.getTime()))return String(iso);
+  const now=new Date();
+  const sameDay=d.toDateString()===now.toDateString();
+  const day=sameDay?'Today':d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+  return day+' · '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
+}
+
+/* ---- Lightweight summary used by the Meetings Hub --------------- */
+function seqSummary(lead){
+  if(!lead||!lead.seq_state)return null;
+  return {
+    type:lead.seq_type||'precall',
+    state:String(lead.seq_state),
+    sent:Number(lead.seq_sent)||0,
+    total:Number(lead.seq_total)||0,
+    nextAt:lead.seq_next_at||null,
+    nextLabel:lead.seq_next_label||lead.seq_next_template||''
+  };
+}
+function seqBadgeHtml(lead){
+  const s=seqSummary(lead);if(!s||!s.total)return'';
+  const st=seqStateMeta(s.state),tm=seqTypeMeta(s.type);
+  return `<span class="seq-chip" title="${escHtml(tm.label)}">
+    <span class="mat sm">${tm.icon}</span>
+    <span class="badge ${st.cls}">${st.label}</span>
+    <span class="seq-chip-count">${s.sent}/${s.total} sent</span>
+    ${s.nextAt?`<span class="seq-chip-next">next ${escHtml(s.nextLabel||'')} · ${seqFmtWhen(s.nextAt)}</span>`:''}
+  </span>`;
+}
+
+/* ---- Data ------------------------------------------------------- */
+async function seqApi(payload){
+  const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  return res.json().catch(()=>[]);
+}
+async function seqLoad(lead,force){
+  const mid=leadMeetingId(lead);
+  if(!mid){seqJobs=null;seqMeetingId=null;seqError=null;renderLeadSequence();return;}
+  if(!force&&seqMeetingId===mid&&seqJobs!==null){renderLeadSequence();return;}
+  seqLoading=true;seqError=null;seqMeetingId=mid;
+  renderLeadSequence();
+  try{
+    const raw=await seqApi({action:'list_automation_jobs',lead_id:lead.id,meeting_id:mid});
+    const rows=Array.isArray(raw)?raw:(raw&&raw.jobs)||[];
+    seqJobs=rows.filter(r=>r&&r.id!=null);
+  }catch(e){
+    console.warn('Automation jobs load failed',e);
+    seqJobs=null;seqError=e.message||'request failed';
+  }finally{seqLoading=false;}
+  renderLeadSequence();
+}
+
+/* ---- Controls (sequence level only, by design) ------------------ */
+async function seqControl(op,type){
+  if(!currentLead||seqBusy)return;
+  const mid=leadMeetingId(currentLead);if(!mid)return;
+  seqBusy=true;renderLeadSequence();
+  try{
+    await seqApi({action:'update_automation_jobs',meeting_id:mid,automation_type:type,op:op,
+      actor:(currentProfile&&currentProfile.email)||''});
+    toast(op==='pause'?'✓ Sequence paused':op==='resume'?'✓ Sequence resumed':'✓ Remaining messages cancelled','ok');
+    seqBusy=false;
+    await seqLoad(currentLead,true);
+    loadLeads();
+  }catch(e){
+    toast('Failed — check the update_automation_jobs action on lead-management.','err');
+  }finally{seqBusy=false;renderLeadSequence();}
+}
+function seqPause(type){seqControl('pause',type);}
+function seqResume(type){seqControl('resume',type);}
+function seqCancelRemaining(type){
+  const tm=seqTypeMeta(type);
+  showConfirm('Cancel remaining messages?',
+    `Every message in the ${tm.label} that has not been sent yet will be cancelled. Messages already sent are unaffected.`,
+    'Cancel remaining','danger',()=>seqControl('cancel',type));
+}
+
+/* ---- Render ----------------------------------------------------- */
+function seqCardShell(body,showRefresh){
+  return `<div class="lp-card"><div class="lp-card-hd"><span class="mat">bolt</span>
+    <span class="lp-card-title">Automated Sequences</span>
+    ${showRefresh?`<span class="mat sm" style="margin-left:auto;cursor:pointer;color:var(--tx3)" title="Refresh" onclick="seqLoad(currentLead,true)">refresh</span>`:''}
+  </div>${body}</div>`;
+}
+function seqBlock(type,jobs){
+  const tm=seqTypeMeta(type);
+  const by=s=>jobs.filter(j=>String(j.status||'').toLowerCase()===s).length;
+  const total=jobs.length,sent=by('sent'),pending=by('pending'),paused=by('paused'),
+        blocked=by('blocked'),cancelled=by('cancelled');
+  const state=paused>0?'paused':pending>0?'active':blocked>0?'blocked'
+             :(sent>0&&!cancelled)?'completed':cancelled>0?'cancelled':'stopped';
+  const st=seqStateMeta(state);
+  const pct=total?Math.round(sent/total*100):0;
+  const ordered=jobs.slice().sort((a,b)=>String(a.scheduled_at||'').localeCompare(String(b.scheduled_at||'')));
+  const next=ordered.filter(j=>j.status==='pending')[0];
+  const dis=seqBusy?' disabled':'';
+  const controls=`<div class="seq-controls">
+    ${pending>0?`<button class="abtn"${dis} onclick="seqPause('${type}')"><span class="mat sm">pause</span>Pause</button>`:''}
+    ${paused>0?`<button class="abtn"${dis} onclick="seqResume('${type}')"><span class="mat sm">play_arrow</span>Resume</button>`:''}
+    ${(pending+paused+blocked)>0?`<button class="abtn danger"${dis} onclick="seqCancelRemaining('${type}')"><span class="mat sm">block</span>Cancel remaining</button>`:''}
+  </div>`;
+  const rows=ordered.map(j=>{
+    const jm=seqJobMeta(j.status);
+    const when=(j.status==='sent'&&j.sent_at)?seqFmtWhen(j.sent_at):seqFmtWhen(j.scheduled_at);
+    return `<div class="seq-row${j.status==='sent'?' done':''}">
+      <span class="mat sm seq-row-icon ${jm.cls}">${jm.icon}</span>
+      <div class="seq-row-main">
+        <div class="seq-row-title">${escHtml(j.template_label||j.template_key||'—')}</div>
+        <div class="seq-row-meta">
+          <span class="seq-ch"><span class="mat sm">${String(j.channel).toLowerCase()==='sms'?'sms':'mail'}</span>${String(j.channel||'').toUpperCase()}</span>
+          <span>${when}</span>
+          ${j.status_reason?`<span class="seq-reason">· ${escHtml(j.status_reason)}</span>`:''}
+        </div>
+      </div>
+      <span class="badge ${jm.cls}">${jm.label}</span>
+    </div>`;
+  }).join('');
+  return `<div class="seq-block">
+    <div class="seq-hd">
+      <span class="mat sm" style="color:var(--acc)">${tm.icon}</span>
+      <span class="seq-hd-title">${tm.label}</span>
+      <span class="badge ${st.cls}">${st.label}</span>
+      <span class="seq-hd-count">${sent} of ${total} sent</span>
+    </div>
+    <div class="ftrack" style="margin:8px 0 6px"><div class="ffill" style="width:${pct}%"></div></div>
+    <div class="seq-next">${next?`<span class="mat sm">arrow_forward</span>Next: ${escHtml(next.template_label||next.template_key)} · ${seqFmtWhen(next.scheduled_at)}`
+      :`<span class="mat sm">check</span>No further messages scheduled`}</div>
+    ${controls}
+    <div class="seq-rows">${rows}</div>
+  </div>`;
+}
+function renderLeadSequence(){
+  const host=document.getElementById('lpSeqCard');if(!host)return;
+  const lead=currentLead;
+  const mid=leadMeetingId(lead);
+  if(!mid){
+    host.innerHTML=seqCardShell(`<div class="seq-empty">No booked meeting is linked to this lead yet. Automated pre-call and post-meeting messages are scheduled from the meeting record, so nothing is queued.</div>`,false);
+    return;
+  }
+  if(seqLoading&&seqJobs===null){
+    host.innerHTML=seqCardShell(`<div class="seq-empty"><span class="spin mat sm">sync</span> Loading sequence…</div>`,false);
+    return;
+  }
+  if(seqError){
+    host.innerHTML=seqCardShell(`<div class="seq-empty" style="color:var(--re)">Couldn't load the sequence — check the <code>list_automation_jobs</code> action on the lead-management webhook.</div>`,true);
+    return;
+  }
+  const jobs=seqJobs||[];
+  if(!jobs.length){
+    host.innerHTML=seqCardShell(`<div class="seq-empty">No automated messages scheduled for this meeting.</div>`,true);
+    return;
+  }
+  const types=jobs.map(j=>j.automation_type||'precall')
+    .filter((v,i,a)=>a.indexOf(v)===i)
+    .sort((a,b)=>(SEQ_ORDER[a]===undefined?9:SEQ_ORDER[a])-(SEQ_ORDER[b]===undefined?9:SEQ_ORDER[b]));
+  host.innerHTML=seqCardShell(types.map(t=>
+    seqBlock(t,jobs.filter(j=>(j.automation_type||'precall')===t))).join(''),true);
+}
+
 function lpEdit(){
   if(!currentLead)return;
   document.getElementById('modalTitle').textContent='Edit Lead';document.getElementById('modalLeadId').value=currentLead.id;
@@ -1850,7 +2104,7 @@ function renderMhUpcoming(mode){
     const mon=d.toLocaleString('default',{month:'short'}).toUpperCase();
     const wkd=d.toLocaleString('default',{weekday:'short'}).toUpperCase();
     const cardClass=isToday?'today':isPast?'overdue':'';
-    const hasMeetUrl=l.notes&&l.notes.includes('meet.google.com');
+    const meetUrl=leadMeetLink(l);
     return `<div class="mh-meeting-card ${cardClass}" onclick="openLead(${l.id})">
       <div class="mh-meeting-time"><div class="date">${wkd}</div><div class="day">${day}</div><div class="month">${mon}</div></div>
       <div style="flex:1;min-width:0">
@@ -1867,9 +2121,10 @@ function renderMhUpcoming(mode){
           ${isToday?`<span style="font-size:10px;font-weight:700;background:rgba(124,58,237,0.15);color:var(--acc);padding:2px 7px;border-radius:3px;letter-spacing:0.06em">TODAY</span>`:''}
           ${isPast&&!isToday?`<span style="font-size:10px;font-weight:700;background:var(--re-d);color:var(--re);padding:2px 7px;border-radius:3px;letter-spacing:0.06em">PAST</span>`:''}
         </div>
+        ${seqBadgeHtml(l)}
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0">
-        ${isToday?`<button class="abtn pri" style="font-size:12px;padding:5px 12px" onclick="event.stopPropagation();mhJoinFromLead(${l.id})"><span class="mat sm">video_call</span>Join</button>`:''}
+        ${isToday&&meetUrl?`<button class="abtn pri" style="font-size:12px;padding:5px 12px" onclick="event.stopPropagation();mhJoinFromLead(${l.id})"><span class="mat sm">video_call</span>Join</button>`:''}
         <button class="abtn" style="font-size:12px;padding:5px 10px" onclick="event.stopPropagation();openLead(${l.id})"><span class="mat sm">open_in_new</span>Open</button>
       </div>
     </div>`;
@@ -1966,8 +2221,7 @@ function mhShowDrawer(lead){
   mhDrawerLeadId=lead.id;
   const nm=((lead.first_name||'')+' '+(lead.last_name||'')).trim()||'—';
   const sc=scClass(lead.status);
-  const hasUrl=lead.notes&&lead.notes.match(/meet\.google\.com\/[^\s]+/);
-  const meetUrl=hasUrl?hasUrl[0]:null;
+  const meetUrl=leadMeetLink(lead);
   document.getElementById('mhDrawerContent').innerHTML=`
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
       <div class="mh-meeting-avatar">${initials(lead.company_name||nm)}</div>
@@ -1992,14 +2246,15 @@ function mhShowDrawer(lead){
       </div>
       ${meetUrl?`<div>
         <div class="stitle" style="margin-bottom:8px">Google Meet</div>
-        <div class="mh-meet-url" onclick="navigator.clipboard&&navigator.clipboard.writeText('https://${meetUrl}').then(()=>toast('URL copied','ok'))">
+        <div class="mh-meet-url" onclick="navigator.clipboard&&navigator.clipboard.writeText('${meetUrl}').then(()=>toast('URL copied','ok'))">
           <span class="mat sm">video_chat</span>
-          <span style="font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">https://${meetUrl}</span>
+          <span style="font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${meetUrl}</span>
           <span class="mat sm" style="color:var(--tx3)">content_copy</span>
         </div>
       </div>`:`<div style="padding:10px;background:var(--bg);border:1px dashed var(--bd);border-radius:7px;text-align:center;font-size:12px;color:var(--tx3)">
-        <span class="mat sm" style="display:block;margin-bottom:5px;opacity:0.4">video_chat</span>No Meet URL — add one in lead notes (meet.google.com/…)
+        <span class="mat sm" style="display:block;margin-bottom:5px;opacity:0.4">video_chat</span>No Meet link on the meeting record yet
       </div>`}
+      ${mhSeqBlockHtml(lead)}
       ${lead.notes?`<div>
         <div class="stitle" style="margin-bottom:8px">Pre-Meeting Notes</div>
         <div style="padding:10px;background:var(--bg);border:1px solid var(--bd);border-radius:7px;font-size:13px;color:var(--tx2);line-height:1.65;font-style:italic">${escHtml(lead.notes).slice(0,300)}</div>
@@ -2028,13 +2283,35 @@ function clearMhDrawer(){
 function mhJoinMeeting(){
   if(!mhDrawerLeadId)return;
   const lead=allLeads.find(l=>l.id===mhDrawerLeadId);if(!lead)return;
-  const hasUrl=lead.notes&&lead.notes.match(/meet\.google\.com\/[^\s]+/);
-  if(hasUrl)window.open('https://'+hasUrl[0],'_blank');
+  const url=leadMeetLink(lead);
+  if(url)window.open(url,'_blank');
 }
 function mhJoinFromLead(id){
   const lead=allLeads.find(l=>l.id===id);if(!lead)return;
-  const hasUrl=lead.notes&&lead.notes.match(/meet\.google\.com\/[^\s]+/);
-  if(hasUrl)window.open('https://'+hasUrl[0],'_blank');else toast('No Meet URL in this lead\'s notes.','err');
+  const url=leadMeetLink(lead);
+  if(url)window.open(url,'_blank');else toast('No Meet link on this meeting.','err');
+}
+/* Meetings Hub stays deliberately light: state, progress and what goes out
+   next. All sequence administration lives in the Lead drawer. */
+function mhSeqBlockHtml(lead){
+  const s=seqSummary(lead);
+  if(!s||!s.total)return'';
+  const st=seqStateMeta(s.state),tm=seqTypeMeta(s.type);
+  const pct=s.total?Math.round(s.sent/s.total*100):0;
+  return `<div>
+    <div class="stitle" style="margin-bottom:8px">${escHtml(tm.label)}</div>
+    <div style="padding:10px;background:var(--bg);border:1px solid var(--bd);border-radius:7px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+        <span class="badge ${st.cls}">${st.label}</span>
+        <span style="font-size:12px;color:var(--tx2)">${s.sent} of ${s.total} sent</span>
+      </div>
+      <div class="ftrack"><div class="ffill" style="width:${pct}%"></div></div>
+      <div style="font-size:12px;color:var(--tx3);margin-top:7px">
+        ${s.nextAt?`Next: ${escHtml(s.nextLabel||'')} · ${seqFmtWhen(s.nextAt)}`:'No further messages scheduled'}
+      </div>
+      <div style="font-size:11.5px;color:var(--tx3);margin-top:6px">Manage this sequence from the lead drawer.</div>
+    </div>
+  </div>`;
 }
 function mhOpenLead(){if(mhDrawerLeadId)openLead(mhDrawerLeadId);}
 function mhEditLead(){if(mhDrawerLeadId){const l=allLeads.find(x=>x.id===mhDrawerLeadId);if(l){currentLead=l;lpEdit();}}}
@@ -3318,7 +3595,11 @@ function chFilterByTab(items, tab) {
   );
 }
 function chActivityMeta(type){
-  const m={Call:{icon:'call',color:'bl'},SMS:{icon:'sms',color:'gr'},Email:{icon:'mail',color:'pu'},Note:{icon:'edit_note',color:'am'},review_request:{icon:'reviews',color:'pu'}};
+  const m={Call:{icon:'call',color:'bl'},SMS:{icon:'sms',color:'gr'},Email:{icon:'mail',color:'pu'},Note:{icon:'edit_note',color:'am'},review_request:{icon:'reviews',color:'pu'},
+    automation_scheduled:{icon:'schedule_send',color:'ac'},automation_paused:{icon:'pause_circle',color:'am'},
+    automation_resumed:{icon:'play_circle',color:'bl'},automation_cancelled:{icon:'block',color:'re'},
+    automation_skipped:{icon:'skip_next',color:'gy'},automation_expired:{icon:'timer_off',color:'gy'},
+    automation_failed:{icon:'error',color:'re'}};
   return m[type]||{icon:'history',color:'gy'};
 }
 function escapeHtml(s){
@@ -3616,6 +3897,7 @@ function chRenderTimeline(items){
 
               ${type.toUpperCase()}
               ${dir ? ' · ' + escapeHtml(dir) : ''}
+              ${data.automation ? `<span class="ch-auto-chip" title="${escapeHtml(data.template_label || data.template_key || 'Automated message')}">AUTO</span>` : ''}
             </div>
 
             <div>
