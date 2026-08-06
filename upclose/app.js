@@ -2080,14 +2080,6 @@ async function saveMhSchedule(){
 
 /* ============================================================
    REPORTS
-   Reporting/export/comparison layer. Does not fetch or store
-   anything of its own — it reads the same allLeads array already
-   loaded for Leads/Pipeline/Analytics, and reuses the same owner
-   map (closersMap) and pipeline stage list (PIPELINE_STAGES) so
-   KPI definitions never drift from what Analytics/Funnel already
-   show. CSV export is real; PDF export and report persistence
-   (Recent Reports / Scheduled Reports) are intentionally left as
-   "coming soon" until a backend exists for them.
    ============================================================ */
 let rptState={type:'sales_summary',preset:'30',dateFrom:'',dateTo:'',owner:'',source:''};
 
