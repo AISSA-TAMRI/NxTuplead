@@ -348,3 +348,53 @@
     </div>
   </div>
 </div>
+
+<!-- ================================================================
+     FOLLOW-UP MODALS
+     fuModal: Schedule / Reschedule a follow-up
+     fuRunner: "Let's Start" work session runner
+     These modals are used by Manual Actions throughout the CRM.
+     They must live in communication.html because that fragment is
+     always loaded when the Communication Hub page is active, and
+     both modals are only ever triggered from Manual Actions.
+     CSS lives in styles.css (#fuModal, #fuRunner).
+     ================================================================ -->
+
+<div id="fuModal">
+  <div class="modal-box" style="width:100%;max-width:500px;border-radius:12px;background:var(--s1);border:1px solid var(--bd2);box-shadow:0 32px 64px rgba(0,0,0,0.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bd)">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--tx)" id="fuModalTitle">Schedule Follow-up</div>
+        <div style="font-size:12px;color:var(--tx3);margin-top:2px" id="fuModalSub"></div>
+      </div>
+      <button class="abtn" style="padding:4px 8px" onclick="fuCloseModal()"><span class="mat sm">close</span></button>
+    </div>
+    <div class="modal-body" id="fuModalBody"></div>
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 20px;border-top:1px solid var(--bd)">
+      <button class="abtn" onclick="fuCloseModal()"><span class="mat sm">close</span>Cancel</button>
+      <button class="abtn pri" id="fuSaveBtn" onclick="fuSaveModal()"><span class="mat sm">save</span>Save Follow-up</button>
+    </div>
+  </div>
+</div>
+
+<div id="fuRunner">
+  <div class="modal-box" style="width:100%;max-width:480px;border-radius:12px;background:var(--s1);border:1px solid var(--bd2);box-shadow:0 32px 64px rgba(0,0,0,0.6)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--bd)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="mat sm" style="color:var(--acc)">play_circle</span>
+        <span style="font-size:14px;font-weight:700;color:var(--tx)">Work Session</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:12px;color:var(--tx3)" id="fuRunnerProgress"></span>
+        <button class="abtn" style="padding:4px 8px" onclick="fuCloseRunner()"><span class="mat sm">close</span></button>
+      </div>
+    </div>
+    <div class="modal-body" id="fuRunnerBody" style="min-height:200px"></div>
+    <div style="display:flex;align-items:center;gap:8px;padding:12px 20px;border-top:1px solid var(--bd)">
+      <button class="abtn" onclick="fuRunnerSkip()"><span class="mat sm">skip_next</span>Skip</button>
+      <button class="abtn" onclick="fuRunnerReschedule()"><span class="mat sm">edit_calendar</span>Reschedule</button>
+      <div style="flex:1"></div>
+      <button class="abtn pri" onclick="fuRunnerComplete()"><span class="mat sm">task_alt</span>Complete &amp; Next</button>
+    </div>
+  </div>
+</div>
