@@ -1559,16 +1559,33 @@ function renderLeadSequence(){
     seqBlock(t,jobs.filter(j=>(j.automation_type||'precall')===t))).join(''),true);
 }
 
-function lpEdit(){
-  if(!currentLead)return;
-  document.getElementById('modalTitle').textContent='Edit Lead';document.getElementById('modalLeadId').value=currentLead.id;
-  document.getElementById('mFirstName').value=currentLead.first_name||'';document.getElementById('mLastName').value=currentLead.last_name||'';
-  document.getElementById('mEmail').value=currentLead.email||'';document.getElementById('mPhone').value=currentLead.phone||'';
-  document.getElementById('mCompany').value=currentLead.company_name||'';document.getElementById('mStatus').value=currentLead.status||'Potential';
-  document.getElementById('mOwner').value=currentLead.owner_id||'';document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
-  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';document.getElementById('mUtmSource').value=currentLead.utm_source||'';
-  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
-  document.getElementById('mUtmContent').value=currentLead.utm_content||'';document.getElementById('mNotes').value=currentLead.notes||'';
+async function lpEdit(){
+  if(!currentLead) return;
+
+
+  await loadClosers();
+
+  document.getElementById('modalTitle').textContent = 'Edit Lead';
+  document.getElementById('modalLeadId').value = currentLead.id;
+
+  document.getElementById('mFirstName').value = currentLead.first_name || '';
+  document.getElementById('mLastName').value = currentLead.last_name || '';
+  document.getElementById('mEmail').value = currentLead.email || '';
+  document.getElementById('mPhone').value = currentLead.phone || '';
+  document.getElementById('mCompany').value = currentLead.company_name || '';
+  document.getElementById('mStatus').value = currentLead.status || 'Potential';
+
+
+  document.getElementById('mOwner').value = currentLead.owner_id || '';
+
+  document.getElementById('mPrefDate').value = currentLead.preferred_date || '';
+  document.getElementById('mPrefTime').value = currentLead.preferred_time || '';
+  document.getElementById('mUtmSource').value = currentLead.utm_source || '';
+  document.getElementById('mUtmCampaign').value = currentLead.utm_campaign || '';
+  document.getElementById('mUtmMedium').value = currentLead.utm_medium || '';
+  document.getElementById('mUtmContent').value = currentLead.utm_content || '';
+  document.getElementById('mNotes').value = currentLead.notes || '';
+
   document.getElementById('modal').classList.add('open');
 }
 async function lpConvert() {
