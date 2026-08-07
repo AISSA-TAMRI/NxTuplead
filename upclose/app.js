@@ -1559,30 +1559,16 @@ function renderLeadSequence(){
     seqBlock(t,jobs.filter(j=>(j.automation_type||'precall')===t))).join(''),true);
 }
 
-async function lpEdit(){
-  if(!currentLead) return;
-
-  await loadClosers();
-
-  document.getElementById('modalTitle').textContent = 'Edit Lead';
-  document.getElementById('modalLeadId').value = currentLead.id;
-  document.getElementById('mFirstName').value = currentLead.first_name || '';
-  document.getElementById('mLastName').value = currentLead.last_name || '';
-  document.getElementById('mEmail').value = currentLead.email || '';
-  document.getElementById('mPhone').value = currentLead.phone || '';
-  document.getElementById('mCompany').value = currentLead.company_name || '';
-  document.getElementById('mStatus').value = currentLead.status || 'Potential';
-
-  document.getElementById('mOwner').value = currentLead.owner_id || '';
-
-  document.getElementById('mPrefDate').value = currentLead.preferred_date || '';
-  document.getElementById('mPrefTime').value = currentLead.preferred_time || '';
-  document.getElementById('mUtmSource').value = currentLead.utm_source || '';
-  document.getElementById('mUtmCampaign').value = currentLead.utm_campaign || '';
-  document.getElementById('mUtmMedium').value = currentLead.utm_medium || '';
-  document.getElementById('mUtmContent').value = currentLead.utm_content || '';
-  document.getElementById('mNotes').value = currentLead.notes || '';
-
+function lpEdit(){
+  if(!currentLead)return;
+  document.getElementById('modalTitle').textContent='Edit Lead';document.getElementById('modalLeadId').value=currentLead.id;
+  document.getElementById('mFirstName').value=currentLead.first_name||'';document.getElementById('mLastName').value=currentLead.last_name||'';
+  document.getElementById('mEmail').value=currentLead.email||'';document.getElementById('mPhone').value=currentLead.phone||'';
+  document.getElementById('mCompany').value=currentLead.company_name||'';document.getElementById('mStatus').value=currentLead.status||'Potential';
+  document.getElementById('mOwner').value=currentLead.owner_id||'';document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
+  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';document.getElementById('mUtmSource').value=currentLead.utm_source||'';
+  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
+  document.getElementById('mUtmContent').value=currentLead.utm_content||'';document.getElementById('mNotes').value=currentLead.notes||'';
   document.getElementById('modal').classList.add('open');
 }
 async function lpConvert() {
@@ -4482,6 +4468,7 @@ function chRenderManualActions(){
           <button class="tbb" title="Open conversation" onclick="chOpenInConversations(${t.lead_id})"><span class="mat">forum</span></button>
           <button class="tbb" title="Reschedule" onclick="fuOpenModal(${t.lead_id},${t.id})"><span class="mat">edit_calendar</span></button>
           <button class="tbb" title="Complete" onclick="fuComplete(${t.id})"><span class="mat">task_alt</span></button>
+          <button class="tbb" title="Delete" style="color:var(--re)" onclick="fuDelete(${t.id})"><span class="mat">delete</span></button>
         </td></tr>`;
     }).join('');
   }
@@ -4609,6 +4596,35 @@ async function fuSkip(id){
     toast('Skipped','ok');
     await fuLoad(true); await loadLeads();
   }catch(e){ toast('Failed to skip — try again','err'); }
+}
+async function fuDelete(id){
+  showConfirm('Delete this follow-up?',
+    'This scheduled follow-up will be permanently removed. The lead remains untouched.',
+    'Delete','danger', async ()=>{
+      try{
+        await fuApi({action:'delete_followup',id});
+        toast('✓ Follow-up deleted','ok');
+        await fuLoad(true); await loadLeads();
+      }catch(e){ toast('Failed to delete — check the delete_followup action','err'); }
+    });
+}
+async function fuBulkDelete(){
+  const boxes=[...document.querySelectorAll('#chManualTableBody .ch-row-check:checked')];
+  if(!boxes.length) return;
+  const ids=boxes.map(cb=>parseInt(cb.dataset.id,10)).filter(Boolean);
+  showConfirm(`Delete ${ids.length} follow-up${ids.length>1?'s':''}?`,
+    'These scheduled follow-ups will be permanently removed. The leads remain untouched.',
+    'Delete all','danger', async ()=>{
+      const btn=document.getElementById('chManualBulkDeleteBtn');
+      if(btn){btn.disabled=true;btn.innerHTML='<span class="mat sm spin">sync</span>Deleting…';}
+      let ok=0;
+      for(const id of ids){
+        try{ await fuApi({action:'delete_followup',id}); ok++; }catch(e){}
+      }
+      toast(ok===ids.length?`✓ Deleted ${ok} follow-up${ok>1?'s':''}`:`Deleted ${ok} of ${ids.length} — some failed`,ok===ids.length?'ok':'err');
+      if(btn){btn.disabled=false;btn.innerHTML='<span class="mat sm">delete</span>Delete Selected';}
+      await fuLoad(true); await loadLeads();
+    });
 }
 
 /* ---- "Let's Start" work queue ------------------------------------ */
@@ -7316,6 +7332,7 @@ function chWireStaticListeners(){
     chManualUpdateBulkBar();
   });
   chOn('chManualBulkMarkBtn','click',fuBulkComplete);
+  chOn('chManualBulkDeleteBtn','click',fuBulkDelete);
 
   /* Composer quick-insert snippet popover */
   chOn('chComposerSnippetBtn','click',e=>{e.stopPropagation();chToggleSnippetQuickList();});
