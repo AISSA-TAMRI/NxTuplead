@@ -174,6 +174,11 @@ tailwind.config = {
     letter-spacing:.08em;
   }
 
+  /* FAQ accordion ------------------------------------------------ */
+  .faq-item.card:hover{ transform:none; }
+  .faq-trigger{ transition: background .2s ease; }
+  .accordion-content{ max-height:0; overflow:hidden; transition: max-height .4s var(--ease); }
+
   /* page-load sequence ------------------------------------------ */
   @keyframes riseIn{ from{ opacity:0; transform: translateY(14px); } to{ opacity:1; transform:none; } }
   @keyframes popIn{ from{ opacity:0; transform: scale(.86); } to{ opacity:1; transform: scale(1); } }
@@ -240,7 +245,11 @@ tailwind.config = {
         </h1>
 
         <p class="rise d4 text-base sm:text-lg text-ink-soft leading-relaxed mb-5">
-          We'll grow your car wash membership base by 50–100+ new members per month — completely done-for-you. Check your inbox for your confirmation email and call details.
+          Check your inbox for your confirmation email and call details. A text reminder is on the way too.
+        </p>
+
+        <p class="rise d5 text-base text-ink-soft leading-relaxed mb-5">
+          On the call we'll look at your wash specifically — where your membership base is now, and the clearest path to growing it.
         </p>
 
         <p class="rise d5 text-sm text-ink-faint leading-relaxed max-w-lg mx-auto">
@@ -318,6 +327,82 @@ tailwind.config = {
     </div>
   </section>
 
+
+  <section class="py-16 sm:py-20 lg:py-24">
+    <div class="max-w-container mx-auto px-5 sm:px-6">
+
+      <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-14">
+        <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-primary-bright mb-4">Before We Talk</p>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">A Few Things Owners Usually Ask</h2>
+      </div>
+
+      <div class="max-w-2xl mx-auto space-y-3" id="faqList">
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">Will this actually work for my wash?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">Express, flex, or full-service — we've worked with all three. On the call we'll look at your specific numbers and tell you honestly whether it's a fit before anything else happens.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">Is this a sales pitch?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">No slides, no script. We'll ask about where your membership base stands today and walk through what growing it would actually take. If it's not a fit, we'll tell you that too.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">What should I have ready?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">Your current member count, your average membership price, and roughly what a member is worth to you. Nothing formal — ballpark numbers are enough for us to work with.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">Am I locked into anything by taking the call?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">No. The call itself is a conversation, not a commitment. If we decide to work together afterward, there's no long-term contract on that either.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">What if I need to reschedule?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">Just use the reschedule link in your confirmation email — no need to reach out separately. We'd rather move the time than have you rush through it.</p>
+          </div>
+        </div>
+
+        <div class="card rounded-2xl overflow-hidden faq-item">
+          <button class="faq-trigger w-full flex items-center justify-between gap-4 p-6 text-left">
+            <span class="font-semibold">Who am I actually talking to?</span>
+            <span class="material-symbols-outlined text-primary faq-icon transition-transform">add</span>
+          </button>
+          <div class="accordion-content">
+            <p class="px-6 pb-6 text-ink-soft leading-relaxed">Someone from our team who works with car wash owners day to day — not a generalist rep reading from a script. They'll know the membership model going in.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
 </main>
 
 
@@ -349,6 +434,21 @@ tailwind.config = {
   var booking = null;
 
   try{ booking = JSON.parse(sessionStorage.getItem(KEY) || 'null'); }catch(e){}
+
+  document.querySelectorAll('.faq-item').forEach(function(item){
+    var trigger = item.querySelector('.faq-trigger');
+    var content = item.querySelector('.accordion-content');
+    var icon = item.querySelector('.faq-icon');
+    trigger.addEventListener('click', function(){
+      var isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+      document.querySelectorAll('.accordion-content').forEach(function(c){ c.style.maxHeight = '0px'; });
+      document.querySelectorAll('.faq-icon').forEach(function(i){ i.style.transform = 'rotate(0deg)'; });
+      if(!isOpen){
+        content.style.maxHeight = content.scrollHeight + 'px';
+        icon.style.transform = 'rotate(45deg)';
+      }
+    });
+  });
 
   if(booking && (booking.date || booking.time)){
     var when = [booking.date, booking.time].filter(Boolean).join(' at ');
