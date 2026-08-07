@@ -12,6 +12,8 @@ const API={getLeads:'https://n8n.upleaddigital.com/webhook/get-leads',getClients
   adSpend:'https://n8n.upleaddigital.com/webhook/ad-spend',
   adSpendSave:'https://n8n.upleaddigital.com/webhook/ad-spend-save',
   adSpendList:'https://n8n.upleaddigital.com/webhook/ad-spend-list',
+  adSpendUpdate:'https://n8n.upleaddigital.com/webhook/ad-spend-update',
+  adSpendDelete:'https://n8n.upleaddigital.com/webhook/ad-spend-delete',
   currentUser:'https://n8n.upleaddigital.com/webhook/get-current-user',
   createTeamMember:'https://n8n.upleaddigital.com/webhook/create-team-member',
 
@@ -2980,9 +2982,78 @@ function fnRenderSpendRows(){
   const el=document.getElementById('fnAdSpendRows'); if(!el) return;
   if(fnSpendRows===null){ el.innerHTML=''; return; }
   if(!fnSpendRows.length){ el.innerHTML='<div style="font-size:12px;color:var(--tx3);padding:8px 0">No entries in this period.</div>'; return; }
-  el.innerHTML='<table class="dt"><thead><tr><th>Date</th><th>Amount</th><th>Note</th></tr></thead><tbody>'
-    + fnSpendRows.map(r=>`<tr><td style="font-weight:600">${fmtDate(r.spend_date)}</td><td>$${(parseFloat(r.amount)||0).toFixed(2)}</td><td style="color:var(--tx3)">${escapeHtml(r.note||'')}</td></tr>`).join('')
+  el.innerHTML='<table class="dt"><thead><tr><th>Date</th><th>Amount</th><th>Note</th><th style="width:72px"></th></tr></thead><tbody>'
+    + fnSpendRows.map(r=>{
+        const id=r.id;
+        const amt=(parseFloat(r.amount)||0).toFixed(2);
+        const note=escapeHtml(r.note||'');
+        const date=r.spend_date?r.spend_date.slice(0,10):'';
+        return `<tr id="fnsr-${id}">
+          <td style="font-weight:600">${fmtDate(r.spend_date)}</td>
+          <td>$${amt}</td>
+          <td style="color:var(--tx3)">${note}</td>
+          <td style="white-space:nowrap">
+            <button class="abtn" style="padding:3px 7px;font-size:11px" title="Edit" onclick="fnEditSpendRow(${id},'${date}','${amt}','${note}')">
+              <span class="mat sm">edit</span>
+            </button>
+            <button class="abtn danger" style="padding:3px 7px;font-size:11px;margin-left:3px" title="Delete" onclick="fnDeleteSpendRow(${id})">
+              <span class="mat sm">delete</span>
+            </button>
+          </td>
+        </tr>`;
+      }).join('')
     + '</tbody></table>';
+}
+
+function fnEditSpendRow(id, date, amount, note){
+  const row=document.getElementById('fnsr-'+id);
+  if(!row) return;
+  row.innerHTML=`
+    <td><input type="date" class="form-input" id="fned-date-${id}" value="${date}" style="width:140px"/></td>
+    <td><input type="number" class="form-input" id="fned-amt-${id}" value="${amount}" min="0" step="0.01" style="width:100px"/></td>
+    <td><input type="text" class="form-input" id="fned-note-${id}" value="${note}" placeholder="Note" style="width:100%"/></td>
+    <td style="white-space:nowrap">
+      <button class="abtn pri" style="padding:3px 7px;font-size:11px" onclick="fnSaveSpendEdit(${id})">
+        <span class="mat sm">save</span>
+      </button>
+      <button class="abtn" style="padding:3px 7px;font-size:11px;margin-left:3px" onclick="fnRenderSpendRows()">
+        <span class="mat sm">close</span>
+      </button>
+    </td>`;
+}
+
+async function fnSaveSpendEdit(id){
+  const dateEl=document.getElementById('fned-date-'+id);
+  const amtEl=document.getElementById('fned-amt-'+id);
+  const noteEl=document.getElementById('fned-note-'+id);
+  const val=parseFloat(amtEl&&amtEl.value);
+  if(isNaN(val)||val<0){ toast('Enter a valid amount','err'); return; }
+  const spend_date=(dateEl&&dateEl.value)||new Date().toISOString().slice(0,10);
+  const note=(noteEl&&noteEl.value)||'';
+  try{
+    const res=await fetch(API.adSpendUpdate,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id, spend_date, amount:val, note})});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    toast('✓ Entry updated','ok');
+    renderFunnelDashboard();
+  }catch(e){
+    toast('Failed to update — check the ad-spend-update webhook','err');
+  }
+}
+
+async function fnDeleteSpendRow(id){
+  showConfirm('Delete this entry?','This ad spend record will be permanently removed.',
+    'Delete','danger', async ()=>{
+      try{
+        const res=await fetch(API.adSpendDelete,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({id})});
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        toast('✓ Entry deleted','ok');
+        renderFunnelDashboard();
+      }catch(e){
+        toast('Failed to delete — check the ad-spend-delete webhook','err');
+      }
+    });
 }
 
 async function fnSaveAdSpend(){
