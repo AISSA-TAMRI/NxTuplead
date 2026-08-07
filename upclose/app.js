@@ -1559,33 +1559,16 @@ function renderLeadSequence(){
     seqBlock(t,jobs.filter(j=>(j.automation_type||'precall')===t))).join(''),true);
 }
 
-async function lpEdit(){
-  if(!currentLead) return;
-
-
-  await loadClosers();
-
-  document.getElementById('modalTitle').textContent = 'Edit Lead';
-  document.getElementById('modalLeadId').value = currentLead.id;
-
-  document.getElementById('mFirstName').value = currentLead.first_name || '';
-  document.getElementById('mLastName').value = currentLead.last_name || '';
-  document.getElementById('mEmail').value = currentLead.email || '';
-  document.getElementById('mPhone').value = currentLead.phone || '';
-  document.getElementById('mCompany').value = currentLead.company_name || '';
-  document.getElementById('mStatus').value = currentLead.status || 'Potential';
-
-
-  document.getElementById('mOwner').value = currentLead.owner_id || '';
-
-  document.getElementById('mPrefDate').value = currentLead.preferred_date || '';
-  document.getElementById('mPrefTime').value = currentLead.preferred_time || '';
-  document.getElementById('mUtmSource').value = currentLead.utm_source || '';
-  document.getElementById('mUtmCampaign').value = currentLead.utm_campaign || '';
-  document.getElementById('mUtmMedium').value = currentLead.utm_medium || '';
-  document.getElementById('mUtmContent').value = currentLead.utm_content || '';
-  document.getElementById('mNotes').value = currentLead.notes || '';
-
+function lpEdit(){
+  if(!currentLead)return;
+  document.getElementById('modalTitle').textContent='Edit Lead';document.getElementById('modalLeadId').value=currentLead.id;
+  document.getElementById('mFirstName').value=currentLead.first_name||'';document.getElementById('mLastName').value=currentLead.last_name||'';
+  document.getElementById('mEmail').value=currentLead.email||'';document.getElementById('mPhone').value=currentLead.phone||'';
+  document.getElementById('mCompany').value=currentLead.company_name||'';document.getElementById('mStatus').value=currentLead.status||'Potential';
+  document.getElementById('mOwner').value=currentLead.owner_id||'';document.getElementById('mPrefDate').value=currentLead.preferred_date||'';
+  document.getElementById('mPrefTime').value=currentLead.preferred_time||'';document.getElementById('mUtmSource').value=currentLead.utm_source||'';
+  document.getElementById('mUtmCampaign').value=currentLead.utm_campaign||'';document.getElementById('mUtmMedium').value=currentLead.utm_medium||'';
+  document.getElementById('mUtmContent').value=currentLead.utm_content||'';document.getElementById('mNotes').value=currentLead.notes||'';
   document.getElementById('modal').classList.add('open');
 }
 async function lpConvert() {
@@ -1729,10 +1712,19 @@ async function saveLeadModal(){
   if(!payload.company_name&&!payload.email){toast('Company name or email required.','err');btn.disabled=false;btn.innerHTML=`<span class="mat sm">save</span>${isEdit?'Update Lead':'Save Lead'}`;return;}
   try{const res=await fetch(API.leadManagement,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error(`HTTP ${res.status}`);
     closeModal();toast(isEdit?'✓ Lead updated':'✓ Lead created','ok');
-    if(isEdit){const idx=allLeads.findIndex(l=>l.id==id);if(idx>-1)allLeads[idx]={...allLeads[idx],...payload};if(currentLead&&currentLead.id==id){currentLead={...currentLead,...payload};openLead(currentLead.id);}}
-    else{await loadLeads();}
-      
-    renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));updateDashboard();updateSidebarCounts();if(page()==='meetings'){renderMhKpis();renderCalendar();} 
+    // Always reload from DB so meeting_id, seq_state, seq_type and any other
+    // server-computed fields are fresh across every page. The local-merge
+    // pattern dropped those fields after edit.
+    await loadLeads();
+    const updatedLead=allLeads.find(l=>l.id==id);
+    if(isEdit&&currentLead&&currentLead.id==id&&updatedLead){currentLead=updatedLead;openLead(updatedLead);}
+    renderTable(activeFilter==='all'?allLeads:allLeads.filter(l=>l.status===activeFilter));
+    updateDashboard();updateSidebarCounts();
+    renderPipeline();
+    if(page()==='pipeline')renderPipeline();
+    if(page()==='analytics')renderAnalytics();
+    if(page()==='meetings'){renderMhKpis();renderCalendar();renderMhUpcoming();}
+    if(page()==='activity')loadActivity(); 
      }
   catch(e){toast(isEdit?'Failed to update lead.':'Failed to create lead.','err');}
   finally{btn.disabled=false;btn.innerHTML=`<span class="mat sm">save</span>${isEdit?'Update Lead':'Save Lead'}`;}
